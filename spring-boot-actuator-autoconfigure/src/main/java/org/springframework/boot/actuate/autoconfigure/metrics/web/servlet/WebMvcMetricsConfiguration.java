@@ -52,9 +52,9 @@ public class WebMvcMetricsConfiguration implements WebMvcConfigurer {
 	public WebMvcMetrics controllerMetrics(MeterRegistry registry,
 			MetricsProperties properties, WebMvcTagsProvider configurer) {
 		return new WebMvcMetrics(registry, configurer,
-				properties.getWeb().getServerRequestsName(),
-				properties.getWeb().getAutoTimeServerRequests(),
-				properties.getWeb().getServerRequestPercentiles());
+				properties.getWeb().getServer().getRequestsMetricName(),
+				properties.getWeb().getServer().isAutoTimeRequests(),
+				properties.getWeb().getServer().isRecordRequestPercentiles());
 	}
 
 	@Bean

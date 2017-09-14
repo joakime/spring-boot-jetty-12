@@ -48,7 +48,7 @@ public class WebFluxMetricsConfiguration {
 	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
 			WebFluxTagsProvider tagConfigurer, MetricsProperties properties) {
 		return new MetricsWebFilter(registry, tagConfigurer,
-				properties.getWeb().getServerRequestsName());
+				properties.getWeb().getServer().getRequestsMetricName());
 	}
 
 }

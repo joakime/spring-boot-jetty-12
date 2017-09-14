@@ -118,7 +118,7 @@ public class MetricsAutoConfiguration {
 			configurers.getIfAvailable(Collections::emptyList)
 					.forEach((configurer) -> configurer.configureRegistry(registry));
 			binders.forEach((binder) -> binder.bindTo(registry));
-			if (config.getUseGlobalRegistry()) {
+			if (config.isUseGlobalRegistry()) {
 				Metrics.addRegistry(registry);
 			}
 		}

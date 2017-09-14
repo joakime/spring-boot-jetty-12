@@ -30,17 +30,17 @@ public class MetricsProperties {
 	private Web web = new Web();
 
 	/**
-	 * Determines whether MeterRegistry implementations configured by Spring should be
-	 * bound to the global static registry on Metrics. For testing, set this to 'false' to
-	 * maximize test independence.
+	 * Whether or not auto-configured MeterRegistry implementations should be bound to the
+	 * global static registry on Metrics. For testing, set this to 'false' to maximize
+	 * test independence.
 	 */
-	private Boolean useGlobalRegistry = true;
+	private boolean useGlobalRegistry = true;
 
-	public Boolean getUseGlobalRegistry() {
+	public boolean isUseGlobalRegistry() {
 		return this.useGlobalRegistry;
 	}
 
-	public void setUseGlobalRegistry(Boolean useGlobalRegistry) {
+	public void setUseGlobalRegistry(boolean useGlobalRegistry) {
 		this.useGlobalRegistry = useGlobalRegistry;
 	}
 
@@ -50,69 +50,103 @@ public class MetricsProperties {
 
 	public static class Web {
 
-		/**
-		 * Determines whether every request mapping (WebMVC or WebFlux) should be
-		 * automatically timed. If the number of time series emitted from a Spring
-		 * application grows too large on account of request mapping timings, disable this
-		 * and use 'Timed' on a per request mapping basis as needed.
-		 */
-		private Boolean autoTimeServerRequests = true;
+		private Client client = new Client();
 
-		private String serverRequestsName = "http.server.requests";
+		private Server server = new Server();
 
-		/**
-		 * Determines whether instrumented server requests ship percentiles histogram
-		 * buckets by default. The default can be overridden by adding '@Timed' to a
-		 * request endpoint and setting 'percentiles' to true.
-		 */
-		private Boolean serverRequestPercentiles = false;
-
-		private String clientRequestsName = "http.client.requests";
-
-		/**
-		 * Determines whether instrumented client requests ship percentiles histogram
-		 * buckets by default.
-		 */
-		private Boolean clientRequestPercentiles = false;
-
-		public Boolean getAutoTimeServerRequests() {
-			return this.autoTimeServerRequests;
+		public Client getClient() {
+			return this.client;
 		}
 
-		public void setAutoTimeServerRequests(Boolean autoTimeServerRequests) {
-			this.autoTimeServerRequests = autoTimeServerRequests;
+		public void setClient(Client client) {
+			this.client = client;
 		}
 
-		public void setServerRequestsName(String serverRequestsName) {
-			this.serverRequestsName = serverRequestsName;
+		public Server getServer() {
+			return this.server;
 		}
 
-		public String getServerRequestsName() {
-			return this.serverRequestsName;
+		public void setServer(Server server) {
+			this.server = server;
 		}
 
-		public void setClientRequestsName(String clientRequestsName) {
-			this.clientRequestsName = clientRequestsName;
+		public static class Client {
+
+			/**
+			 * Whether or not instrumented requests record percentiles histogram buckets
+			 * by default.
+			 */
+			private boolean recordRequestPercentiles;
+
+			/**
+			 * Name of the metric for sent requests.
+			 */
+			private String requestsMetricName = "http.client.requests";
+
+			public boolean isRecordRequestPercentiles() {
+				return this.recordRequestPercentiles;
+			}
+
+			public void setRecordRequestPercentiles(boolean recordRequestPercentiles) {
+				this.recordRequestPercentiles = recordRequestPercentiles;
+			}
+
+			public String getRequestsMetricName() {
+				return this.requestsMetricName;
+			}
+
+			public void setRequestsMetricName(String requestsMetricName) {
+				this.requestsMetricName = requestsMetricName;
+			}
+
 		}
 
-		public String getClientRequestsName() {
-			return this.clientRequestsName;
-		}
+		public static class Server {
 
-		public void setServerRequestPercentiles(Boolean serverRequestPercentiles) {
-			this.serverRequestPercentiles = serverRequestPercentiles;
-		}
+			/**
+			 * Whether or not requests handled by Spring MVC or WebFlux should be
+			 * automatically timed. If the number of time series emitted grows too large
+			 * on account of request mapping timings, disable this and use 'Timed' on a
+			 * per request mapping basis as needed.
+			 */
+			private boolean autoTimeRequests = true;
 
-		public Boolean getServerRequestPercentiles() {
-			return this.serverRequestPercentiles;
-		}
+			/**
+			 * Whether or not instrumented requests record percentiles histogram buckets
+			 * by default. Can be overridden by adding '@Timed' to a request endpoint and
+			 * setting 'percentiles' to true.
+			 */
+			private boolean recordRequestPercentiles;
 
-		public void setClientRequestPercentiles(Boolean clientRequestPercentiles) {
-			this.clientRequestPercentiles = clientRequestPercentiles;
-		}
+			/**
+			 * Name of the metric for received requests.
+			 */
+			private String requestsMetricName = "http.server.requests";
 
-		public Boolean getClientRequestPercentiles() {
-			return this.clientRequestPercentiles;
+			public boolean isAutoTimeRequests() {
+				return this.autoTimeRequests;
+			}
+
+			public void setAutoTimeRequests(boolean autoTimeRequests) {
+				this.autoTimeRequests = autoTimeRequests;
+			}
+
+			public boolean isRecordRequestPercentiles() {
+				return this.recordRequestPercentiles;
+			}
+
+			public void setRecordRequestPercentiles(boolean recordRequestPercentiles) {
+				this.recordRequestPercentiles = recordRequestPercentiles;
+			}
+
+			public String getRequestsMetricName() {
+				return this.requestsMetricName;
+			}
+
+			public void setRequestsMetricName(String requestsMetricName) {
+				this.requestsMetricName = requestsMetricName;
+			}
+
 		}
 
 	}
