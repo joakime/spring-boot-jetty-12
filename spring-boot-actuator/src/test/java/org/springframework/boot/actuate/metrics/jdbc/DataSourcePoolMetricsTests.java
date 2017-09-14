@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.binder;
+package org.springframework.boot.actuate.metrics.jdbc;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -26,7 +26,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.metrics.binder.DataSourcePoolMetrics;
+import org.springframework.boot.actuate.metrics.jdbc.DataSourcePoolMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;

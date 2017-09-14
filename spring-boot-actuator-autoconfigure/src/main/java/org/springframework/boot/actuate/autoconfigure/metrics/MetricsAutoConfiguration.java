@@ -40,7 +40,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.We
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
-import org.springframework.boot.actuate.metrics.binder.SpringIntegrationMetrics;
+import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
