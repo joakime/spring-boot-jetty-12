@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
+import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -38,14 +39,14 @@ import org.springframework.context.annotation.Configuration;
 public class WebFluxMetricsConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(DefaultWebFluxTagsProvider.class)
+	@ConditionalOnMissingBean(WebFluxTagsProvider.class)
 	public DefaultWebFluxTagsProvider webfluxTagConfigurer() {
 		return new DefaultWebFluxTagsProvider();
 	}
 
 	@Bean
 	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
-			DefaultWebFluxTagsProvider tagConfigurer, MetricsProperties properties) {
+			WebFluxTagsProvider tagConfigurer, MetricsProperties properties) {
 		return new MetricsWebFilter(registry, tagConfigurer,
 				properties.getWeb().getServerRequestsName());
 	}
