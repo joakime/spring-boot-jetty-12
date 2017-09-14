@@ -174,7 +174,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 
 	private void addReceives(MeterRegistry registry, Iterable<Tag> tags,
 			MessageChannelMetrics channelMetrics) {
-		Id id = registry.createId("spring.integration.receives", tags,
+		Id id = registry.createId("spring.integration.channel.receives", tags,
 				"The number of messages received");
 		registry.more().counter(id, (PollableChannelManagement) channelMetrics,
 				PollableChannelManagement::getReceiveCount);
