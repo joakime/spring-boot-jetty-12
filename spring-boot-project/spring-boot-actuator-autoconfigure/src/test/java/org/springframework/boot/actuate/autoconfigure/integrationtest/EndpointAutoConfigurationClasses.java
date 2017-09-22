@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.trace.TraceEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.servlet.RequestMappingEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.MappingEndpointAutoConfiguration;
 
 /**
  * A list of all endpoint auto-configuration classes for use in tests.
@@ -50,7 +50,7 @@ final class EndpointAutoConfigurationClasses {
 		all.add(InfoEndpointAutoConfiguration.class);
 		all.add(ThreadDumpEndpointAutoConfiguration.class);
 		all.add(TraceEndpointAutoConfiguration.class);
-		all.add(RequestMappingEndpointAutoConfiguration.class);
+		all.add(MappingEndpointAutoConfiguration.class);
 		ALL = all.toArray(new Class<?>[] {});
 	}
 
