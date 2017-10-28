@@ -154,8 +154,8 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void loadTwoPropertiesFilesWithProfiles() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"spring.config.location="
-						+ "classpath:enableprofile.properties,classpath:enableother.properties");
+				"spring.config.location=classpath:enableprofile.properties,"
+						+ "classpath:enableother.properties,classpath:/");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("other");
 		String property = this.environment.getProperty("my.property");
@@ -566,10 +566,10 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(property).isEqualTo("fromspecificlocation");
 		assertThat(this.environment).has(matchingPropertySource(
 				"applicationConfig: " + "[classpath:specificlocation.properties]"));
-		// The default property source is still there
-		assertThat(this.environment).has(matchingPropertySource(
+		// The default property source is not there
+		assertThat(this.environment).doesNotHave(matchingPropertySource(
 				"applicationConfig: " + "[classpath:/application.properties]"));
-		assertThat(this.environment.getProperty("foo")).isEqualTo("bucket");
+		assertThat(this.environment.getProperty("foo")).isNull();
 	}
 
 	@Test

@@ -563,9 +563,8 @@ public class ConfigFileApplicationListener
 		}
 
 		private Set<String> getSearchLocations() {
-			Set<String> locations = new LinkedHashSet<>();
-			// User-configured settings take precedence, so we do them first
 			if (this.environment.containsProperty(CONFIG_LOCATION_PROPERTY)) {
+				Set<String> locations = new LinkedHashSet<>();
 				for (String path : asResolvedSet(
 						this.environment.getProperty(CONFIG_LOCATION_PROPERTY), null)) {
 					if (!path.contains("$")) {
@@ -576,11 +575,10 @@ public class ConfigFileApplicationListener
 					}
 					locations.add(path);
 				}
+				return locations;
 			}
-			locations.addAll(
-					asResolvedSet(ConfigFileApplicationListener.this.searchLocations,
-							DEFAULT_SEARCH_LOCATIONS));
-			return locations;
+			return asResolvedSet(ConfigFileApplicationListener.this.searchLocations,
+					DEFAULT_SEARCH_LOCATIONS);
 		}
 
 		private Set<String> getSearchNames() {

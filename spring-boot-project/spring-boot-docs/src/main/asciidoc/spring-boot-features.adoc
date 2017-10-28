@@ -557,24 +557,21 @@ Config locations are searched in reverse order. By default, the configured locat
 3. `classpath:/config/`
 4. `classpath:/`
 
-When custom config locations are configured, they are used in addition to the default
-locations. Custom locations are searched before the default locations. For example,
-if custom locations `classpath:/custom-config/,file:./custom-config/` are configured,
-the search order becomes:
+When custom config locations are configured, they are used in place of the default
+locations. For example, if custom locations
+`classpath:/custom-config/,file:./custom-config/` are configured, the search order
+becomes:
 
 1. `file:./custom-config/`
 2. `classpath:custom-config/`
-3. `file:./config/`
-4. `file:./`
-5. `classpath:/config/`
-6. `classpath:/`
 
-This search ordering allows you to specify default values in one configuration file
-and then selectively override those values in another. You can provide default values
-for your application in `application.properties` (or whatever other basename you choose
-with `spring.config.name`) in one of the default locations. These default values can
-then be overriden at runtime with a different file located in one of the custom
-locations.
+If you wish to retain some or all of the defaults in addition to one or more custom
+locations, you should include them in yuor `spring.config.location` configuration. Doing
+so allows you to specify default values in one configuration file and then selectively
+override those values in another. You can provide default values for your application in
+`application.properties` (or whatever other basename you choose with `spring.config.name`)
+in one of the default locations. These default values can then be overriden at runtime
+with a different file located in one of the custom locations.
 
 NOTE: If you use environment variables rather than system properties, most operating
 systems disallow period-separated key names, but you can use underscores instead (e.g.
