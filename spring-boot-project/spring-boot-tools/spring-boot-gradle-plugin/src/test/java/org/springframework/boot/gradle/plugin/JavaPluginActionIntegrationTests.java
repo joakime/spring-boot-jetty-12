@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
 import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,24 +76,31 @@ public class JavaPluginActionIntegrationTests {
 	}
 
 	@Test
-	public void javaCompileTasksUseParametersCompilerFlagByDefault() {
+	public void javaCompileTasksUseParametersCompilerFlagByDefaultAndConfiguresAdditionalMetadataLocations() {
 		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
-				.contains("compileJava compiler args: [-parameters]")
-				.contains("compileTestJava compiler args: [-parameters]");
+				.contains("compileJava compiler args: [-parameters, "
+						+ getAdditionalMetadataLocationsParameter("main") + "]")
+				.contains("compileTestJava compiler args: [-parameters, "
+						+ getAdditionalMetadataLocationsParameter("test") + "]");
 	}
 
 	@Test
 	public void javaCompileTasksUseParametersAndAdditionalCompilerFlags() {
 		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
-				.contains("compileJava compiler args: [-parameters, -Xlint:all]")
-				.contains("compileTestJava compiler args: [-parameters, -Xlint:all]");
+				.contains("compileJava compiler args: [-parameters, -Xlint:all")
+				.contains("compileTestJava compiler args: [-parameters, -Xlint:all");
 	}
 
 	@Test
-	public void javaCompileTasksCanOverrideDefaultParametersCompilerFlag() {
-		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
-				.contains("compileJava compiler args: [-Xlint:all]")
-				.contains("compileTestJava compiler args: [-Xlint:all]");
+	public void javaCompileTasksCanOverrideDefaultParametersCompilerFlag()
+			throws IOException {
+		copyApplication();
+		assertThat(this.gradleBuild.build("compileJava").getOutput())
+				.contains("compileJava compiler args: [-Xlint:all, "
+						+ getAdditionalMetadataLocationsParameter("main") + "]");
+		assertThat(this.gradleBuild.build("compileTestJava").getOutput())
+				.contains("compileTestJava compiler args: [-Xlint:all, "
+						+ getAdditionalMetadataLocationsParameter("test") + "]");
 	}
 
 	@Test
@@ -111,6 +120,30 @@ public class JavaPluginActionIntegrationTests {
 				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"),
 				new File(buildLibs,
 						this.gradleBuild.getProjectDir().getName() + "-boot.jar"));
+	}
+
+	private String getAdditionalMetadataLocationsParameter(String sourceSetName) {
+		try {
+			return "-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
+					+ new File(this.gradleBuild.getProjectDir().getCanonicalPath(),
+							"src/" + sourceSetName + "/resources").getAbsolutePath();
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	private void copyApplication() throws IOException {
+		File mainOutput = new File(this.gradleBuild.getProjectDir(),
+				"src/main/java/com/example");
+		mainOutput.mkdirs();
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"),
+				mainOutput);
+		File testOutput = new File(this.gradleBuild.getProjectDir(),
+				"src/test/java/com/example");
+		testOutput.mkdirs();
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"),
+				testOutput);
 	}
 
 }

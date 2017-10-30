@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,9 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  */
 @SupportedAnnotationTypes({ "*" })
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
+
+	static final String ADDITIONAL_METADATA_LOCATIONS_OPTION = "org.springframework.boot."
+			+ "configurationprocessor.additionalMetadataLocations";
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.ConfigurationProperties";
@@ -112,6 +116,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	@Override
 	public SourceVersion getSupportedSourceVersion() {
 		return SourceVersion.latestSupported();
+	}
+
+	@Override
+	public Set<String> getSupportedOptions() {
+		return new HashSet<>(Arrays.asList(ADDITIONAL_METADATA_LOCATIONS_OPTION));
 	}
 
 	@Override
@@ -394,10 +403,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					type, null, String.format("Expose the %s endpoint as a Web endpoint.",
 							endpointId),
 					enabledByDefault, null));
-			this.metadataCollector.add(ItemMetadata.newProperty(
-					endpointKey(endpointId), "web.path", String.class.getName(), type,
-					null, String.format("Path of the %s endpoint.", endpointId),
-					endpointId, null));
+			this.metadataCollector.add(ItemMetadata.newProperty(endpointKey(endpointId),
+					"web.path", String.class.getName(), type, null,
+					String.format("Path of the %s endpoint.", endpointId), endpointId,
+					null));
 		}
 	}
 
