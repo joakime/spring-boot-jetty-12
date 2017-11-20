@@ -16,8 +16,14 @@
 
 package org.springframework.boot.actuate.jms;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -31,6 +37,8 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  */
 public class JmsHealthIndicator extends AbstractHealthIndicator {
 
+	private final Log logger = LogFactory.getLog(JmsHealthIndicator.class);
+
 	private final ConnectionFactory connectionFactory;
 
 	public JmsHealthIndicator(ConnectionFactory connectionFactory) {
@@ -39,8 +47,25 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
+		CountDownLatch started = new CountDownLatch(1);
 		try (Connection connection = this.connectionFactory.createConnection()) {
+			new Thread(() -> {
+				try {
+					if (!started.await(5, TimeUnit.SECONDS)) {
+						this.logger.warn("Connection failed to start within 5 seconds "
+								+ "and will be closed.");
+						connection.close();
+					}
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				catch (Exception ex) {
+					// Continue
+				}
+			}).start();
 			connection.start();
+			started.countDown();
 			builder.up().withDetail("provider",
 					connection.getMetaData().getJMSProviderName());
 		}
