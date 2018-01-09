@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -713,13 +714,14 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	public void defaultSessionTimeout() {
-		assertThat(getFactory().getSessionTimeout()).isEqualTo(Duration.ofMinutes(30));
+		assertThat(getFactory().getSession().getTimeout())
+				.isEqualTo(Duration.ofMinutes(30));
 	}
 
 	@Test
 	public void persistSession() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setPersistSession(true);
+		factory.getSession().setPersistent(true);
 		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		String s1 = getResponse(getLocalUrl("/session"));
@@ -737,8 +739,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void persistSessionInSpecificSessionStoreDir() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		File sessionStoreDir = this.temporaryFolder.newFolder();
-		factory.setPersistSession(true);
-		factory.setSessionStoreDir(sessionStoreDir);
+		factory.getSession().setPersistent(true);
+		factory.getSession().setStoreDir(sessionStoreDir);
 		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		getResponse(getLocalUrl("/session"));
@@ -759,7 +761,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void getValidSessionStoreWhenSessionStoreIsRelative() {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSessionStoreDir(new File("sessions"));
+		factory.getSession().setStoreDir(new File("sessions"));
 		File dir = factory.getValidSessionStoreDir(false);
 		assertThat(dir.getName()).isEqualTo("sessions");
 		assertThat(dir.getParentFile()).isEqualTo(new ApplicationHome().getDir());
@@ -768,10 +770,33 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSessionStoreDir(this.temporaryFolder.newFile());
+		factory.getSession().setStoreDir(this.temporaryFolder.newFile());
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("points to a file");
 		factory.getValidSessionStoreDir(false);
+	}
+
+	@Test
+	public void sessionCookieConfiguration() {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.getSession().getCookie().setName("testname");
+		factory.getSession().getCookie().setDomain("testdomain");
+		factory.getSession().getCookie().setPath("/testpath");
+		factory.getSession().getCookie().setComment("testcomment");
+		factory.getSession().getCookie().setHttpOnly(true);
+		factory.getSession().getCookie().setSecure(true);
+		factory.getSession().getCookie().setMaxAge(Duration.ofSeconds(60));
+		final AtomicReference<SessionCookieConfig> configReference = new AtomicReference<>();
+		this.webServer = factory.getWebServer(
+				(context) -> configReference.set(context.getSessionCookieConfig()));
+		SessionCookieConfig sessionCookieConfig = configReference.get();
+		assertThat(sessionCookieConfig.getName()).isEqualTo("testname");
+		assertThat(sessionCookieConfig.getDomain()).isEqualTo("testdomain");
+		assertThat(sessionCookieConfig.getPath()).isEqualTo("/testpath");
+		assertThat(sessionCookieConfig.getComment()).isEqualTo("testcomment");
+		assertThat(sessionCookieConfig.isHttpOnly()).isTrue();
+		assertThat(sessionCookieConfig.isSecure()).isTrue();
+		assertThat(sessionCookieConfig.getMaxAge()).isEqualTo(60);
 	}
 
 	@Test
@@ -1016,8 +1041,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 					@Override
 					protected void service(HttpServletRequest req,
-							HttpServletResponse resp)
-									throws IOException {
+							HttpServletResponse resp) throws IOException {
 						resp.setContentType("text/plain");
 						resp.setContentLength(testContent.length());
 						resp.getWriter().write(testContent);
@@ -1140,7 +1164,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 				new ExampleServlet() {
 
 					@Override
-					public void service(ServletRequest request, ServletResponse response) {
+					public void service(ServletRequest request,
+							ServletResponse response) {
 						throw new RuntimeException("Planned");
 					}
 
