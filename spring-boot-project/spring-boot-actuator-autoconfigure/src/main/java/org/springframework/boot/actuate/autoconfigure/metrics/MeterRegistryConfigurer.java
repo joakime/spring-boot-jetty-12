@@ -38,7 +38,7 @@ import org.springframework.boot.util.LambdaSafe;
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class MeterRegistryPostProcessor implements BeanPostProcessor {
+class MeterRegistryConfigurer {
 
 	private final Collection<MeterRegistryCustomizer<?>> customizers;
 
@@ -48,7 +48,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 
 	private final boolean addToGlobalRegistry;
 
-	MeterRegistryPostProcessor(Collection<MeterBinder> binders,
+	MeterRegistryConfigurer(Collection<MeterBinder> binders,
 			Collection<MeterFilter> filters,
 			Collection<MeterRegistryCustomizer<?>> customizers,
 			boolean addToGlobalRegistry) {
@@ -58,20 +58,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 		this.addToGlobalRegistry = addToGlobalRegistry;
 	}
 
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) {
-		return bean;
-	}
-
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) {
-		if (bean instanceof MeterRegistry) {
-			postProcess((MeterRegistry) bean);
-		}
-		return bean;
-	}
-
-	private void postProcess(MeterRegistry registry) {
+	void configure(MeterRegistry registry) {
 		if (registry instanceof CompositeMeterRegistry) {
 			return;
 		}
@@ -88,7 +75,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor {
 	@SuppressWarnings("unchecked")
 	private void customize(MeterRegistry registry) {
 		LambdaSafe.callbacks(MeterRegistryCustomizer.class, this.customizers, registry)
-				.withLogger(MeterRegistryPostProcessor.class)
+				.withLogger(MeterRegistryConfigurer.class)
 				.invoke((customizer) -> customizer.customize(registry));
 	}
 
