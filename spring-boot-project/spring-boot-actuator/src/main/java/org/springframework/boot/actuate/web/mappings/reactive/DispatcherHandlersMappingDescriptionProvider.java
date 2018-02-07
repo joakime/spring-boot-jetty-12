@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
@@ -122,7 +123,8 @@ public class DispatcherHandlersMappingDescriptionProvider
 		private DispatcherHandlerMappingDescription describe(
 				Entry<RequestMappingInfo, HandlerMethod> mapping) {
 			return new DispatcherHandlerMappingDescription(mapping.getKey().toString(),
-					mapping.getValue().toString());
+					mapping.getValue().toString(), new DispatcherHandlerMappingDetails(
+							new HandlerMethodDescription(mapping.getValue())));
 		}
 
 	}
@@ -145,7 +147,8 @@ public class DispatcherHandlersMappingDescriptionProvider
 		private DispatcherHandlerMappingDescription describe(
 				Entry<PathPattern, Object> mapping) {
 			return new DispatcherHandlerMappingDescription(
-					mapping.getKey().getPatternString(), mapping.getValue().toString());
+					mapping.getKey().getPatternString(), mapping.getValue().toString(),
+					null);
 		}
 
 	}
@@ -187,7 +190,7 @@ public class DispatcherHandlersMappingDescriptionProvider
 		public void route(RequestPredicate predicate,
 				HandlerFunction<?> handlerFunction) {
 			this.descriptions.add(new DispatcherHandlerMappingDescription(
-					predicate.toString(), handlerFunction.toString()));
+					predicate.toString(), handlerFunction.toString(), null));
 		}
 
 		@Override

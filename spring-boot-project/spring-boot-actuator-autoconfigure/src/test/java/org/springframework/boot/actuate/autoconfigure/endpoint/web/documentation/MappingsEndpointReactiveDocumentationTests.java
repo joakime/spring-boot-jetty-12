@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
@@ -35,12 +36,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.RequestPredicates;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
@@ -74,17 +82,20 @@ public class MappingsEndpointReactiveDocumentationTests
 	public void mappings() throws Exception {
 		this.client.get().uri("/actuator/mappings").exchange().expectStatus().isOk()
 				.expectBody()
-				.consumeWith(document("mappings",
-						responseFields(
-								beneathPath("contexts.*.mappings.dispatcherHandlers")
-										.withSubsectionId("dispatcher-handlers"),
-								fieldWithPath("*").description(
-										"Dispatcher handler mappings, if any, keyed by "
-												+ "dispatcher handler bean name."),
-								fieldWithPath("*.[].handler")
-										.description("Handler for the mapping."),
-								fieldWithPath("*.[].predicate")
-										.description("Predicate for the mapping."))));
+				.consumeWith(document("mappings", responseFields(
+						beneathPath("contexts.*.mappings.dispatcherHandlers")
+								.withSubsectionId("dispatcher-handlers"),
+						fieldWithPath("*").description(
+								"Dispatcher handler mappings, if any, keyed by "
+										+ "dispatcher handler bean name."),
+						fieldWithPath("*.[].handler")
+								.description("Handler for the mapping."),
+						fieldWithPath("*.[].predicate")
+								.description("Predicate for the mapping."),
+						subsectionWithPath("*.[].details").optional()
+								.type(JsonFieldType.OBJECT)
+								.description("Additional implementation-specific "
+										+ "details about the mapping. Optional."))));
 	}
 
 	@Configuration

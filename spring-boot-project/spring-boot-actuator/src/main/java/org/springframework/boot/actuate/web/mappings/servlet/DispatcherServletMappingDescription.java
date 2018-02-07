@@ -30,16 +30,21 @@ public class DispatcherServletMappingDescription {
 
 	private final String predicate;
 
+	private final DispatcherServletMappingDetails details;
+
 	/**
 	 * Creates a new {@code DispatcherServletMappingDescription} for the given
 	 * {@code handler} that will receives requests that match the given {@code predicate}.
 	 *
 	 * @param predicate the predicate
 	 * @param handler the handler
+	 * @param details addition details describing the mapping
 	 */
-	public DispatcherServletMappingDescription(String predicate, String handler) {
+	public DispatcherServletMappingDescription(String predicate, String handler,
+			DispatcherServletMappingDetails details) {
 		this.handler = handler;
 		this.predicate = predicate;
+		this.details = details;
 	}
 
 	/**
@@ -56,6 +61,10 @@ public class DispatcherServletMappingDescription {
 	 */
 	public String getPredicate() {
 		return this.predicate;
+	}
+
+	public DispatcherServletMappingDetails getDetails() {
+		return this.details;
 	}
 
 }
