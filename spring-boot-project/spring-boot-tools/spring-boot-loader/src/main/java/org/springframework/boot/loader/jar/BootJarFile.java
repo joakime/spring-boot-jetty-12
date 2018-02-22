@@ -18,21 +18,18 @@ package org.springframework.boot.loader.jar;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.jar.JarEntry;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
@@ -40,11 +37,18 @@ import java.util.zip.ZipEntry;
  */
 public class BootJarFile extends java.util.jar.JarFile {
 
+	private final File file;
+
 	private final ZipMetadata zipMetadata;
 
 	public BootJarFile(File file) throws IOException {
+		this(file, new RandomAccessDataFile(file));
+	}
+
+	private BootJarFile(File file, RandomAccessData data) throws IOException {
 		super(file);
-		this.zipMetadata = ZipMetadata.metadataFor(file);
+		this.file = file;
+		this.zipMetadata = new ZipMetadata(data);
 	}
 
 	@Override
@@ -62,26 +66,45 @@ public class BootJarFile extends java.util.jar.JarFile {
 		return this.zipMetadata.entries();
 	}
 
-	private static final class ZipMetadata {
+	public BootJarFile getNestedEntry(String name) throws IOException {
+		return this.zipMetadata.getNestedEntry(name);
+	}
 
-		private static final Map<FileId, ZipMetadata> metadatas = new HashMap<>();
+	@Override
+	public Manifest getManifest() throws IOException {
+		InputStream inputStream = getInputStream(getEntry("META-INF/MANIFEST.MF"));
+		return new Manifest(inputStream);
+	}
+
+	@Override
+	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
+		InputStream inputStream = this.zipMetadata.getInputStream(ze.getName());
+		if (ze.getMethod() == ZipEntry.DEFLATED) {
+			return new ZipInflaterInputStream(inputStream, (int) ze.getSize());
+		}
+		else {
+			return inputStream;
+		}
+	}
+
+	private final class ZipMetadata {
 
 		private final CentralDirectory centralDirectory;
 
-		private final RandomAccessFile file;
+		private final RandomAccessData data;
 
 		private final EndRecord endRecord;
 
-		private ZipMetadata(FileId fileId) throws IOException {
-			this.file = new RandomAccessFile(fileId.file, "r");
-			this.endRecord = EndRecord.from(this.file);
+		private ZipMetadata(RandomAccessData data) throws IOException {
+			this.data = data;
+			this.endRecord = EndRecord.from(data);
 			this.centralDirectory = readCentralDirectory();
 		}
 
 		private CentralDirectory readCentralDirectory() throws IOException {
-			this.file.seek(this.endRecord.centralDirectoryOffset);
 			byte[] centralDirectory = new byte[(int) this.endRecord.centralDirectorySize];
-			if (this.file.read(centralDirectory, 0,
+			if (this.data.seekAndRead(this.endRecord.centralDirectoryOffset,
+					centralDirectory, 0,
 					centralDirectory.length) != this.endRecord.centralDirectorySize) {
 				throw new IOException("Failed to read central directory");
 			}
@@ -96,74 +119,46 @@ public class BootJarFile extends java.util.jar.JarFile {
 			return this.centralDirectory.entries();
 		}
 
-		private static ZipMetadata metadataFor(File file) throws IOException {
-			FileId fileId = new FileId(file);
-			synchronized (metadatas) {
-				ZipMetadata metadata = metadatas.get(fileId);
-				if (metadata != null) {
-					return metadata;
+		private InputStream getInputStream(String name) throws IOException {
+			RandomAccessData entryData = getEntryData(name);
+			return new InputStream() {
+
+				int position = 0;
+
+				@Override
+				public int read() throws IOException {
+					int read = entryData.seekAndRead(this.position);
+					this.position++;
+					return read;
 				}
-			}
-			ZipMetadata metadata = new ZipMetadata(fileId);
-			synchronized (metadatas) {
-				ZipMetadata existing = metadatas.putIfAbsent(fileId, metadata);
-				if (existing != null) {
-					// TODO Close metadata
-					return existing;
+
+				@Override
+				public int read(byte[] b, int off, int len) throws IOException {
+					int read = entryData.seekAndRead(this.position, b, off, len);
+					this.position += read;
+					return read;
 				}
-				return metadata;
-			}
+
+			};
 		}
 
-	}
-
-	private static final class FileId {
-
-		private final File file;
-
-		private final BasicFileAttributes attributes;
-
-		private FileId(File file) throws IOException {
-			this.file = file;
-			this.attributes = Files.readAttributes(file.toPath(),
-					BasicFileAttributes.class);
+		private BootJarFile getNestedEntry(String name) throws IOException {
+			return new BootJarFile(BootJarFile.this.file, getEntryData(name));
 		}
 
-		@Override
-		public int hashCode() {
-			long lastModified = this.attributes.lastModifiedTime().toMillis();
-			return Long.hashCode(lastModified) + this.file.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
+		private RandomAccessData getEntryData(String name) throws IOException {
+			Integer localHeaderOffset = this.centralDirectory.localHeaderOffset(name);
+			if (localHeaderOffset == null) {
+				return null;
 			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			FileId other = (FileId) obj;
-
-			if (this.attributes == null) {
-				if (other.attributes != null) {
-					return false;
-				}
-			}
-			else if (!this.attributes.lastModifiedTime()
-					.equals(other.attributes.lastModifiedTime())) {
-				return false;
-			}
-			Object key = this.attributes.fileKey();
-			if (key != null) {
-				return key.equals(other.attributes.fileKey());
-			}
-			else {
-				return this.file.equals(other.file);
-			}
+			byte[] header = new byte[30];
+			this.data.seekAndRead(localHeaderOffset, header, 0, 30);
+			int nameLength = (int) Bytes.littleEndianValue(header, 26, 2);
+			int extraLength = (int) Bytes.littleEndianValue(header, 28, 2);
+			long length = Bytes.littleEndianValue(header, 18, 4);
+			RandomAccessData entryData = this.data.subsection(
+					localHeaderOffset + 30 + nameLength + extraLength, length);
+			return entryData;
 		}
 
 	}
@@ -189,12 +184,12 @@ public class BootJarFile extends java.util.jar.JarFile {
 			this.entries = entries;
 		}
 
-		private static EndRecord from(RandomAccessFile file) throws IOException {
+		private static EndRecord from(RandomAccessData data) throws IOException {
 			byte[] buffer = new byte[256];
 			int size = MINIMUM_SIZE;
 			while (size < MAXIMUM_SIZE) {
-				file.seek(file.length() - buffer.length - size + MINIMUM_SIZE);
-				int read = file.read(buffer, 0, buffer.length);
+				long position = data.length() - buffer.length - size + MINIMUM_SIZE;
+				int read = data.seekAndRead(position, buffer, 0, buffer.length);
 				for (int i = read - MINIMUM_SIZE; i > 0; i--) {
 					if (buffer[i] == 'P' && buffer[i + 1] == 'K' && buffer[i + 2] == 5
 							&& buffer[i + 3] == 6) {
@@ -213,7 +208,7 @@ public class BootJarFile extends java.util.jar.JarFile {
 
 	}
 
-	private static class CentralDirectory {
+	private class CentralDirectory {
 
 		private final byte[] data;
 
@@ -233,18 +228,22 @@ public class BootJarFile extends java.util.jar.JarFile {
 		}
 
 		private JarEntry getEntry(String name) {
+			Integer offset = getOffset(name);
+			if (offset == null) {
+				return null;
+			}
+			return createEntry(name, offset);
+		}
+
+		private Integer getOffset(String name) {
 			CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
 			CharBuffer input = CharBuffer.wrap(name.toCharArray());
 			byte[] output = new byte[name.length() * (int) encoder.maxBytesPerChar()];
 			ByteBuffer outputBuffer = ByteBuffer.wrap(output);
 			encoder.encode(input, outputBuffer, true);
 			encoder.flush(outputBuffer);
-			Integer offset = this.entries
+			return this.entries
 					.get(Arrays.copyOfRange(output, 0, outputBuffer.position()));
-			if (offset == null) {
-				return null;
-			}
-			return createEntry(name, offset);
 		}
 
 		private JarEntry createEntry(String name, int offset) {
@@ -263,6 +262,14 @@ public class BootJarFile extends java.util.jar.JarFile {
 			return createEntry(
 					new AsciiBytes(name(offset, entryNameLength(offset))).toString(),
 					offset);
+		}
+
+		public Integer localHeaderOffset(String name) throws IOException {
+			Integer offset = getOffset(name);
+			if (offset == null) {
+				return null;
+			}
+			return (int) localHeaderOffset(offset);
 		}
 
 		private Enumeration<JarEntry> entries() {
@@ -327,6 +334,10 @@ public class BootJarFile extends java.util.jar.JarFile {
 
 		private int commentLength(int offset) {
 			return (int) Bytes.littleEndianValue(this.data, offset + 32, 2);
+		}
+
+		private long localHeaderOffset(int offset) {
+			return Bytes.littleEndianValue(this.data, offset + 42, 4);
 		}
 
 		private byte[] name(int offset, int length) {

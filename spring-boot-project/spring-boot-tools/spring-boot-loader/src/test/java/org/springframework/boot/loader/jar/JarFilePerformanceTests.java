@@ -71,8 +71,36 @@ public class JarFilePerformanceTests {
 		}
 	}
 
+	@Test
+	public void iterateWithNewBootNestedJar() throws Exception {
+		try (BootJarFile jarFile = new BootJarFile(new File(
+				"/Users/awilkinson/dev/wilkinsona/spring-boot-jar-generator/jar-builder/build/libs/jar-builder.jar"))) {
+			try (BootJarFile nestedJar = jarFile
+					.getNestedEntry("BOOT-INF/lib/nested.jar")) {
+				iterateEntries(nestedJar);
+			}
+		}
+		System.out.println();
+		try (JarFile jarFile = new JarFile(new File(
+				"/Users/awilkinson/dev/wilkinsona/spring-boot-jar-generator/jar-builder/build/libs/jar-builder.jar"))) {
+			JarFile nestedJar = jarFile
+					.getNestedJarFile(jarFile.getJarEntry("BOOT-INF/lib/nested.jar"));
+			iterateEntries(nestedJar);
+		}
+	}
+
+	@Test
+	public void iterateWithBootNestedJar() throws Exception {
+		try (JarFile jarFile = new JarFile(new File(
+				"/Users/awilkinson/dev/wilkinsona/spring-boot-jar-generator/jar-builder/build/libs/jar-builder.jar"))) {
+			JarFile nestedJar = jarFile
+					.getNestedJarFile(jarFile.getJarEntry("BOOT-INF/lib/nested.jar"));
+			iterateEntries(nestedJar);
+		}
+	}
+
 	private void iterateEntries(java.util.jar.JarFile jarFile) {
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 20; i++) {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			List<String> names = new ArrayList<>();
 			long start = System.currentTimeMillis();
