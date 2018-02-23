@@ -19,295 +19,120 @@ package org.springframework.boot.loader.jar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.jar.JarInputStream;
+import java.util.GregorianCalendar;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
-import org.springframework.boot.loader.data.RandomAccessDataFile;
-
 /**
- * Extended variant of {@link java.util.jar.JarFile} that behaves in the same way but
- * offers the following additional functionality.
- * <ul>
- * <li>A nested {@link JarFile} can be {@link #getNestedJarFile(ZipEntry) obtained} based
- * on any directory entry.</li>
- * <li>A nested {@link JarFile} can be {@link #getNestedJarFile(ZipEntry) obtained} for
- * embedded JAR files (as long as their entry is not compressed).</li>
- * </ul>
- *
- * @author Phillip Webb
+ * @author awilkinson
  */
 public class JarFile extends java.util.jar.JarFile {
-
-	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 
 	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
 
 	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
-	private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
+	private final File file;
 
-	private static final AsciiBytes SIGNATURE_FILE_EXTENSION = new AsciiBytes(".SF");
-
-	private final RandomAccessDataFile rootFile;
+	private final ZipMetadata zipMetadata;
 
 	private final String pathFromRoot;
 
-	private final RandomAccessData data;
-
-	private final JarFileType type;
-
 	private URL url;
 
-	private JarFileEntries entries;
-
-	private SoftReference<Manifest> manifest;
-
-	private boolean signed;
-
-	/**
-	 * Create a new {@link JarFile} backed by the specified file.
-	 * @param file the root jar file
-	 * @throws IOException if the file cannot be read
-	 */
 	public JarFile(File file) throws IOException {
-		this(new RandomAccessDataFile(file));
+		this(file, new RandomAccessDataFile(file), "");
 	}
 
-	/**
-	 * Create a new {@link JarFile} backed by the specified file.
-	 * @param file the root jar file
-	 * @throws IOException if the file cannot be read
-	 */
-	JarFile(RandomAccessDataFile file) throws IOException {
-		this(file, "", file, JarFileType.DIRECT);
-	}
-
-	/**
-	 * Private constructor used to create a new {@link JarFile} either directly or from a
-	 * nested entry.
-	 * @param rootFile the root jar file
-	 * @param pathFromRoot the name of this file
-	 * @param data the underlying data
-	 * @param type the type of the jar file
-	 * @throws IOException if the file cannot be read
-	 */
-	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
-			RandomAccessData data, JarFileType type) throws IOException {
-		this(rootFile, pathFromRoot, data, null, type);
-	}
-
-	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
-			RandomAccessData data, JarEntryFilter filter, JarFileType type)
+	private JarFile(File file, RandomAccessData data, String pathFromRoot)
 			throws IOException {
-		super(rootFile.getFile());
-		this.rootFile = rootFile;
+		this(file, data, pathFromRoot, Function.identity());
+	}
+
+	private JarFile(File file, RandomAccessData data, String pathFromRoot,
+			Function<byte[], byte[]> nameMapper) throws IOException {
+		super(file);
+		this.file = file;
+		this.zipMetadata = new ZipMetadata(data, nameMapper);
 		this.pathFromRoot = pathFromRoot;
-		CentralDirectoryParser parser = new CentralDirectoryParser();
-		this.entries = parser.addVisitor(new JarFileEntries(this, filter));
-		parser.addVisitor(centralDirectoryVisitor());
-		this.data = parser.parse(data, filter == null);
-		this.type = type;
 	}
 
-	private CentralDirectoryVisitor centralDirectoryVisitor() {
-		return new CentralDirectoryVisitor() {
-
-			@Override
-			public void visitStart(CentralDirectoryEndRecord endRecord,
-					RandomAccessData centralDirectoryData) {
-			}
-
-			@Override
-			public void visitFileHeader(CentralDirectoryFileHeader fileHeader,
-					int dataOffset) {
-				AsciiBytes name = fileHeader.getName();
-				if (name.startsWith(META_INF)
-						&& name.endsWith(SIGNATURE_FILE_EXTENSION)) {
-					JarFile.this.signed = true;
-				}
-			}
-
-			@Override
-			public void visitEnd() {
-			}
-
-		};
+	File getFile() {
+		return this.file;
 	}
 
-	protected final RandomAccessDataFile getRootJarFile() {
-		return this.rootFile;
-	}
-
-	RandomAccessData getData() {
-		return this.data;
-	}
-
-	@Override
-	public Manifest getManifest() throws IOException {
-		Manifest manifest = (this.manifest == null ? null : this.manifest.get());
-		if (manifest == null) {
-			if (this.type == JarFileType.NESTED_DIRECTORY) {
-				try (JarFile rootJarFile = new JarFile(this.getRootJarFile())) {
-					manifest = rootJarFile.getManifest();
-				}
-			}
-			else {
-				try (InputStream inputStream = getInputStream(MANIFEST_NAME,
-						ResourceAccess.ONCE)) {
-					if (inputStream == null) {
-						return null;
-					}
-					manifest = new Manifest(inputStream);
-				}
-			}
-			this.manifest = new SoftReference<>(manifest);
-		}
-		return manifest;
-	}
-
-	@Override
-	public Enumeration<java.util.jar.JarEntry> entries() {
-		final Iterator<JarEntry> iterator = this.entries.iterator();
-		return new Enumeration<java.util.jar.JarEntry>() {
-
-			@Override
-			public boolean hasMoreElements() {
-				return iterator.hasNext();
-			}
-
-			@Override
-			public java.util.jar.JarEntry nextElement() {
-				return iterator.next();
-			}
-
-		};
-	}
-
-	public JarEntry getJarEntry(CharSequence name) {
-		return this.entries.getEntry(name);
+	String getPathFromRoot() {
+		return this.pathFromRoot;
 	}
 
 	@Override
 	public JarEntry getJarEntry(String name) {
-		return (JarEntry) getEntry(name);
+		return this.zipMetadata.getEntry(name);
 	}
 
-	public boolean containsEntry(String name) {
-		return this.entries.containsEntry(name);
+	public JarEntry getJarEntry(CharSequence name) {
+		return this.zipMetadata.getEntry(name);
 	}
 
 	@Override
 	public ZipEntry getEntry(String name) {
-		return this.entries.getEntry(name);
+		return getJarEntry(name);
+	}
+
+	@Override
+	public Enumeration<JarEntry> entries() {
+		return this.zipMetadata.entries();
+	}
+
+	public JarFile getNestedJarFile(ZipEntry entry) throws IOException {
+		return this.zipMetadata.getNestedJarFile(entry);
+	}
+
+	@Override
+	public Manifest getManifest() throws IOException {
+		ZipEntry manifestEntry = getEntry("META-INF/MANIFEST.MF");
+		if (manifestEntry == null) {
+			try (java.util.jar.JarFile jarFile = new java.util.jar.JarFile(this.file)) {
+				return jarFile.getManifest();
+			}
+		}
+		InputStream inputStream = getInputStream(manifestEntry);
+		return new Manifest(inputStream);
+	}
+
+	public InputStream getInputStream() throws IOException {
+		return this.zipMetadata.getInputStream();
 	}
 
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
-		return getInputStream(ze, ResourceAccess.PER_READ);
-	}
-
-	public InputStream getInputStream(ZipEntry ze, ResourceAccess access)
-			throws IOException {
-		if (ze instanceof JarEntry) {
-			return this.entries.getInputStream((JarEntry) ze, access);
+		InputStream inputStream = this.zipMetadata.getInputStream(ze.getName());
+		if (ze.getMethod() == ZipEntry.DEFLATED) {
+			return new ZipInflaterInputStream(inputStream, (int) ze.getSize());
 		}
-		return getInputStream(ze == null ? null : ze.getName(), access);
-	}
-
-	InputStream getInputStream(String name, ResourceAccess access) throws IOException {
-		return this.entries.getInputStream(name, access);
-	}
-
-	/**
-	 * Return a nested {@link JarFile} loaded from the specified entry.
-	 * @param entry the zip entry
-	 * @return a {@link JarFile} for the entry
-	 * @throws IOException if the nested jar file cannot be read
-	 */
-	public synchronized JarFile getNestedJarFile(ZipEntry entry) throws IOException {
-		return getNestedJarFile((JarEntry) entry);
-	}
-
-	/**
-	 * Return a nested {@link JarFile} loaded from the specified entry.
-	 * @param entry the zip entry
-	 * @return a {@link JarFile} for the entry
-	 * @throws IOException if the nested jar file cannot be read
-	 */
-	public synchronized JarFile getNestedJarFile(JarEntry entry) throws IOException {
-		try {
-			return createJarFileFromEntry(entry);
-		}
-		catch (Exception ex) {
-			throw new IOException(
-					"Unable to open nested jar file '" + entry.getName() + "'", ex);
+		else {
+			return inputStream;
 		}
 	}
 
-	private JarFile createJarFileFromEntry(JarEntry entry) throws IOException {
-		if (entry.isDirectory()) {
-			return createJarFileFromDirectoryEntry(entry);
-		}
-		return createJarFileFromFileEntry(entry);
-	}
-
-	private JarFile createJarFileFromDirectoryEntry(JarEntry entry) throws IOException {
-		AsciiBytes name = entry.getAsciiBytesName();
-		JarEntryFilter filter = (candidate) -> {
-			if (candidate.startsWith(name) && !candidate.equals(name)) {
-				return candidate.substring(name.length());
-			}
-			return null;
-		};
-		return new JarFile(this.rootFile,
-				this.pathFromRoot + "!/"
-						+ entry.getName().substring(0, name.length() - 1),
-				this.data, filter, JarFileType.NESTED_DIRECTORY);
-	}
-
-	private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
-		if (entry.getMethod() != ZipEntry.STORED) {
-			throw new IllegalStateException("Unable to open nested entry '"
-					+ entry.getName() + "'. It has been compressed and nested "
-					+ "jar files must be stored without compression. Please check the "
-					+ "mechanism used to create your executable jar file");
-		}
-		RandomAccessData entryData = this.entries.getEntryData(entry.getName());
-		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(),
-				entryData, JarFileType.NESTED_JAR);
-	}
-
-	@Override
-	public int size() {
-		return (int) this.data.getSize();
-	}
-
-	@Override
-	public void close() throws IOException {
-		super.close();
-		this.rootFile.close();
-	}
-
-	/**
-	 * Return a URL that can be used to access this JAR file. NOTE: the specified URL
-	 * cannot be serialized and or cloned.
-	 * @return the URL
-	 * @throws MalformedURLException if the URL is malformed
-	 */
 	public URL getUrl() throws MalformedURLException {
 		if (this.url == null) {
 			Handler handler = new Handler(this);
-			String file = this.rootFile.getFile().toURI() + this.pathFromRoot + "!/";
+			String file = this.file.toURI() + this.pathFromRoot + "!/";
 			file = file.replace("file:////", "file://"); // Fix UNC paths
 			this.url = new URL("jar", "", -1, file, handler);
 		}
@@ -316,56 +141,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public String toString() {
-		return getName();
-	}
-
-	@Override
-	public String getName() {
-		return this.rootFile.getFile() + this.pathFromRoot;
-	}
-
-	boolean isSigned() {
-		return this.signed;
-	}
-
-	void setupEntryCertificates(JarEntry entry) {
-		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
-		// happening that often.
-		try {
-			try (JarInputStream inputStream = new JarInputStream(
-					getData().getInputStream(ResourceAccess.ONCE))) {
-				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
-				while (certEntry != null) {
-					inputStream.closeEntry();
-					if (entry.getName().equals(certEntry.getName())) {
-						setCertificates(entry, certEntry);
-					}
-					setCertificates(getJarEntry(certEntry.getName()), certEntry);
-					certEntry = inputStream.getNextJarEntry();
-				}
-			}
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
-	private void setCertificates(JarEntry entry, java.util.jar.JarEntry certEntry) {
-		if (entry != null) {
-			entry.setCertificates(certEntry);
-		}
-	}
-
-	public void clearCache() {
-		this.entries.clearCache();
-	}
-
-	protected String getPathFromRoot() {
-		return this.pathFromRoot;
-	}
-
-	JarFileType getType() {
-		return this.type;
+		return this.file.toString() + this.pathFromRoot;
 	}
 
 	/**
@@ -393,12 +169,425 @@ public class JarFile extends java.util.jar.JarFile {
 		}
 	}
 
-	/**
-	 * The type of a {@link JarFile}.
-	 */
-	enum JarFileType {
+	private final class ZipMetadata {
 
-		DIRECT, NESTED_DIRECTORY, NESTED_JAR
+		private final RandomAccessData data;
+
+		private final EndRecord endRecord;
+
+		private final CentralDirectory centralDirectory;
+
+		private ZipMetadata(RandomAccessData data, Function<byte[], byte[]> nameMapper)
+				throws IOException {
+			this.endRecord = EndRecord.from(data);
+			this.data = this.endRecord.archiveStartOffset == 0 ? data
+					: data.subsection(this.endRecord.archiveStartOffset,
+							data.length() - this.endRecord.archiveStartOffset);
+			this.centralDirectory = readCentralDirectory(nameMapper);
+		}
+
+		private CentralDirectory readCentralDirectory(Function<byte[], byte[]> nameMapper)
+				throws IOException {
+			byte[] centralDirectory = new byte[(int) this.endRecord.centralDirectorySize];
+			if (this.data.seekAndRead(this.endRecord.centralDirectoryOffset,
+					centralDirectory, 0,
+					centralDirectory.length) != this.endRecord.centralDirectorySize) {
+				throw new IOException("Failed to read central directory");
+			}
+			return new CentralDirectory(centralDirectory, (int) this.endRecord.entries,
+					nameMapper);
+		}
+
+		private JarEntry getEntry(CharSequence name) {
+			return this.centralDirectory.getEntry(name);
+		}
+
+		private Enumeration<JarEntry> entries() {
+			return this.centralDirectory.entries();
+		}
+
+		private InputStream getInputStream() throws IOException {
+			return new RandomAccessDataInputStream(this.data);
+		}
+
+		private InputStream getInputStream(String name) throws IOException {
+			return new RandomAccessDataInputStream(getEntryData(name));
+		}
+
+		private JarFile getNestedJarFile(ZipEntry entry) throws IOException {
+			if (entry.isDirectory()) {
+				byte[] rootBytes = this.centralDirectory.getNameAsBytes(entry.getName());
+				return new JarFile(JarFile.this.file, this.data, JarFile.this.pathFromRoot
+						+ "!/"
+						+ entry.getName().substring(0, entry.getName().length() - 1),
+						(name) -> {
+							if (name.length <= rootBytes.length) {
+								return null;
+							}
+							for (int i = 0; i < rootBytes.length; i++) {
+								if (rootBytes[i] != name[i]) {
+									return null;
+								}
+							}
+							byte[] mapped = Arrays.copyOfRange(name, rootBytes.length,
+									name.length);
+							return mapped;
+						});
+			}
+			return new JarFile(JarFile.this.file, getEntryData(entry.getName()),
+					JarFile.this.pathFromRoot + "!/" + entry.getName());
+		}
+
+		private RandomAccessData getEntryData(String name) throws IOException {
+			Integer localHeaderOffset = this.centralDirectory.localHeaderOffset(name);
+			if (localHeaderOffset == null) {
+				return null;
+			}
+			byte[] header = new byte[30];
+			this.data.seekAndRead(localHeaderOffset, header, 0, 30);
+			int nameLength = (int) Bytes.littleEndianValue(header, 26, 2);
+			int extraLength = (int) Bytes.littleEndianValue(header, 28, 2);
+			long length = Bytes.littleEndianValue(header, 18, 4);
+			RandomAccessData entryData = this.data.subsection(
+					localHeaderOffset + 30 + nameLength + extraLength, length);
+			return entryData;
+		}
+
+	}
+
+	private static class EndRecord {
+
+		private static final int MINIMUM_SIZE = 22;
+
+		private static final int MAXIMUM_COMMENT_LENGTH = 0xFFFF;
+
+		private static final int MAXIMUM_SIZE = MINIMUM_SIZE + MAXIMUM_COMMENT_LENGTH;
+
+		private final long entries;
+
+		private final long centralDirectorySize;
+
+		private final long centralDirectoryOffset;
+
+		private final long archiveStartOffset;
+
+		private EndRecord(long entries, long centralDirectorySize,
+				long centralDirectoryOffset, long archiveStartOffset) {
+			this.centralDirectorySize = centralDirectorySize;
+			this.centralDirectoryOffset = centralDirectoryOffset;
+			this.entries = entries;
+			this.archiveStartOffset = archiveStartOffset;
+		}
+
+		private static EndRecord from(RandomAccessData data) throws IOException {
+			byte[] buffer = new byte[256];
+			int size = MINIMUM_SIZE;
+			while (size < MAXIMUM_SIZE) {
+				long position = data.length() - buffer.length - size + MINIMUM_SIZE;
+				int read = data.seekAndRead(position, buffer, 0, buffer.length);
+				for (int i = read - MINIMUM_SIZE; i > 0; i--) {
+					if (buffer[i] == 'P' && buffer[i + 1] == 'K' && buffer[i + 2] == 5
+							&& buffer[i + 3] == 6) {
+						long entries = Bytes.littleEndianValue(buffer, i + 10, 2);
+						long centralDirectorySize = Bytes.littleEndianValue(buffer,
+								i + 12, 4);
+						long centralDirectoryOffset = Bytes.littleEndianValue(buffer,
+								i + 16, 4);
+						long actualCentralDirectoryOffset = data.length() - size
+								- centralDirectorySize;
+						return new EndRecord(entries, centralDirectorySize,
+								centralDirectoryOffset,
+								actualCentralDirectoryOffset - centralDirectoryOffset);
+					}
+				}
+			}
+			return null;
+		}
+
+	}
+
+	private class CentralDirectory {
+
+		private final byte[] data;
+
+		private final Entries entries;
+
+		private final Function<byte[], byte[]> nameMapper;
+
+		private CentralDirectory(byte[] data, int entries,
+				Function<byte[], byte[]> nameMapper) {
+			this.data = data;
+			this.entries = new Entries(entries);
+			this.nameMapper = nameMapper;
+			for (int i = 0; i < data.length;) {
+				int nameLength = (int) Bytes.littleEndianValue(data, i + 28, 2);
+				long extraFieldLength = Bytes.littleEndianValue(data, i + 30, 2);
+				long commentLength = Bytes.littleEndianValue(data, i + 32, 2);
+				byte[] name = name(i, nameLength);
+				if (name != null) {
+					int nameHash = hash(name, 0, name.length);
+					this.entries.put(nameHash, i);
+				}
+				i += (46 + nameLength + extraFieldLength + commentLength);
+			}
+		}
+
+		private JarEntry getEntry(CharSequence name) {
+			Integer offset = getOffset(name);
+			return offset == null ? null : createEntry(name, offset);
+		}
+
+		private byte[] getNameAsBytes(CharSequence name) {
+			CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
+			CharBuffer input = CharBuffer.wrap(name);
+			byte[] output = new byte[name.length() * (int) encoder.maxBytesPerChar()];
+			ByteBuffer outputBuffer = ByteBuffer.wrap(output);
+			encoder.encode(input, outputBuffer, true);
+			encoder.flush(outputBuffer);
+			return Arrays.copyOfRange(output, 0, outputBuffer.position());
+		}
+
+		private Integer getOffset(CharSequence name) {
+			return this.entries.get(getNameAsBytes(name));
+		}
+
+		private JarEntry createEntry(CharSequence name, int offset) {
+			JarEntry jarEntry = new JarEntry(name.toString());
+			jarEntry.setCompressedSize(compressedSize(offset));
+			jarEntry.setMethod(method(offset));
+			jarEntry.setCrc(crc32(offset));
+			jarEntry.setSize(uncompressedSize(offset));
+			jarEntry.setExtra(extra(offset));
+			jarEntry.setComment(new AsciiBytes(comment(offset)).toString());
+			jarEntry.setTime(time(offset));
+			return jarEntry;
+		}
+
+		private JarEntry createEntry(int offset) {
+			return createEntry(
+					new AsciiBytes(name(offset, entryNameLength(offset))).toString(),
+					offset);
+		}
+
+		public Integer localHeaderOffset(String name) throws IOException {
+			Integer offset = getOffset(name);
+			if (offset == null) {
+				return null;
+			}
+			return (int) localHeaderOffset(offset);
+		}
+
+		private Enumeration<JarEntry> entries() {
+			return this.entries.enumeration();
+		}
+
+		private int hash(byte[] bytes, int offset, int length) {
+			int hash = 1;
+			for (int i = 0; i < length; i++) {
+				hash = 31 * hash + bytes[i + offset];
+			}
+			return hash;
+		}
+
+		private int method(int offset) {
+			return (int) Bytes.littleEndianValue(this.data, offset + 10, 2);
+		}
+
+		public long time(int offset) {
+			long date = Bytes.littleEndianValue(this.data, offset + 14, 2);
+			long time = Bytes.littleEndianValue(this.data, offset + 12, 2);
+			return decodeMsDosFormatDateTime(date, time).getTimeInMillis();
+		}
+
+		/**
+		 * Decode MS-DOS Date Time details. See
+		 * <a href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a>
+		 * for more details of the format.
+		 * @param date the date part
+		 * @param time the time part
+		 * @return a {@link Calendar} containing the decoded date.
+		 */
+		private Calendar decodeMsDosFormatDateTime(long date, long time) {
+			int year = (int) ((date >> 9) & 0x7F) + 1980;
+			int month = (int) ((date >> 5) & 0xF) - 1;
+			int day = (int) (date & 0x1F);
+			int hours = (int) ((time >> 11) & 0x1F);
+			int minutes = (int) ((time >> 5) & 0x3F);
+			int seconds = (int) ((time << 1) & 0x3E);
+			return new GregorianCalendar(year, month, day, hours, minutes, seconds);
+		}
+
+		private long crc32(int offset) {
+			return Bytes.littleEndianValue(this.data, offset + 16, 4);
+		}
+
+		private long compressedSize(int offset) {
+			return Bytes.littleEndianValue(this.data, offset + 20, 4);
+		}
+
+		private long uncompressedSize(int offset) {
+			return Bytes.littleEndianValue(this.data, offset + 24, 4);
+		}
+
+		private int entryNameLength(int offset) {
+			return (int) Bytes.littleEndianValue(this.data, offset + 28, 2);
+		}
+
+		private int extraLength(int offset) {
+			return (int) Bytes.littleEndianValue(this.data, offset + 30, 2);
+		}
+
+		private int commentLength(int offset) {
+			return (int) Bytes.littleEndianValue(this.data, offset + 32, 2);
+		}
+
+		private long localHeaderOffset(int offset) {
+			return Bytes.littleEndianValue(this.data, offset + 42, 4);
+		}
+
+		private byte[] name(int offset, int length) {
+			byte[] name = Arrays.copyOfRange(this.data, offset + 46,
+					offset + 46 + length);
+			return this.nameMapper.apply(name);
+		}
+
+		private byte[] extra(int offset) {
+			int length = extraLength(offset);
+			int extraOffset = offset + 46 + entryNameLength(offset);
+			return Arrays.copyOfRange(this.data, extraOffset, extraOffset + length);
+		}
+
+		private byte[] comment(int offset) {
+			int length = commentLength(offset);
+			int commentOffset = offset + 46 + entryNameLength(offset)
+					+ commentLength(offset);
+			return Arrays.copyOfRange(this.data, commentOffset, commentOffset + length);
+		}
+
+		private class Entries {
+
+			private final int[] table;
+
+			private final int[] entries;
+
+			private int size;
+
+			private int entryIndex = 0;
+
+			private Entries(int expectedSize) {
+				this.table = new int[expectedSize / 2];
+				Arrays.fill(this.table, -1);
+				this.entries = new int[expectedSize * 3];
+				Arrays.fill(this.entries, -1);
+			}
+
+			private void put(int nameHash, int offset) {
+				int tableIndex = (nameHash & 0x7FFFFFFF) % this.table.length;
+				int existingEntryIndex = this.table[tableIndex];
+				this.table[tableIndex] = this.entryIndex;
+				addEntry(nameHash, existingEntryIndex, offset);
+			}
+
+			private Integer get(byte[] name) {
+				Integer offset = doGet(name);
+				if (offset == null) {
+					byte[] nameWithSlash = new byte[name.length + 1];
+					System.arraycopy(name, 0, nameWithSlash, 0, name.length);
+					nameWithSlash[name.length] = '/';
+					offset = doGet(nameWithSlash);
+				}
+				return offset;
+			}
+
+			private Integer doGet(byte[] name) {
+				int nameHash = hash(name, 0, name.length);
+				int tableIndex = (nameHash & 0x7FFFFFFF) % this.table.length;
+				int entryIndex = this.table[tableIndex];
+				while (entryIndex != -1) {
+					int entryNameHash = this.entries[entryIndex];
+					if (entryNameHash == nameHash) {
+						int offset = this.entries[entryIndex + 2];
+						int entryNameLength = CentralDirectory.this
+								.entryNameLength(offset);
+						byte[] centralDirectoryName = CentralDirectory.this.name(offset,
+								entryNameLength);
+						if (Arrays.equals(name, centralDirectoryName)) {
+							return offset;
+						}
+					}
+					entryIndex = this.entries[entryIndex + 1];
+				}
+				return null;
+			}
+
+			private void addEntry(int nameHash, int existingEntryIndex, int offset) {
+				this.entries[this.entryIndex++] = nameHash;
+				this.entries[this.entryIndex++] = existingEntryIndex;
+				this.entries[this.entryIndex++] = offset;
+				this.size++;
+			}
+
+			private int hash(byte[] bytes, int offset, int length) {
+				int hash = 1;
+				for (int i = 0; i < length; i++) {
+					hash = 31 * hash + bytes[i + offset];
+				}
+				return hash;
+			}
+
+			private Enumeration<JarEntry> enumeration() {
+				return new Enumeration<JarEntry>() {
+
+					private int entryIndex = 0;
+
+					@Override
+					public boolean hasMoreElements() {
+						return this.entryIndex < Entries.this.size;
+					}
+
+					@Override
+					public JarEntry nextElement() {
+						if (this.entryIndex >= Entries.this.size) {
+							throw new NoSuchElementException();
+						}
+						int offset = Entries.this.entries[(this.entryIndex * 3) + 2];
+						this.entryIndex++;
+						return createEntry(offset);
+					}
+
+				};
+			}
+
+		}
+
+	}
+
+	/**
+	 * An {@link InputStream} that reads from {@code RandomAccessData}.
+	 */
+	private static final class RandomAccessDataInputStream extends InputStream {
+
+		private final RandomAccessData entryData;
+
+		private int position = 0;
+
+		private RandomAccessDataInputStream(RandomAccessData entryData) {
+			this.entryData = entryData;
+		}
+
+		@Override
+		public int read() throws IOException {
+			int read = this.entryData.seekAndRead(this.position);
+			this.position++;
+			return read;
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			int read = this.entryData.seekAndRead(this.position, b, off, len);
+			this.position += read;
+			return read;
+		}
 
 	}
 

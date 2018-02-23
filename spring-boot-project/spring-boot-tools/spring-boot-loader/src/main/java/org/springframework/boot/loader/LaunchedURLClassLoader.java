@@ -176,10 +176,11 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	}
 
 	private void clearCache(URLConnection connection) throws IOException {
-		Object jarFile = ((JarURLConnection) connection).getJarFile();
-		if (jarFile instanceof org.springframework.boot.loader.jar.JarFile) {
-			((org.springframework.boot.loader.jar.JarFile) jarFile).clearCache();
-		}
+		// TODO Cache clearing
+		// Object jarFile = ((JarURLConnection) connection).getJarFile();
+		// if (jarFile instanceof org.springframework.boot.loader.jar.JarFile) {
+		// ((org.springframework.boot.loader.jar.JarFile) jarFile).clearCache();
+		// }
 	}
 
 	private static class UseFastConnectionExceptionsEnumeration

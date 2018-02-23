@@ -28,8 +28,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URLStreamHandler;
 import java.security.Permission;
-
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
+import java.util.jar.JarEntry;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -164,13 +163,14 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		if (this.jarFile == null) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
-		if (this.jarEntryName.isEmpty()
-				&& this.jarFile.getType() == JarFile.JarFileType.DIRECT) {
-			throw new IOException("no entry name specified");
-		}
+		// TODO IOException for top-level jar file with no entry name
+		// if (this.jarEntryName.isEmpty()
+		// && this.jarFile.getType() == JarFile.JarFileType.DIRECT) {
+		// throw new IOException("no entry name specified");
+		// }
 		connect();
 		InputStream inputStream = (this.jarEntryName.isEmpty()
-				? this.jarFile.getData().getInputStream(ResourceAccess.ONCE)
+				? this.jarFile.getInputStream()
 				: this.jarFile.getInputStream(this.jarEntry));
 		if (inputStream == null) {
 			throwFileNotFound(this.jarEntryName, this.jarFile);
@@ -230,8 +230,8 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
 		if (this.permission == null) {
-			this.permission = new FilePermission(
-					this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
+			this.permission = new FilePermission(this.jarFile.getFile().getPath(),
+					READ_ACTION);
 		}
 		return this.permission;
 	}
@@ -270,7 +270,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		JarEntryName jarEntryName = JarEntryName.get(spec, index);
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			if (!jarEntryName.isEmpty()
-					&& !jarFile.containsEntry(jarEntryName.toString())) {
+					&& jarFile.getEntry(jarEntryName.toString()) == null) {
 				return NOT_FOUND_CONNECTION;
 			}
 		}
