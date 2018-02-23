@@ -49,11 +49,10 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 		setCompressedSize(header.getCompressedSize());
 		setMethod(header.getMethod());
 		setCrc(header.getCrc());
-		setSize(header.getSize());
-		setExtra(header.getExtra());
 		setComment(header.getComment().toString());
 		setSize(header.getSize());
 		setTime(header.getTime());
+		setExtra(header.getExtra());
 	}
 
 	AsciiBytes getAsciiBytesName() {

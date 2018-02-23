@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,10 @@ public interface RandomAccessData {
 	/**
 	 * Returns an {@link InputStream} that can be used to read the underlying data. The
 	 * caller is responsible close the underlying stream.
-	 * @param access hint indicating how the underlying data should be accessed
 	 * @return a new input stream that can be used to read the underlying data.
 	 * @throws IOException if the stream cannot be opened
 	 */
-	InputStream getInputStream(ResourceAccess access) throws IOException;
+	InputStream getInputStream() throws IOException;
 
 	/**
 	 * Returns a new {@link RandomAccessData} for a specific subsection of this data.
@@ -44,28 +43,14 @@ public interface RandomAccessData {
 	 */
 	RandomAccessData getSubsection(long offset, long length);
 
+	byte[] read(long offset, long length) throws IOException;
+
+	byte[] read() throws IOException;
+
 	/**
 	 * Returns the size of the data.
 	 * @return the size
 	 */
 	long getSize();
-
-	/**
-	 * Lock modes for accessing the underlying resource.
-	 */
-	enum ResourceAccess {
-
-		/**
-		 * Obtain access to the underlying resource once and keep it until the stream is
-		 * closed.
-		 */
-		ONCE,
-
-		/**
-		 * Obtain access to the underlying resource on each read, releasing it when done.
-		 */
-		PER_READ
-
-	}
 
 }

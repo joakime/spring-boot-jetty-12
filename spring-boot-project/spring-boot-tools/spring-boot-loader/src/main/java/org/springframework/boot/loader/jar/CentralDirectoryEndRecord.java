@@ -74,7 +74,7 @@ class CentralDirectoryEndRecord {
 	private byte[] createBlockFromEndOfData(RandomAccessData data, int size)
 			throws IOException {
 		int length = (int) Math.min(data.getSize(), size);
-		return Bytes.get(data.getSubsection(data.getSize() - length, length));
+		return data.read(data.getSize() - length, length);
 	}
 
 	private boolean isValid() {

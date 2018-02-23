@@ -27,6 +27,8 @@ import java.nio.charset.StandardCharsets;
  */
 final class AsciiBytes {
 
+	private static final String EMPTY_STRING = "";
+
 	private static final int[] EXCESS = { 0x0, 0x1080, 0x96, 0x1c82080 };
 
 	private final byte[] bytes;
@@ -123,8 +125,13 @@ final class AsciiBytes {
 	@Override
 	public String toString() {
 		if (this.string == null) {
-			this.string = new String(this.bytes, this.offset, this.length,
-					StandardCharsets.UTF_8);
+			if (this.length == 0) {
+				this.string = EMPTY_STRING;
+			}
+			else {
+				this.string = new String(this.bytes, this.offset, this.length,
+						StandardCharsets.UTF_8);
+			}
 		}
 		return this.string;
 	}
