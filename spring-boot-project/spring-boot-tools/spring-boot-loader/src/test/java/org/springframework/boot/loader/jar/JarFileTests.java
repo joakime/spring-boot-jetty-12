@@ -481,4 +481,19 @@ public class JarFileTests {
 		assertThat(temp.delete()).isTrue();
 	}
 
+	@Test
+	public void jarFileCanStillBeUsedAfterNestedJarIsClosed() throws Exception {
+		File temp = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(temp);
+		JarFile jar = new JarFile(temp);
+		JarFile nestedJar = jar.getNestedJarFile(jar.getJarEntry("nested.jar"));
+		nestedJar.close();
+		JarFile anotherNestedJar = jar
+				.getNestedJarFile(jar.getJarEntry("another-nested.jar"));
+		anotherNestedJar.close();
+		jar.close();
+		this.thrown.expect(IOException.class);
+		jar.getNestedJarFile(jar.getJarEntry("nested.jar"));
+	}
+
 }

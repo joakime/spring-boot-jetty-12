@@ -117,7 +117,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	public void close() throws IOException {
-
+		this.randomAccessFile.close();
 	}
 
 	/**
