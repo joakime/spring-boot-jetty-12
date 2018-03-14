@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.util.List;
 
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
@@ -26,6 +27,7 @@ import org.springframework.test.context.ContextCustomizerFactory;
  * A {@link ContextCustomizerFactory} to add Mockito support.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class MockitoContextCustomizerFactory implements ContextCustomizerFactory {
 
@@ -35,8 +37,16 @@ class MockitoContextCustomizerFactory implements ContextCustomizerFactory {
 		// We gather the explicit mock definitions here since they form part of the
 		// MergedContextConfiguration key. Different mocks need to have a different key.
 		DefinitionsParser parser = new DefinitionsParser();
-		parser.parse(testClass);
+		parseDefinitions(testClass, parser);
 		return new MockitoContextCustomizer(parser.getDefinitions());
+	}
+
+	private void parseDefinitions(Class<?> testClass, DefinitionsParser parser) {
+		parser.parse(testClass);
+		if (testClass.getEnclosingClass() != null && AnnotatedElementUtils
+				.isAnnotated(testClass, "org.junit.jupiter.api.Nested")) {
+			parseDefinitions(testClass.getEnclosingClass(), parser);
+		}
 	}
 
 }
