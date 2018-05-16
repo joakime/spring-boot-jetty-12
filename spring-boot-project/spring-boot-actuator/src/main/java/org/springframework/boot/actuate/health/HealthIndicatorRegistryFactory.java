@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,48 +22,45 @@ import java.util.function.Function;
 import org.springframework.util.Assert;
 
 /**
- * Factory to create a {@link CompositeHealthIndicator}.
+ * Factory to create a {@link HealthIndicatorRegistry}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
- * @deprecated since 2.1.0 in favor of
- * {@link CompositeHealthIndicator#CompositeHealthIndicator(HealthAggregator, HealthIndicatorRegistry)}
+ * @since 2.1.0
  */
-@Deprecated
-public class CompositeHealthIndicatorFactory {
+public class HealthIndicatorRegistryFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;
 
-	public CompositeHealthIndicatorFactory() {
-		this(new HealthIndicatorNameFactory());
-	}
-
-	public CompositeHealthIndicatorFactory(
+	public HealthIndicatorRegistryFactory(
 			Function<String, String> healthIndicatorNameFactory) {
 		this.healthIndicatorNameFactory = healthIndicatorNameFactory;
 	}
 
+	public HealthIndicatorRegistryFactory() {
+		this(new HealthIndicatorNameFactory());
+	}
+
 	/**
-	 * Create a {@link CompositeHealthIndicator} based on the specified health
+	 * Create a {@link HealthIndicatorRegistry} based on the specified health
 	 * indicators.
-	 * @param healthAggregator the {@link HealthAggregator}
 	 * @param healthIndicators the {@link HealthIndicator} instances mapped by
 	 * name
 	 * @return a {@link HealthIndicator} that delegates to the specified
 	 * {@code healthIndicators}.
 	 */
-	public CompositeHealthIndicator createHealthIndicator(
-			HealthAggregator healthAggregator,
+	public HealthIndicatorRegistry createHealthIndicatorRegistry(
 			Map<String, HealthIndicator> healthIndicators) {
-		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
-		CompositeHealthIndicator indicator = new CompositeHealthIndicator(
-				healthAggregator);
+		return initialize(new DefaultHealthIndicatorRegistry(), healthIndicators);
+	}
+
+	protected <T extends HealthIndicatorRegistry> T initialize(T registry,
+			Map<String, HealthIndicator> healthIndicators) {
 		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
 			String name = this.healthIndicatorNameFactory.apply(entry.getKey());
-			indicator.addHealthIndicator(name, entry.getValue());
+			registry.register(name, entry.getValue());
 		}
-		return indicator;
+		return registry;
 	}
 
 }

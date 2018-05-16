@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,16 +38,13 @@ import static org.mockito.BDDMockito.given;
  */
 public class CompositeHealthIndicatorTests {
 
-	private HealthAggregator healthAggregator;
+	private final HealthAggregator healthAggregator = new OrderedHealthAggregator();
 
 	@Mock
 	private HealthIndicator one;
 
 	@Mock
 	private HealthIndicator two;
-
-	@Mock
-	private HealthIndicator three;
 
 	@Before
 	public void setup() {
@@ -55,57 +53,6 @@ public class CompositeHealthIndicatorTests {
 				.willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
 		given(this.two.health())
 				.willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
-		given(this.three.health())
-				.willReturn(new Health.Builder().unknown().withDetail("3", "3").build());
-
-		this.healthAggregator = new OrderedHealthAggregator();
-	}
-
-	@Test
-	public void createWithIndicators() {
-		Map<String, HealthIndicator> indicators = new HashMap<>();
-		indicators.put("one", this.one);
-		indicators.put("two", this.two);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
-		Health result = composite.health();
-		assertThat(result.getDetails()).hasSize(2);
-		assertThat(result.getDetails()).containsEntry("one",
-				new Health.Builder().unknown().withDetail("1", "1").build());
-		assertThat(result.getDetails()).containsEntry("two",
-				new Health.Builder().unknown().withDetail("2", "2").build());
-	}
-
-	@Test
-	public void createWithIndicatorsAndAdd() {
-		Map<String, HealthIndicator> indicators = new HashMap<>();
-		indicators.put("one", this.one);
-		indicators.put("two", this.two);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
-		composite.addHealthIndicator("three", this.three);
-		Health result = composite.health();
-		assertThat(result.getDetails()).hasSize(3);
-		assertThat(result.getDetails()).containsEntry("one",
-				new Health.Builder().unknown().withDetail("1", "1").build());
-		assertThat(result.getDetails()).containsEntry("two",
-				new Health.Builder().unknown().withDetail("2", "2").build());
-		assertThat(result.getDetails()).containsEntry("three",
-				new Health.Builder().unknown().withDetail("3", "3").build());
-	}
-
-	@Test
-	public void createWithoutAndAdd() {
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator);
-		composite.addHealthIndicator("one", this.one);
-		composite.addHealthIndicator("two", this.two);
-		Health result = composite.health();
-		assertThat(result.getDetails().size()).isEqualTo(2);
-		assertThat(result.getDetails()).containsEntry("one",
-				new Health.Builder().unknown().withDetail("1", "1").build());
-		assertThat(result.getDetails()).containsEntry("two",
-				new Health.Builder().unknown().withDetail("2", "2").build());
 	}
 
 	@Test
@@ -114,10 +61,10 @@ public class CompositeHealthIndicatorTests {
 		indicators.put("db1", this.one);
 		indicators.put("db2", this.two);
 		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(
-				this.healthAggregator, indicators);
+				this.healthAggregator, new DefaultHealthIndicatorRegistry(indicators));
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator);
-		composite.addHealthIndicator("db", innerComposite);
+				this.healthAggregator, new DefaultHealthIndicatorRegistry(
+						Collections.singletonMap("db", innerComposite)));
 		Health result = composite.health();
 		ObjectMapper mapper = new ObjectMapper();
 		assertThat(mapper.writeValueAsString(result)).isEqualTo(

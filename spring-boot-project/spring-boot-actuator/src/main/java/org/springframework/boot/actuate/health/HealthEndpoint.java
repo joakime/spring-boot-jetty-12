@@ -32,29 +32,21 @@ import org.springframework.util.Assert;
 @Endpoint(id = "health")
 public class HealthEndpoint {
 
-	private final HealthAggregator healthAggregator;
-
-	private final HealthIndicatorRegistry healthIndicatorRegistry;
+	private final HealthIndicator healthIndicator;
 
 	/**
-	 * Create a new {@link HealthEndpoint} instance.
-	 * @param healthAggregator the health aggregator
-	 * @param healthIndicatorRegistry the health indicator registry
+	 * Create a new {@link HealthEndpoint} instance that will use the given
+	 * {@code healthIndicator} to generate its response.
+	 * @param healthIndicator the health indicator
 	 */
-	public HealthEndpoint(HealthAggregator healthAggregator,
-			HealthIndicatorRegistry healthIndicatorRegistry) {
-		Assert.notNull(healthAggregator, "healthAggregator must not be null");
-		Assert.notNull(healthIndicatorRegistry, "healthIndicatorRegistry must not be null");
-		this.healthAggregator = healthAggregator;
-		this.healthIndicatorRegistry = healthIndicatorRegistry;
+	public HealthEndpoint(HealthIndicator healthIndicator) {
+		Assert.notNull(healthIndicator, "healthIndicator must not be null");
+		this.healthIndicator = healthIndicator;
 	}
 
 	@ReadOperation
 	public Health health() {
-		CompositeHealthIndicatorFactory factory = new CompositeHealthIndicatorFactory();
-		CompositeHealthIndicator healthIndicator = factory.createHealthIndicator(
-				this.healthAggregator, this.healthIndicatorRegistry.getAll());
-		return healthIndicator.health();
+		return this.healthIndicator.health();
 	}
 
 }

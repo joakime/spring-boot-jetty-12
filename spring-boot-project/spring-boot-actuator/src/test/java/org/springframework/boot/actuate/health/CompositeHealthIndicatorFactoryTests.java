@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
+@Deprecated
 public class CompositeHealthIndicatorFactoryTests {
 
 	@Test

@@ -31,11 +31,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Integration tests for {@link HealthEndpoint} and {@link HealthEndpointWebExtension}
- * exposed by Jersey, Spring MVC, and WebFlux.
+ * Integration tests for {@link HealthEndpoint} and
+ * {@link HealthEndpointWebExtension} exposed by Jersey, Spring MVC, and
+ * WebFlux.
  *
  * @author Andy Wilkinson
- * @author Vedran Pavic
  */
 @RunWith(WebEndpointRunners.class)
 public class HealthEndpointWebIntegrationTests {
@@ -67,9 +67,9 @@ public class HealthEndpointWebIntegrationTests {
 		@Bean
 		public HealthEndpoint healthEndpoint(
 				Map<String, HealthIndicator> healthIndicators) {
-			HealthIndicatorRegistry registry = new DefaultHealthIndicatorRegistry();
-			healthIndicators.forEach(registry::register);
-			return new HealthEndpoint(new OrderedHealthAggregator(), registry);
+			return new HealthEndpoint(new CompositeHealthIndicator(
+					new OrderedHealthAggregator(), new HealthIndicatorRegistryFactory()
+							.createHealthIndicatorRegistry(healthIndicators)));
 		}
 
 		@Bean

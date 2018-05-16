@@ -29,8 +29,9 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link DefaultHealthIndicatorRegistry}.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  */
-public class DefaultHealthIndicatorRegistryTest {
+public class DefaultHealthIndicatorRegistryTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -43,9 +44,10 @@ public class DefaultHealthIndicatorRegistryTest {
 
 	@Before
 	public void setUp() {
-		given(this.one.health()).willReturn(new Health.Builder().up().build());
-		given(this.two.health()).willReturn(new Health.Builder().unknown().build());
-
+		given(this.one.health())
+				.willReturn(new Health.Builder().unknown().withDetail("1", "1").build());
+		given(this.two.health())
+				.willReturn(new Health.Builder().unknown().withDetail("2", "2").build());
 		this.registry = new DefaultHealthIndicatorRegistry();
 	}
 
@@ -60,9 +62,9 @@ public class DefaultHealthIndicatorRegistryTest {
 
 	@Test
 	public void registerAlreadyUsedName() {
+		this.registry.register("one", this.one);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("HealthIndicator with name 'one' already registered");
-		this.registry.register("one", this.one);
 		this.registry.register("one", this.two);
 	}
 
@@ -77,7 +79,7 @@ public class DefaultHealthIndicatorRegistryTest {
 	}
 
 	@Test
-	public void unregisterNotKnown() {
+	public void unregisterUnknown() {
 		this.registry.register("one", this.one);
 		assertThat(this.registry.getAll()).hasSize(1);
 		HealthIndicator two = this.registry.unregister("two");
