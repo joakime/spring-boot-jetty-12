@@ -17,8 +17,10 @@
 package org.springframework.boot.test.context.runner;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -46,7 +48,11 @@ public class ApplicationContextRunner extends
 	 * {@link AnnotationConfigApplicationContext} as the underlying source.
 	 */
 	public ApplicationContextRunner() {
-		this(AnnotationConfigApplicationContext::new);
+		super((runner) -> {
+			DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+			beanFactory.setBeanClassLoader(runner.getClassLoader());
+			return new AnnotationConfigApplicationContext(beanFactory);
+		});
 	}
 
 	/**
@@ -56,11 +62,11 @@ public class ApplicationContextRunner extends
 	 */
 	public ApplicationContextRunner(
 			Supplier<ConfigurableApplicationContext> contextFactory) {
-		super(contextFactory);
+		super((runner) -> contextFactory.get());
 	}
 
 	private ApplicationContextRunner(
-			Supplier<ConfigurableApplicationContext> contextFactory,
+			Function<ApplicationContextRunner, ConfigurableApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<ConfigurableApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
@@ -71,7 +77,7 @@ public class ApplicationContextRunner extends
 
 	@Override
 	protected ApplicationContextRunner newInstance(
-			Supplier<ConfigurableApplicationContext> contextFactory,
+			Function<ApplicationContextRunner, ConfigurableApplicationContext> contextFactory,
 			List<ApplicationContextInitializer<ConfigurableApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,

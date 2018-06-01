@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
@@ -98,7 +97,7 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
-	private final Supplier<C> contextFactory;
+	private final Function<SELF, C> contextFactory;
 
 	private final List<ApplicationContextInitializer<C>> initializers;
 
@@ -116,7 +115,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * Create a new {@link AbstractApplicationContextRunner} instance.
 	 * @param contextFactory the factory used to create the actual context
 	 */
-	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
+	protected AbstractApplicationContextRunner(Function<SELF, C> contextFactory) {
 		this(contextFactory, Collections.emptyList(), TestPropertyValues.empty(),
 				TestPropertyValues.empty(), null, null, Collections.emptyList());
 	}
@@ -131,7 +130,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param parent the parent
 	 * @param configurations the configuration
 	 */
-	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
+	protected AbstractApplicationContextRunner(Function<SELF, C> contextFactory,
 			List<ApplicationContextInitializer<C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
@@ -259,7 +258,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		return result;
 	}
 
-	protected abstract SELF newInstance(Supplier<C> contextFactory,
+	protected abstract SELF newInstance(Function<SELF, C> contextFactory,
 			List<ApplicationContextInitializer<C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
@@ -283,6 +282,10 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		return (SELF) this;
 	}
 
+	protected ClassLoader getClassLoader() {
+		return this.classLoader;
+	}
+
 	@SuppressWarnings("unchecked")
 	private A createAssertableContext() {
 		ResolvableType resolvableType = ResolvableType
@@ -293,8 +296,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 				this::createAndLoadContext);
 	}
 
+	@SuppressWarnings("unchecked")
 	private C createAndLoadContext() {
-		C context = this.contextFactory.get();
+		C context = this.contextFactory.apply((SELF) this);
 		try {
 			configureContext(context);
 			return context;

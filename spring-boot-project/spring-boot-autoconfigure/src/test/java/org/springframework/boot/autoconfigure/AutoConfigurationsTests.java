@@ -18,7 +18,11 @@ package org.springframework.boot.autoconfigure;
 
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.annotation.Configurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,12 +41,31 @@ public class AutoConfigurationsTests {
 				.containsExactly(AutoConfigureB.class, AutoConfigureA.class);
 	}
 
+	@Test
+	public void contextShouldNotHaveBeenIfConfigurationClassConditionalDoesNotMatch() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withClassLoader(new FilteredClassLoader(Foo.class))
+				.withConfiguration(AutoConfigurations.of(ConditionalConfig.class));
+		contextRunner.run(((context) -> assertThat(context)
+				.doesNotHaveBean(ConditionalConfig.class)));
+	}
+
 	@AutoConfigureAfter(AutoConfigureB.class)
 	public static class AutoConfigureA {
 
 	}
 
 	public static class AutoConfigureB {
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(Foo.class)
+	static class ConditionalConfig {
+
+	}
+
+	static class Foo {
 
 	}
 
