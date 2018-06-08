@@ -47,20 +47,16 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		boolean content = getEnabledProperty(environment, "strategy.content.", false);
 		Boolean chain = getEnabledProperty(environment, "", null);
 		Boolean match = ResourceProperties.Chain.getEnabled(fixed, content, chain);
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition(ConditionalOnEnabledResourceChain.class);
 		if (match == null) {
 			if (ClassUtils.isPresent(WEBJAR_ASSET_LOCATOR, getClass().getClassLoader())) {
-				return ConditionOutcome
-						.match(message.found("class").items(WEBJAR_ASSET_LOCATOR));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
-			return ConditionOutcome
-					.noMatch(message.didNotFind("class").items(WEBJAR_ASSET_LOCATOR));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 		if (match) {
-			return ConditionOutcome.match(message.because("enabled"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
-		return ConditionOutcome.noMatch(message.because("disabled"));
+		return ConditionOutcome.noMatch(ConditionMessage.empty());
 	}
 
 	private Boolean getEnabledProperty(ConfigurableEnvironment environment, String key,

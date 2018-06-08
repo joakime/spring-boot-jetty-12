@@ -46,26 +46,20 @@ abstract class AbstractSessionCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Session Condition");
 		Environment environment = context.getEnvironment();
 		StoreType required = SessionStoreMappings.getType(this.webApplicationType,
 				((AnnotationMetadata) metadata).getClassName());
 		if (!environment.containsProperty("spring.session.store-type")) {
-			return ConditionOutcome.match(message.didNotFind("property", "properties")
-					.items(ConditionMessage.Style.QUOTE, "spring.session.store-type"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
 		try {
 			Binder binder = Binder.get(environment);
-			return binder.bind("spring.session.store-type", StoreType.class)
-					.map((t) -> new ConditionOutcome(t == required,
-							message.found("spring.session.store-type property").items(t)))
-					.orElse(ConditionOutcome.noMatch(message
-							.didNotFind("spring.session.store-type property").atAll()));
+			return binder.bind("spring.session.store-type", StoreType.class).map(
+					(t) -> new ConditionOutcome(t == required, ConditionMessage.empty()))
+					.orElse(ConditionOutcome.noMatch(ConditionMessage.empty()));
 		}
 		catch (BindException ex) {
-			return ConditionOutcome.noMatch(
-					message.found("invalid spring.session.store-type property").atAll());
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 	}
 

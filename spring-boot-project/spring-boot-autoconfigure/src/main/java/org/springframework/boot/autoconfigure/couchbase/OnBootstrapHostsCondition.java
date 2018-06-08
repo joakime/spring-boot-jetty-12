@@ -45,13 +45,9 @@ class OnBootstrapHostsCondition extends SpringBootCondition {
 		BindResult<?> property = Binder.get(context.getEnvironment()).bind(name,
 				STRING_LIST);
 		if (property.isBound()) {
-			return ConditionOutcome.match(ConditionMessage
-					.forCondition(OnBootstrapHostsCondition.class.getName())
-					.found("property").items(name));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
-		return ConditionOutcome.noMatch(
-				ConditionMessage.forCondition(OnBootstrapHostsCondition.class.getName())
-						.didNotFind("property").items(name));
+		return ConditionOutcome.noMatch(ConditionMessage.empty());
 	}
 
 }

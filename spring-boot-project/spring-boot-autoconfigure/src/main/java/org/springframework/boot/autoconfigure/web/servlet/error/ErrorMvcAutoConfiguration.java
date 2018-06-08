@@ -187,19 +187,15 @@ public class ErrorMvcAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("ErrorTemplate Missing");
 			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
 					context.getClassLoader());
 			TemplateAvailabilityProvider provider = providers.getProvider("error",
 					context.getEnvironment(), context.getClassLoader(),
 					context.getResourceLoader());
 			if (provider != null) {
-				return ConditionOutcome
-						.noMatch(message.foundExactly("template from " + provider));
+				return ConditionOutcome.noMatch(ConditionMessage.empty());
 			}
-			return ConditionOutcome
-					.match(message.didNotFind("error template view").atAll());
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
 
 	}

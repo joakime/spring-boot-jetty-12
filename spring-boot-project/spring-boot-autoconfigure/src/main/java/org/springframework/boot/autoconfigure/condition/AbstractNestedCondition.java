@@ -171,14 +171,11 @@ public abstract class AbstractNestedCondition extends SpringBootCondition
 
 		private final ConditionContext context;
 
-		private final AnnotationMetadata metadata;
-
 		private final List<ConditionOutcome> outcomes;
 
 		MemberOutcomes(ConditionContext context, AnnotationMetadata metadata,
 				List<Condition> conditions) {
 			this.context = context;
-			this.metadata = metadata;
 			this.outcomes = new ArrayList<>(conditions.size());
 			for (Condition condition : conditions) {
 				this.outcomes.add(getConditionOutcome(metadata, condition));
@@ -196,13 +193,9 @@ public abstract class AbstractNestedCondition extends SpringBootCondition
 		}
 
 		public ConditionOutcome getUltimateOutcome() {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("NestedCondition on "
-							+ ClassUtils.getShortName(this.metadata.getClassName()));
 			if (this.outcomes.size() == 1) {
 				ConditionOutcome outcome = this.outcomes.get(0);
-				return new ConditionOutcome(outcome.isMatch(),
-						message.because(outcome.getMessage()));
+				return new ConditionOutcome(outcome.isMatch(), ConditionMessage.empty());
 			}
 			List<ConditionOutcome> match = new ArrayList<>();
 			List<ConditionOutcome> nonMatch = new ArrayList<>();
@@ -210,11 +203,9 @@ public abstract class AbstractNestedCondition extends SpringBootCondition
 				(outcome.isMatch() ? match : nonMatch).add(outcome);
 			}
 			if (nonMatch.isEmpty()) {
-				return ConditionOutcome
-						.match(message.found("matching nested conditions").items(match));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
-			return ConditionOutcome.noMatch(
-					message.found("non-matching nested conditions").items(nonMatch));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 	}

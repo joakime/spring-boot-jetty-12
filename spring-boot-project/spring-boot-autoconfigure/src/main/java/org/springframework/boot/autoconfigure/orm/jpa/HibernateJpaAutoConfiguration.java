@@ -16,14 +16,11 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import java.util.Arrays;
-
 import javax.persistence.EntityManager;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
-import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -66,16 +63,12 @@ public class HibernateJpaAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("HibernateEntityManager");
 			for (String className : CLASS_NAMES) {
 				if (ClassUtils.isPresent(className, context.getClassLoader())) {
-					return ConditionOutcome
-							.match(message.found("class").items(Style.QUOTE, className));
+					return ConditionOutcome.match(ConditionMessage.empty());
 				}
 			}
-			return ConditionOutcome.noMatch(message.didNotFind("class", "classes")
-					.items(Style.QUOTE, Arrays.asList(CLASS_NAMES)));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 	}

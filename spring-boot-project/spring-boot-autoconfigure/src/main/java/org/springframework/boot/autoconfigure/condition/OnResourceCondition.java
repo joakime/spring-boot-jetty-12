@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -61,13 +60,9 @@ class OnResourceCondition extends SpringBootCondition {
 			}
 		}
 		if (!missing.isEmpty()) {
-			return ConditionOutcome.noMatch(ConditionMessage
-					.forCondition(ConditionalOnResource.class)
-					.didNotFind("resource", "resources").items(Style.QUOTE, missing));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
-		return ConditionOutcome
-				.match(ConditionMessage.forCondition(ConditionalOnResource.class)
-						.found("location", "locations").items(locations));
+		return ConditionOutcome.match(ConditionMessage.empty());
 	}
 
 	private void collectValues(List<String> names, List<Object> values) {

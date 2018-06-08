@@ -34,7 +34,6 @@ import com.unboundid.ldif.LDIFReader;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
-import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -216,14 +215,13 @@ public class EmbeddedLdapAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			Builder message = ConditionMessage.forCondition("Embedded LDAP");
 			Environment environment = context.getEnvironment();
 			if (environment != null && !Binder.get(environment)
 					.bind("spring.ldap.embedded.base-dn", STRING_LIST)
 					.orElseGet(Collections::emptyList).isEmpty()) {
-				return ConditionOutcome.match(message.because("Found base-dn property"));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
-			return ConditionOutcome.noMatch(message.because("No base-dn property found"));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 	}

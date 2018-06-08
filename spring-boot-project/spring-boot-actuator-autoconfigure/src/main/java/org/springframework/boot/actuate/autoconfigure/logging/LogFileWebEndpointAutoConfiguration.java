@@ -61,23 +61,18 @@ public class LogFileWebEndpointAutoConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			String config = environment.resolvePlaceholders("${logging.file:}");
-			ConditionMessage.Builder message = ConditionMessage.forCondition("Log File");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome
-						.match(message.found("logging.file").items(config));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
 			config = environment.resolvePlaceholders("${logging.path:}");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome
-						.match(message.found("logging.path").items(config));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
 			config = environment.getProperty("management.endpoint.logfile.external-file");
 			if (StringUtils.hasText(config)) {
-				return ConditionOutcome
-						.match(message.found("management.endpoint.logfile.external-file")
-								.items(config));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
-			return ConditionOutcome.noMatch(message.didNotFind("logging file").atAll());
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 	}

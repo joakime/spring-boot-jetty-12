@@ -31,7 +31,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
-import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -121,19 +120,12 @@ class OnClassCondition extends SpringBootCondition
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		ClassLoader classLoader = context.getClassLoader();
-		ConditionMessage matchMessage = ConditionMessage.empty();
 		List<String> onClasses = getCandidates(metadata, ConditionalOnClass.class);
 		if (onClasses != null) {
 			List<String> missing = getMatches(onClasses, MatchType.MISSING, classLoader);
 			if (!missing.isEmpty()) {
-				return ConditionOutcome
-						.noMatch(ConditionMessage.forCondition(ConditionalOnClass.class)
-								.didNotFind("required class", "required classes")
-								.items(Style.QUOTE, missing));
+				return ConditionOutcome.noMatch(ConditionMessage.empty());
 			}
-			matchMessage = matchMessage.andCondition(ConditionalOnClass.class)
-					.found("required class", "required classes").items(Style.QUOTE,
-							getMatches(onClasses, MatchType.PRESENT, classLoader));
 		}
 		List<String> onMissingClasses = getCandidates(metadata,
 				ConditionalOnMissingClass.class);
@@ -141,16 +133,10 @@ class OnClassCondition extends SpringBootCondition
 			List<String> present = getMatches(onMissingClasses, MatchType.PRESENT,
 					classLoader);
 			if (!present.isEmpty()) {
-				return ConditionOutcome.noMatch(
-						ConditionMessage.forCondition(ConditionalOnMissingClass.class)
-								.found("unwanted class", "unwanted classes")
-								.items(Style.QUOTE, present));
+				return ConditionOutcome.noMatch(ConditionMessage.empty());
 			}
-			matchMessage = matchMessage.andCondition(ConditionalOnMissingClass.class)
-					.didNotFind("unwanted class", "unwanted classes").items(Style.QUOTE,
-							getMatches(onMissingClasses, MatchType.MISSING, classLoader));
 		}
-		return ConditionOutcome.match(matchMessage);
+		return ConditionOutcome.match(ConditionMessage.empty());
 	}
 
 	private List<String> getCandidates(AnnotatedTypeMetadata metadata,
@@ -318,10 +304,7 @@ class OnClassCondition extends SpringBootCondition
 				List<String> missing = getMatches(candidates, MatchType.MISSING,
 						this.beanClassLoader);
 				if (!missing.isEmpty()) {
-					return ConditionOutcome.noMatch(
-							ConditionMessage.forCondition(ConditionalOnClass.class)
-									.didNotFind("required class", "required classes")
-									.items(Style.QUOTE, missing));
+					return ConditionOutcome.noMatch(ConditionMessage.empty());
 				}
 			}
 			catch (Exception ex) {

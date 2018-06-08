@@ -62,8 +62,6 @@ class OnWebApplicationCondition extends SpringBootCondition {
 
 	private ConditionOutcome isWebApplication(ConditionContext context,
 			AnnotatedTypeMetadata metadata, boolean required) {
-		ConditionMessage.Builder message = ConditionMessage.forCondition(
-				ConditionalOnWebApplication.class, required ? "(required)" : "");
 		Type type = deduceType(metadata);
 		if (Type.SERVLET == type) {
 			return isServletWebApplication(context);
@@ -75,56 +73,47 @@ class OnWebApplicationCondition extends SpringBootCondition {
 			ConditionOutcome servletOutcome = isServletWebApplication(context);
 			if (servletOutcome.isMatch() && required) {
 				return new ConditionOutcome(servletOutcome.isMatch(),
-						message.because(servletOutcome.getMessage()));
+						ConditionMessage.empty());
 			}
 			ConditionOutcome reactiveOutcome = isReactiveWebApplication(context);
 			if (reactiveOutcome.isMatch() && required) {
 				return new ConditionOutcome(reactiveOutcome.isMatch(),
-						message.because(reactiveOutcome.getMessage()));
+						ConditionMessage.empty());
 			}
 			boolean finalOutcome = (required
 					? servletOutcome.isMatch() && reactiveOutcome.isMatch()
 					: servletOutcome.isMatch() || reactiveOutcome.isMatch());
-			return new ConditionOutcome(finalOutcome,
-					message.because(servletOutcome.getMessage()).append("and")
-							.append(reactiveOutcome.getMessage()));
+			return new ConditionOutcome(finalOutcome, ConditionMessage.empty());
 		}
 	}
 
 	private ConditionOutcome isServletWebApplication(ConditionContext context) {
-		ConditionMessage.Builder message = ConditionMessage.forCondition("");
 		if (!ClassUtils.isPresent(WEB_CONTEXT_CLASS, context.getClassLoader())) {
-			return ConditionOutcome
-					.noMatch(message.didNotFind("web application classes").atAll());
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 		if (context.getBeanFactory() != null) {
 			String[] scopes = context.getBeanFactory().getRegisteredScopeNames();
 			if (ObjectUtils.containsElement(scopes, "session")) {
-				return ConditionOutcome.match(message.foundExactly("'session' scope"));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
 		}
 		if (context.getEnvironment() instanceof ConfigurableWebEnvironment) {
-			return ConditionOutcome
-					.match(message.foundExactly("ConfigurableWebEnvironment"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
 		if (context.getResourceLoader() instanceof WebApplicationContext) {
-			return ConditionOutcome.match(message.foundExactly("WebApplicationContext"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
-		return ConditionOutcome.noMatch(message.because("not a servlet web application"));
+		return ConditionOutcome.noMatch(ConditionMessage.empty());
 	}
 
 	private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
-		ConditionMessage.Builder message = ConditionMessage.forCondition("");
 		if (context.getEnvironment() instanceof ConfigurableReactiveWebEnvironment) {
-			return ConditionOutcome
-					.match(message.foundExactly("ConfigurableReactiveWebEnvironment"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
 		if (context.getResourceLoader() instanceof ReactiveWebApplicationContext) {
-			return ConditionOutcome
-					.match(message.foundExactly("ReactiveWebApplicationContext"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
-		return ConditionOutcome
-				.noMatch(message.because("not a reactive web application"));
+		return ConditionOutcome.noMatch(ConditionMessage.empty());
 	}
 
 	private Type deduceType(AnnotatedTypeMetadata metadata) {

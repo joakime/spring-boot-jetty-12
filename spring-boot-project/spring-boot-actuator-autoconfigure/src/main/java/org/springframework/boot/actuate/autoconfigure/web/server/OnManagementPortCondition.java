@@ -41,22 +41,17 @@ class OnManagementPortCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Management Port");
 		if (!isWebApplicationContext(context)) {
-			return ConditionOutcome
-					.noMatch(message.because("non web application context"));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 		Map<String, Object> attributes = metadata
 				.getAnnotationAttributes(ConditionalOnManagementPort.class.getName());
 		ManagementPortType requiredType = (ManagementPortType) attributes.get("value");
 		ManagementPortType actualType = ManagementPortType.get(context.getEnvironment());
 		if (actualType == requiredType) {
-			return ConditionOutcome.match(message.because(
-					"actual port type (" + actualType + ") matched required type"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
-		return ConditionOutcome.noMatch(message.because("actual port type (" + actualType
-				+ ") did not match required type (" + requiredType + ")"));
+		return ConditionOutcome.noMatch(ConditionMessage.empty());
 	}
 
 	private boolean isWebApplicationContext(ConditionContext context) {

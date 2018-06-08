@@ -54,14 +54,11 @@ public class LoggersEndpointAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("Logging System");
 			String loggingSystem = System.getProperty(LoggingSystem.SYSTEM_PROPERTY);
 			if (LoggingSystem.NONE.equals(loggingSystem)) {
-				return ConditionOutcome.noMatch(message.because("system property "
-						+ LoggingSystem.SYSTEM_PROPERTY + " is set to none"));
+				return ConditionOutcome.noMatch(ConditionMessage.empty());
 			}
-			return ConditionOutcome.match(message.because("enabled"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
 
 	}

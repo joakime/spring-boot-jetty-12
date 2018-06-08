@@ -150,15 +150,10 @@ public class MetricsAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("LogbackLoggingCondition");
 			if (loggerFactory instanceof LoggerContext) {
-				return ConditionOutcome.match(
-						message.because("ILoggerFactory is a Logback LoggerContext"));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
-			return ConditionOutcome
-					.noMatch(message.because("ILoggerFactory is an instance of "
-							+ loggerFactory.getClass().getCanonicalName()));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 	}

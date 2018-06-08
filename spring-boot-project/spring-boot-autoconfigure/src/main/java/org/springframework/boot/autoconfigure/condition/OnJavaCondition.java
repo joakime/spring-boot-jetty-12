@@ -52,13 +52,7 @@ class OnJavaCondition extends SpringBootCondition {
 	protected ConditionOutcome getMatchOutcome(Range range, JavaVersion runningVersion,
 			JavaVersion version) {
 		boolean match = isWithin(runningVersion, range, version);
-		String expected = String.format(
-				range != Range.EQUAL_OR_NEWER ? "(older than %s)" : "(%s or newer)",
-				version);
-		ConditionMessage message = ConditionMessage
-				.forCondition(ConditionalOnJava.class, expected)
-				.foundExactly(runningVersion);
-		return new ConditionOutcome(match, message);
+		return new ConditionOutcome(match, ConditionMessage.empty());
 	}
 
 	/**

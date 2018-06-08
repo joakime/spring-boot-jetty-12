@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -79,17 +78,12 @@ class OAuth2ClientRegistrationRepositoryConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("OAuth2 Clients Configured Condition");
 			Map<String, Registration> registrations = this
 					.getRegistrations(context.getEnvironment());
 			if (!registrations.isEmpty()) {
-				return ConditionOutcome.match(message.foundExactly(
-						"registered clients " + registrations.values().stream()
-								.map(OAuth2ClientProperties.Registration::getClientId)
-								.collect(Collectors.joining(", "))));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
-			return ConditionOutcome.noMatch(message.notAvailable("registered clients"));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 		private Map<String, Registration> getRegistrations(Environment environment) {

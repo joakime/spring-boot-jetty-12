@@ -102,14 +102,10 @@ public class DataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("PooledDataSource");
 			if (getDataSourceClassLoader(context) != null) {
-				return ConditionOutcome
-						.match(message.foundExactly("supported DataSource"));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
-			return ConditionOutcome
-					.noMatch(message.didNotFind("supported DataSource").atAll());
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 		/**
@@ -138,19 +134,15 @@ public class DataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("EmbeddedDataSource");
 			if (anyMatches(context, metadata, this.pooledCondition)) {
-				return ConditionOutcome
-						.noMatch(message.foundExactly("supported pooled data source"));
+				return ConditionOutcome.noMatch(ConditionMessage.empty());
 			}
 			EmbeddedDatabaseType type = EmbeddedDatabaseConnection
 					.get(context.getClassLoader()).getType();
 			if (type == null) {
-				return ConditionOutcome
-						.noMatch(message.didNotFind("embedded database").atAll());
+				return ConditionOutcome.noMatch(ConditionMessage.empty());
 			}
-			return ConditionOutcome.match(message.found("embedded database").items(type));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
 
 	}

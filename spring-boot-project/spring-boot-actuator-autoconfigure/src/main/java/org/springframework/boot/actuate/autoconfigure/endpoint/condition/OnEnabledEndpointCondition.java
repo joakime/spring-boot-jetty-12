@@ -57,23 +57,14 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		String key = "management.endpoint." + id + ".enabled";
 		Boolean userDefinedEnabled = environment.getProperty(key, Boolean.class);
 		if (userDefinedEnabled != null) {
-			return new ConditionOutcome(userDefinedEnabled,
-					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
-							.because("found property " + key + " with value "
-									+ userDefinedEnabled));
+			return new ConditionOutcome(userDefinedEnabled, ConditionMessage.empty());
 		}
 		Boolean userDefinedDefault = isEnabledByDefault(environment);
 		if (userDefinedDefault != null) {
-			return new ConditionOutcome(userDefinedDefault,
-					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
-							.because("no property " + key
-									+ " found so using user defined default from "
-									+ ENABLED_BY_DEFAULT_KEY));
+			return new ConditionOutcome(userDefinedDefault, ConditionMessage.empty());
 		}
 		boolean endpointDefault = attributes.getBoolean("enableByDefault");
-		return new ConditionOutcome(endpointDefault,
-				ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class).because(
-						"no property " + key + " found so using endpoint default"));
+		return new ConditionOutcome(endpointDefault, ConditionMessage.empty());
 	}
 
 	private Boolean isEnabledByDefault(Environment environment) {

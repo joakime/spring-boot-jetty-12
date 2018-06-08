@@ -42,17 +42,13 @@ class OnExpressionCondition extends SpringBootCondition {
 				.getAnnotationAttributes(ConditionalOnExpression.class.getName())
 				.get("value");
 		expression = wrapIfNecessary(expression);
-		String rawExpression = expression;
 		expression = context.getEnvironment().resolvePlaceholders(expression);
-		ConditionMessage.Builder messageBuilder = ConditionMessage
-				.forCondition(ConditionalOnExpression.class, "(" + rawExpression + ")");
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory != null) {
 			boolean result = evaluateExpression(beanFactory, expression);
-			return new ConditionOutcome(result, messageBuilder.resultedIn(result));
+			return new ConditionOutcome(result, ConditionMessage.empty());
 		}
-		return ConditionOutcome
-				.noMatch(messageBuilder.because("no BeanFactory available."));
+		return ConditionOutcome.noMatch(ConditionMessage.empty());
 	}
 
 	private Boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory,

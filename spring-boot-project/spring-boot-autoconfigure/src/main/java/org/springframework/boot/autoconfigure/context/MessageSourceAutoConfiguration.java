@@ -103,19 +103,15 @@ public class MessageSourceAutoConfiguration {
 
 		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
 				String basename) {
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("ResourceBundle");
 			for (String name : StringUtils.commaDelimitedListToStringArray(
 					StringUtils.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
-						return ConditionOutcome
-								.match(message.found("bundle").items(resource));
+						return ConditionOutcome.match(ConditionMessage.empty());
 					}
 				}
 			}
-			return ConditionOutcome.noMatch(
-					message.didNotFind("bundle with basename " + basename).atAll());
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {

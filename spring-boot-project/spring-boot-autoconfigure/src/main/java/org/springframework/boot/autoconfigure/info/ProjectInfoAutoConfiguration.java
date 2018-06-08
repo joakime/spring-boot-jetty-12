@@ -97,14 +97,10 @@ public class ProjectInfoAutoConfiguration {
 			if (location == null) {
 				location = "classpath:git.properties";
 			}
-			ConditionMessage.Builder message = ConditionMessage
-					.forCondition("GitResource");
 			if (loader.getResource(location).exists()) {
-				return ConditionOutcome
-						.match(message.found("git info at").items(location));
+				return ConditionOutcome.match(ConditionMessage.empty());
 			}
-			return ConditionOutcome
-					.noMatch(message.didNotFind("git info at").items(location));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 
 	}

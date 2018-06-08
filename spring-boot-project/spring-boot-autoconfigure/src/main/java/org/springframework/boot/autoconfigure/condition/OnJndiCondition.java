@@ -26,7 +26,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.jndi.JndiLocatorSupport;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} that checks for JNDI locations.
@@ -48,33 +47,23 @@ class OnJndiCondition extends SpringBootCondition {
 			return getMatchOutcome(locations);
 		}
 		catch (NoClassDefFoundError ex) {
-			return ConditionOutcome
-					.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class)
-							.because("JNDI class not found"));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 	}
 
 	private ConditionOutcome getMatchOutcome(String[] locations) {
 		if (!isJndiAvailable()) {
-			return ConditionOutcome
-					.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class)
-							.notAvailable("JNDI environment"));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 		if (locations.length == 0) {
-			return ConditionOutcome.match(ConditionMessage
-					.forCondition(ConditionalOnJndi.class).available("JNDI environment"));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
 		JndiLocator locator = getJndiLocator(locations);
 		String location = locator.lookupFirstLocation();
-		String details = "(" + StringUtils.arrayToCommaDelimitedString(locations) + ")";
 		if (location != null) {
-			return ConditionOutcome
-					.match(ConditionMessage.forCondition(ConditionalOnJndi.class, details)
-							.foundExactly("\"" + location + "\""));
+			return ConditionOutcome.match(ConditionMessage.empty());
 		}
-		return ConditionOutcome
-				.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class, details)
-						.didNotFind("any matching JNDI location").atAll());
+		return ConditionOutcome.noMatch(ConditionMessage.empty());
 	}
 
 	protected boolean isJndiAvailable() {

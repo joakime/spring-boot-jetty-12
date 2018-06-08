@@ -65,9 +65,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		String enabledProperty = this.prefix + endpointName + ".enabled";
 		if (environment.containsProperty(enabledProperty)) {
 			boolean match = environment.getProperty(enabledProperty, Boolean.class, true);
-			return new ConditionOutcome(match,
-					ConditionMessage.forCondition(this.annotationType).because(
-							this.prefix + endpointName + ".enabled is " + match));
+			return new ConditionOutcome(match, ConditionMessage.empty());
 		}
 		return null;
 	}
@@ -75,9 +73,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	protected ConditionOutcome getDefaultEndpointsOutcome(ConditionContext context) {
 		boolean match = Boolean.valueOf(context.getEnvironment()
 				.getProperty(this.prefix + "defaults.enabled", "true"));
-		return new ConditionOutcome(match,
-				ConditionMessage.forCondition(this.annotationType).because(
-						this.prefix + "defaults.enabled is considered " + match));
+		return new ConditionOutcome(match, ConditionMessage.empty());
 	}
 
 }

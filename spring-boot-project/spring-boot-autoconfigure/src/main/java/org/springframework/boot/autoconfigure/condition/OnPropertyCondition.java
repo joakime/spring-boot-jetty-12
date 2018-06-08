@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
@@ -60,9 +59,9 @@ class OnPropertyCondition extends SpringBootCondition {
 			(outcome.isMatch() ? match : noMatch).add(outcome.getConditionMessage());
 		}
 		if (!noMatch.isEmpty()) {
-			return ConditionOutcome.noMatch(ConditionMessage.of(noMatch));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
-		return ConditionOutcome.match(ConditionMessage.of(match));
+		return ConditionOutcome.match(ConditionMessage.empty());
 	}
 
 	private List<AnnotationAttributes> annotationAttributesFromMultiValueMap(
@@ -95,20 +94,12 @@ class OnPropertyCondition extends SpringBootCondition {
 		List<String> nonMatchingProperties = new ArrayList<>();
 		spec.collectProperties(resolver, missingProperties, nonMatchingProperties);
 		if (!missingProperties.isEmpty()) {
-			return ConditionOutcome.noMatch(
-					ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
-							.didNotFind("property", "properties")
-							.items(Style.QUOTE, missingProperties));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
 		if (!nonMatchingProperties.isEmpty()) {
-			return ConditionOutcome.noMatch(
-					ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
-							.found("different value in property",
-									"different value in properties")
-							.items(Style.QUOTE, nonMatchingProperties));
+			return ConditionOutcome.noMatch(ConditionMessage.empty());
 		}
-		return ConditionOutcome.match(ConditionMessage
-				.forCondition(ConditionalOnProperty.class, spec).because("matched"));
+		return ConditionOutcome.match(ConditionMessage.empty());
 	}
 
 	private static class Spec {
