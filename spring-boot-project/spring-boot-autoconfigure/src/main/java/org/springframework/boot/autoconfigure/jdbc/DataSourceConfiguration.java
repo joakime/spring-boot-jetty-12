@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -54,7 +55,8 @@ abstract class DataSourceConfiguration {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
 		public org.apache.tomcat.jdbc.pool.DataSource dataSource(
-				DataSourceProperties properties) {
+				DataSourceProperties properties,
+				DataSourceInitializationRegistry initializationRegistry) {
 			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(
 					properties, org.apache.tomcat.jdbc.pool.DataSource.class);
 			DatabaseDriver databaseDriver = DatabaseDriver
@@ -64,6 +66,7 @@ abstract class DataSourceConfiguration {
 				dataSource.setTestOnBorrow(true);
 				dataSource.setValidationQuery(validationQuery);
 			}
+			initializationRegistry.register(dataSource, properties);
 			return dataSource;
 		}
 
@@ -79,12 +82,14 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.hikari")
-		public HikariDataSource dataSource(DataSourceProperties properties) {
+		public HikariDataSource dataSource(DataSourceProperties properties,
+				DataSourceInitializationRegistry initializationRegistry) {
 			HikariDataSource dataSource = createDataSource(properties,
 					HikariDataSource.class);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setPoolName(properties.getName());
 			}
+			initializationRegistry.register(dataSource, properties);
 			return dataSource;
 		}
 
@@ -93,17 +98,19 @@ abstract class DataSourceConfiguration {
 	/**
 	 * DBCP DataSource configuration.
 	 */
-	@ConditionalOnClass(org.apache.commons.dbcp2.BasicDataSource.class)
+	@ConditionalOnClass(BasicDataSource.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "org.apache.commons.dbcp2.BasicDataSource", matchIfMissing = true)
 	static class Dbcp2 {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
-		public org.apache.commons.dbcp2.BasicDataSource dataSource(
-				DataSourceProperties properties) {
-			return createDataSource(properties,
+		public BasicDataSource dataSource(DataSourceProperties properties,
+				DataSourceInitializationRegistry initializationRegistry) {
+			BasicDataSource dataSource = createDataSource(properties,
 					org.apache.commons.dbcp2.BasicDataSource.class);
+			initializationRegistry.register(dataSource, properties);
+			return dataSource;
 		}
 
 	}
@@ -116,8 +123,11 @@ abstract class DataSourceConfiguration {
 	static class Generic {
 
 		@Bean
-		public DataSource dataSource(DataSourceProperties properties) {
-			return properties.initializeDataSourceBuilder().build();
+		public DataSource dataSource(DataSourceProperties properties,
+				DataSourceInitializationRegistry initializationRegistry) {
+			DataSource dataSource = properties.initializeDataSourceBuilder().build();
+			initializationRegistry.register(dataSource, properties);
+			return dataSource;
 		}
 
 	}

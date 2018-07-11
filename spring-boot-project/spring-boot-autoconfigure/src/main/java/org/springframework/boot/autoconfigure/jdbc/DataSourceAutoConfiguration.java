@@ -31,6 +31,8 @@ import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetada
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -50,9 +52,14 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @Configuration
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @EnableConfigurationProperties(DataSourceProperties.class)
-@Import({ DataSourcePoolMetadataProvidersConfiguration.class,
-		DataSourceInitializationConfiguration.class })
+@Import(DataSourcePoolMetadataProvidersConfiguration.class)
 public class DataSourceAutoConfiguration {
+
+	@Bean
+	public static StandardDataSourceInitializationRegistry dataSourceInitializationRegistry(
+			ApplicationContext context) {
+		return new StandardDataSourceInitializationRegistry(context, context);
+	}
 
 	@Configuration
 	@Conditional(EmbeddedDatabaseCondition.class)

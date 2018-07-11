@@ -50,12 +50,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link DataSourceInitializerInvoker}.
+ * Tests for {@link DataSource} initialization driven by
+ * {@link StandardDataSourceInitializationRegistry} and {@link DataSourceInitializer}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class DataSourceInitializerInvokerTests {
+public class DataSourceInitializationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
@@ -75,8 +76,18 @@ public class DataSourceInitializerInvokerTests {
 	}
 
 	@Test
-	public void initializationAppliesToCustomDataSource() {
-		this.contextRunner.withUserConfiguration(OneDataSource.class)
+	public void initializationDoesNotApplyToCustomDataSource() {
+		this.contextRunner.withUserConfiguration(InitializedDataSource.class)
+				.withPropertyValues("spring.datasource.initialization-mode:always")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DataSource.class);
+					assertDataSourceIsInitialized(context.getBean(DataSource.class));
+				});
+	}
+
+	@Test
+	public void initializationCanBeAppliedToCustomDataSource() {
+		this.contextRunner.withUserConfiguration(InitializedDataSource.class)
 				.withPropertyValues("spring.datasource.initialization-mode:always")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(DataSource.class);
@@ -290,6 +301,19 @@ public class DataSourceInitializerInvokerTests {
 		@Bean
 		public DataSource oneDataSource() {
 			return new TestDataSource();
+		}
+
+	}
+
+	@Configuration
+	protected static class InitializedDataSource {
+
+		@Bean
+		public DataSource oneDataSource(DataSourceProperties properties,
+				StandardDataSourceInitializationRegistry initializationRegistry) {
+			TestDataSource testDataSource = new TestDataSource();
+			initializationRegistry.register(testDataSource, properties);
+			return testDataSource;
 		}
 
 	}

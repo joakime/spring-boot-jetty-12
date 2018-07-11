@@ -57,6 +57,8 @@ class DataSourceInitializer {
 
 	private final ResourceLoader resourceLoader;
 
+	private InitializationState state = InitializationState.UNINITIALIZED;
+
 	/**
 	 * Create a new instance with the {@link DataSource} to initialize and its matching
 	 * {@link DataSourceProperties configuration}.
@@ -86,12 +88,19 @@ class DataSourceInitializer {
 		return this.dataSource;
 	}
 
+	DataSourceProperties getProperties() {
+		return this.properties;
+	}
+
 	/**
 	 * Create the schema if necessary.
 	 * @return {@code true} if the schema was created
 	 * @see DataSourceProperties#getSchema()
 	 */
 	public boolean createSchema() {
+		if (this.state != InitializationState.UNINITIALIZED) {
+			return false;
+		}
 		List<Resource> scripts = getScripts("spring.datasource.schema",
 				this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
@@ -102,6 +111,7 @@ class DataSourceInitializer {
 			String username = this.properties.getSchemaUsername();
 			String password = this.properties.getSchemaPassword();
 			runScripts(scripts, username, password);
+			this.state = InitializationState.SCHEMA_CREATED;
 		}
 		return !scripts.isEmpty();
 	}
@@ -111,6 +121,9 @@ class DataSourceInitializer {
 	 * @see DataSourceProperties#getData()
 	 */
 	public void initSchema() {
+		if (this.state == InitializationState.SCHEMA_INITIALIZED) {
+			return;
+		}
 		List<Resource> scripts = getScripts("spring.datasource.data",
 				this.properties.getData(), "data");
 		if (!scripts.isEmpty()) {
@@ -121,6 +134,7 @@ class DataSourceInitializer {
 			String username = this.properties.getDataUsername();
 			String password = this.properties.getDataPassword();
 			runScripts(scripts, username, password);
+			this.state = InitializationState.SCHEMA_INITIALIZED;
 		}
 	}
 
@@ -208,6 +222,12 @@ class DataSourceInitializer {
 					.password(password).build();
 		}
 		DatabasePopulatorUtils.execute(populator, dataSource);
+	}
+
+	enum InitializationState {
+
+		UNINITIALIZED, SCHEMA_CREATED, SCHEMA_INITIALIZED;
+
 	}
 
 }
