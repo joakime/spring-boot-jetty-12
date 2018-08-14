@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,28 @@ package org.springframework.boot.autoconfigure.data.jpa;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
@@ -58,7 +67,47 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 		JpaRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(JpaRepositoriesAutoConfigureRegistrar.class)
-@AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
+@AutoConfigureAfter({ HibernateJpaAutoConfiguration.class,
+		TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {
+
+	@Bean
+	@Conditional(BootstrapExecutorCondition.class)
+	public static BeanPostProcessor entityManagerFactoryBoostrapExecutorConfigurer(
+			ObjectProvider<AsyncTaskExecutor> taskExecutor) {
+		return new BeanPostProcessor() {
+
+			@Override
+			public Object postProcessBeforeInitialization(Object bean, String beanName)
+					throws BeansException {
+				if (bean instanceof LocalContainerEntityManagerFactoryBean) {
+					LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
+					if (factory.getBootstrapExecutor() == null) {
+						factory.setBootstrapExecutor(taskExecutor.getIfAvailable());
+					}
+				}
+				return bean;
+			}
+
+		};
+	}
+
+	private static final class BootstrapExecutorCondition extends AnyNestedCondition {
+
+		BootstrapExecutorCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "deferred", matchIfMissing = false)
+		static class DeferredBootstrapMode {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy", matchIfMissing = false)
+		static class LazyBootstrapMode {
+
+		}
+
+	}
 
 }
