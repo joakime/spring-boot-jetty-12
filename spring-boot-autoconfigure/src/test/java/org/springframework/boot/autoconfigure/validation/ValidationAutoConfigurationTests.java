@@ -24,14 +24,19 @@ import javax.validation.Validator;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigurationTests.CustomValidatorConfiguration.TestBeanPostProcessor;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigurationTests.ValidatedFactoryBeanConfiguration.DemoBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -211,6 +216,12 @@ public class ValidationAutoConfigurationTests {
 				.contains("someService");
 	}
 
+	@Test
+	public void validatedFactoryBeanDoesNotCauseAnInfiniteLoop() {
+		load(ValidatedFactoryBeanConfiguration.class, "demo.name=alpha");
+		this.context.getBean(DemoBean.class);
+	}
+
 	private boolean isPrimaryBean(String beanName) {
 		return this.context.getBeanDefinition(beanName).isPrimary();
 	}
@@ -382,6 +393,53 @@ public class ValidationAutoConfigurationTests {
 			public Object postProcessBeforeInitialization(Object bean, String name) {
 				return bean;
 			}
+
+		}
+
+	}
+
+	@org.springframework.context.annotation.Configuration
+	@EnableConfigurationProperties
+	static class ValidatedFactoryBeanConfiguration {
+
+		@Bean
+		public DemoFactoryBean demoBean() {
+			return new DemoFactoryBean();
+		}
+
+		@Validated
+		@ConfigurationProperties("demo")
+		class DemoFactoryBean implements FactoryBean<DemoBean> {
+
+			private String name;
+
+			@NotBlank
+			public String getName() {
+				return this.name;
+			}
+
+			public void setName(String name) {
+				this.name = name;
+			}
+
+			@Override
+			public DemoBean getObject() {
+				return new DemoBean();
+			}
+
+			@Override
+			public Class<?> getObjectType() {
+				return DemoBean.class;
+			}
+
+			@Override
+			public boolean isSingleton() {
+				return false;
+			}
+
+		}
+
+		class DemoBean {
 
 		}
 

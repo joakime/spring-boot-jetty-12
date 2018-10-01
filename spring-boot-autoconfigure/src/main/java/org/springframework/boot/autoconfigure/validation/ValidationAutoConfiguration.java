@@ -16,9 +16,14 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.executable.ExecutableValidator;
+import javax.validation.metadata.BeanDescriptor;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -29,7 +34,6 @@ import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -61,10 +65,10 @@ public class ValidationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public static MethodValidationPostProcessor methodValidationPostProcessor(
-			Environment environment, @Lazy Validator validator) {
+			Environment environment, ObjectProvider<Validator> validatorProvider) {
 		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
 		processor.setProxyTargetClass(determineProxyTargetClass(environment));
-		processor.setValidator(validator);
+		processor.setValidator(new LazyValidator(validatorProvider));
 		return processor;
 	}
 
@@ -73,6 +77,58 @@ public class ValidationAutoConfiguration {
 				"spring.aop.");
 		Boolean value = resolver.getProperty("proxyTargetClass", Boolean.class);
 		return (value != null) ? value : true;
+	}
+
+	private static final class LazyValidator implements Validator {
+
+		private final ObjectProvider<Validator> validatorProvider;
+
+		private volatile Validator validator;
+
+		LazyValidator(ObjectProvider<Validator> validatorProvider) {
+			this.validatorProvider = validatorProvider;
+			this.validator = this.validator;
+		}
+
+		@Override
+		public <T> Set<ConstraintViolation<T>> validate(T object, Class<?>... groups) {
+			return getValidator().validate(object, groups);
+		}
+
+		@Override
+		public <T> Set<ConstraintViolation<T>> validateProperty(T object,
+				String propertyName, Class<?>... groups) {
+			return getValidator().validateProperty(object, propertyName, groups);
+		}
+
+		@Override
+		public <T> Set<ConstraintViolation<T>> validateValue(Class<T> beanType,
+				String propertyName, Object value, Class<?>... groups) {
+			return getValidator().validateValue(beanType, propertyName, value, groups);
+		}
+
+		@Override
+		public BeanDescriptor getConstraintsForClass(Class<?> clazz) {
+			return getValidator().getConstraintsForClass(clazz);
+		}
+
+		@Override
+		public <T> T unwrap(Class<T> type) {
+			return getValidator().unwrap(type);
+		}
+
+		@Override
+		public ExecutableValidator forExecutables() {
+			return getValidator().forExecutables();
+		}
+
+		private Validator getValidator() {
+			if (this.validator == null) {
+				this.validator = this.validatorProvider.getObject();
+			}
+			return this.validator;
+		}
+
 	}
 
 }
