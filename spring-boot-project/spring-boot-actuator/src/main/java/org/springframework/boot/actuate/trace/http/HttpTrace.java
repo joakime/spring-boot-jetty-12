@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.trace.http;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ import org.springframework.util.StringUtils;
  */
 public final class HttpTrace {
 
-	private final Instant timestamp = Instant.now();
+	private final Instant timestamp;
 
 	private volatile Principal principal;
 
@@ -45,8 +46,19 @@ public final class HttpTrace {
 
 	private volatile Long timeTaken;
 
+	public HttpTrace(Request request, Response response, Instant timestamp,
+			Principal principal, Session session, Long timeTaken) {
+		this.request = request;
+		this.response = response;
+		this.timestamp = timestamp;
+		this.principal = principal;
+		this.session = session;
+		this.timeTaken = timeTaken;
+	}
+
 	HttpTrace(TraceableRequest request) {
 		this.request = new Request(request);
+		this.timestamp = Instant.now();
 	}
 
 	public Instant getTimestamp() {
@@ -107,10 +119,16 @@ public final class HttpTrace {
 		private final String remoteAddress;
 
 		private Request(TraceableRequest request) {
-			this.method = request.getMethod();
-			this.uri = request.getUri();
-			this.headers = request.getHeaders();
-			this.remoteAddress = request.getRemoteAddress();
+			this(request.getMethod(), request.getUri(), request.getHeaders(),
+					request.getRemoteAddress());
+		}
+
+		public Request(String method, URI uri, Map<String, List<String>> headers,
+				String remoteAddress) {
+			this.method = method;
+			this.uri = uri;
+			this.headers = new LinkedHashMap<>(headers);
+			this.remoteAddress = remoteAddress;
 		}
 
 		public String getMethod() {
@@ -141,8 +159,12 @@ public final class HttpTrace {
 		private final Map<String, List<String>> headers;
 
 		Response(TraceableResponse response) {
-			this.status = response.getStatus();
-			this.headers = response.getHeaders();
+			this(response.getStatus(), response.getHeaders());
+		}
+
+		public Response(int status, Map<String, List<String>> headers) {
+			this.status = status;
+			this.headers = new LinkedHashMap<>(headers);
 		}
 
 		public int getStatus() {
@@ -162,7 +184,7 @@ public final class HttpTrace {
 
 		private final String id;
 
-		private Session(String id) {
+		public Session(String id) {
 			this.id = id;
 		}
 
@@ -179,7 +201,7 @@ public final class HttpTrace {
 
 		private final String name;
 
-		private Principal(String name) {
+		public Principal(String name) {
 			this.name = name;
 		}
 
