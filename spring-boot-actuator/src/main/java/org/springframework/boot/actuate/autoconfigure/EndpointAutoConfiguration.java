@@ -25,7 +25,9 @@ import java.util.Map;
 import liquibase.integration.spring.SpringLiquibase;
 import org.flywaydb.core.Flyway;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint;
@@ -57,6 +59,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.DataSourceClosingSpringLiquibase;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.logging.LoggingSystem;
@@ -207,6 +210,29 @@ public class EndpointAutoConfiguration {
 		public LiquibaseEndpoint liquibaseEndpoint(
 				Map<String, SpringLiquibase> liquibases) {
 			return new LiquibaseEndpoint(liquibases);
+		}
+
+		@Bean
+		public static BeanPostProcessor preventDataSourceCloseBeanPostProcessor() {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessBeforeInitialization(Object bean,
+						String beanName) throws BeansException {
+					if (bean instanceof DataSourceClosingSpringLiquibase) {
+						((DataSourceClosingSpringLiquibase) bean)
+								.setCloseDataSourceOnceMigrated(false);
+					}
+					return bean;
+				}
+
+				@Override
+				public Object postProcessAfterInitialization(Object bean, String beanName)
+						throws BeansException {
+					return bean;
+				}
+
+			};
 		}
 
 	}
