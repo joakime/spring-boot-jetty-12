@@ -23,9 +23,11 @@ import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
@@ -55,11 +57,15 @@ public class TomcatMetricsAutoConfigurationTests {
 						.withConfiguration(AutoConfigurations.of(
 								TomcatMetricsAutoConfiguration.class,
 								ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(ServletWebServerConfiguration.class)
+						.withUserConfiguration(ServletWebServerConfiguration.class,
+								MeterRegistryConfiguration.class)
 						.run((context) -> {
-							assertThat(context).hasSingleBean(TomcatMetrics.class);
-							SimpleMeterRegistry registry = new SimpleMeterRegistry();
-							context.getBean(TomcatMetrics.class).bindTo(registry);
+							context.publishEvent(
+									new ApplicationStartedEvent(new SpringApplication(),
+											null, context.getSourceApplicationContext()));
+							assertThat(context).hasSingleBean(TomcatMetricsBinder.class);
+							SimpleMeterRegistry registry = context
+									.getBean(SimpleMeterRegistry.class);
 							assertThat(
 									registry.find("tomcat.sessions.active.max").meter())
 											.isNotNull();
@@ -76,16 +82,18 @@ public class TomcatMetricsAutoConfigurationTests {
 								TomcatMetricsAutoConfiguration.class,
 								ServletWebServerFactoryAutoConfiguration.class))
 						.withUserConfiguration(ServletWebServerConfiguration.class,
+								MeterRegistryConfiguration.class,
 								EarlyMeterBinderInitializationConfiguration.class)
 						.run((context) -> {
-							assertThat(context).hasSingleBean(TomcatMetrics.class);
-							SimpleMeterRegistry registry = new SimpleMeterRegistry();
-							context.getBean(TomcatMetrics.class).bindTo(registry);
+							context.publishEvent(
+									new ApplicationStartedEvent(new SpringApplication(),
+											null, context.getSourceApplicationContext()));
+							assertThat(context).hasSingleBean(TomcatMetricsBinder.class);
+							SimpleMeterRegistry registry = context
+									.getBean(SimpleMeterRegistry.class);
 							assertThat(
 									registry.find("tomcat.sessions.active.max").meter())
 											.isNotNull();
-							assertThat(registry.find("tomcat.threads.current").meter())
-									.isNotNull();
 						});
 	}
 
@@ -96,11 +104,14 @@ public class TomcatMetricsAutoConfigurationTests {
 						.withConfiguration(AutoConfigurations.of(
 								TomcatMetricsAutoConfiguration.class,
 								ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(ReactiveWebServerConfiguration.class)
+						.withUserConfiguration(ReactiveWebServerConfiguration.class,
+								MeterRegistryConfiguration.class)
 						.run((context) -> {
-							assertThat(context).hasSingleBean(TomcatMetrics.class);
-							SimpleMeterRegistry registry = new SimpleMeterRegistry();
-							context.getBean(TomcatMetrics.class).bindTo(registry);
+							context.publishEvent(
+									new ApplicationStartedEvent(new SpringApplication(),
+											null, context.getSourceApplicationContext()));
+							SimpleMeterRegistry registry = context
+									.getBean(SimpleMeterRegistry.class);
 							assertThat(
 									registry.find("tomcat.sessions.active.max").meter())
 											.isNotNull();
@@ -114,7 +125,10 @@ public class TomcatMetricsAutoConfigurationTests {
 		new WebApplicationContextRunner()
 				.withConfiguration(
 						AutoConfigurations.of(TomcatMetricsAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(TomcatMetrics.class));
+				.withUserConfiguration(MeterRegistryConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(TomcatMetricsBinder.class);
+				});
 	}
 
 	@Test
@@ -125,6 +139,16 @@ public class TomcatMetricsAutoConfigurationTests {
 				.withUserConfiguration(CustomTomcatMetrics.class)
 				.run((context) -> assertThat(context).hasSingleBean(TomcatMetrics.class)
 						.hasBean("customTomcatMetrics"));
+	}
+
+	@Configuration
+	static class MeterRegistryConfiguration {
+
+		@Bean
+		public SimpleMeterRegistry meterRegistry() {
+			return new SimpleMeterRegistry();
+		}
+
 	}
 
 	@Configuration
