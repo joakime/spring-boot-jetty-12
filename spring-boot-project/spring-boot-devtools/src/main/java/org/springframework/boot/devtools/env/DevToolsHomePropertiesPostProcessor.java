@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.FileSystemResource;
@@ -36,7 +38,8 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProcessor {
+public class DevToolsHomePropertiesPostProcessor
+		implements EnvironmentPostProcessor, Ordered {
 
 	private static final String FILE_NAME = ".spring-boot-devtools.properties";
 
@@ -65,6 +68,11 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 			return new File(home);
 		}
 		return null;
+	}
+
+	@Override
+	public int getOrder() {
+		return ConfigFileApplicationListener.DEFAULT_ORDER - 1;
 	}
 
 }
