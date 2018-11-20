@@ -79,21 +79,25 @@
     <requirement
         name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <requirement
-        name="org.springframework.ide.eclipse.boot.feature.feature.group"/>
+        name="org.springframework.boot.ide.main.feature.feature.group"/>
+    <requirement
+        name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
+    <requirement
+        name="org.springframework.tooling.boot.ls.feature.feature.group"/>
     <repository
-        url="http://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
+        url="https://download.eclipse.org/technology/epp/packages/2018-09/R/"/>
     <repository
-        url="http://download.eclipse.org/releases/oxygen/"/>
+        url="https://download.eclipse.org/releases/2018-09/"/>
     <repository
         url="http://andrei.gmxhome.de/eclipse/"/>
     <repository
         url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
-        url="http://download.eclipse.org/egit/github/updates/"/>
+        url="https://download.eclipse.org/egit/github/updates/"/>
     <repository
-        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
+        url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
     <repository
-        url="http://dist.springsource.com/release/TOOLS/update/e4.7"/>
+        url="https://download.springsource.com/release/TOOLS/sts4/update/latest/"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
