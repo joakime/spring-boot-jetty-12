@@ -39,8 +39,9 @@ public class BuildOutput {
 	 */
 	public File getTestClassesLocation() {
 		try {
-			File location = new File(this.testClass.getProtectionDomain().getCodeSource().getLocation().toURI());
-			if (location.getPath().endsWith(path("target", "test-classes"))) {
+			File location = new File(this.testClass.getProtectionDomain().getCodeSource()
+					.getLocation().toURI());
+			if (location.getPath().endsWith(path("bin", "test")) || location.getPath().endsWith(path("build", "classes", "java", "test"))) {
 				return location;
 			}
 			throw new IllegalStateException("Unexpected test classes location '" + location + "'");
@@ -56,8 +57,11 @@ public class BuildOutput {
 	 */
 	public File getTestResourcesLocation() {
 		File testClassesLocation = getTestClassesLocation();
-		if (testClassesLocation.getPath().endsWith(path("target", "test-classes"))) {
+		if (testClassesLocation.getPath().endsWith(path("bin", "test"))) {
 			return testClassesLocation;
+		}
+		if (testClassesLocation.getPath().endsWith(path("build", "classes", "java", "test"))) {
+			return new File(testClassesLocation.getParentFile().getParentFile().getParentFile(), "resources/test");
 		}
 		throw new IllegalStateException(
 				"Cannot determine test resources location from classes location '" + testClassesLocation + "'");
@@ -68,7 +72,7 @@ public class BuildOutput {
 	 * @return root location
 	 */
 	public File getRootLocation() {
-		return getTestClassesLocation().getParentFile();
+		return new File("build");
 	}
 
 	private String path(String... components) {

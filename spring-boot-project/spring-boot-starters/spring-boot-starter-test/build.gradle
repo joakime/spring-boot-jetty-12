@@ -1,0 +1,24 @@
+plugins {
+	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
+}
+
+description = "Starter for testing Spring Boot applications with libraries including 		JUnit, Hamcrest and Mockito"
+
+dependencies {
+	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	api project(':spring-boot-project:spring-boot-starters:spring-boot-starter')
+	api project(':spring-boot-project:spring-boot-test')
+	api project(':spring-boot-project:spring-boot-test-autoconfigure')
+	api 'com.jayway.jsonpath:json-path'
+	api 'org.assertj:assertj-core'
+	api 'org.hamcrest:hamcrest-core'
+	api 'org.hamcrest:hamcrest-library'
+	api 'junit:junit'
+	api 'org.mockito:mockito-core'
+	api 'org.skyscreamer:jsonassert'
+	api 'org.springframework:spring-core'
+	api 'org.springframework:spring-test'
+	api 'org.xmlunit:xmlunit-core'
+}

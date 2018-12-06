@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,8 +30,8 @@ import org.w3c.dom.NodeList;
 
 /**
  * Temporary helper {@link Task} to keep the bom configuration in {@code build.gradle}
- * aligned with the equivalent configuration in {@code pom.xml} during the Maven to
- * Gradle migration.
+ * aligned with the equivalent configuration in {@code pom.xml} during the Maven to Gradle
+ * migration.
  *
  * @author Andy Wilkinson
  */
@@ -46,10 +46,12 @@ public class ProcessBom extends AbstractTask {
 		for (int i = 0; i < properties.getLength(); i++) {
 			Node property = properties.item(i);
 			if (property.getNodeName().endsWith(".version")) {
-				System.out.println("    property '" + property.getNodeName() + "', '" + property.getTextContent() + "'");
+				System.out
+						.println("    property '" + property.getNodeName() + "', '" + property.getTextContent() + "'");
 			}
 		}
-		NodeList dependencies = (NodeList) xpath.evaluate("//dependencyManagement/dependencies/dependency", bom, XPathConstants.NODESET);
+		NodeList dependencies = (NodeList) xpath.evaluate("//dependencyManagement/dependencies/dependency", bom,
+				XPathConstants.NODESET);
 		for (int i = 0; i < dependencies.getLength(); i++) {
 			Node dependency = dependencies.item(i);
 			String groupId = (String) xpath.evaluate("groupId/text()", dependency, XPathConstants.STRING);
@@ -61,7 +63,7 @@ public class ProcessBom extends AbstractTask {
 			else {
 				version = "'" + version + "'";
 			}
-			String scope = (String)xpath.evaluate("scope/text()", dependency, XPathConstants.STRING);
+			String scope = (String) xpath.evaluate("scope/text()", dependency, XPathConstants.STRING);
 			String type = ("import".equals(scope)) ? "bomImport" : "dependency";
 			System.out.println("    " + type + " '" + groupId + "', '" + artifactId + "'," + version);
 		}

@@ -1,0 +1,14 @@
+plugins {
+	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
+}
+
+description = "Starter for using jOOQ to access SQL databases. An alternative to 		spring-boot-starter-data-jpa or spring-boot-starter-jdbc"
+
+dependencies {
+	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	api project(':spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc')
+	api 'org.springframework:spring-tx'
+	api 'org.jooq:jooq'
+}

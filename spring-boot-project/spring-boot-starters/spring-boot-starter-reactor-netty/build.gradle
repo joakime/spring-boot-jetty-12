@@ -1,0 +1,12 @@
+plugins {
+	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
+}
+
+description = "Starter for using Reactor Netty as the embedded reactive HTTP server."
+
+dependencies {
+	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	api 'io.projectreactor.netty:reactor-netty'
+}

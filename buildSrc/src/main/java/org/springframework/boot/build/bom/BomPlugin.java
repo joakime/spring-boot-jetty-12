@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,9 @@
  */
 
 package org.springframework.boot.build.bom;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import groovy.util.Node;
 import groovy.xml.QName;
@@ -28,9 +31,13 @@ import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+/**
+ * {@link Plugin} for defining a bom. Dependencies are added as constraints in the
+ * {@code api} configuration. Imported boms are added as enforced platforms in the
+ * {@code api} configuration.
+ *
+ * @author Andy Wilkinson
+ */
 public class BomPlugin implements Plugin<Project> {
 
 	@Override
@@ -61,7 +68,7 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		private void configurePublication(MavenPublication publication) {
-			SoftwareComponent javaLibrary = project.getComponents().getByName("javaLibraryPlatform");
+			SoftwareComponent javaLibrary = this.project.getComponents().getByName("javaLibraryPlatform");
 			publication.from(javaLibrary);
 			publication.pom(this::customizePom);
 		}
@@ -72,26 +79,34 @@ public class BomPlugin implements Plugin<Project> {
 				Node projectNode = xml.asNode();
 				Node properties = new Node(null, "properties");
 				this.bom.getProperties().forEach(properties::appendNode);
-				projectNode.children().add(5, properties);
 				Node dependencyManagement = findChild(projectNode, "dependencyManagement");
 				if (dependencyManagement != null) {
+					for (int i = 0; i < projectNode.children().size(); i++) {
+						if (isNodeWithName(projectNode.children().get(i), "dependencyManagement")) {
+							projectNode.children().add(i, properties);
+							break;
+						}
+					}
 					Node dependencies = findChild(dependencyManagement, "dependencies");
 					if (dependencies != null) {
-                        for (Node dependency: findChildren(dependencies, "dependency")) {
-                            String groupId = findChild(dependency, "groupId").text();
-                            String artifactId = findChild(dependency, "artifactId").text();
-                            findChild(dependency, "version").setValue(bom.getVersion(groupId, artifactId));
-                        }
-                    }
+						for (Node dependency : findChildren(dependencies, "dependency")) {
+							String groupId = findChild(dependency, "groupId").text();
+							String artifactId = findChild(dependency, "artifactId").text();
+							findChild(dependency, "version").setValue(this.bom.getVersion(groupId, artifactId));
+						}
+					}
+				}
+				else {
+					projectNode.children().add(properties);
 				}
 			});
 		}
 
 		private Node findChild(Node parent, String name) {
-			for (Object child: parent.children()) {
+			for (Object child : parent.children()) {
 				if (child instanceof Node) {
 					Node node = (Node) child;
-					if ((node.name() instanceof QName) && name.equals(((QName)node.name()).getLocalPart())) {
+					if ((node.name() instanceof QName) && name.equals(((QName) node.name()).getLocalPart())) {
 						return node;
 					}
 					if (name.equals(node.name())) {
@@ -104,14 +119,15 @@ public class BomPlugin implements Plugin<Project> {
 
 		@SuppressWarnings("unchecked")
 		private List<Node> findChildren(Node parent, String name) {
-			return (List<Node>) parent.children().stream().filter((child) -> isNodeWithName(child, name)).collect(Collectors.toList());
+			return (List<Node>) parent.children().stream().filter((child) -> isNodeWithName(child, name))
+					.collect(Collectors.toList());
 
 		}
 
 		private boolean isNodeWithName(Object candidate, String name) {
 			if (candidate instanceof Node) {
 				Node node = (Node) candidate;
-				if ((node.name() instanceof QName) && name.equals(((QName)node.name()).getLocalPart())) {
+				if ((node.name() instanceof QName) && name.equals(((QName) node.name()).getLocalPart())) {
 					return true;
 				}
 				if (name.equals(node.name())) {

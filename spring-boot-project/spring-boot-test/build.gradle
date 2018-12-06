@@ -1,0 +1,51 @@
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot.optional-dependencies'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
+}
+
+description = 'Spring Boot Test'
+
+dependencies {
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	implementation project(':spring-boot-project:spring-boot')
+
+	optional enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	optional 'com.fasterxml.jackson.core:jackson-databind'
+	optional 'com.google.code.gson:gson'
+	optional 'com.jayway.jsonpath:json-path'
+	optional 'io.projectreactor.netty:reactor-netty'
+	optional 'javax.json.bind:javax.json.bind-api'
+	optional 'javax.servlet:javax.servlet-api'
+	optional 'junit:junit'
+	optional 'org.apache.httpcomponents:httpclient'
+	optional 'org.assertj:assertj-core'
+	optional 'org.hamcrest:hamcrest-core'
+	optional 'org.hamcrest:hamcrest-library'
+	optional 'org.jetbrains.kotlin:kotlin-stdlib'
+	optional 'org.jetbrains.kotlin:kotlin-reflect'
+	optional 'org.junit.jupiter:junit-jupiter-api'
+	optional 'org.mockito:mockito-core'
+	optional 'org.skyscreamer:jsonassert'
+	optional 'org.seleniumhq.selenium:htmlunit-driver'
+	optional 'org.seleniumhq.selenium:selenium-api'
+	optional 'org.springframework:spring-test'
+	optional 'org.springframework:spring-web'
+	optional 'org.springframework:spring-webflux'
+	optional 'net.sourceforge.htmlunit:htmlunit'
+
+	testImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
+	testImplementation 'javax.json:javax.json-api'
+	testImplementation 'ch.qos.logback:logback-classic'
+	testImplementation 'org.apache.tomcat.embed:tomcat-embed-core'
+	testImplementation 'org.codehaus.groovy:groovy'
+	testImplementation 'org.codehaus.groovy:groovy-xml'
+	testImplementation 'org.apache.johnzon:johnzon-jsonb'
+	testImplementation 'org.jetbrains.kotlin:kotlin-runtime'
+	testImplementation 'org.slf4j:slf4j-api'
+	testImplementation 'org.spockframework:spock-core'
+	testImplementation 'org.springframework:spring-webmvc'
+	testImplementation 'com.nhaarman:mockito-kotlin'
+}

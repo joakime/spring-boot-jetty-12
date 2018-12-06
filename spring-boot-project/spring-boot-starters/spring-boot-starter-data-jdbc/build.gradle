@@ -1,0 +1,13 @@
+plugins {
+	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
+}
+
+description = "Starter for using Spring Data JDBC"
+
+dependencies {
+	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	api project(':spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc')
+	api 'org.springframework.data:spring-data-jdbc'
+}

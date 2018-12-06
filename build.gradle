@@ -1,8 +1,11 @@
+description = 'Spring Boot Build'
+
 allprojects {
 	group 'org.springframework.boot'
 
 	repositories {
 		mavenCentral()
+		maven { url 'https://repo.spring.io/milestone' }
 	}
 
 	configurations.all {

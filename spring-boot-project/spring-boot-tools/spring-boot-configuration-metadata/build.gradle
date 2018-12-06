@@ -1,6 +1,10 @@
 plugins {
-	id "java-library"
+	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
 }
+
+description = 'Spring Boot Configuration Metadata'
 
 dependencies {
 	implementation enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent"))

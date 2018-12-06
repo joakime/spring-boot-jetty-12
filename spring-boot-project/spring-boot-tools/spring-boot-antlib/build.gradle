@@ -1,6 +1,10 @@
 plugins {
 	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
 }
+
+description = 'Spring Boot Antlib'
 
 ext {
 	antVersion = "1.9.3"

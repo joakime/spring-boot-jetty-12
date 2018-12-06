@@ -1,6 +1,10 @@
 plugins {
-	id "java-library"
+	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
 }
+
+description = 'Spring Boot Loader'
 
 dependencies {
 	compileOnly "org.springframework:spring-core"
@@ -18,10 +22,4 @@ dependencies {
 	testRuntimeOnly "org.bouncycastle:bcprov-jdk16:1.46"
 	testRuntimeOnly "org.slf4j:jcl-over-slf4j"
 	testRuntimeOnly "org.springframework:spring-webmvc"
-}
-
-task resolveBomTest {
-	doLast {
-		println configurations.bomTest.files
-	}
 }

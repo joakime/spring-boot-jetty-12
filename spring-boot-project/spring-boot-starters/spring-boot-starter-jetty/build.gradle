@@ -1,0 +1,16 @@
+plugins {
+	id 'java-library'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
+}
+
+description = "Starter for using Jetty as the embedded servlet container. An 		alternative to spring-boot-starter-tomcat"
+
+dependencies {
+	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	api 'org.eclipse.jetty:jetty-servlets'
+	api 'org.eclipse.jetty:jetty-webapp'
+	api 'org.eclipse.jetty.websocket:websocket-server'
+	api 'org.eclipse.jetty.websocket:javax-websocket-server-impl'
+	api 'org.mortbay.jasper:apache-el'
+}

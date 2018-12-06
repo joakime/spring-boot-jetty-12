@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,11 @@ import java.util.Map;
 
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 
+/**
+ * DSL extensions for {@link BomPlugin}.
+ *
+ * @author Andy Wilkinson
+ */
 public class BomExtension {
 
 	private final Map<String, String> properties = new LinkedHashMap<>();
@@ -41,7 +46,8 @@ public class BomExtension {
 
 	public void bomImport(String groupId, String artifactId, String version) {
 		this.bomImports.put(groupId + ":" + artifactId, version);
-		this.dependencyHandler.add("api", this.dependencyHandler.enforcedPlatform(createDependencyNotation(groupId, artifactId, version)));
+		this.dependencyHandler.add("api",
+				this.dependencyHandler.enforcedPlatform(createDependencyNotation(groupId, artifactId, version)));
 	}
 
 	public void dependency(String groupId, String artifactId, String version) {
@@ -55,7 +61,7 @@ public class BomExtension {
 
 	private String resolveVersion(String version) {
 		while (version.startsWith("${")) {
-			String resolved = properties.get(version.substring(2, version.length() - 1));
+			String resolved = this.properties.get(version.substring(2, version.length() - 1));
 			if (resolved != null) {
 				version = resolved;
 			}
@@ -65,7 +71,6 @@ public class BomExtension {
 		}
 		return version;
 	}
-
 
 	Map<String, String> getProperties() {
 		return this.properties;
@@ -82,7 +87,7 @@ public class BomExtension {
 	String getVersion(String groupId, String artifactId) {
 		String coordinates = groupId + ":" + artifactId;
 		String dependencyVersion = this.dependencies.get(coordinates);
-		return dependencyVersion != null ? dependencyVersion : this.bomImports.get(coordinates);
+		return (dependencyVersion != null) ? dependencyVersion : this.bomImports.get(coordinates);
 	}
 
 }
