@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -249,6 +249,19 @@ public class FlywayAutoConfiguration {
 					.to(configuration::skipDefaultResolvers);
 			map.from(this.properties.isValidateOnMigrate())
 					.to(configuration::validateOnMigrate);
+			// Pro properties
+			map.from(this.properties.getBatch()).whenNonNull().to(configuration::batch);
+			map.from(this.properties.getDryRunOutput()).whenNonNull()
+					.to(configuration::dryRunOutput);
+			map.from(this.properties.getErrorOverrides()).whenNonNull()
+					.to(configuration::errorOverrides);
+			map.from(this.properties.getLicenseKey()).whenNonNull()
+					.to(configuration::licenseKey);
+			map.from(this.properties.getOracleSqlplus()).whenNonNull()
+					.to(configuration::oracleSqlplus);
+			map.from(this.properties.getStream()).whenNonNull().to(configuration::stream);
+			map.from(this.properties.getUndoSqlMigrationPrefix()).whenNonNull()
+					.to(configuration::undoSqlMigrationPrefix);
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration) {

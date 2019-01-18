@@ -558,12 +558,15 @@ content into your application. Rather, pick only the properties that you need.
 	spring.flyway.baseline-description=<< Flyway Baseline >> # Description to tag an existing schema with when applying a baseline.
 	spring.flyway.baseline-on-migrate=false # Whether to automatically call baseline when migrating a non-empty schema.
 	spring.flyway.baseline-version=1 # Version to tag an existing schema with when executing baseline.
+	spring.flyway.batch= # Whether to batch SQL statements when executing them. Requires Flyway Pro or Flyway Enterprise.
 	spring.flyway.check-location=true # Whether to check that migration scripts location exists.
 	spring.flyway.clean-disabled=false # Whether to disable cleaning of the database.
 	spring.flyway.clean-on-validation-error=false # Whether to automatically call clean when a validation error occurs.
 	spring.flyway.connect-retries=0 # Maximum number of retries when attempting to connect to the database.
+	spring.flyway.dry-run-output= # File to which the SQL statements of a migration dry run should be output. Requires Flyway Pro or Flyway Enterprise.
 	spring.flyway.enabled=true # Whether to enable flyway.
 	spring.flyway.encoding=UTF-8 # Encoding of SQL migrations.
+	spring.flyway.error-overrides= # Rules for the built-in error handling to override specific SQL states and error codes. Requires Flyway Pro or Flyway Enterprise.
 	spring.flyway.group=false # Whether to group all pending migrations together in the same transaction when applying them.
 	spring.flyway.ignore-future-migrations=true # Whether to ignore future migrations when reading the schema history table.
 	spring.flyway.ignore-ignored-migrations=false # Whether to ignore ignored migrations when reading the schema history table.
@@ -571,8 +574,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.flyway.ignore-pending-migrations=false # Whether to ignore pending migrations when reading the schema history table.
 	spring.flyway.init-sqls= # SQL statements to execute to initialize a connection immediately after obtaining it.
 	spring.flyway.installed-by= # Username recorded in the schema history table as having applied the migration.
+	spring.flyway.license-key= # Licence key for Flyway Pro or Flyway Enterprise.
 	spring.flyway.locations=classpath:db/migration # Locations of migrations scripts. Can contain the special "{vendor}" placeholder to use vendor-specific locations.
 	spring.flyway.mixed=false # Whether to allow mixing transactional and non-transactional statements within the same migration.
+	spring.flyway.oracle-sqlplus= # Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Pro or Flyway Enterprise.
 	spring.flyway.out-of-order=false # Whether to allow migrations to be run out of order.
 	spring.flyway.password= # Login password of the database to migrate.
 	spring.flyway.placeholder-prefix=${ # Prefix of placeholders in migration scripts.
@@ -586,8 +591,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.flyway.sql-migration-prefix=V # File name prefix for SQL migrations.
 	spring.flyway.sql-migration-separator=__ # File name separator for SQL migrations.
 	spring.flyway.sql-migration-suffixes=.sql # File name suffix for SQL migrations.
+	spring.flyway.stream= # Whether to stream SQL migrarions when executing them. Requires Flyway Pro or Flyway Enterprise.
 	spring.flyway.table=flyway_schema_history # Name of the schema schema history table that will be used by Flyway.
 	spring.flyway.target= # Target version up to which migrations should be considered.
+	spring.flyway.undo-sql-migration-prefix= # File name prefix for undo SQL migrations. Requires Flyway Pro or Flyway Enterprise.
 	spring.flyway.url= # JDBC url of the database to migrate. If not set, the primary configured data source is used.
 	spring.flyway.user= # Login user of the database to migrate.
 	spring.flyway.validate-on-migrate=true # Whether to automatically call validate when performing a migration.
