@@ -195,7 +195,7 @@ public final class ConfigurationPropertyName
 		if (elementValue == null) {
 			return this;
 		}
-		Elements additionalElements = elementsOf(elementValue);
+		Elements additionalElements = probablySingleElementOf(elementValue);
 		return new ConfigurationPropertyName(this.elements.append(additionalElements));
 	}
 
@@ -423,11 +423,16 @@ public final class ConfigurationPropertyName
 		return new ConfigurationPropertyName(elementsOf(name, returnNullIfInvalid));
 	}
 
-	private static Elements elementsOf(CharSequence name) {
-		return elementsOf(name, false);
+	private static Elements probablySingleElementOf(CharSequence name) {
+		return elementsOf(name, false, 1);
 	}
 
 	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid) {
+		return elementsOf(name, returnNullIfInvalid, ElementsParser.DEFAULT_CAPACITY);
+	}
+
+	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid,
+			int parserCapacity) {
 		if (name == null) {
 			Assert.isTrue(returnNullIfInvalid, "Name must not be null");
 			return null;
@@ -442,7 +447,7 @@ public final class ConfigurationPropertyName
 			throw new InvalidConfigurationPropertyNameException(name,
 					Collections.singletonList('.'));
 		}
-		Elements elements = new ElementsParser(name, '.').parse();
+		Elements elements = new ElementsParser(name, '.', parserCapacity).parse();
 		for (int i = 0; i < elements.getSize(); i++) {
 			if (elements.getType(i) == ElementType.NON_UNIFORM) {
 				if (returnNullIfInvalid) {
