@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.ExtensionResolver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -1043,7 +1044,8 @@ public class ConfigFileApplicationListenerTests {
 			extends ConfigFileApplicationListener {
 
 		@Override
-		List<EnvironmentPostProcessor> loadPostProcessors() {
+		List<EnvironmentPostProcessor> loadPostProcessors(
+				ExtensionResolver extensionLoader) {
 			return new ArrayList<>(
 					Arrays.asList(new LowestPrecedenceEnvironmentPostProcessor()));
 		}

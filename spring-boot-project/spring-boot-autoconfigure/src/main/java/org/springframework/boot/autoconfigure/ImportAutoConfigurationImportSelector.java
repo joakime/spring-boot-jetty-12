@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -97,7 +96,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	protected Collection<String> loadFactoryNames(Class<?> source) {
-		return SpringFactoriesLoader.loadFactoryNames(source,
+		return getExtensionResolver().resolveExtensionNames(source,
 				getClass().getClassLoader());
 	}
 

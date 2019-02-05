@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.ExtensionResolver;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.SpringFactoriesExtensionResolver;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -36,7 +38,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextHierarchy;
@@ -112,8 +113,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	@Override
 	protected Set<Class<? extends TestExecutionListener>> getDefaultTestExecutionListenerClasses() {
 		Set<Class<? extends TestExecutionListener>> listeners = super.getDefaultTestExecutionListenerClasses();
-		List<DefaultTestExecutionListenersPostProcessor> postProcessors = SpringFactoriesLoader
-				.loadFactories(DefaultTestExecutionListenersPostProcessor.class,
+		List<DefaultTestExecutionListenersPostProcessor> postProcessors = getExtensionResolver()
+				.resolveExtensions(DefaultTestExecutionListenersPostProcessor.class,
 						getClass().getClassLoader());
 		for (DefaultTestExecutionListenersPostProcessor postProcessor : postProcessors) {
 			listeners = postProcessor.postProcessDefaultTestExecutionListeners(listeners);
@@ -344,6 +345,10 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 					+ "mock web environment. Please remove @WebAppConfiguration or "
 					+ "reconfigure @SpringBootTest.");
 		}
+	}
+
+	protected ExtensionResolver getExtensionResolver() {
+		return new SpringFactoriesExtensionResolver();
 	}
 
 	private <T extends Annotation> T getAnnotation(Class<T> annotationType,

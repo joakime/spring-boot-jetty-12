@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.ExtensionResolver;
+import org.springframework.boot.SpringFactoriesExtensionResolver;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -188,7 +190,7 @@ public class ErrorMvcAutoConfiguration {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("ErrorTemplate Missing");
 			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
-					context.getClassLoader());
+					getExtensionResolver(context), context.getClassLoader());
 			TemplateAvailabilityProvider provider = providers.getProvider("error",
 					context.getEnvironment(), context.getClassLoader(),
 					context.getResourceLoader());
@@ -198,6 +200,15 @@ public class ErrorMvcAutoConfiguration {
 			}
 			return ConditionOutcome
 					.match(message.didNotFind("error template view").atAll());
+		}
+
+		private ExtensionResolver getExtensionResolver(ConditionContext context) {
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			if (beanFactory.containsBean("springBootExtensionResolver")) {
+				return beanFactory.getBean("springBootExtensionResolver",
+						ExtensionResolver.class);
+			}
+			return new SpringFactoriesExtensionResolver();
 		}
 
 	}

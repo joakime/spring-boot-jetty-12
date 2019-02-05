@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@ package org.springframework.boot;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Listener for the {@link SpringApplication} {@code run} method.
- * {@link SpringApplicationRunListener}s are loaded via the {@link SpringFactoriesLoader}
- * and should declare a public constructor that accepts a {@link SpringApplication}
- * instance and a {@code String[]} of arguments. A new
- * {@link SpringApplicationRunListener} instance will be created for each run.
+ * {@link SpringApplicationRunListener}s are loaded via the {@link ExtensionResolver} and
+ * should declare a public constructor that accepts a {@link SpringApplication} instance
+ * and a {@code String[]} of arguments. A new {@link SpringApplicationRunListener}
+ * instance will be created for each run.
  *
  * @author Phillip Webb
  * @author Dave Syer
