@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,8 +98,7 @@ public class LocalDevToolsAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
-	static class RestartConfiguration
-			implements ApplicationListener<ClassPathChangedEvent> {
+	static class RestartConfiguration {
 
 		private final DevToolsProperties properties;
 
@@ -107,20 +106,25 @@ public class LocalDevToolsAutoConfiguration {
 			this.properties = properties;
 		}
 
-		@Override
-		public void onApplicationEvent(ClassPathChangedEvent event) {
-			if (event.isRestartRequired()) {
-				Restarter.getInstance().restart(
-						new FileWatchingFailureHandler(fileSystemWatcherFactory()));
-			}
+		@Bean
+		public ApplicationListener<ClassPathChangedEvent> restartingClassPathChangedEventListener(
+				FileSystemWatcherFactory fileSystemWatcherFactory) {
+			return (event) -> {
+				if (event.isRestartRequired()) {
+					Restarter.getInstance().restart(
+							new FileWatchingFailureHandler(fileSystemWatcherFactory));
+				}
+			};
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
+		public ClassPathFileSystemWatcher classPathFileSystemWatcher(
+				FileSystemWatcherFactory fileSystemWatcherFactory,
+				ClassPathRestartStrategy classPathRestartStrategy) {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
 			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(
-					fileSystemWatcherFactory(), classPathRestartStrategy(), urls);
+					fileSystemWatcherFactory, classPathRestartStrategy, urls);
 			watcher.setStopWatcherOnRestart(true);
 			return watcher;
 		}

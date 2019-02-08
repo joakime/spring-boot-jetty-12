@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,34 +112,36 @@ public class Neo4jDataAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "open-in-view", havingValue = "true", matchIfMissing = true)
 	protected static class Neo4jWebConfiguration {
 
-		@Configuration
-		protected static class Neo4jWebMvcConfiguration implements WebMvcConfigurer {
+		private static final Log logger = LogFactory.getLog(Neo4jWebConfiguration.class);
 
-			private static final Log logger = LogFactory
-					.getLog(Neo4jWebMvcConfiguration.class);
+		private final Neo4jProperties neo4jProperties;
 
-			private final Neo4jProperties neo4jProperties;
+		protected Neo4jWebConfiguration(Neo4jProperties neo4jProperties) {
+			this.neo4jProperties = neo4jProperties;
+		}
 
-			protected Neo4jWebMvcConfiguration(Neo4jProperties neo4jProperties) {
-				this.neo4jProperties = neo4jProperties;
+		@Bean
+		public OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor() {
+			if (this.neo4jProperties.getOpenInView() == null) {
+				logger.warn("spring.data.neo4j.open-in-view is enabled by default."
+						+ "Therefore, database queries may be performed during view "
+						+ "rendering. Explicitly configure "
+						+ "spring.data.neo4j.open-in-view to disable this warning");
 			}
+			return new OpenSessionInViewInterceptor();
+		}
 
-			@Bean
-			public OpenSessionInViewInterceptor neo4jOpenSessionInViewInterceptor() {
-				if (this.neo4jProperties.getOpenInView() == null) {
-					logger.warn("spring.data.neo4j.open-in-view is enabled by default."
-							+ "Therefore, database queries may be performed during view "
-							+ "rendering. Explicitly configure "
-							+ "spring.data.neo4j.open-in-view to disable this warning");
+		@Bean
+		public WebMvcConfigurer neo4jOpenSessionInViewInterceptorConfigurer(
+				OpenSessionInViewInterceptor interceptor) {
+			return new WebMvcConfigurer() {
+
+				@Override
+				public void addInterceptors(InterceptorRegistry registry) {
+					registry.addWebRequestInterceptor(interceptor);
 				}
-				return new OpenSessionInViewInterceptor();
-			}
 
-			@Override
-			public void addInterceptors(InterceptorRegistry registry) {
-				registry.addWebRequestInterceptor(neo4jOpenSessionInViewInterceptor());
-			}
-
+			};
 		}
 
 	}

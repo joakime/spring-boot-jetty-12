@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,36 +214,36 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
 	protected static class JpaWebConfiguration {
 
-		// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when
-		// not on the classpath
-		@Configuration
-		protected static class JpaWebMvcConfiguration implements WebMvcConfigurer {
+		private static final Log logger = LogFactory.getLog(JpaWebConfiguration.class);
 
-			private static final Log logger = LogFactory
-					.getLog(JpaWebMvcConfiguration.class);
+		private final JpaProperties jpaProperties;
 
-			private final JpaProperties jpaProperties;
+		protected JpaWebConfiguration(JpaProperties jpaProperties) {
+			this.jpaProperties = jpaProperties;
+		}
 
-			protected JpaWebMvcConfiguration(JpaProperties jpaProperties) {
-				this.jpaProperties = jpaProperties;
+		@Bean
+		public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+			if (this.jpaProperties.getOpenInView() == null) {
+				logger.warn("spring.jpa.open-in-view is enabled by default. "
+						+ "Therefore, database queries may be performed during view "
+						+ "rendering. Explicitly configure "
+						+ "spring.jpa.open-in-view to disable this warning");
 			}
+			return new OpenEntityManagerInViewInterceptor();
+		}
 
-			@Bean
-			public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
-				if (this.jpaProperties.getOpenInView() == null) {
-					logger.warn("spring.jpa.open-in-view is enabled by default. "
-							+ "Therefore, database queries may be performed during view "
-							+ "rendering. Explicitly configure "
-							+ "spring.jpa.open-in-view to disable this warning");
+		@Bean
+		public WebMvcConfigurer openEntityManagerInViewInterceptorConfigurer(
+				OpenEntityManagerInViewInterceptor interceptor) {
+			return new WebMvcConfigurer() {
+
+				@Override
+				public void addInterceptors(InterceptorRegistry registry) {
+					registry.addWebRequestInterceptor(interceptor);
 				}
-				return new OpenEntityManagerInViewInterceptor();
-			}
 
-			@Override
-			public void addInterceptors(InterceptorRegistry registry) {
-				registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
-			}
-
+			};
 		}
 
 	}

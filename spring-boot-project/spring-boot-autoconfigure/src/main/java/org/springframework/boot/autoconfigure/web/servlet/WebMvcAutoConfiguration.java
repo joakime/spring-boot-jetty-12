@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -423,19 +423,17 @@ public class WebMvcAutoConfiguration {
 			}
 
 			@Bean
-			public SimpleUrlHandlerMapping faviconHandlerMapping() {
+			public SimpleUrlHandlerMapping faviconHandlerMapping(
+					FaviconRequestHandler handler) {
 				SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
 				mapping.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
-				mapping.setUrlMap(Collections.singletonMap("**/favicon.ico",
-						faviconRequestHandler()));
+				mapping.setUrlMap(Collections.singletonMap("**/favicon.ico", handler));
 				return mapping;
 			}
 
 			@Bean
-			public ResourceHttpRequestHandler faviconRequestHandler() {
-				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
-				requestHandler.setLocations(resolveFaviconLocations());
-				return requestHandler;
+			public FaviconRequestHandler faviconRequestHandler() {
+				return new FaviconRequestHandler(resolveFaviconLocations());
 			}
 
 			private List<Resource> resolveFaviconLocations() {
@@ -446,6 +444,15 @@ public class WebMvcAutoConfiguration {
 						.forEach(locations::add);
 				locations.add(new ClassPathResource("/"));
 				return Collections.unmodifiableList(locations);
+			}
+
+		}
+
+		private static final class FaviconRequestHandler
+				extends ResourceHttpRequestHandler {
+
+			private FaviconRequestHandler(List<Resource> locations) {
+				setLocations(locations);
 			}
 
 		}
