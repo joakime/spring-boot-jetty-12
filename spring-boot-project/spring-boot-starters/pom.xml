@@ -88,8 +88,13 @@
 								<bannedDependencies>
 									<excludes>
 										<exclude>commons-logging:*:*</exclude>
+										<exclude>javax.*:*:*</exclude>
 										<exclude>org.hibernate:hibernate-validator:*</exclude>
 									</excludes>
+									<includes>
+										<include>javax.batch:*:*</include>
+										<include>javax.inject:*:*</include>
+									</includes>
 									<searchTransitive>true</searchTransitive>
 								</bannedDependencies>
 								<dependencyConvergence />
