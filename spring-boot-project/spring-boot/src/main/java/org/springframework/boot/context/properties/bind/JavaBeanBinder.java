@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.core.ResolvableType;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
 class JavaBeanBinder implements BeanBinder {
 
@@ -251,6 +252,10 @@ class JavaBeanBinder implements BeanBinder {
 
 		private final ResolvableType declaringClassType;
 
+		private Map<Class<?>, Method> getters = new LinkedHashMap<>();
+
+		private Map<Class<?>, Method> setters = new LinkedHashMap<>();
+
 		private Method getter;
 
 		private Method setter;
@@ -263,15 +268,11 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		public void addGetter(Method getter) {
-			if (this.getter == null) {
-				this.getter = getter;
-			}
+			this.getters.put(getter.getReturnType(), getter);
 		}
 
 		public void addSetter(Method setter) {
-			if (this.setter == null) {
-				this.setter = setter;
-			}
+			this.setters.put(setter.getParameterTypes()[0], setter);
 		}
 
 		public void addField(Field field) {
@@ -285,11 +286,13 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		public ResolvableType getType() {
+			determineSetter();
 			if (this.setter != null) {
 				MethodParameter methodParameter = new MethodParameter(this.setter, 0);
 				return ResolvableType.forMethodParameter(methodParameter,
 						this.declaringClassType);
 			}
+			determineGetter();
 			MethodParameter methodParameter = new MethodParameter(this.getter, -1);
 			return ResolvableType.forMethodParameter(methodParameter,
 					this.declaringClassType);
@@ -305,6 +308,7 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		public Supplier<Object> getValue(Supplier<?> instance) {
+			determineGetter();
 			if (this.getter == null) {
 				return null;
 			}
@@ -321,10 +325,12 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		public boolean isSettable() {
+			determineSetter();
 			return this.setter != null;
 		}
 
 		public void setValue(Supplier<?> instance, Object value) {
+			determineSetter();
 			try {
 				this.setter.setAccessible(true);
 				this.setter.invoke(instance.get(), value);
@@ -333,6 +339,33 @@ class JavaBeanBinder implements BeanBinder {
 				throw new IllegalStateException(
 						"Unable to set value for property " + this.name, ex);
 			}
+		}
+
+		private void determineGetter() {
+			if (this.getter != null) {
+				return;
+			}
+			this.getter = getFieldTypeMatchOrFirst(this.getters);
+		}
+
+		private void determineSetter() {
+			if (this.setter != null) {
+				return;
+			}
+			this.setter = getFieldTypeMatchOrFirst(this.setters);
+		}
+
+		private Method getFieldTypeMatchOrFirst(Map<Class<?>, Method> methods) {
+			if (methods.isEmpty()) {
+				return null;
+			}
+			if (this.field != null) {
+				Method matchingType = methods.get(this.field.getType());
+				if (matchingType != null) {
+					return matchingType;
+				}
+			}
+			return methods.values().iterator().next();
 		}
 
 	}

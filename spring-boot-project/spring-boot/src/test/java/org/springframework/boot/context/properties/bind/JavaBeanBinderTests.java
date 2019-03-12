@@ -16,9 +16,11 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -44,6 +46,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
 public class JavaBeanBinderTests {
 
@@ -492,6 +495,16 @@ public class JavaBeanBinderTests {
 		assertThat(bean.getCounter()).isEqualTo(42);
 	}
 
+	@Test
+	public void bindToClassWithOverloadedSetterShouldUseSetterThatMatchesField() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.property", "some string");
+		this.sources.add(source);
+		PropertyWithOverloadedSetter bean = this.binder
+				.bind("foo", Bindable.of(PropertyWithOverloadedSetter.class)).get();
+		assertThat(bean.getProperty()).isEqualTo("some string");
+	}
+
 	public static class ExampleValueBean {
 
 		private int intValue;
@@ -908,6 +921,28 @@ public class JavaBeanBinderTests {
 
 		public void setValue(Class<? extends Throwable> value) {
 			this.value = value;
+		}
+
+	}
+
+	public static class PropertyWithOverloadedSetter {
+
+		private String property;
+
+		public void setProperty(String property) {
+			this.property = property;
+		}
+
+		public void setProperty(int property) {
+			this.property = String.valueOf(property);
+		}
+
+		public void setProperty(Date property) {
+			this.property = new SimpleDateFormat().format(property);
+		}
+
+		public String getProperty() {
+			return this.property;
 		}
 
 	}
