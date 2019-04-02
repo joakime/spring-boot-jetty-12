@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
-import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -122,7 +122,7 @@ public class ManagementContextAutoConfiguration {
 	@Configuration
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	static class DifferentManagementContextConfiguration
-			implements SmartInitializingSingleton {
+			implements ApplicationListener<WebServerInitializedEvent> {
 
 		private final ApplicationContext applicationContext;
 
@@ -135,10 +135,8 @@ public class ManagementContextAutoConfiguration {
 		}
 
 		@Override
-		public void afterSingletonsInstantiated() {
-			if (this.applicationContext instanceof WebServerApplicationContext
-					&& ((WebServerApplicationContext) this.applicationContext)
-							.getWebServer() != null) {
+		public void onApplicationEvent(WebServerInitializedEvent event) {
+			if (event.getApplicationContext().equals(this.applicationContext)) {
 				ConfigurableWebServerApplicationContext managementContext = this.managementContextFactory
 						.createManagementContext(this.applicationContext,
 								EnableChildManagementContextConfiguration.class,
@@ -149,11 +147,6 @@ public class ManagementContextAutoConfiguration {
 				CloseManagementContextListener.addIfPossible(this.applicationContext,
 						managementContext);
 				managementContext.refresh();
-			}
-			else {
-				logger.warn("Could not start embedded management container on "
-						+ "different port (management endpoints are still available "
-						+ "through JMX)");
 			}
 		}
 
