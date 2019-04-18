@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class BootRunIntegrationTests {
 
 	@Test
 	public void basicExecution() throws IOException {
-		copyApplication();
+		copyClasspathApplication();
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -58,7 +58,7 @@ public class BootRunIntegrationTests {
 
 	@Test
 	public void sourceResourcesCanBeUsed() throws IOException {
-		copyApplication();
+		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput())
@@ -89,28 +89,56 @@ public class BootRunIntegrationTests {
 
 	@Test
 	public void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
-		copyApplication();
+		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("echoMainClassName");
 		assertThat(result.task(":echoMainClassName").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput())
-				.contains("Main class name = com.example.BootRunApplication");
+		assertThat(result.getOutput()).contains(
+				"Main class name = com.example.classpath.BootRunClasspathApplication");
+	}
+
+	@Test
+	public void defaultJvmArgs() throws IOException {
+		copyJvmArgsApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("1. -Xverify:none")
+				.contains("2. -XX:TieredStopAtLevel=1");
+	}
+
+	@Test
+	public void fastLaunchDisabledJvmArgs() throws IOException {
+		copyJvmArgsApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).doesNotContain("-Xverify:none")
+				.doesNotContain("-XX:TieredStopAtLevel=1");
 	}
 
 	@Test
 	public void applicationPluginJvmArgumentsAreUsed() throws IOException {
-		BuildResult result = this.gradleBuild.build("echoJvmArguments");
-		assertThat(result.task(":echoJvmArguments").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput())
-				.contains("JVM arguments = [-Dcom.foo=bar, -Dcom.bar=baz]");
+		copyJvmArgsApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("1. -Dcom.bar=baz")
+				.contains("2. -Dcom.foo=bar").contains("3. -Xverify:none")
+				.contains("4. -XX:TieredStopAtLevel=1");
 	}
 
-	private void copyApplication() throws IOException {
+	private void copyClasspathApplication() throws IOException {
+		copyApplication("classpath");
+	}
+
+	private void copyJvmArgsApplication() throws IOException {
+		copyApplication("jvmargs");
+	}
+
+	private void copyApplication(String name) throws IOException {
 		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example");
+				"src/main/java/com/example/" + name);
 		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/" + name),
+				output);
 	}
 
 	private String canonicalPathOf(String path) throws IOException {

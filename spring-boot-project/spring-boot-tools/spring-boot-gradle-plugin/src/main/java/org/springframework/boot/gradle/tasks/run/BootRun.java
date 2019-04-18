@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.run;
 
 import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetOutput;
@@ -28,6 +29,17 @@ import org.gradle.api.tasks.SourceSetOutput;
  * @since 2.0.0
  */
 public class BootRun extends JavaExec {
+
+	private boolean fastLaunch = true;
+
+	@Input
+	public boolean isFastLaunch() {
+		return this.fastLaunch;
+	}
+
+	public void setFastLaunch(boolean fastLaunch) {
+		this.fastLaunch = fastLaunch;
+	}
 
 	/**
 	 * Adds the {@link SourceDirectorySet#getSrcDirs() source directories} of the given
@@ -44,6 +56,10 @@ public class BootRun extends JavaExec {
 
 	@Override
 	public void exec() {
+		if (this.fastLaunch) {
+			setJvmArgs(getJvmArgs());
+			jvmArgs("-Xverify:none", "-XX:TieredStopAtLevel=1");
+		}
 		if (System.console() != null) {
 			// Record that the console is available here for AnsiOutput to detect later
 			this.getEnvironment().put("spring.output.ansi.console-available", true);
