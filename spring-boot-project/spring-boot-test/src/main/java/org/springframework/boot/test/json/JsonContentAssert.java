@@ -83,6 +83,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param charset the charset of the JSON resources
 	 * @param json the actual JSON content
 	 * @param configuration the json-path configuration
+	 * @since 2.1.5
 	 */
 	public JsonContentAssert(Class<?> resourceLoadClass, Charset charset,
 			CharSequence json, Configuration configuration) {

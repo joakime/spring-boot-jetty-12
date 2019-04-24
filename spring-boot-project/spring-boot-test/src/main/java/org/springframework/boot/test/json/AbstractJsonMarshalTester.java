@@ -123,7 +123,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @param type the type under test
 	 * @param configuration the json-path configuration
 	 */
-	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type,
+	private void initialize(Class<?> resourceLoadClass, ResolvableType type,
 			Configuration configuration) {
 		if (this.resourceLoadClass == null && this.type == null
 				&& this.configuration == null) {

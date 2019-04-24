@@ -109,22 +109,9 @@ public class BasicJsonTester {
 	 * @since 1.4.1
 	 */
 	protected final void initialize(Class<?> resourceLoadClass, Charset charset) {
-		initialize(resourceLoadClass, charset, Configuration.defaultConfiguration());
-	}
-
-	/**
-	 * Initialize the marshal tester for use.
-	 * @param resourceLoadClass the source class used when loading relative classpath
-	 * resources
-	 * @param charset the charset used when loading relative classpath resources
-	 * @param configuration the json-path configuration
-	 * @since
-	 */
-	protected final void initialize(Class<?> resourceLoadClass, Charset charset,
-			Configuration configuration) {
 		if (this.loader == null && this.configuration == null) {
 			this.loader = new JsonLoader(resourceLoadClass, charset);
-			this.configuration = configuration;
+			this.configuration = Configuration.defaultConfiguration();
 		}
 	}
 

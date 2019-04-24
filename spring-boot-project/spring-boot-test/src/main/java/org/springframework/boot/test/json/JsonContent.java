@@ -56,7 +56,8 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	 * @param resourceLoadClass the source class used to load resources
 	 * @param type the type under test (or {@code null} if not known)
 	 * @param json the actual JSON content
-	 * @param configuration the json-path configuration
+	 * @param configuration the JsonPath configuration
+	 * @since 2.1.5
 	 */
 	public JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json,
 			Configuration configuration) {
