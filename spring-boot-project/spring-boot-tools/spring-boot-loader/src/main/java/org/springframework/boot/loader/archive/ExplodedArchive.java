@@ -49,7 +49,7 @@ public class ExplodedArchive implements Archive {
 
 	private final boolean recursive;
 
-	private File manifestFile;
+	private final File manifestFile;
 
 	private Manifest manifest;
 

@@ -46,7 +46,9 @@ public class JarFileArchive implements Archive {
 
 	private static final int BUFFER_SIZE = 32 * 1024;
 
-	private final JarFile jarFile;
+	private File file;
+
+	private JarFile jarFile;
 
 	private URL url;
 
@@ -57,7 +59,7 @@ public class JarFileArchive implements Archive {
 	}
 
 	public JarFileArchive(File file, URL url) throws IOException {
-		this(new JarFile(file));
+		this.file = file;
 		this.url = url;
 	}
 
@@ -70,12 +72,12 @@ public class JarFileArchive implements Archive {
 		if (this.url != null) {
 			return this.url;
 		}
-		return this.jarFile.getUrl();
+		return getJarFile().getUrl();
 	}
 
 	@Override
 	public Manifest getManifest() throws IOException {
-		return this.jarFile.getManifest();
+		return getJarFile().getManifest();
 	}
 
 	@Override
@@ -91,7 +93,7 @@ public class JarFileArchive implements Archive {
 
 	@Override
 	public Iterator<Entry> iterator() {
-		return new EntryIterator(this.jarFile.entries());
+		return new EntryIterator(getJarFile().entries());
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
@@ -100,7 +102,7 @@ public class JarFileArchive implements Archive {
 			return getUnpackedNestedArchive(jarEntry);
 		}
 		try {
-			JarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
+			JarFile jarFile = getJarFile().getNestedJarFile(jarEntry);
 			return new JarFileArchive(jarFile);
 		}
 		catch (Exception ex) {
@@ -132,7 +134,7 @@ public class JarFileArchive implements Archive {
 	private File createUnpackFolder(File parent) {
 		int attempts = 0;
 		while (attempts++ < 1000) {
-			String fileName = new File(this.jarFile.getName()).getName();
+			String fileName = new File(getJarFile().getName()).getName();
 			File unpackFolder = new File(parent,
 					fileName + "-spring-boot-libs-" + UUID.randomUUID());
 			if (unpackFolder.mkdirs()) {
@@ -144,7 +146,7 @@ public class JarFileArchive implements Archive {
 	}
 
 	private void unpack(JarEntry entry, File file) throws IOException {
-		try (InputStream inputStream = this.jarFile.getInputStream(entry);
+		try (InputStream inputStream = getJarFile().getInputStream(entry);
 				OutputStream outputStream = new FileOutputStream(file)) {
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int bytesRead;
@@ -163,6 +165,19 @@ public class JarFileArchive implements Archive {
 		catch (Exception ex) {
 			return "jar archive";
 		}
+	}
+
+	private JarFile getJarFile() {
+		if (this.jarFile == null) {
+			try {
+				this.jarFile = new JarFile(this.file);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(
+						"Failed to create JarFile for '" + this.file + "'");
+			}
+		}
+		return this.jarFile;
 	}
 
 	/**

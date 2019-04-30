@@ -131,7 +131,8 @@ public class JarFileArchiveTests {
 	public void zip64ArchivesAreHandledGracefully() throws IOException {
 		File file = this.temporaryFolder.newFile("test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
-		assertThatIllegalStateException().isThrownBy(() -> new JarFileArchive(file))
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new JarFileArchive(file).getManifest())
 				.withMessageContaining("Zip64 archives are not supported");
 	}
 
