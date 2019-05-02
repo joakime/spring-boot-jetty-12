@@ -355,27 +355,6 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	public void reproducibleOrderingCanBeEnabled() throws IOException {
-		this.task.setMainClassName("com.example.Main");
-		this.task.from(this.temp.newFile("bravo.txt"), this.temp.newFile("alpha.txt"),
-				this.temp.newFile("charlie.txt"));
-		this.task.setReproducibleFileOrder(true);
-		this.task.execute();
-		assertThat(this.task.getArchivePath()).exists();
-		List<String> textFiles = new ArrayList<>();
-		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
-			Enumeration<JarEntry> entries = jarFile.entries();
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				if (entry.getName().endsWith(".txt")) {
-					textFiles.add(entry.getName());
-				}
-			}
-		}
-		assertThat(textFiles).containsExactly("alpha.txt", "bravo.txt", "charlie.txt");
-	}
-
-	@Test
 	public void devtoolsJarIsExcludedByDefault() throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		this.task.classpath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
@@ -422,7 +401,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	public void loaderIsWrittenFirstThenApplicationClassesThenLibraries()
+	public void metaInfIsWrittenFirstThenLoaderThenApplicationClassesThenLibraries()
 			throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		File classpathFolder = this.temp.newFolder();
@@ -435,7 +414,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.requiresUnpack("second-library.jar");
 		this.task.execute();
 		assertThat(getEntryNames(this.task.getArchivePath())).containsSubsequence(
-				"org/springframework/boot/loader/",
+				"META-INF/", "org/springframework/boot/loader/",
 				this.classesPath + "com/example/Application.class",
 				this.libPath + "first-library.jar", this.libPath + "second-library.jar",
 				this.libPath + "third-library.jar");

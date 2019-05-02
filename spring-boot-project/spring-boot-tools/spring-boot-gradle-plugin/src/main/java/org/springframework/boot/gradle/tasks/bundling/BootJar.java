@@ -51,6 +51,7 @@ public class BootJar extends Jar implements BootArchive {
 	 * Creates a new {@code BootJar} task.
 	 */
 	public BootJar() {
+		getMainSpec().with(this.support.configureLoaderCopySpec(this, getProject()));
 		this.bootInf = getProject().copySpec().into("BOOT-INF");
 		getMainSpec().with(this.bootInf);
 		this.bootInf.into("classes", classpathFiles(File::isDirectory));

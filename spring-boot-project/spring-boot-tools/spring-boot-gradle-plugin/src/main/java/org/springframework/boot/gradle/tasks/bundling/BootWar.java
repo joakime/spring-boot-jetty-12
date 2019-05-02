@@ -17,7 +17,9 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
@@ -26,6 +28,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
+import org.gradle.api.internal.file.copy.CopySpecInternal;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Optional;
@@ -50,6 +53,8 @@ public class BootWar extends War implements BootArchive {
 	 * Creates a new {@code BootWar} task.
 	 */
 	public BootWar() {
+		getRootSpec().addChildBeforeSpec(extractSecondChildSpec())
+				.with(this.support.configureLoaderCopySpec(this, getProject()));
 		getWebInf().into("lib-provided",
 				(copySpec) -> copySpec.from(
 						(Callable<Iterable<File>>) () -> (this.providedClasspath != null)
@@ -64,6 +69,15 @@ public class BootWar extends War implements BootArchive {
 				details.exclude();
 			}
 		});
+	}
+
+	private CopySpecInternal extractSecondChildSpec() {
+		List<CopySpecInternal> children = new ArrayList<>();
+		getRootSpec().getChildren().forEach(children::add);
+		if (children.size() < 2) {
+			throw new IllegalStateException("Could not extract second child spec");
+		}
+		return children.get(1);
 	}
 
 	@Override

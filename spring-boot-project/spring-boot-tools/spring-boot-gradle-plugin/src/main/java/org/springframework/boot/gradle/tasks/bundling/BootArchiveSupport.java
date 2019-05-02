@@ -18,27 +18,28 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 
+import org.gradle.api.Project;
+import org.gradle.api.file.CopySpec;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
-import org.gradle.api.file.RelativePath;
 import org.gradle.api.internal.file.copy.CopyAction;
-import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
-import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
-import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
+
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Support class for implementations of {@link BootArchive}.
@@ -96,14 +97,26 @@ class BootArchiveSupport {
 	}
 
 	CopyAction createCopyAction(Jar jar) {
-		CopyAction copyAction = new BootZipCopyAction(jar.getArchivePath(),
-				jar.isPreserveFileTimestamps(), isUsingDefaultLoader(jar),
+		return new BootZipCopyAction(jar.getArchivePath(), jar.isPreserveFileTimestamps(),
 				this.requiresUnpack.getAsSpec(), this.exclusions.getAsExcludeSpec(),
 				this.launchScript, this.compressionResolver, jar.getMetadataCharset());
-		if (!jar.isReproducibleFileOrder()) {
-			return copyAction;
+	}
+
+	CopySpec configureLoaderCopySpec(Jar jar, Project project) {
+		return project.copySpec()
+				.from((Callable<FileCollection>) () -> loaderFiles(jar, project));
+	}
+
+	private FileCollection loaderFiles(Jar jar, Project project) throws Exception {
+		if (!isUsingDefaultLoader(jar)) {
+			return project.files();
 		}
-		return new ReproducibleOrderingCopyAction(copyAction);
+		InputStream loaderStream = getClass()
+				.getResourceAsStream("/META-INF/loader/spring-boot-loader.jar");
+		File loaderJar = new File(jar.getTemporaryDir(), "spring-boot-loader.jar");
+		FileCopyUtils.copy(loaderStream, new FileOutputStream(loaderJar));
+		return project.zipTree(loaderJar).matching(
+				(patternFilterable) -> patternFilterable.exclude("META-INF/**"));
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {
@@ -162,26 +175,6 @@ class BootArchiveSupport {
 			excludes.add("**/spring-boot-devtools-*.jar");
 		}
 		this.exclusions.setExcludes(excludes);
-	}
-
-	private static final class ReproducibleOrderingCopyAction implements CopyAction {
-
-		private final CopyAction delegate;
-
-		private ReproducibleOrderingCopyAction(CopyAction delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public WorkResult execute(CopyActionProcessingStream stream) {
-			return this.delegate.execute((action) -> {
-				Map<RelativePath, FileCopyDetailsInternal> detailsByPath = new TreeMap<>();
-				stream.process((details) -> detailsByPath.put(details.getRelativePath(),
-						details));
-				detailsByPath.values().forEach(action::processFile);
-			});
-		}
-
 	}
 
 }
