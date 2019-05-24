@@ -18,7 +18,7 @@ package org.springframework.boot.configurationprocessor;
 
 import java.time.Duration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -101,8 +101,7 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 
 	@Test
 	public void incrementalEndpointBuildChangeGeneralEnabledFlag() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder,
-				IncrementalEndpoint.class);
+		TestProject project = new TestProject(this.tempDir, IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
 				.fromSource(IncrementalEndpoint.class));
@@ -121,8 +120,7 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 
 	@Test
 	public void incrementalEndpointBuildChangeCacheFlag() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder,
-				IncrementalEndpoint.class);
+		TestProject project = new TestProject(this.tempDir, IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
 				.fromSource(IncrementalEndpoint.class));
@@ -140,8 +138,7 @@ public class EndpointMetadataGenerationTests extends AbstractMetadataGenerationT
 
 	@Test
 	public void incrementalEndpointBuildEnableSpecificEndpoint() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder,
-				SpecificEndpoint.class);
+		TestProject project = new TestProject(this.tempDir, SpecificEndpoint.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific")
 				.fromSource(SpecificEndpoint.class));

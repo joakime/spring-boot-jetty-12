@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.tools.MainClassFinder.MainClass;
 import org.springframework.boot.loader.tools.MainClassFinder.MainClassCallback;
@@ -41,14 +41,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 public class MainClassFinderTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
 	private TestJarFile testJarFile;
 
-	@Before
-	public void setup() throws IOException {
-		this.testJarFile = new TestJarFile(this.temporaryFolder);
+	@BeforeEach
+	public void setup(@TempDir File tempDir) throws IOException {
+		this.testJarFile = new TestJarFile(tempDir);
 	}
 
 	@Test

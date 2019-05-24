@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import org.springframework.util.FileSystemUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,19 +35,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FileUtilsTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File outputDirectory;
 
 	private File originDirectory;
 
-	@Before
+	@BeforeEach
 	public void init() throws IOException {
-		this.outputDirectory = this.temporaryFolder.newFolder("remove");
-		this.originDirectory = this.temporaryFolder.newFolder("keep");
-		FileSystemUtils.deleteRecursively(this.outputDirectory);
-		FileSystemUtils.deleteRecursively(this.originDirectory);
+		this.outputDirectory = new File(this.tempDir, "remove");
+		this.originDirectory = new File(this.tempDir, "keep");
 		this.outputDirectory.mkdirs();
 		this.originDirectory.mkdirs();
 	}
@@ -101,7 +96,7 @@ public class FileUtilsTests {
 
 	@Test
 	public void hash() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "file");
 		try (OutputStream outputStream = new FileOutputStream(file)) {
 			outputStream.write(new byte[] { 1, 2, 3 });
 		}

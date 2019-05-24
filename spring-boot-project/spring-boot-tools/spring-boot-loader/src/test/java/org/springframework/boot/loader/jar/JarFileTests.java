@@ -32,10 +32,9 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
@@ -61,16 +60,16 @@ public class JarFileTests {
 
 	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File rootJarFile;
 
 	private JarFile jarFile;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
-		this.rootJarFile = this.temporaryFolder.newFile();
+		this.rootJarFile = new File(this.tempDir, "root.jar");
 		TestJarCreator.createTestJar(this.rootJarFile);
 		this.jarFile = new JarFile(this.rootJarFile);
 	}
@@ -411,7 +410,7 @@ public class JarFileTests {
 
 	@Test
 	public void jarFileWithScriptAtTheStart() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "test.jar");
 		InputStream sourceJarContent = new FileInputStream(this.rootJarFile);
 		FileOutputStream outputStream = new FileOutputStream(file);
 		StreamUtils.copy("#/bin/bash", Charset.defaultCharset(), outputStream);
@@ -474,11 +473,11 @@ public class JarFileTests {
 
 	@Test
 	public void jarFileCanBeDeletedOnceItHasBeenClosed() throws Exception {
-		File temp = this.temporaryFolder.newFile();
-		TestJarCreator.createTestJar(temp);
-		JarFile jf = new JarFile(temp);
+		File jar = new File(this.tempDir, "test.jar");
+		TestJarCreator.createTestJar(jar);
+		JarFile jf = new JarFile(jar);
 		jf.close();
-		assertThat(temp.delete()).isTrue();
+		assertThat(jar.delete()).isTrue();
 	}
 
 	@Test

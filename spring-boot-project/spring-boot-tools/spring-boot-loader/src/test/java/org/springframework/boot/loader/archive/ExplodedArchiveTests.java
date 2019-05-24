@@ -26,13 +26,13 @@ import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
@@ -49,14 +49,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ExplodedArchiveTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File rootFolder;
 
 	private ExplodedArchive archive;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		createArchive();
 	}
@@ -66,12 +66,12 @@ public class ExplodedArchiveTests {
 	}
 
 	private void createArchive(String folderName) throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
 
 		this.rootFolder = (StringUtils.hasText(folderName)
-				? this.temporaryFolder.newFolder(folderName)
-				: this.temporaryFolder.newFolder());
+				? new File(this.tempDir, folderName)
+				: new File(this.tempDir, UUID.randomUUID().toString()));
 		JarFile jarFile = new JarFile(file);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {

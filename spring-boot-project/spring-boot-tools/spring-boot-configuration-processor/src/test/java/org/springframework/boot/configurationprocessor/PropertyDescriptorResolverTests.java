@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,9 +28,8 @@ import java.util.stream.Stream;
 
 import javax.lang.model.element.TypeElement;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
@@ -54,8 +54,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PropertyDescriptorResolverTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
 	public void propertiesWithJavaBeanProperties() throws IOException {
@@ -148,7 +148,7 @@ public class PropertyDescriptorResolverTests {
 		};
 		TestableAnnotationProcessor<MetadataGenerationEnvironment> processor = new TestableAnnotationProcessor<>(
 				internalConsumer, new MetadataGenerationEnvironmentFactory());
-		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
+		TestCompiler compiler = new TestCompiler(this.tempDir);
 		ArrayList<Class<?>> allClasses = new ArrayList<>();
 		allClasses.add(target);
 		allClasses.addAll(additionalClasses);

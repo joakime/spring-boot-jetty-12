@@ -21,9 +21,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 
@@ -35,9 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 public class HandlerTests {
-
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	private final Handler handler = new Handler();
 
@@ -180,8 +176,9 @@ public class HandlerTests {
 	}
 
 	@Test
-	public void fallbackToJdksJarUrlStreamHandler() throws Exception {
-		File testJar = this.temporaryFolder.newFile("test.jar");
+	public void fallbackToJdksJarUrlStreamHandler(@TempDir File tempDir)
+			throws Exception {
+		File testJar = new File(tempDir, "test.jar");
 		TestJarCreator.createTestJar(testJar);
 		URLConnection connection = new URL(null,
 				"jar:file:" + testJar.getAbsolutePath() + "!/nested.jar!/", this.handler)

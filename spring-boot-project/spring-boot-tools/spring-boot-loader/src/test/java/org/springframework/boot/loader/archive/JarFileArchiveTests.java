@@ -28,10 +28,9 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
@@ -48,8 +47,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 public class JarFileArchiveTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File rootJarFile;
 
@@ -57,13 +56,13 @@ public class JarFileArchiveTests {
 
 	private String rootJarFileUrl;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		setup(false);
 	}
 
 	private void setup(boolean unpackNested) throws Exception {
-		this.rootJarFile = this.temporaryFolder.newFile();
+		this.rootJarFile = new File(this.tempDir, "root.jar");
 		this.rootJarFileUrl = this.rootJarFile.toURI().toString();
 		TestJarCreator.createTestJar(this.rootJarFile, unpackNested);
 		this.archive = new JarFileArchive(this.rootJarFile);
@@ -129,7 +128,7 @@ public class JarFileArchiveTests {
 
 	@Test
 	public void zip64ArchivesAreHandledGracefully() throws IOException {
-		File file = this.temporaryFolder.newFile("test.jar");
+		File file = new File(this.tempDir, "test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
 		assertThatIllegalStateException().isThrownBy(() -> new JarFileArchive(file))
 				.withMessageContaining("Zip64 archives are not supported");
@@ -137,7 +136,7 @@ public class JarFileArchiveTests {
 
 	@Test
 	public void nestedZip64ArchivesAreHandledGracefully() throws IOException {
-		File file = this.temporaryFolder.newFile("test.jar");
+		File file = new File(this.tempDir, "test.jar");
 		JarOutputStream output = new JarOutputStream(new FileOutputStream(file));
 		JarEntry zip64JarEntry = new JarEntry("nested/zip64.jar");
 		output.putNextEntry(zip64JarEntry);

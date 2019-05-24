@@ -28,16 +28,16 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.assertj.core.api.Condition;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.extension.OutputCapture;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -52,22 +52,22 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 public class PropertiesLauncherTests {
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	final OutputCapture output = new OutputCapture();
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private ClassLoader contextClassLoader;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
 		System.setProperty("loader.home",
 				new File("src/test/resources").getAbsolutePath());
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		Thread.currentThread().setContextClassLoader(this.contextClassLoader);
 		System.clearProperty("loader.home");
@@ -319,13 +319,11 @@ public class PropertiesLauncherTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testLoadPathCustomizedUsingManifest() throws Exception {
-		System.setProperty("loader.home",
-				this.temporaryFolder.getRoot().getAbsolutePath());
+		System.setProperty("loader.home", this.tempDir.getAbsolutePath());
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 		manifest.getMainAttributes().putValue("Loader-Path", "/foo.jar, /bar");
-		File manifestFile = new File(this.temporaryFolder.getRoot(),
-				"META-INF/MANIFEST.MF");
+		File manifestFile = new File(this.tempDir, "META-INF/MANIFEST.MF");
 		manifestFile.getParentFile().mkdirs();
 		manifest.write(new FileOutputStream(manifestFile));
 		PropertiesLauncher launcher = new PropertiesLauncher();
@@ -342,7 +340,8 @@ public class PropertiesLauncherTests {
 
 	@Test
 	public void encodedFileUrlLoaderPathIsHandledCorrectly() throws Exception {
-		File loaderPath = this.temporaryFolder.newFolder("loader path");
+		File loaderPath = new File(this.tempDir, "loader path");
+		loaderPath.mkdir();
 		System.setProperty("loader.path", loaderPath.toURI().toURL().toString());
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		List<Archive> archives = launcher.getClassPathArchives();

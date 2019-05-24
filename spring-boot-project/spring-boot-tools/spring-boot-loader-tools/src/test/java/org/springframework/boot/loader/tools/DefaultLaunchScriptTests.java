@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.FileCopyUtils;
 
@@ -38,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DefaultLaunchScriptTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
 	public void loadsDefaultScript() throws Exception {
@@ -159,7 +158,7 @@ public class DefaultLaunchScriptTests {
 
 	@Test
 	public void loadFromFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "script");
 		FileCopyUtils.copy("ABC".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
@@ -168,7 +167,7 @@ public class DefaultLaunchScriptTests {
 
 	@Test
 	public void expandVariables() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "script");
 		FileCopyUtils.copy("h{{a}}ll{{b}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:e", "b:o"));
@@ -178,7 +177,7 @@ public class DefaultLaunchScriptTests {
 
 	@Test
 	public void expandVariablesMultiLine() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "script");
 		FileCopyUtils.copy("h{{a}}l\nl{{b}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:e", "b:o"));
@@ -188,7 +187,7 @@ public class DefaultLaunchScriptTests {
 
 	@Test
 	public void expandVariablesWithDefaults() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "script");
 		FileCopyUtils.copy("h{{a:e}}ll{{b:o}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
@@ -197,7 +196,7 @@ public class DefaultLaunchScriptTests {
 
 	@Test
 	public void expandVariablesCanDefaultToBlank() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "script");
 		FileCopyUtils.copy("s{{p:}}{{r:}}ing".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
@@ -206,7 +205,7 @@ public class DefaultLaunchScriptTests {
 
 	@Test
 	public void expandVariablesWithDefaultsOverride() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "script");
 		FileCopyUtils.copy("h{{a:e}}ll{{b:o}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:a"));
@@ -216,7 +215,7 @@ public class DefaultLaunchScriptTests {
 
 	@Test
 	public void expandVariablesMissingAreUnchanged() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "script");
 		FileCopyUtils.copy("h{{a}}ll{{b}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());

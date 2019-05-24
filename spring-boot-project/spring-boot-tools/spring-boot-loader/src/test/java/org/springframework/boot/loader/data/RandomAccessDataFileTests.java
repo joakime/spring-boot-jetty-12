@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -55,18 +54,15 @@ public class RandomAccessDataFileTests {
 		}
 	}
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
 	private File tempFile;
 
 	private RandomAccessDataFile file;
 
 	private InputStream inputStream;
 
-	@Before
-	public void setup() throws Exception {
-		this.tempFile = this.temporaryFolder.newFile();
+	@BeforeEach
+	public void setup(@TempDir File tempDir) throws Exception {
+		this.tempFile = new File(tempDir, "tempFile");
 		FileOutputStream outputStream = new FileOutputStream(this.tempFile);
 		outputStream.write(BYTES);
 		outputStream.close();
@@ -74,7 +70,7 @@ public class RandomAccessDataFileTests {
 		this.inputStream = this.file.getInputStream();
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() throws Exception {
 		this.inputStream.close();
 		this.file.close();

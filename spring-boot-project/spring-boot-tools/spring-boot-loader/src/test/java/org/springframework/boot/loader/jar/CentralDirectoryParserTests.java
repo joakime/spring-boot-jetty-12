@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessData;
@@ -39,16 +38,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CentralDirectoryParserTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
 	private File jarFile;
 
 	private RandomAccessData jarData;
 
-	@Before
-	public void setup() throws Exception {
-		this.jarFile = this.temporaryFolder.newFile();
+	@BeforeEach
+	public void setup(@TempDir File tempDir) throws Exception {
+		this.jarFile = new File(tempDir, "test.jar");
 		TestJarCreator.createTestJar(this.jarFile);
 		this.jarData = new RandomAccessDataFile(this.jarFile);
 	}

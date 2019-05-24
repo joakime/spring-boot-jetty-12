@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
@@ -36,7 +36,7 @@ public class IncrementalBuildMetadataGenerationTests
 
 	@Test
 	public void incrementalBuild() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+		TestProject project = new TestProject(this.tempDir, FooProperties.class,
 				BarProperties.class);
 		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isFalse();
 		ConfigurationMetadata metadata = project.fullBuild();
@@ -69,7 +69,7 @@ public class IncrementalBuildMetadataGenerationTests
 
 	@Test
 	public void incrementalBuildAnnotationRemoved() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+		TestProject project = new TestProject(this.tempDir, FooProperties.class,
 				BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata)
@@ -86,7 +86,7 @@ public class IncrementalBuildMetadataGenerationTests
 
 	@Test
 	public void incrementalBuildTypeRenamed() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+		TestProject project = new TestProject(this.tempDir, FooProperties.class,
 				BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
 		assertThat(metadata).has(Metadata.withProperty("foo.counter")

@@ -16,13 +16,13 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.function.BiConsumer;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.TypeUtils.TypeDescriptor;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
@@ -41,8 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TypeUtilsTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
 	public void resolveTypeDescriptorOnConcreteClass() throws IOException {
@@ -94,7 +94,7 @@ public class TypeUtilsTests {
 			BiConsumer<RoundEnvironmentTester, TypeUtils> consumer) throws IOException {
 		TestableAnnotationProcessor<TypeUtils> processor = new TestableAnnotationProcessor<>(
 				consumer, TypeUtils::new);
-		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
+		TestCompiler compiler = new TestCompiler(this.tempDir);
 		compiler.getTask(target).call(processor);
 	}
 

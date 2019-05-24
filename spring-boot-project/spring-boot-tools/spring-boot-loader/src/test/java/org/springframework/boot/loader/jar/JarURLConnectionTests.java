@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.jar.JarURLConnection.JarEntryName;
@@ -41,16 +40,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class JarURLConnectionTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder(new File("target"));
-
 	private File rootJarFile;
 
 	private JarFile jarFile;
 
-	@Before
-	public void setup() throws Exception {
-		this.rootJarFile = this.temporaryFolder.newFile();
+	@BeforeEach
+	public void setup(@TempDir File tempDir) throws Exception {
+		this.rootJarFile = new File(tempDir, "root.jar");
 		TestJarCreator.createTestJar(this.rootJarFile);
 		this.jarFile = new JarFile(this.rootJarFile);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@ package org.springframework.boot.loader;
 import java.io.File;
 import java.net.URL;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.jar.JarFile;
 
@@ -37,8 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SuppressWarnings("resource")
 public class LaunchedURLClassLoaderTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
 	public void resolveResourceFromArchive() throws Exception {
@@ -75,7 +74,7 @@ public class LaunchedURLClassLoaderTests {
 
 	@Test
 	public void resolveFromNested() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
 		JarFile jarFile = new JarFile(file);
 		URL url = jarFile.getUrl();
@@ -88,7 +87,7 @@ public class LaunchedURLClassLoaderTests {
 
 	@Test
 	public void resolveFromNestedWhileThreadIsInterrupted() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
 		JarFile jarFile = new JarFile(file);
 		URL url = jarFile.getUrl();
