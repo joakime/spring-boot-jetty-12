@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -31,14 +31,14 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Henri Tremblay
  * @author Andy Wilkinson
  */
-public class SpringBootExceptionHandlerTests {
+class SpringBootExceptionHandlerTests {
 
 	private final UncaughtExceptionHandler parent = mock(UncaughtExceptionHandler.class);
 
 	private final SpringBootExceptionHandler handler = new SpringBootExceptionHandler(this.parent);
 
 	@Test
-	public void uncaughtExceptionDoesNotForwardLoggedErrorToParent() {
+	void uncaughtExceptionDoesNotForwardLoggedErrorToParent() {
 		Thread thread = Thread.currentThread();
 		Exception ex = new Exception();
 		this.handler.registerLoggedException(ex);
@@ -47,7 +47,7 @@ public class SpringBootExceptionHandlerTests {
 	}
 
 	@Test
-	public void uncaughtExceptionForwardsLogConfigurationErrorToParent() {
+	void uncaughtExceptionForwardsLogConfigurationErrorToParent() {
 		Thread thread = Thread.currentThread();
 		Exception ex = new Exception("[stuff] Logback configuration error detected [stuff]");
 		this.handler.registerLoggedException(ex);
@@ -56,7 +56,7 @@ public class SpringBootExceptionHandlerTests {
 	}
 
 	@Test
-	public void uncaughtExceptionForwardsWrappedLogConfigurationErrorToParent() {
+	void uncaughtExceptionForwardsWrappedLogConfigurationErrorToParent() {
 		Thread thread = Thread.currentThread();
 		Exception ex = new InvocationTargetException(
 				new Exception("[stuff] Logback configuration error detected [stuff]", new Exception()));

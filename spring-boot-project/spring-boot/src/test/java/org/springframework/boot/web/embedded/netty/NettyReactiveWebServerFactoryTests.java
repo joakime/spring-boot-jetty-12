@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.web.embedded.netty;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.netty.http.server.HttpServer;
 
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected NettyReactiveWebServerFactory getFactory() {
@@ -46,7 +46,7 @@ public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void exceptionIsThrownWhenPortIsAlreadyInUse() {
+	void exceptionIsThrownWhenPortIsAlreadyInUse() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setPort(0);
 		this.webServer = factory.getWebServer(new EchoHandler());
@@ -61,7 +61,7 @@ public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void nettyCustomizers() {
+	void nettyCustomizers() {
 		NettyReactiveWebServerFactory factory = getFactory();
 		NettyServerCustomizer[] customizers = new NettyServerCustomizer[2];
 		for (int i = 0; i < customizers.length; i++) {
@@ -77,7 +77,7 @@ public class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void useForwardedHeaders() {
+	void useForwardedHeaders() {
 		NettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);

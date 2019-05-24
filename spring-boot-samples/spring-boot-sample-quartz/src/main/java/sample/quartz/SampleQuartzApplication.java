@@ -35,17 +35,17 @@ public class SampleQuartzApplication {
 
 	@Bean
 	public JobDetail sampleJobDetail() {
-		return JobBuilder.newJob(SampleJob.class).withIdentity("sampleJob")
-				.usingJobData("name", "World").storeDurably().build();
+		return JobBuilder.newJob(SampleJob.class).withIdentity("sampleJob").usingJobData("name", "World").storeDurably()
+				.build();
 	}
 
 	@Bean
 	public Trigger sampleJobTrigger() {
-		SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
-				.withIntervalInSeconds(2).repeatForever();
+		SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(2)
+				.repeatForever();
 
-		return TriggerBuilder.newTrigger().forJob(sampleJobDetail())
-				.withIdentity("sampleTrigger").withSchedule(scheduleBuilder).build();
+		return TriggerBuilder.newTrigger().forJob(sampleJobDetail()).withIdentity("sampleTrigger")
+				.withSchedule(scheduleBuilder).build();
 	}
 
 }

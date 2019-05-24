@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -38,23 +38,23 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ApplicationContextRequestMatcherTests {
+class ApplicationContextRequestMatcherTests {
 
 	@Test
-	public void createWhenContextClassIsNullShouldThrowException() {
+	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
 				.withMessageContaining("Context class must not be null");
 	}
 
 	@Test
-	public void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
+	void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		assertThat(new TestApplicationContextRequestMatcher<>(ApplicationContext.class)
 				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context);
 	}
 
 	@Test
-	public void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
+	void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
@@ -62,7 +62,7 @@ public class ApplicationContextRequestMatcherTests {
 	}
 
 	@Test
-	public void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
+	void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(ExistingBean.class)
 				.callMatchesAndReturnProvidedContext(context);

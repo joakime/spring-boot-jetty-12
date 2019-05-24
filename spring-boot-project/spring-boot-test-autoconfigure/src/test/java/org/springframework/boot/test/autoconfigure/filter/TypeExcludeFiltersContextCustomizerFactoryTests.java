@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class TypeExcludeFiltersContextCustomizerFactoryTests {
+class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	private TypeExcludeFiltersContextCustomizerFactory factory = new TypeExcludeFiltersContextCustomizerFactory();
 
@@ -44,19 +44,19 @@ public class TypeExcludeFiltersContextCustomizerFactoryTests {
 	private ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {
+	void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasAnnotationShouldReturnCustomizer() {
+	void getContextCustomizerWhenHasAnnotationShouldReturnCustomizer() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(WithExcludeFilters.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void hashCodeAndEquals() {
+	void hashCodeAndEquals() {
 		ContextCustomizer customizer1 = this.factory.createContextCustomizer(WithExcludeFilters.class, null);
 		ContextCustomizer customizer2 = this.factory.createContextCustomizer(WithSameExcludeFilters.class, null);
 		ContextCustomizer customizer3 = this.factory.createContextCustomizer(WithDifferentExcludeFilters.class, null);
@@ -65,7 +65,7 @@ public class TypeExcludeFiltersContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void getContextCustomizerShouldAddExcludeFilters() throws Exception {
+	void getContextCustomizerShouldAddExcludeFilters() throws Exception {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(WithExcludeFilters.class, null);
 		customizer.customizeContext(this.context, this.mergedContextConfiguration);
 		this.context.refresh();

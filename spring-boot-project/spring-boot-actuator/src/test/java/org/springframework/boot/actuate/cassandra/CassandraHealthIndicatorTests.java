@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.cassandra;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.querybuilder.Select;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -37,15 +37,15 @@ import static org.mockito.Mockito.mock;
  *
  * @author Oleksii Bondar
  */
-public class CassandraHealthIndicatorTests {
+class CassandraHealthIndicatorTests {
 
 	@Test
-	public void createWhenCassandraOperationsIsNullShouldThrowException() {
+	void createWhenCassandraOperationsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraHealthIndicator(null));
 	}
 
 	@Test
-	public void verifyHealthStatusWhenExhausted() {
+	void verifyHealthStatusWhenExhausted() {
 		CassandraOperations cassandraOperations = mock(CassandraOperations.class);
 		CqlOperations cqlOperations = mock(CqlOperations.class);
 		ResultSet resultSet = mock(ResultSet.class);
@@ -58,7 +58,7 @@ public class CassandraHealthIndicatorTests {
 	}
 
 	@Test
-	public void verifyHealthStatusWithVersion() {
+	void verifyHealthStatusWithVersion() {
 		CassandraOperations cassandraOperations = mock(CassandraOperations.class);
 		CqlOperations cqlOperations = mock(CqlOperations.class);
 		ResultSet resultSet = mock(ResultSet.class);

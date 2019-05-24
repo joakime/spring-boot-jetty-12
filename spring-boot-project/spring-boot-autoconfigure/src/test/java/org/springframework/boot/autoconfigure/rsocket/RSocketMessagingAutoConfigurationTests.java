@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,19 +34,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-public class RSocketMessagingAutoConfigurationTests {
+class RSocketMessagingAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
-	public void shouldCreateDefaultBeans() {
+	void shouldCreateDefaultBeans() {
 		this.contextRunner.run((context) -> assertThat(context).getBeans(MessageHandlerAcceptor.class).hasSize(1));
 	}
 
 	@Test
-	public void shouldFailOnMissingStrategies() {
+	void shouldFailOnMissingStrategies() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context).hasFailed();
@@ -56,7 +56,7 @@ public class RSocketMessagingAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldUseCustomMessageHandlerAcceptor() {
+	void shouldUseCustomMessageHandlerAcceptor() {
 		this.contextRunner.withUserConfiguration(CustomMessageHandlerAcceptor.class)
 				.run((context) -> assertThat(context).getBeanNames(MessageHandlerAcceptor.class)
 						.containsOnly("customMessageHandlerAcceptor"));

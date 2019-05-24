@@ -25,8 +25,7 @@ public class SampleMessage {
 	private final String message;
 
 	@JsonCreator
-	public SampleMessage(@JsonProperty("id") Integer id,
-			@JsonProperty("message") String message) {
+	public SampleMessage(@JsonProperty("id") Integer id, @JsonProperty("message") String message) {
 		this.id = id;
 		this.message = message;
 	}

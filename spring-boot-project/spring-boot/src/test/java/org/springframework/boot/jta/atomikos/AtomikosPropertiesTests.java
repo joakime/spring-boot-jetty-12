@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.util.Properties;
 
 import org.assertj.core.data.MapEntry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -34,12 +34,12 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class AtomikosPropertiesTests {
+class AtomikosPropertiesTests {
 
 	private AtomikosProperties properties = new AtomikosProperties();
 
 	@Test
-	public void testProperties() {
+	void testProperties() {
 		this.properties.setService("service");
 		this.properties.setMaxTimeout(Duration.ofMillis(1));
 		this.properties.setDefaultJtaTimeout(Duration.ofMillis(2));
@@ -80,7 +80,7 @@ public class AtomikosPropertiesTests {
 	}
 
 	@Test
-	public void testDefaultProperties() {
+	void testDefaultProperties() {
 		Properties defaultSettings = loadDefaultSettings();
 		Properties properties = this.properties.asProperties();
 		assertThat(properties).contains(defaultOf(defaultSettings, "com.atomikos.icatch.max_timeout",
