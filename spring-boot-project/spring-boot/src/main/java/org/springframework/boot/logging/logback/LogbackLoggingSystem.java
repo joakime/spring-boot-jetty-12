@@ -33,7 +33,9 @@ import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
+import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
+import ch.qos.logback.core.util.StatusListenerConfigHelper;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -129,6 +131,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			LogFile logFile) {
 		LoggerContext context = getLoggerContext();
 		stopAndReset(context);
+		configureStatusListenerIfNecessary(context);
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
 		Environment environment = initializationContext.getEnvironment();
 		context.putProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN,
@@ -140,6 +143,13 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
 		context.setPackagingDataEnabled(true);
+	}
+
+	private void configureStatusListenerIfNecessary(LoggerContext context) {
+		if (Boolean.getBoolean("logback.debug")) {
+			StatusListenerConfigHelper.addOnConsoleListenerInstance(context,
+					new OnConsoleStatusListener());
+		}
 	}
 
 	@Override
