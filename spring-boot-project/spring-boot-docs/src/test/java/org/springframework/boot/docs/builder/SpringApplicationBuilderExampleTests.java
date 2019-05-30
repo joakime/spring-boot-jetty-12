@@ -16,13 +16,11 @@
 
 package org.springframework.boot.docs.builder;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.system.OutputCaptureRule;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,17 +29,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions("spring-web-*.jar")
+@ExtendWith(OutputCaptureExtension.class)
 public class SpringApplicationBuilderExampleTests {
 
-	@Rule
-	public OutputCaptureRule outputCapture = new OutputCaptureRule();
-
 	@Test
-	public void contextHierarchyWithDisabledBanner() {
-		new SpringApplicationBuilderExample().hierarchyWithDisabledBanner(new String[0]);
-		assertThat(this.outputCapture.toString()).doesNotContain(":: Spring Boot ::");
+	public void contextHierarchyWithDisabledBanner(CapturedOutput capturedOutput) {
+		System.setProperty("spring.main.web-application-type", "none");
+		try {
+			new SpringApplicationBuilderExample()
+					.hierarchyWithDisabledBanner(new String[0]);
+			assertThat(capturedOutput).doesNotContain(":: Spring Boot ::");
+		}
+		finally {
+			System.clearProperty("spring.main.web-application-type");
+		}
 	}
 
 }

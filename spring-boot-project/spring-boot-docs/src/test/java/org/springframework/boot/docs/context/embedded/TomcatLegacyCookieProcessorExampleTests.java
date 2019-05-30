@@ -18,7 +18,7 @@ package org.springframework.boot.docs.context.embedded;
 
 import org.apache.catalina.Context;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.docs.context.embedded.TomcatLegacyCookieProcessorExample.LegacyCookieProcessorConfiguration;
