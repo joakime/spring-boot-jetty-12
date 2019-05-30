@@ -20,7 +20,7 @@ import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
 import bitronix.tm.BitronixTransactionManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

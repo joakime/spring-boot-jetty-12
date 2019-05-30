@@ -28,10 +28,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.PostConstruct;
 
 import org.assertj.core.api.Condition;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
@@ -55,7 +55,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.convert.ApplicationConversionService;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.extension.OutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
@@ -132,8 +132,8 @@ public class SpringApplicationTests {
 
 	private String headlessProperty;
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	final OutputCapture output = new OutputCapture();
 
 	private ConfigurableApplicationContext context;
 
@@ -144,13 +144,13 @@ public class SpringApplicationTests {
 		throw new IllegalStateException("Could not obtain Environment");
 	}
 
-	@Before
+	@BeforeEach
 	public void storeAndClearHeadlessProperty() {
 		this.headlessProperty = System.getProperty("java.awt.headless");
 		System.clearProperty("java.awt.headless");
 	}
 
-	@After
+	@AfterEach
 	public void reinstateHeadlessProperty() {
 		if (this.headlessProperty == null) {
 			System.clearProperty("java.awt.headless");
@@ -160,7 +160,7 @@ public class SpringApplicationTests {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();
@@ -256,7 +256,7 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.main.banner-mode=log");
 		verify(application, atLeastOnce()).setBannerMode(Banner.Mode.LOG);
-		assertThat(this.output.toString()).contains("o.s.b.SpringApplication");
+		assertThat(this.output).contains("o.s.b.SpringApplication");
 	}
 
 	@Test

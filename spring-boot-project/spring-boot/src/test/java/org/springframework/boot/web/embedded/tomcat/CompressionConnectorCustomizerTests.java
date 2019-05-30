@@ -19,8 +19,8 @@ package org.springframework.boot.web.embedded.tomcat;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http2.Http2Protocol;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.util.unit.DataSize;
@@ -42,7 +42,7 @@ public class CompressionConnectorCustomizerTests {
 
 	private Compression compression;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.compression = new Compression();
 		this.compression.setEnabled(true);

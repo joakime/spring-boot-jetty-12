@@ -60,13 +60,13 @@ import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.extension.OutputCapture;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -100,15 +100,15 @@ import static org.mockito.Mockito.verify;
 public class TomcatServletWebServerFactoryTests
 		extends AbstractServletWebServerFactoryTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@RegisterExtension
+	final OutputCapture outputCapture = new OutputCapture();
 
 	@Override
 	protected TomcatServletWebServerFactory getFactory() {
 		return new TomcatServletWebServerFactory(0);
 	}
 
-	@After
+	@AfterEach
 	public void restoreTccl() {
 		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",
 				null);
@@ -397,11 +397,10 @@ public class TomcatServletWebServerFactoryTests
 
 	@Test
 	public void disableDoesNotSaveSessionFiles() throws Exception {
-		File baseDir = this.temporaryFolder.newFolder();
 		TomcatServletWebServerFactory factory = getFactory();
 		// If baseDir is not set SESSIONS.ser is written to a different temp directory
 		// each time. By setting it we can really ensure that data isn't saved
-		factory.setBaseDirectory(baseDir);
+		factory.setBaseDirectory(this.tempDir);
 		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		String s1 = getResponse(getLocalUrl("/session"));

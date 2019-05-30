@@ -29,12 +29,12 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.tomcat.util.net.SSLHostConfig;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.extension.OutputCapture;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
@@ -58,10 +58,10 @@ public class SslConnectorCustomizerTests {
 
 	private Connector connector;
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture output = new OutputCapture();
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.tomcat = new Tomcat();
 		this.connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
@@ -69,7 +69,7 @@ public class SslConnectorCustomizerTests {
 		this.tomcat.setConnector(this.connector);
 	}
 
-	@After
+	@AfterEach
 	public void stop() throws Exception {
 		System.clearProperty("javax.net.ssl.trustStorePassword");
 		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance",

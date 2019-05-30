@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.undertow.servlet.api.SessionPersistenceManager.PersistentSession;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,9 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FileSessionPersistenceTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	private File dir;
 
 	private FileSessionPersistence persistence;
@@ -48,9 +44,10 @@ public class FileSessionPersistenceTests {
 
 	private Date expiration = new Date(System.currentTimeMillis() + 10000);
 
-	@Before
-	public void setup() throws IOException {
-		this.dir = this.temp.newFolder();
+	@BeforeEach
+	public void setup(@TempDir File tempDir) throws IOException {
+		this.dir = tempDir;
+		this.dir.mkdir();
 		this.persistence = new FileSessionPersistence(this.dir);
 	}
 

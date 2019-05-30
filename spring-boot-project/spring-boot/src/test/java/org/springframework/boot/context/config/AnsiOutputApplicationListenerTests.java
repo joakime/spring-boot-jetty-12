@@ -19,9 +19,9 @@ package org.springframework.boot.context.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -50,7 +50,7 @@ public class AnsiOutputApplicationListenerTests {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		resetAnsi();
 		if (this.context != null) {

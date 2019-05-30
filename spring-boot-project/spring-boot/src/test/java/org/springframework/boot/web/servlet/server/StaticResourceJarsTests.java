@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,8 @@ import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StaticResourceJarsTests {
 
-	@Rule
-	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
 	public void includeJarWithStaticResources() throws Exception {
@@ -101,7 +100,7 @@ public class StaticResourceJarsTests {
 
 	private File createJar(String name, Consumer<JarOutputStream> customizer)
 			throws IOException {
-		File jarFile = this.temporaryFolder.newFile(name);
+		File jarFile = new File(this.tempDir, name);
 		JarOutputStream jarOutputStream = new JarOutputStream(
 				new FileOutputStream(jarFile));
 		if (customizer != null) {

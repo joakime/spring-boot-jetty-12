@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BinderTests.ExampleEnum;
 import org.springframework.boot.context.properties.bind.BinderTests.JavaBean;
@@ -56,14 +55,9 @@ public class CollectionBinderTests {
 
 	private static final Bindable<Set<String>> STRING_SET = Bindable.setOf(String.class);
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder;
-
-	@Before
-	public void setup() {
-		this.binder = new Binder(this.sources);
-	}
+	private Binder binder = new Binder(this.sources);
 
 	@Test
 	public void bindToCollectionShouldReturnPopulatedCollection() {

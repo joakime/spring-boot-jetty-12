@@ -37,7 +37,7 @@ import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletContainer;
 import org.apache.jasper.servlet.JspServlet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
@@ -190,7 +190,7 @@ public class UndertowServletWebServerFactoryTests
 		factory.setAccessLogEnabled(true);
 		factory.setAccessLogPrefix(prefix);
 		factory.setAccessLogSuffix(suffix);
-		File accessLogDirectory = this.temporaryFolder.getRoot();
+		File accessLogDirectory = this.tempDir;
 		factory.setAccessLogDirectory(accessLogDirectory);
 		assertThat(accessLogDirectory.listFiles()).isEmpty();
 		this.webServer = factory.getWebServer(

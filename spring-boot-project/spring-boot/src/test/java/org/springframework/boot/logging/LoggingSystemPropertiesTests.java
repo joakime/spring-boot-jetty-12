@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -40,12 +40,12 @@ public class LoggingSystemPropertiesTests {
 
 	private Set<Object> systemPropertyNames;
 
-	@Before
+	@BeforeEach
 	public void captureSystemPropertyNames() {
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 	}
 
-	@After
+	@AfterEach
 	public void restoreSystemProperties() {
 		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 	}

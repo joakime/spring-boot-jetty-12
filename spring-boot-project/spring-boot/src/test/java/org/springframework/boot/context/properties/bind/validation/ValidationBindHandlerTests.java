@@ -24,8 +24,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
@@ -62,7 +62,7 @@ public class ValidationBindHandlerTests {
 
 	private LocalValidatorFactoryBean validator;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.binder = new Binder(this.sources);
 		this.validator = new LocalValidatorFactoryBean();

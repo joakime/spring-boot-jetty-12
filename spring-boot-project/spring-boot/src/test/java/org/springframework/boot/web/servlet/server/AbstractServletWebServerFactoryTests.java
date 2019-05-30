@@ -78,16 +78,16 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.jasper.EmbeddedServletOptions;
 import org.apache.jasper.servlet.JspServlet;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.extension.OutputCapture;
 import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
@@ -119,7 +119,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -138,17 +137,17 @@ import static org.mockito.Mockito.verify;
  */
 public abstract class AbstractServletWebServerFactoryTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	protected File tempDir;
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
+	@RegisterExtension
+	final OutputCapture output = new OutputCapture();
 
 	protected WebServer webServer;
 
 	private final HttpClientContext httpClientContext = HttpClientContext.create();
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (this.webServer != null) {
 			try {
@@ -326,10 +325,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	public void mimeType() throws Exception {
-		FileCopyUtils.copy("test",
-				new FileWriter(this.temporaryFolder.newFile("test.xxcss")));
+		FileCopyUtils.copy("test", new FileWriter(new File(this.tempDir, "test.xxcss")));
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+		factory.setDocumentRoot(this.tempDir);
 		MimeMappings mimeMappings = new MimeMappings();
 		mimeMappings.add("xxcss", "text/css");
 		factory.setMimeMappings(mimeMappings);
@@ -743,7 +741,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void persistSessionInSpecificSessionStoreDir() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		File sessionStoreDir = this.temporaryFolder.newFolder();
+		File sessionStoreDir = new File(this.tempDir, "sessions");
+		sessionStoreDir.mkdir();
 		factory.getSession().setPersistent(true);
 		factory.getSession().setStoreDir(sessionStoreDir);
 		this.webServer = factory.getWebServer(sessionServletRegistration());
@@ -775,7 +774,9 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.getSession().setStoreDir(this.temporaryFolder.newFile());
+		File file = new File(this.tempDir, "file");
+		file.createNewFile();
+		factory.getSession().setStoreDir(file);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> factory.getValidSessionStoreDir(false))
 				.withMessageContaining("points to a file");
@@ -960,7 +961,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getJsp().setInitParameters(initParameters);
 		this.webServer = factory.getWebServer();
-		Assume.assumeThat(getJspServlet(), notNullValue());
+		Assumptions.assumeFalse(getJspServlet() == null);
 		JspServlet jspServlet = getJspServlet();
 		assertThat(jspServlet.getInitParameter("a")).isEqualTo("alpha");
 	}
@@ -969,7 +970,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void jspServletIsNotInDevelopmentModeByDefault() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
-		Assume.assumeThat(getJspServlet(), notNullValue());
+		Assumptions.assumeFalse(getJspServlet() == null);
 		JspServlet jspServlet = getJspServlet();
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
 				.getField(jspServlet, "options");
@@ -1136,9 +1137,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	private void addTestTxtFile(AbstractServletWebServerFactory factory)
 			throws IOException {
-		FileCopyUtils.copy("test",
-				new FileWriter(this.temporaryFolder.newFile("test.txt")));
-		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+		FileCopyUtils.copy("test", new FileWriter(new File(this.tempDir, "test.txt")));
+		factory.setDocumentRoot(this.tempDir);
 	}
 
 	protected String getLocalUrl(String resourcePath) {

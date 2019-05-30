@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

@@ -19,8 +19,8 @@ package org.springframework.boot.web.servlet.view;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -46,7 +46,7 @@ public class MustacheViewTests {
 
 	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
-	@Before
+	@BeforeEach
 	public void init() {
 		this.context.refresh();
 		MockServletContext servletContext = new MockServletContext();

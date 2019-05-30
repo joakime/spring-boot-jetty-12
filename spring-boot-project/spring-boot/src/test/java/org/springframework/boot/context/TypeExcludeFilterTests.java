@@ -17,7 +17,7 @@
 package org.springframework.boot.context;
 
 import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.filtersample.ExampleComponent;

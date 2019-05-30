@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package org.springframework.boot;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
@@ -48,12 +48,12 @@ public class ImageBannerTests {
 
 	private static final String INVERT_TRUE = "spring.banner.image.invert=true";
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}

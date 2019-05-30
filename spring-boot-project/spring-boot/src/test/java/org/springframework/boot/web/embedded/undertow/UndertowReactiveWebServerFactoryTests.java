@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import io.undertow.Undertow;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
@@ -50,8 +49,8 @@ import static org.mockito.Mockito.mock;
 public class UndertowReactiveWebServerFactoryTests
 		extends AbstractReactiveWebServerFactoryTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Override
 	protected UndertowReactiveWebServerFactory getFactory() {
@@ -114,7 +113,7 @@ public class UndertowReactiveWebServerFactoryTests
 		factory.setAccessLogEnabled(true);
 		factory.setAccessLogPrefix(prefix);
 		factory.setAccessLogSuffix(suffix);
-		File accessLogDirectory = this.temporaryFolder.getRoot();
+		File accessLogDirectory = this.tempDir;
 		factory.setAccessLogDirectory(accessLogDirectory);
 		assertThat(accessLogDirectory.listFiles()).isEmpty();
 		this.webServer = factory.getWebServer(new EchoHandler());

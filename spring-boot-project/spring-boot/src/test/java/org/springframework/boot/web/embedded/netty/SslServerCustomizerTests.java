@@ -18,7 +18,7 @@ package org.springframework.boot.web.embedded.netty;
 
 import java.security.NoSuchProviderException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;

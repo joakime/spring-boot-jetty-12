@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.logging.log4j2;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.AbstractLogEvent;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ansi.AnsiOutput;
 
@@ -38,18 +38,18 @@ public class ColorConverterTests {
 
 	private TestLogEvent event;
 
-	@BeforeClass
-	public static void setupAnsi() {
+	@BeforeAll
+	static void setupAnsi() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 	}
 
-	@AfterClass
-	public static void resetAnsi() {
+	@AfterAll
+	static void resetAnsi() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.DETECT);
 	}
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		this.event = new TestLogEvent();
 	}
 

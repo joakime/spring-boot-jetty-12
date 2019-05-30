@@ -19,8 +19,8 @@ package org.springframework.boot.env;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
@@ -41,7 +41,7 @@ public class OriginTrackedYamlLoaderTests {
 
 	private List<Map<String, Object>> result;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
 		this.loader = new OriginTrackedYamlLoader(resource);

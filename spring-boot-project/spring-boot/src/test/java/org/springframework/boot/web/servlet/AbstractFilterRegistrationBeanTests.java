@@ -28,8 +28,8 @@ import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -54,7 +54,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	@Mock
 	FilterRegistration.Dynamic registration;
 
-	@Before
+	@BeforeEach
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
 		given(this.servletContext.addFilter(anyString(), any(Filter.class)))

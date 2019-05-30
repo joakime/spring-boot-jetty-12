@@ -17,8 +17,8 @@ package org.springframework.boot.context.properties;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -44,7 +44,7 @@ public class ConfigurationPropertiesScanRegistrarTests {
 
 	private final DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.registrar.setEnvironment(new MockEnvironment());
 	}

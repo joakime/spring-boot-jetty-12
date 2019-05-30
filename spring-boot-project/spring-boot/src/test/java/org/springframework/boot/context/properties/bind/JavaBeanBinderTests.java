@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.Bean;
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.BeanProperty;
@@ -53,14 +52,9 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class JavaBeanBinderTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder;
-
-	@Before
-	public void setup() {
-		this.binder = new Binder(this.sources);
-	}
+	private final Binder binder = new Binder(this.sources);
 
 	@Test
 	public void bindToClassShouldCreateBoundBean() {

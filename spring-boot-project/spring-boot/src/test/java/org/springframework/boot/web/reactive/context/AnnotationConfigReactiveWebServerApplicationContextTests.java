@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.ServerManager;
 import org.springframework.boot.web.reactive.context.config.ExampleReactiveWebServerApplicationConfiguration;

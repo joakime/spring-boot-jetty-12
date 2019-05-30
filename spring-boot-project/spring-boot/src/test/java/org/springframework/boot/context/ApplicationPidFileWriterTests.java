@@ -18,11 +18,10 @@ package org.springframework.boot.context;
 
 import java.io.File;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -55,11 +54,11 @@ public class ApplicationPidFileWriterTests {
 			new SpringApplication(), new String[] {},
 			mock(ConfigurableApplicationContext.class));
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
-	@Before
-	@After
+	@BeforeEach
+	@AfterEach
 	public void resetListener() {
 		System.clearProperty("PIDFILE");
 		System.clearProperty("PID_FAIL_ON_WRITE_ERROR");
@@ -68,7 +67,7 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void createPidFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
 		assertThat(contentOf(file)).isNotEmpty();
@@ -76,8 +75,9 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void overridePidFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		System.setProperty("PIDFILE", this.temporaryFolder.newFile().getAbsolutePath());
+		File file = new File(this.tempDir, "pid");
+		System.setProperty("PIDFILE",
+				new File(this.tempDir, "override").getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
 		assertThat(contentOf(new File(System.getProperty("PIDFILE")))).isNotEmpty();
@@ -85,7 +85,7 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void overridePidFileWithSpring() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
 		SpringApplicationEvent event = createPreparedEvent("spring.pid.file",
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
@@ -95,7 +95,8 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void tryEnvironmentPreparedEvent() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
+		file.createNewFile();
 		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pid.file",
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
@@ -108,7 +109,8 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void tryReadyEvent() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
+		file.createNewFile();
 		SpringApplicationEvent event = createReadyEvent("spring.pid.file",
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
@@ -121,7 +123,7 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void withNoEnvironment() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.setTriggerEventType(ApplicationStartingEvent.class);
 		listener.onApplicationEvent(
@@ -131,7 +133,8 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void continueWhenPidFileIsReadOnly() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
+		file.createNewFile();
 		file.setReadOnly();
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
@@ -140,7 +143,8 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void throwWhenPidFileIsReadOnly() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
+		file.createNewFile();
 		file.setReadOnly();
 		System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
@@ -151,7 +155,8 @@ public class ApplicationPidFileWriterTests {
 
 	@Test
 	public void throwWhenPidFileIsReadOnlyWithSpring() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "pid");
+		file.createNewFile();
 		file.setReadOnly();
 		SpringApplicationEvent event = createPreparedEvent(
 				"spring.pid.fail-on-write-error", "true");

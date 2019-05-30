@@ -21,7 +21,7 @@ import java.security.NoSuchProviderException;
 
 import javax.net.ssl.KeyManager;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;

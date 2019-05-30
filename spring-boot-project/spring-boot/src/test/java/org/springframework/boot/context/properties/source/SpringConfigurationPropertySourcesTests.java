@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;

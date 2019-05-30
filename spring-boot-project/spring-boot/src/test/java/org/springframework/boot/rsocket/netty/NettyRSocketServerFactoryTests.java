@@ -32,7 +32,7 @@ import io.rsocket.util.DefaultPayload;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 

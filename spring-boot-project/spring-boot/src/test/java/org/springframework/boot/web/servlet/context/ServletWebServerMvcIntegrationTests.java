@@ -19,8 +19,8 @@ package org.springframework.boot.web.servlet.context;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -57,7 +57,7 @@ public class ServletWebServerMvcIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
+	@AfterEach
 	public void closeContext() {
 		try {
 			this.context.close();

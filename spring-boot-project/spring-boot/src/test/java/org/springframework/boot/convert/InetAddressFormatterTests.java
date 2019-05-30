@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,10 @@ package org.springframework.boot.convert;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.stream.Stream;
 
 import org.junit.AssumptionViolatedException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
@@ -36,38 +34,33 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  */
-@RunWith(Parameterized.class)
 public class InetAddressFormatterTests {
 
-	private final ConversionService conversionService;
-
-	public InetAddressFormatterTests(String name, ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
-
-	@Test
-	public void convertFromInetAddressToStringShouldConvert()
-			throws UnknownHostException {
+	@ConversionServiceTest
+	public void convertFromInetAddressToStringShouldConvert(
+			ConversionService conversionService) throws UnknownHostException {
 		assumeResolves("example.com", true);
 		InetAddress address = InetAddress.getByName("example.com");
-		String converted = this.conversionService.convert(address, String.class);
+		String converted = conversionService.convert(address, String.class);
 		assertThat(converted).isEqualTo(address.getHostAddress());
 	}
 
-	@Test
-	public void convertFromStringToInetAddressShouldConvert() {
+	@ConversionServiceTest
+	public void convertFromStringToInetAddressShouldConvert(
+			ConversionService conversionService) {
 		assumeResolves("example.com", true);
-		InetAddress converted = this.conversionService.convert("example.com",
+		InetAddress converted = conversionService.convert("example.com",
 				InetAddress.class);
 		assertThat(converted.toString()).startsWith("example.com");
 	}
 
-	@Test
-	public void convertFromStringToInetAddressWhenHostDoesNotExistShouldThrowException() {
+	@ConversionServiceTest
+	public void convertFromStringToInetAddressWhenHostDoesNotExistShouldThrowException(
+			ConversionService conversionService) {
 		String missingDomain = "ireallydontexist.example.com";
 		assumeResolves(missingDomain, false);
 		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(
-				() -> this.conversionService.convert(missingDomain, InetAddress.class));
+				() -> conversionService.convert(missingDomain, InetAddress.class));
 	}
 
 	private void assumeResolves(String host, boolean expectedToResolve) {
@@ -88,9 +81,8 @@ public class InetAddressFormatterTests {
 		}
 	}
 
-	@Parameters(name = "{0}")
-	public static Iterable<Object[]> conversionServices() {
-		return new ConversionServiceParameters(new InetAddressFormatter());
+	static Stream<? extends Arguments> conversionServices() {
+		return ConversionServiceArguments.with(new InetAddressFormatter());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,8 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.ParallelWebappClassLoader;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.catalina.webresources.WarResourceSet;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.CollectionUtils;
 
@@ -45,8 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TomcatEmbeddedWebappClassLoaderTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
 	public void getResourceFindsResourceFromParentClassLoader() throws Exception {
@@ -92,7 +91,7 @@ public class TomcatEmbeddedWebappClassLoaderTests {
 	}
 
 	private File createWar() throws IOException {
-		File warFile = this.temp.newFile("test.war");
+		File warFile = new File(this.tempDir, "test.war");
 		try (JarOutputStream warOut = new JarOutputStream(
 				new FileOutputStream(warFile))) {
 			createEntries(warOut, "WEB-INF/", "WEB-INF/classes/",

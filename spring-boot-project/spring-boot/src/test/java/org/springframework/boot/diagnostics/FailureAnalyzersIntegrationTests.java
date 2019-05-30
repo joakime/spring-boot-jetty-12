@@ -18,12 +18,12 @@ package org.springframework.boot.diagnostics;
 
 import javax.annotation.PostConstruct;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.extension.OutputCapture;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class FailureAnalyzersIntegrationTests {
 
-	@Rule
+	@RegisterExtension
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
