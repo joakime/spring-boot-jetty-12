@@ -25,8 +25,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -70,7 +70,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	private MockWebServer server;
 
-	@After
+	@AfterEach
 	public void cleanup() throws Exception {
 		if (this.server != null) {
 			this.server.shutdown();

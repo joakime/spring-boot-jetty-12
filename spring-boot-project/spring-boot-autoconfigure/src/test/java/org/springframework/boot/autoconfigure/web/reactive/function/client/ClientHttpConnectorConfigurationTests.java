@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.util.thread.Scheduler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.http.client.reactive.JettyResourceFactory;

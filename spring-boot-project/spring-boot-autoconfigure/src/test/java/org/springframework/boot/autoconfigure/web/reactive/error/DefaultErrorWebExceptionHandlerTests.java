@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;

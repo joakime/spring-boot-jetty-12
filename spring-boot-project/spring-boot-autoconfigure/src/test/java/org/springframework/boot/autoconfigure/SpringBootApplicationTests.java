@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
