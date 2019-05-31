@@ -26,6 +26,9 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+import org.springframework.boot.test.io.CapturedOutput;
+import org.springframework.boot.test.io.OutputCapture;
+
 /**
  * JUnit5 {@code @Extension} to capture output {@link System#out System.out} and
  * {@link System#err System.err}. Can be used on a test class via
@@ -56,7 +59,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 public class OutputCaptureExtension implements BeforeAllCallback, AfterAllCallback,
 		BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-	private final CapturedOutput capturedOutput = new CapturedOutput();
+	private final OutputCapture outputCapture = new OutputCapture();
 
 	OutputCaptureExtension() {
 		// Package private to prevent users from directly creating an instance.
@@ -64,22 +67,22 @@ public class OutputCaptureExtension implements BeforeAllCallback, AfterAllCallba
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
-		this.capturedOutput.push();
+		this.outputCapture.push();
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) throws Exception {
-		this.capturedOutput.pop();
+		this.outputCapture.pop();
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		this.capturedOutput.push();
+		this.outputCapture.push();
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		this.capturedOutput.pop();
+		this.outputCapture.pop();
 	}
 
 	@Override
@@ -91,7 +94,7 @@ public class OutputCaptureExtension implements BeforeAllCallback, AfterAllCallba
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext,
 			ExtensionContext extensionContext) throws ParameterResolutionException {
-		return this.capturedOutput;
+		return this.outputCapture;
 	}
 
 }

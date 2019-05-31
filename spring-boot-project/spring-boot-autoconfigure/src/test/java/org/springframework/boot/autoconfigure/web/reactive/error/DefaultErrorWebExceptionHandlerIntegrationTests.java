@@ -32,8 +32,8 @@ import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFact
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.extension.CapturedOutput;
 import org.springframework.boot.test.extension.OutputCaptureExtension;
+import org.springframework.boot.test.io.CapturedOutput;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

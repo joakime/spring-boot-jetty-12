@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.endpoint;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.CapturedOutput;
 import org.springframework.boot.test.extension.OutputCaptureExtension;
+import org.springframework.boot.test.io.CapturedOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;

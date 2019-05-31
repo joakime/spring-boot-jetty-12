@@ -20,6 +20,8 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import org.springframework.boot.test.io.CapturedOutput;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

@@ -27,8 +27,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.extension.CapturedOutput;
 import org.springframework.boot.test.extension.OutputCaptureExtension;
+import org.springframework.boot.test.io.CapturedOutput;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
