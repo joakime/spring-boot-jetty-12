@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.FileCopyUtils;
@@ -32,12 +34,12 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Base {@link ExternalResource} for launching a Spring Boot application as part of a
- * JUnit test.
+ * Base class for launching a Spring Boot application as part of a JUnit test.
  *
  * @author Andy Wilkinson
  */
-abstract class AbstractApplicationLauncher extends ExternalResource {
+abstract class AbstractApplicationLauncher
+		implements BeforeEachCallback, AfterEachCallback {
 
 	private final ApplicationBuilder applicationBuilder;
 
@@ -54,13 +56,13 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 	}
 
 	@Override
-	protected final void before() throws Throwable {
-		this.process = startApplication();
+	public void afterEach(ExtensionContext context) throws Exception {
+		this.process.destroy();
 	}
 
 	@Override
-	protected final void after() {
-		this.process.destroy();
+	public void beforeEach(ExtensionContext context) throws Exception {
+		this.process = startApplication();
 	}
 
 	public final int getHttpPort() {

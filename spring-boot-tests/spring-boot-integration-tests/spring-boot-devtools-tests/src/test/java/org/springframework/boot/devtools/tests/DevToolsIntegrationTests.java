@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,11 @@ import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.FixedValue;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testsupport.BuildOutput;
@@ -52,44 +48,39 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(Parameterized.class)
 public class DevToolsIntegrationTests {
 
-	@ClassRule
-	public static final TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	static File temp;
 
 	private static final BuildOutput buildOutput = new BuildOutput(
 			DevToolsIntegrationTests.class);
 
 	private LaunchedApplication launchedApplication;
 
-	private final File serverPortFile;
+	private final File serverPortFile = new File(buildOutput.getRootLocation(),
+			"server.port");
 
-	private final ApplicationLauncher applicationLauncher;
+	@RegisterExtension
+	final JvmLauncher javaLauncher = new JvmLauncher();
 
-	@Rule
-	public JvmLauncher javaLauncher = new JvmLauncher();
-
-	public DevToolsIntegrationTests(ApplicationLauncher applicationLauncher) {
-		this.applicationLauncher = applicationLauncher;
-		this.serverPortFile = new File(
-				DevToolsIntegrationTests.buildOutput.getRootLocation(), "server.port");
-	}
-
-	@Before
-	public void launchApplication() throws Exception {
+	private void launchApplication(ApplicationLauncher applicationLauncher)
+			throws Exception {
 		this.serverPortFile.delete();
-		this.launchedApplication = this.applicationLauncher
+		this.launchedApplication = applicationLauncher
 				.launchApplication(this.javaLauncher, this.serverPortFile);
 	}
 
-	@After
+	@AfterEach
 	public void stopApplication() throws InterruptedException {
 		this.launchedApplication.stop();
 	}
 
-	@Test
-	public void addARequestMappingToAnExistingController() throws Exception {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("parameters")
+	public void addARequestMappingToAnExistingController(
+			ApplicationLauncher applicationLauncher) throws Exception {
+		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
@@ -105,8 +96,11 @@ public class DevToolsIntegrationTests {
 				.isEqualTo("two");
 	}
 
-	@Test
-	public void removeARequestMappingFromAnExistingController() throws Exception {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("parameters")
+	public void removeARequestMappingFromAnExistingController(
+			ApplicationLauncher applicationLauncher) throws Exception {
+		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
@@ -117,8 +111,11 @@ public class DevToolsIntegrationTests {
 				.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-	@Test
-	public void createAController() throws Exception {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("parameters")
+	public void createAController(ApplicationLauncher applicationLauncher)
+			throws Exception {
+		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
@@ -134,8 +131,11 @@ public class DevToolsIntegrationTests {
 
 	}
 
-	@Test
-	public void createAControllerAndThenAddARequestMapping() throws Exception {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("parameters")
+	public void createAControllerAndThenAddARequestMapping(
+			ApplicationLauncher applicationLauncher) throws Exception {
+		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
@@ -155,9 +155,11 @@ public class DevToolsIntegrationTests {
 				.isEqualTo("three");
 	}
 
-	@Test
-	public void createAControllerAndThenAddARequestMappingToAnExistingController()
-			throws Exception {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("parameters")
+	public void createAControllerAndThenAddARequestMappingToAnExistingController(
+			ApplicationLauncher applicationLauncher) throws Exception {
+		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
@@ -181,8 +183,11 @@ public class DevToolsIntegrationTests {
 				.isEqualTo("three");
 	}
 
-	@Test
-	public void deleteAController() throws Exception {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("parameters")
+	public void deleteAController(ApplicationLauncher applicationLauncher)
+			throws Exception {
+		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
@@ -195,8 +200,11 @@ public class DevToolsIntegrationTests {
 
 	}
 
-	@Test
-	public void createAControllerAndThenDeleteIt() throws Exception {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("parameters")
+	public void createAControllerAndThenDeleteIt(ApplicationLauncher applicationLauncher)
+			throws Exception {
+		launchApplication(applicationLauncher);
 		TestRestTemplate template = new TestRestTemplate();
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class))
@@ -247,8 +255,7 @@ public class DevToolsIntegrationTests {
 				this.launchedApplication.getClassesDirectory());
 	}
 
-	@Parameters(name = "{0}")
-	public static Object[] parameters() throws IOException {
+	static Object[] parameters() throws IOException {
 		Directories directories = new Directories(buildOutput, temp);
 		return new Object[] { new Object[] { new LocalApplicationLauncher(directories) },
 				new Object[] { new ExplodedRemoteApplicationLauncher(directories) },
