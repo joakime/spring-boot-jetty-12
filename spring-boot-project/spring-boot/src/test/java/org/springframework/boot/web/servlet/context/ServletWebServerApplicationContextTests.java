@@ -31,7 +31,7 @@ import javax.servlet.ServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
@@ -45,7 +45,8 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -85,12 +86,10 @@ import static org.mockito.Mockito.withSettings;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ServletWebServerApplicationContextTests {
 
 	private ServletWebServerApplicationContext context;
-
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
 
 	@Captor
 	private ArgumentCaptor<Filter> filterCaptor;
@@ -458,9 +457,10 @@ public class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void servletRequestCanBeInjectedEarly() throws Exception {
+	public void servletRequestCanBeInjectedEarly(CapturedOutput capturedOutput)
+			throws Exception {
 		// gh-14990
-		int initialOutputLength = this.output.toString().length();
+		int initialOutputLength = capturedOutput.length();
 		addWebServerFactoryBean();
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(
 				WithAutowiredServletRequest.class);
@@ -473,7 +473,7 @@ public class ServletWebServerApplicationContextTests {
 			assertThat(bean.getRequest()).isNotNull();
 		});
 		this.context.refresh();
-		String output = this.output.toString().substring(initialOutputLength);
+		String output = capturedOutput.toString().substring(initialOutputLength);
 		assertThat(output).doesNotContain("Replacing scope");
 	}
 

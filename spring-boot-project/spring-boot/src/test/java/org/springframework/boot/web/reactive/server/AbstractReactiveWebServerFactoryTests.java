@@ -46,7 +46,7 @@ import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.OutputCaptureRule;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -76,7 +76,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public abstract class AbstractReactiveWebServerFactoryTests {
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public OutputCaptureRule output = new OutputCaptureRule();
 
 	protected WebServer webServer;
 

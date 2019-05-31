@@ -38,7 +38,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.OutputCaptureRule;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.mock;
 public class NettyRSocketServerFactoryTests {
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public OutputCaptureRule output = new OutputCaptureRule();
 
 	private NettyRSocketServer rSocketServer;
 

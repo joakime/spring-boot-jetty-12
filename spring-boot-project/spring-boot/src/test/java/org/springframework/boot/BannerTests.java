@@ -21,13 +21,14 @@ import java.io.PrintStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -46,6 +47,7 @@ import static org.mockito.Mockito.verify;
  * @author Michael Stummvoll
  * @author Michael Simons
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class BannerTests {
 
 	private ConfigurableApplicationContext context;
@@ -57,9 +59,6 @@ public class BannerTests {
 		}
 	}
 
-	@RegisterExtension
-	OutputCapture out = new OutputCapture();
-
 	@Captor
 	private ArgumentCaptor<Class<?>> sourceClassCaptor;
 
@@ -69,25 +68,25 @@ public class BannerTests {
 	}
 
 	@Test
-	public void testDefaultBanner() {
+	public void testDefaultBanner(CapturedOutput capturedOutput) {
 		SpringApplication application = createSpringApplication();
 		this.context = application.run();
-		assertThat(this.out.toString()).contains(":: Spring Boot ::");
+		assertThat(capturedOutput).contains(":: Spring Boot ::");
 	}
 
 	@Test
-	public void testDefaultBannerInLog() {
+	public void testDefaultBannerInLog(CapturedOutput capturedOutput) {
 		SpringApplication application = createSpringApplication();
 		this.context = application.run();
-		assertThat(this.out.toString()).contains(":: Spring Boot ::");
+		assertThat(capturedOutput).contains(":: Spring Boot ::");
 	}
 
 	@Test
-	public void testCustomBanner() {
+	public void testCustomBanner(CapturedOutput capturedOutput) {
 		SpringApplication application = createSpringApplication();
 		application.setBanner(new DummyBanner());
 		this.context = application.run();
-		assertThat(this.out.toString()).contains("My Banner");
+		assertThat(capturedOutput).contains("My Banner");
 	}
 
 	@Test

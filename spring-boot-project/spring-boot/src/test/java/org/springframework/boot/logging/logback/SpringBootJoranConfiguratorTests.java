@@ -23,14 +23,15 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
@@ -43,10 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class SpringBootJoranConfiguratorTests {
-
-	@RegisterExtension
-	final OutputCapture out = new OutputCapture();
 
 	private MockEnvironment environment;
 
@@ -58,8 +57,11 @@ public class SpringBootJoranConfiguratorTests {
 
 	private Logger logger;
 
+	private CapturedOutput capturedOutput;
+
 	@BeforeEach
-	public void setup() {
+	public void setup(CapturedOutput capturedOutput) {
+		this.capturedOutput = capturedOutput;
 		this.environment = new MockEnvironment();
 		this.initializationContext = new LoggingInitializationContext(this.environment);
 		this.configurator = new SpringBootJoranConfigurator(this.initializationContext);
@@ -80,7 +82,7 @@ public class SpringBootJoranConfiguratorTests {
 		this.environment.setActiveProfiles("production");
 		initialize("production-profile.xml");
 		this.logger.trace("Hello");
-		assertThat(this.out).contains("Hello");
+		assertThat(this.capturedOutput).contains("Hello");
 	}
 
 	@Test
@@ -88,7 +90,7 @@ public class SpringBootJoranConfiguratorTests {
 		this.environment.setActiveProfiles("production");
 		initialize("multi-profile-names.xml");
 		this.logger.trace("Hello");
-		assertThat(this.out).contains("Hello");
+		assertThat(this.capturedOutput).contains("Hello");
 	}
 
 	@Test
@@ -96,14 +98,14 @@ public class SpringBootJoranConfiguratorTests {
 		this.environment.setActiveProfiles("test");
 		initialize("multi-profile-names.xml");
 		this.logger.trace("Hello");
-		assertThat(this.out).contains("Hello");
+		assertThat(this.capturedOutput).contains("Hello");
 	}
 
 	@Test
 	public void profileNotActive() throws Exception {
 		initialize("production-profile.xml");
 		this.logger.trace("Hello");
-		assertThat(this.out).doesNotContain("Hello");
+		assertThat(this.capturedOutput).doesNotContain("Hello");
 	}
 
 	@Test
@@ -111,7 +113,7 @@ public class SpringBootJoranConfiguratorTests {
 		this.environment.setActiveProfiles("production");
 		initialize("profile-expression.xml");
 		this.logger.trace("Hello");
-		assertThat(this.out).contains("Hello");
+		assertThat(this.capturedOutput).contains("Hello");
 	}
 
 	@Test
@@ -119,7 +121,7 @@ public class SpringBootJoranConfiguratorTests {
 		this.environment.setActiveProfiles("test");
 		initialize("profile-expression.xml");
 		this.logger.trace("Hello");
-		assertThat(this.out).contains("Hello");
+		assertThat(this.capturedOutput).contains("Hello");
 	}
 
 	@Test
@@ -127,7 +129,7 @@ public class SpringBootJoranConfiguratorTests {
 		this.environment.setActiveProfiles("development");
 		initialize("profile-expression.xml");
 		this.logger.trace("Hello");
-		assertThat(this.out).doesNotContain("Hello");
+		assertThat(this.capturedOutput).doesNotContain("Hello");
 	}
 
 	@Test
@@ -197,10 +199,10 @@ public class SpringBootJoranConfiguratorTests {
 		initialize("nested.xml");
 		this.logger.trace("Hello");
 		if (expected) {
-			assertThat(this.out).contains("Hello");
+			assertThat(this.capturedOutput).contains("Hello");
 		}
 		else {
-			assertThat(this.out).doesNotContain("Hello");
+			assertThat(this.capturedOutput).doesNotContain("Hello");
 		}
 
 	}

@@ -32,9 +32,10 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.catalina.connector.ClientAbortException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
@@ -60,6 +61,7 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ErrorPageFilterTests {
 
 	private ErrorPageFilter filter = new ErrorPageFilter();
@@ -70,9 +72,6 @@ public class ErrorPageFilterTests {
 
 	private MockFilterChain chain = new TestFilterChain((request, response, chain) -> {
 	});
-
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void notAnError() throws Exception {
@@ -133,7 +132,8 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void responseCommittedWhenFromClientAbortException() throws Exception {
+	public void responseCommittedWhenFromClientAbortException(
+			CapturedOutput capturedOutput) throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.response.setCommitted(true);
 		this.chain = new TestFilterChain((request, response, chain) -> {
@@ -142,7 +142,7 @@ public class ErrorPageFilterTests {
 		});
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.response.isCommitted()).isTrue();
-		assertThat(this.output.toString()).doesNotContain("Cannot forward");
+		assertThat(capturedOutput).doesNotContain("Cannot forward");
 	}
 
 	@Test
@@ -390,7 +390,7 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
-	public void errorMessageForRequestWithoutPathInfo()
+	public void errorMessageForRequestWithoutPathInfo(CapturedOutput capturedOutput)
 			throws IOException, ServletException {
 		this.request.setServletPath("/test");
 		this.filter.addErrorPages(new ErrorPage("/error"));
@@ -399,11 +399,11 @@ public class ErrorPageFilterTests {
 			throw new RuntimeException();
 		});
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.output.toString()).contains("request [/test]");
+		assertThat(capturedOutput).contains("request [/test]");
 	}
 
 	@Test
-	public void errorMessageForRequestWithPathInfo()
+	public void errorMessageForRequestWithPathInfo(CapturedOutput capturedOutput)
 			throws IOException, ServletException {
 		this.request.setServletPath("/test");
 		this.request.setPathInfo("/alpha");
@@ -413,7 +413,7 @@ public class ErrorPageFilterTests {
 			throw new RuntimeException();
 		});
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.output.toString()).contains("request [/test/alpha]");
+		assertThat(capturedOutput).contains("request [/test/alpha]");
 	}
 
 	@Test

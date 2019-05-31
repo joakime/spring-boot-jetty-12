@@ -34,7 +34,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.OutputCaptureRule;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -57,7 +57,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 			getClass().getClassLoader());
 
 	@Rule
-	public OutputCapture output = new OutputCapture();
+	public OutputCaptureRule output = new OutputCaptureRule();
 
 	private Logger logger;
 

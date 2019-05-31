@@ -21,9 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -37,10 +38,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Dave Syer
  */
 @Configuration(proxyBeanMethods = false)
+@ExtendWith(OutputCaptureExtension.class)
 public class SimpleMainTests {
-
-	@RegisterExtension
-	final OutputCapture outputCapture = new OutputCapture();
 
 	private static final String SPRING_STARTUP = "Started SpringApplication in";
 
@@ -51,29 +50,29 @@ public class SimpleMainTests {
 	}
 
 	@Test
-	public void basePackageScan() throws Exception {
+	public void basePackageScan(CapturedOutput capturedOutput) throws Exception {
 		SpringApplication
 				.main(getArgs(ClassUtils.getPackageName(getClass()) + ".sampleconfig"));
-		assertThat(getOutput()).contains(SPRING_STARTUP);
+		assertThat(capturedOutput).contains(SPRING_STARTUP);
 	}
 
 	@Test
-	public void configClassContext() throws Exception {
+	public void configClassContext(CapturedOutput capturedOutput) throws Exception {
 		SpringApplication.main(getArgs(getClass().getName()));
-		assertThat(getOutput()).contains(SPRING_STARTUP);
+		assertThat(capturedOutput).contains(SPRING_STARTUP);
 	}
 
 	@Test
-	public void xmlContext() throws Exception {
+	public void xmlContext(CapturedOutput capturedOutput) throws Exception {
 		SpringApplication.main(getArgs("org/springframework/boot/sample-beans.xml"));
-		assertThat(getOutput()).contains(SPRING_STARTUP);
+		assertThat(capturedOutput).contains(SPRING_STARTUP);
 	}
 
 	@Test
-	public void mixedContext() throws Exception {
+	public void mixedContext(CapturedOutput capturedOutput) throws Exception {
 		SpringApplication.main(getArgs(getClass().getName(),
 				"org/springframework/boot/sample-beans.xml"));
-		assertThat(getOutput()).contains(SPRING_STARTUP);
+		assertThat(capturedOutput).contains(SPRING_STARTUP);
 	}
 
 	private String[] getArgs(String... args) {
@@ -86,10 +85,6 @@ public class SimpleMainTests {
 					+ StringUtils.arrayToCommaDelimitedString(args));
 		}
 		return StringUtils.toStringArray(list);
-	}
-
-	private String getOutput() {
-		return this.outputCapture.toString();
 	}
 
 }

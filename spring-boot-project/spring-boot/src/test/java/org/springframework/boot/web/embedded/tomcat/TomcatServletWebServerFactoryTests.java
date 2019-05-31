@@ -62,11 +62,10 @@ import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -99,9 +98,6 @@ import static org.mockito.Mockito.verify;
  */
 public class TomcatServletWebServerFactoryTests
 		extends AbstractServletWebServerFactoryTests {
-
-	@RegisterExtension
-	final OutputCapture outputCapture = new OutputCapture();
 
 	@Override
 	protected TomcatServletWebServerFactory getFactory() {
@@ -363,11 +359,10 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
-	public void startupFailureDoesNotResultInUnstoppedThreadsBeingReported()
-			throws IOException {
+	public void startupFailureDoesNotResultInUnstoppedThreadsBeingReported(
+			CapturedOutput capturedOutput) throws IOException {
 		super.portClashOfPrimaryConnectorResultsInPortInUseException();
-		String string = this.outputCapture.toString();
-		assertThat(string)
+		assertThat(capturedOutput)
 				.doesNotContain("appears to have started a thread named [main]");
 	}
 

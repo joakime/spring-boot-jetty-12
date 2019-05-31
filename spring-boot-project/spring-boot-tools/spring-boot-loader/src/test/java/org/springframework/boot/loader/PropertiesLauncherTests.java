@@ -31,13 +31,14 @@ import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -50,21 +51,22 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class PropertiesLauncherTests {
-
-	@RegisterExtension
-	final OutputCapture output = new OutputCapture();
 
 	@TempDir
 	File tempDir;
 
 	private ClassLoader contextClassLoader;
 
+	private CapturedOutput capturedOutput;
+
 	@BeforeEach
-	public void setup() {
+	public void setup(CapturedOutput capturedOutput) {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
 		System.setProperty("loader.home",
 				new File("src/test/resources").getAbsolutePath());
+		this.capturedOutput = capturedOutput;
 	}
 
 	@AfterEach
@@ -356,7 +358,7 @@ public class PropertiesLauncherTests {
 		while (!timeout && count < 100) {
 			count++;
 			Thread.sleep(50L);
-			timeout = this.output.toString().contains(value);
+			timeout = this.capturedOutput.toString().contains(value);
 		}
 		assertThat(timeout).as("Timed out waiting for (" + value + ")").isTrue();
 	}

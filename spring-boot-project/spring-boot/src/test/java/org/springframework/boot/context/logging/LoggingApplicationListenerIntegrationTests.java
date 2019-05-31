@@ -17,7 +17,7 @@
 package org.springframework.boot.context.logging;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,8 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -37,10 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class LoggingApplicationListenerIntegrationTests {
-
-	@RegisterExtension
-	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void loggingSystemRegisteredInTheContext() {
@@ -52,7 +51,8 @@ public class LoggingApplicationListenerIntegrationTests {
 	}
 
 	@Test
-	public void loggingPerformedDuringChildApplicationStartIsNotLost() {
+	public void loggingPerformedDuringChildApplicationStartIsNotLost(
+			CapturedOutput capturedOutput) {
 		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE)
 				.child(Config.class).web(WebApplicationType.NONE)
 				.listeners(new ApplicationListener<ApplicationStartingEvent>() {
@@ -65,7 +65,7 @@ public class LoggingApplicationListenerIntegrationTests {
 					}
 
 				}).run();
-		assertThat(this.outputCapture.toString()).contains("Child application starting");
+		assertThat(capturedOutput).contains("Child application starting");
 	}
 
 	@Component

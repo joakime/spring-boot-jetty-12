@@ -35,7 +35,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -43,7 +43,8 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.testsupport.BuildOutput;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -71,6 +72,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Eddú Meléndez
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ConfigFileApplicationListenerTests {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
@@ -80,9 +82,6 @@ public class ConfigFileApplicationListenerTests {
 	private final SpringApplication application = new SpringApplication();
 
 	private final ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
-
-	@RegisterExtension
-	final OutputCapture out = new OutputCapture();
 
 	private ConfigurableApplicationContext context;
 
@@ -432,7 +431,7 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	public void profilesAddedToEnvironmentAndViaProperty() {
+	public void profilesAddedToEnvironmentAndViaProperty(CapturedOutput capturedOutput) {
 		// External profile takes precedence over profile added via the environment
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=other");
@@ -441,11 +440,12 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
 		assertThat(this.environment.getProperty("my.property"))
 				.isEqualTo("fromotherpropertiesfile");
-		validateProfilePrecedence(null, "dev", "other");
+		validateProfilePreference(capturedOutput, null, "dev", "other");
 	}
 
 	@Test
-	public void profilesAddedToEnvironmentViaActiveAndIncludeProperty() {
+	public void profilesAddedToEnvironmentViaActiveAndIncludeProperty(
+			CapturedOutput capturedOutput) {
 		// Active profile property takes precedence
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev", "spring.profiles.include=other");
@@ -453,21 +453,23 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("other", "dev");
 		assertThat(this.environment.getProperty("my.property"))
 				.isEqualTo("fromdevpropertiesfile");
-		validateProfilePrecedence(null, "other", "dev");
+		validateProfilePreference(capturedOutput, null, "other", "dev");
 	}
 
 	@Test
-	public void profilesAddedViaIncludePropertyAndActivatedViaAnotherPropertySource() {
+	public void profilesAddedViaIncludePropertyAndActivatedViaAnotherPropertySource(
+			CapturedOutput capturedOutput) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.include=dev,simple");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev", "simple",
 				"other");
-		validateProfilePrecedence("dev", "simple", "other");
+		validateProfilePreference(capturedOutput, "dev", "simple", "other");
 	}
 
 	@Test
-	public void profilesAddedToEnvironmentAndViaPropertyDuplicate() {
+	public void profilesAddedToEnvironmentAndViaPropertyDuplicate(
+			CapturedOutput capturedOutput) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev,other");
 		this.environment.addActiveProfile("dev");
@@ -475,11 +477,12 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
 		assertThat(this.environment.getProperty("my.property"))
 				.isEqualTo("fromotherpropertiesfile");
-		validateProfilePrecedence(null, "dev", "other");
+		validateProfilePreference(capturedOutput, null, "dev", "other");
 	}
 
 	@Test
-	public void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins() {
+	public void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins(
+			CapturedOutput capturedOutput) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=other,dev");
 		this.environment.addActiveProfile("other");
@@ -487,7 +490,7 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
 		assertThat(this.environment.getProperty("my.property"))
 				.isEqualTo("fromdevpropertiesfile");
-		validateProfilePrecedence(null, "other", "dev");
+		validateProfilePreference(capturedOutput, null, "other", "dev");
 	}
 
 	@Test
@@ -497,12 +500,13 @@ public class ConfigFileApplicationListenerTests {
 				this.application, new String[0], this.environment));
 	}
 
-	private void validateProfilePrecedence(String... profiles) {
+	private void validateProfilePreference(CapturedOutput capturedOutput,
+			String... profiles) {
 		ApplicationPreparedEvent event = new ApplicationPreparedEvent(
 				new SpringApplication(), new String[0],
 				new AnnotationConfigApplicationContext());
 		withDebugLogging(() -> this.initializer.onApplicationEvent(event));
-		String log = this.out.toString();
+		String log = capturedOutput.toString();
 
 		// First make sure that each profile got processed only once
 		for (String profile : profiles) {
@@ -838,7 +842,8 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	public void activateProfileFromProfileSpecificProperties() {
+	public void activateProfileFromProfileSpecificProperties(
+			CapturedOutput capturedOutput) {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.active=includeprofile");
@@ -848,7 +853,7 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(environment).has(matchingProfile("morespecific"));
 		assertThat(environment).has(matchingProfile("yetmorespecific"));
 		assertThat(environment).doesNotHave(matchingProfile("missing"));
-		assertThat(this.out.toString()).contains(
+		assertThat(capturedOutput).contains(
 				"The following profiles are active: includeprofile,specific,morespecific,yetmorespecific");
 	}
 

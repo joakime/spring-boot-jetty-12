@@ -32,9 +32,10 @@ import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
@@ -52,14 +53,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class SslConnectorCustomizerTests {
 
 	private Tomcat tomcat;
 
 	private Connector connector;
-
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
 
 	@BeforeEach
 	public void setup() {
@@ -173,8 +172,8 @@ public class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	public void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl()
-			throws Exception {
+	public void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl(
+			CapturedOutput capturedOutput) throws Exception {
 		System.setProperty("javax.net.ssl.trustStorePassword", "trustStoreSecret");
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
@@ -188,7 +187,7 @@ public class SslConnectorCustomizerTests {
 		customizer.customize(connector);
 		this.tomcat.start();
 		assertThat(connector.getState()).isEqualTo(LifecycleState.STARTED);
-		assertThat(this.output.toString()).doesNotContain("Password verification failed");
+		assertThat(capturedOutput).doesNotContain("Password verification failed");
 	}
 
 	@Test

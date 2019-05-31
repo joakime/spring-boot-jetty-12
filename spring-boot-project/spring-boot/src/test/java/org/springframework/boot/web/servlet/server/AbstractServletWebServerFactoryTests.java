@@ -81,13 +81,14 @@ import org.apache.jasper.servlet.JspServlet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
@@ -135,13 +136,11 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Raja Kolli
  */
+@ExtendWith(OutputCaptureExtension.class)
 public abstract class AbstractServletWebServerFactoryTests {
 
 	@TempDir
 	protected File tempDir;
-
-	@RegisterExtension
-	final OutputCapture output = new OutputCapture();
 
 	protected WebServer webServer;
 
@@ -168,7 +167,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void startCalledTwice() throws Exception {
+	public void startCalledTwice(CapturedOutput capturedOutput) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
@@ -176,7 +175,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		assertThat(this.webServer.getPort()).isEqualTo(port);
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
-		assertThat(this.output.toString()).containsOnlyOnce("started on port");
+		assertThat(capturedOutput).containsOnlyOnce("started on port");
 	}
 
 	@Test
@@ -267,13 +266,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	public void contextPathIsLoggedOnStartup() {
+	public void contextPathIsLoggedOnStartup(CapturedOutput capturedOutput) {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setContextPath("/custom");
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
-		assertThat(this.output.toString())
-				.containsOnlyOnce("with context path '/custom'");
+		assertThat(capturedOutput).containsOnlyOnce("with context path '/custom'");
 	}
 
 	@Test

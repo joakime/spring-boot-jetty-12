@@ -35,7 +35,7 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -50,7 +50,8 @@ import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.convert.DataSizeUnit;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -103,12 +104,10 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ConfigurationPropertiesTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@RegisterExtension
-	public OutputCapture output = new OutputCapture();
 
 	@AfterEach
 	public void cleanup() {
@@ -545,9 +544,10 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenHasMultiplePropertySourcesPlaceholderConfigurerShouldLogWarning() {
+	public void loadWhenHasMultiplePropertySourcesPlaceholderConfigurerShouldLogWarning(
+			CapturedOutput capturedOutput) {
 		load(MultiplePropertySourcesPlaceholderConfigurerConfiguration.class);
-		assertThat(this.output.toString()).contains(
+		assertThat(capturedOutput).contains(
 				"Multiple PropertySourcesPlaceholderConfigurer beans registered");
 	}
 

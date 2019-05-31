@@ -19,11 +19,12 @@ package org.springframework.boot.diagnostics;
 import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,17 +36,15 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class FailureAnalyzersIntegrationTests {
 
-	@RegisterExtension
-	public OutputCapture outputCapture = new OutputCapture();
-
 	@Test
-	public void analysisIsPerformed() {
+	public void analysisIsPerformed(CapturedOutput capturedOutput) {
 		assertThatExceptionOfType(Exception.class)
 				.isThrownBy(() -> new SpringApplicationBuilder(TestConfiguration.class)
 						.web(WebApplicationType.NONE).run());
-		assertThat(this.outputCapture.toString()).contains("APPLICATION FAILED TO START");
+		assertThat(capturedOutput).contains("APPLICATION FAILED TO START");
 	}
 
 	@Configuration(proxyBeanMethods = false)

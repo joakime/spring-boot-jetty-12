@@ -31,7 +31,7 @@ import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
@@ -55,7 +55,8 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.convert.ApplicationConversionService;
-import org.springframework.boot.testsupport.extension.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
@@ -128,12 +129,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Brian Clozel
  * @author Artsiom Yudovin
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class SpringApplicationTests {
 
 	private String headlessProperty;
-
-	@RegisterExtension
-	final OutputCapture output = new OutputCapture();
 
 	private ConfigurableApplicationContext context;
 
@@ -191,26 +190,26 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void customBanner() {
+	public void customBanner(CapturedOutput capturedOutput) {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application
 				.run("--spring.banner.location=classpath:test-banner.txt");
-		assertThat(this.output.toString()).startsWith("Running a Test!");
+		assertThat(capturedOutput).startsWith("Running a Test!");
 	}
 
 	@Test
-	public void customBannerWithProperties() {
+	public void customBannerWithProperties(CapturedOutput capturedOutput) {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run(
 				"--spring.banner.location=classpath:test-banner-with-placeholder.txt",
 				"--test.property=123456");
-		assertThat(this.output.toString()).containsPattern("Running a Test!\\s+123456");
+		assertThat(capturedOutput).containsPattern("Running a Test!\\s+123456");
 	}
 
 	@Test
-	public void imageBannerAndTextBanner() {
+	public void imageBannerAndTextBanner(CapturedOutput capturedOutput) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		MockResourceLoader resourceLoader = new MockResourceLoader();
 		resourceLoader.addResource("banner.gif", "black-and-white.gif");
@@ -218,49 +217,49 @@ public class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setResourceLoader(resourceLoader);
 		application.run();
-		assertThat(this.output.toString()).contains("@@@@").contains("Foo Bar");
+		assertThat(capturedOutput).contains("@@@@").contains("Foo Bar");
 	}
 
 	@Test
-	public void imageBannerLoads() {
+	public void imageBannerLoads(CapturedOutput capturedOutput) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		MockResourceLoader resourceLoader = new MockResourceLoader();
 		resourceLoader.addResource("banner.gif", "black-and-white.gif");
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setResourceLoader(resourceLoader);
 		application.run();
-		assertThat(this.output.toString()).contains("@@@@@@");
+		assertThat(capturedOutput).contains("@@@@@@");
 	}
 
 	@Test
-	public void logsNoActiveProfiles() {
+	public void logsNoActiveProfiles(CapturedOutput capturedOutput) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		assertThat(this.output.toString()).contains(
+		assertThat(capturedOutput).contains(
 				"No active profile set, falling back to default profiles: default");
 	}
 
 	@Test
-	public void logsActiveProfiles() {
+	public void logsActiveProfiles(CapturedOutput capturedOutput) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.profiles.active=myprofiles");
-		assertThat(this.output.toString())
+		assertThat(capturedOutput)
 				.contains("The following profiles are active: myprofile");
 	}
 
 	@Test
-	public void enableBannerInLogViaProperty() {
+	public void enableBannerInLogViaProperty(CapturedOutput capturedOutput) {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.main.banner-mode=log");
 		verify(application, atLeastOnce()).setBannerMode(Banner.Mode.LOG);
-		assertThat(this.output).contains("o.s.b.SpringApplication");
+		assertThat(capturedOutput).contains("o.s.b.SpringApplication");
 	}
 
 	@Test
-	public void setIgnoreBeanInfoPropertyByDefault() {
+	public void setIgnoreBeanInfoPropertyByDefault(CapturedOutput capturedOutput) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
@@ -657,8 +656,8 @@ public class SpringApplicationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void runnersAreCalledAfterStartedIsLoggedAndBeforeApplicationReadyEventIsPublished()
-			throws Exception {
+	public void runnersAreCalledAfterStartedIsLoggedAndBeforeApplicationReadyEventIsPublished(
+			CapturedOutput capturedOutput) throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		ApplicationRunner applicationRunner = mock(ApplicationRunner.class);
 		CommandLineRunner commandLineRunner = mock(CommandLineRunner.class);
@@ -666,14 +665,12 @@ public class SpringApplicationTests {
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 			beanFactory.registerSingleton("commandLineRunner",
 					(CommandLineRunner) (args) -> {
-						assertThat(SpringApplicationTests.this.output.toString())
-								.contains("Started");
+						assertThat(capturedOutput).contains("Started");
 						commandLineRunner.run(args);
 					});
 			beanFactory.registerSingleton("applicationRunner",
 					(ApplicationRunner) (args) -> {
-						assertThat(SpringApplicationTests.this.output.toString())
-								.contains("Started");
+						assertThat(capturedOutput).contains("Started");
 						applicationRunner.run(args);
 					});
 		});
@@ -753,7 +750,8 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void failureInReadyEventListenerCloseApplicationContext() {
+	public void failureInReadyEventListenerCloseApplicationContext(
+			CapturedOutput capturedOutput) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		ExitCodeListener exitCodeListener = new ExitCodeListener();
@@ -769,7 +767,7 @@ public class SpringApplicationTests {
 		verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
 		verify(listener, never()).onApplicationEvent(isA(ApplicationFailedEvent.class));
 		assertThat(exitCodeListener.getExitCode()).isEqualTo(11);
-		assertThat(this.output.toString()).contains("Application run failed");
+		assertThat(capturedOutput).contains("Application run failed");
 	}
 
 	@Test
@@ -870,7 +868,7 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void exceptionFromRefreshIsHandledGracefully() {
+	public void exceptionFromRefreshIsHandledGracefully(CapturedOutput capturedOutput) {
 		final SpringBootExceptionHandler handler = mock(SpringBootExceptionHandler.class);
 		SpringApplication application = new SpringApplication(
 				RefreshFailureConfig.class) {
@@ -890,7 +888,7 @@ public class SpringApplicationTests {
 		verify(handler).registerLoggedException(exceptionCaptor.capture());
 		assertThat(exceptionCaptor.getValue())
 				.hasCauseInstanceOf(RefreshFailureException.class);
-		assertThat(this.output.toString()).doesNotContain("NullPointerException");
+		assertThat(capturedOutput).doesNotContain("NullPointerException");
 	}
 
 	@Test
@@ -1138,7 +1136,8 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void failureResultsInSingleStackTrace() throws Exception {
+	public void failureResultsInSingleStackTrace(CapturedOutput capturedOutput)
+			throws Exception {
 		ThreadGroup group = new ThreadGroup("main");
 		Thread thread = new Thread(group, "main") {
 			@Override
@@ -1151,9 +1150,8 @@ public class SpringApplicationTests {
 		};
 		thread.start();
 		thread.join(6000);
-		int occurrences = StringUtils.countOccurrencesOf(this.output.toString(),
-				"Caused by: java.lang.RuntimeException: ExpectedError");
-		assertThat(occurrences).as("Expected single stacktrace").isEqualTo(1);
+		assertThat(capturedOutput)
+				.containsOnlyOnce("Caused by: java.lang.RuntimeException: ExpectedError");
 	}
 
 	@Test

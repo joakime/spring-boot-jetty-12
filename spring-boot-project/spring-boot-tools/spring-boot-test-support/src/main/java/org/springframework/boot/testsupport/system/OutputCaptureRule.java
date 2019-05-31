@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.system;
+package org.springframework.boot.testsupport.system;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +28,10 @@ import org.junit.runners.model.Statement;
 import static org.hamcrest.Matchers.allOf;
 
 /**
- * JUnit {@code @Rule} to capture output from System.out and System.err.
+ * Internal JUnit {@code @Rule} to capture output from System.out and System.err.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 2.2.0
  */
 public class OutputCaptureRule implements TestRule {
 
@@ -63,15 +62,6 @@ public class OutputCaptureRule implements TestRule {
 				}
 			}
 		};
-	}
-
-	/**
-	 * Resets the current capture session, clearing its captured output.
-	 * @deprecated since 2.2 with no replacement
-	 */
-	@Deprecated
-	public void reset() {
-		OutputCaptureRule.this.delegate.reset();
 	}
 
 	@Override
