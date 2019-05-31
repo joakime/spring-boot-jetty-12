@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.junit.jupiter.api.extension.Extension;
-
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.util.Assert;
@@ -36,7 +34,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Provides access to {@link System#out System.out} and {@link System#err System.err}
- * output that has been capture by the {@link OutputExtension}. Can be used to apply
+ * output that has been capture by the {@link OutputCaptureExtension}. Can be used to apply
  * assertions either using AssertJ or standard JUnit assertions. For example:
  * <pre class="code">
  * assertThat(output).contains("started"); // Checks all output
@@ -47,9 +45,9 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @since 2.2.0
- * @see OutputExtension
+ * @see OutputCaptureExtension
  */
-public class CapturedOutput implements CharSequence, Extension {
+public class CapturedOutput implements CharSequence {
 
 	private final Deque<SystemCapture> systemCaptures = new ArrayDeque<>();
 

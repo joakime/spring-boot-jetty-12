@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import javax.validation.Valid;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfigurat
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.extension.CapturedOutput;
-import org.springframework.boot.test.extension.OutputExtension;
+import org.springframework.boot.test.extension.OutputCaptureExtension;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,15 +56,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Brian Clozel
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 	private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html",
 			StandardCharsets.UTF_8);
 
 	private final LogIdFilter logIdFilter = new LogIdFilter();
-
-	@RegisterExtension
-	CapturedOutput output = OutputExtension.capture();
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
@@ -78,7 +76,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 			.withUserConfiguration(Application.class);
 
 	@Test
-	public void jsonError() {
+	public void jsonError(CapturedOutput capturedOutput) {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get().uri("/").exchange().expectStatus()
@@ -89,7 +87,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
 					.jsonPath("trace").doesNotExist().jsonPath("requestId")
 					.isEqualTo(this.logIdFilter.getLogId());
-			assertThat(this.output).contains("500 Server Error for HTTP GET \"/\"")
+			assertThat(capturedOutput).contains("500 Server Error for HTTP GET \"/\"")
 					.contains("java.lang.IllegalStateException: Expected!");
 		});
 	}
