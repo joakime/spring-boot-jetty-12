@@ -37,8 +37,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCaptureExtension;
 import org.springframework.boot.test.io.CapturedOutput;
+import org.springframework.boot.test.io.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -30,8 +30,8 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.extension.OutputCaptureExtension;
 import org.springframework.boot.test.io.CapturedOutput;
+import org.springframework.boot.test.io.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.test.extension;
+package org.springframework.boot.test.io;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import org.springframework.boot.test.io.CapturedOutput;
+import org.springframework.boot.test.io.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

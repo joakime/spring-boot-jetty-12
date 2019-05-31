@@ -29,7 +29,6 @@ import java.util.function.Predicate;
 
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
-import org.springframework.boot.test.extension.OutputCaptureExtension;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -43,7 +42,7 @@ import org.springframework.util.ClassUtils;
  * @since 2.2.0
  * @see OutputCaptureExtension
  */
-public class OutputCapture implements CapturedOutput {
+class OutputCapture implements CapturedOutput {
 
 	private final Deque<SystemCapture> systemCaptures = new ArrayDeque<>();
 
@@ -52,7 +51,7 @@ public class OutputCapture implements CapturedOutput {
 	/**
 	 * Push a new system capture session onto the stack.
 	 */
-	public final void push() {
+	final void push() {
 		if (this.systemCaptures.isEmpty()) {
 			this.ansiOutputState = AnsiOutputState.saveAndDisable();
 		}
@@ -62,7 +61,7 @@ public class OutputCapture implements CapturedOutput {
 	/**
 	 * Pop the last system capture session from the stack.
 	 */
-	public final void pop() {
+	final void pop() {
 		this.systemCaptures.removeLast().release();
 		if (this.systemCaptures.isEmpty() && this.ansiOutputState != null) {
 			this.ansiOutputState.restore();
@@ -122,7 +121,7 @@ public class OutputCapture implements CapturedOutput {
 	/**
 	 * Resets the current capture session, clearing the captured output.
 	 */
-	public void reset() {
+	void reset() {
 		this.systemCaptures.peek().reset();
 	}
 

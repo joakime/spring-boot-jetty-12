@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.rule;
+package org.springframework.boot.test.io;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hamcrest.Matcher;
+import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.springframework.boot.test.io.OutputCaptureRule;
+import static org.hamcrest.Matchers.allOf;
 
 /**
  * JUnit {@code @Rule} to capture output from System.out and System.err.
@@ -29,27 +33,45 @@ import org.springframework.boot.test.io.OutputCaptureRule;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.4.0
- * @deprecated since 2.2.0 in favor of {@link OutputCaptureRule}
  */
-@Deprecated
-public class OutputCapture implements TestRule {
+public class OutputCaptureRule implements TestRule {
 
-	private final OutputCaptureRule delegate = new OutputCaptureRule();
+	private final org.springframework.boot.test.io.OutputCapture delegate = new org.springframework.boot.test.io.OutputCapture();
+
+	private List<Matcher<? super String>> matchers = new ArrayList<>();
 
 	@Override
 	public Statement apply(Statement base, Description description) {
-		return this.delegate.apply(base, description);
+		return new Statement() {
+			@Override
+			public void evaluate() throws Throwable {
+				OutputCaptureRule.this.delegate.push();
+				try {
+					base.evaluate();
+				}
+				finally {
+					try {
+						if (!OutputCaptureRule.this.matchers.isEmpty()) {
+							String output = OutputCaptureRule.this.delegate.toString();
+							Assert.assertThat(output, allOf(OutputCaptureRule.this.matchers));
+						}
+					}
+					finally {
+						OutputCaptureRule.this.delegate.pop();
+					}
+				}
+			}
+		};
 	}
 
 	/**
 	 * Discard all currently accumulated output.
 	 */
 	public void reset() {
-		this.delegate.reset();
+		OutputCaptureRule.this.delegate.reset();
 	}
 
 	public void flush() {
-		this.delegate.flush();
 
 	}
 
@@ -64,7 +86,7 @@ public class OutputCapture implements TestRule {
 	 * @param matcher the matcher
 	 */
 	public void expect(Matcher<? super String> matcher) {
-		this.delegate.expect(matcher);
+		this.matchers.add(matcher);
 	}
 
 }

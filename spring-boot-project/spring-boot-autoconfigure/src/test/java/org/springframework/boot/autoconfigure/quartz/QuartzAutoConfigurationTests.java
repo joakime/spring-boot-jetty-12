@@ -45,8 +45,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.extension.OutputCaptureExtension;
 import org.springframework.boot.test.io.CapturedOutput;
+import org.springframework.boot.test.io.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

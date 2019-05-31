@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.rule;
+package org.springframework.boot.test.io;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,15 +22,14 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OutputCapture}.
+ * Tests for {@link OutputCaptureRule}.
  *
  * @author Roland Weisleder
  */
-@Deprecated
-public class OutputCaptureTests {
+public class OutputCaptureRuleTests {
 
 	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	public OutputCaptureRule outputCapture = new OutputCaptureRule();
 
 	@Test
 	public void toStringShouldReturnAllCapturedOutput() {

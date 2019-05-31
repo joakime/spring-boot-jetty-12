@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.extension.OutputCaptureExtension;
 import org.springframework.boot.test.io.CapturedOutput;
+import org.springframework.boot.test.io.OutputCaptureExtension;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
 

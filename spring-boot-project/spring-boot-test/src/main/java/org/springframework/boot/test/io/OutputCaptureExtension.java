@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.extension;
+package org.springframework.boot.test.io;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -25,9 +25,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-
-import org.springframework.boot.test.io.CapturedOutput;
-import org.springframework.boot.test.io.OutputCapture;
 
 /**
  * JUnit5 {@code @Extension} to capture output {@link System#out System.out} and

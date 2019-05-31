@@ -24,8 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.extension.OutputCaptureExtension;
 import org.springframework.boot.test.io.CapturedOutput;
+import org.springframework.boot.test.io.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
 
 import static org.assertj.core.api.Assertions.assertThat;

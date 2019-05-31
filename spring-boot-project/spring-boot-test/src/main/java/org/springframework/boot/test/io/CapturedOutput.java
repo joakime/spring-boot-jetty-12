@@ -16,8 +16,6 @@
 
 package org.springframework.boot.test.io;
 
-import org.springframework.boot.test.extension.OutputCaptureExtension;
-
 /**
  * Provides access to {@link System#out System.out} and {@link System#err System.err}
  * output that has been capture by the {@link OutputCaptureExtension}. Can be used to

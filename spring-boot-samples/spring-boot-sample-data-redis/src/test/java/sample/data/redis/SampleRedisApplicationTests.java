@@ -19,8 +19,8 @@ package sample.data.redis;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.extension.OutputCaptureExtension;
 import org.springframework.boot.test.io.CapturedOutput;
+import org.springframework.boot.test.io.OutputCaptureExtension;
 import org.springframework.data.redis.RedisConnectionFailureException;
 
 import static org.assertj.core.api.Assertions.assertThat;
