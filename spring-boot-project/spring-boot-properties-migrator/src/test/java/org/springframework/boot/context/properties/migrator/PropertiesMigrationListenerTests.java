@@ -16,12 +16,13 @@
 
 package org.springframework.boot.context.properties.migrator;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,14 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class PropertiesMigrationListenerTests {
-
-	@Rule
-	public final OutputCaptureRule output = new OutputCaptureRule();
 
 	private ConfigurableApplicationContext context;
 
-	@After
+	@AfterEach
 	public void closeContext() {
 		if (this.context != null) {
 			this.context.close();
@@ -47,9 +46,9 @@ public class PropertiesMigrationListenerTests {
 	}
 
 	@Test
-	public void sampleReport() {
+	public void sampleReport(CapturedOutput capturedOutput) {
 		this.context = createSampleApplication().run("--banner.charset=UTF8");
-		assertThat(this.output.toString()).contains("commandLineArgs")
+		assertThat(capturedOutput).contains("commandLineArgs")
 				.contains("spring.banner.charset")
 				.contains("Each configuration key has been temporarily mapped")
 				.doesNotContain("Please refer to the migration guide");
