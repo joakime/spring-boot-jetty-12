@@ -22,10 +22,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
@@ -40,14 +39,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DevToolsHomePropertiesPostProcessorTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	private File home;
 
-	@Before
-	public void setup() throws IOException {
-		this.home = this.temp.newFolder();
+	@BeforeEach
+	public void setup(@TempDir File tempDir) throws IOException {
+		this.home = tempDir;
 	}
 
 	@Test

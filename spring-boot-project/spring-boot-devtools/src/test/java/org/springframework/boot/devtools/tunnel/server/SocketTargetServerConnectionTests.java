@@ -24,8 +24,8 @@ import java.nio.channels.ByteChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -43,7 +43,7 @@ public class SocketTargetServerConnectionTests {
 
 	private SocketTargetServerConnection connection;
 
-	@Before
+	@BeforeEach
 	public void setup() throws IOException {
 		this.server = new MockServer();
 		this.connection = new SocketTargetServerConnection(() -> this.server.getPort());

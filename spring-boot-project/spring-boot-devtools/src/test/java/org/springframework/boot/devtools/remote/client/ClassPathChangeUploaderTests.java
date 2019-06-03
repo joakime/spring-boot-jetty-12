@@ -26,10 +26,9 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
@@ -55,14 +54,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 public class ClassPathChangeUploaderTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	private MockClientHttpRequestFactory requestFactory;
 
 	private ClassPathChangeUploader uploader;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.requestFactory = new MockClientHttpRequestFactory();
 		this.uploader = new ClassPathChangeUploader("http://localhost/upload",
@@ -100,8 +96,7 @@ public class ClassPathChangeUploaderTests {
 	}
 
 	@Test
-	public void sendsClassLoaderFiles() throws Exception {
-		File sourceFolder = this.temp.newFolder();
+	public void sendsClassLoaderFiles(@TempDir File sourceFolder) throws Exception {
 		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
 		this.requestFactory.willRespond(HttpStatus.OK);
 		this.uploader.onApplicationEvent(event);
@@ -111,8 +106,7 @@ public class ClassPathChangeUploaderTests {
 	}
 
 	@Test
-	public void retriesOnSocketException() throws Exception {
-		File sourceFolder = this.temp.newFolder();
+	public void retriesOnSocketException(@TempDir File sourceFolder) throws Exception {
 		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
 		this.requestFactory.willRespond(new SocketException());
 		this.requestFactory.willRespond(HttpStatus.OK);

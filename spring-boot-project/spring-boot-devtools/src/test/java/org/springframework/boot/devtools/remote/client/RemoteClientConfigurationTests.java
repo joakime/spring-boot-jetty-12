@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -37,7 +37,8 @@ import org.springframework.boot.devtools.remote.server.Dispatcher;
 import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -59,19 +60,14 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
+@ExtendWith({ OutputCaptureExtension.class, MockRestarter.class })
 public class RemoteClientConfigurationTests {
-
-	@Rule
-	public MockRestarter restarter = new MockRestarter();
-
-	@Rule
-	public OutputCaptureRule output = new OutputCaptureRule();
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	private AnnotationConfigApplicationContext clientContext;
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		if (this.context != null) {
 			this.context.close();
@@ -82,21 +78,21 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	public void warnIfRestartDisabled() {
+	public void warnIfRestartDisabled(CapturedOutput capturedOutput) {
 		configure("spring.devtools.remote.restart.enabled:false");
-		assertThat(this.output.toString()).contains("Remote restart is disabled");
+		assertThat(capturedOutput).contains("Remote restart is disabled");
 	}
 
 	@Test
-	public void warnIfNotHttps() {
+	public void warnIfNotHttps(CapturedOutput capturedOutput) {
 		configure("http://localhost", true);
-		assertThat(this.output.toString()).contains("is insecure");
+		assertThat(capturedOutput).contains("is insecure");
 	}
 
 	@Test
-	public void doesntWarnIfUsingHttps() {
+	public void doesntWarnIfUsingHttps(CapturedOutput capturedOutput) {
 		configure("https://localhost", true);
-		assertThat(this.output.toString()).doesNotContain("is insecure");
+		assertThat(capturedOutput).doesNotContain("is insecure");
 	}
 
 	@Test

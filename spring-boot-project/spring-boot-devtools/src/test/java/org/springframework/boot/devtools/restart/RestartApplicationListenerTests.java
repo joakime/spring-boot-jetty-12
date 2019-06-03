@@ -18,17 +18,18 @@ package org.springframework.boot.devtools.restart;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -43,17 +44,15 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class RestartApplicationListenerTests {
 
 	private static final String ENABLED_PROPERTY = "spring.devtools.restart.enabled";
 
 	private static final String[] ARGS = new String[] { "a", "b", "c" };
 
-	@Rule
-	public final OutputCaptureRule output = new OutputCaptureRule();
-
-	@Before
-	@After
+	@BeforeEach
+	@AfterEach
 	public void cleanup() {
 		Restarter.clearInstance();
 		System.clearProperty(ENABLED_PROPERTY);
@@ -84,12 +83,11 @@ public class RestartApplicationListenerTests {
 	}
 
 	@Test
-	public void disableWithSystemProperty() {
+	public void disableWithSystemProperty(CapturedOutput capturedOutput) {
 		System.setProperty(ENABLED_PROPERTY, "false");
 		testInitialize(false);
 		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", false);
-		assertThat(this.output.toString())
-				.contains("Restart disabled due to System property");
+		assertThat(capturedOutput).contains("Restart disabled due to System property");
 	}
 
 	private void testInitialize(boolean failed) {

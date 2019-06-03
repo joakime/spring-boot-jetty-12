@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
@@ -52,10 +52,10 @@ public class FileSystemWatcherTests {
 	private List<Set<ChangedFiles>> changes = Collections
 			.synchronizedList(new ArrayList<>());
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		setupWatcher(20, 10);
 	}
@@ -120,7 +120,7 @@ public class FileSystemWatcherTests {
 	public void cannotAddSourceFolderToStartedListener() throws Exception {
 		this.watcher.start();
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.watcher.addSourceFolder(this.temp.newFolder()))
+				.isThrownBy(() -> this.watcher.addSourceFolder(this.tempDir))
 				.withMessageContaining("FileSystemWatcher already started");
 	}
 
@@ -146,7 +146,7 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void createSourceFolderAndAddFile() throws IOException {
-		File folder = new File(this.temp.getRoot(), "does/not/exist");
+		File folder = new File(this.tempDir, "does/not/exist");
 		assertThat(folder.exists()).isFalse();
 		this.watcher.addSourceFolder(folder);
 		this.watcher.start();
@@ -186,7 +186,8 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void withExistingFiles() throws Exception {
-		File folder = this.temp.newFolder();
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		touch(new File(folder, "test.txt"));
 		this.watcher.addSourceFolder(folder);
 		this.watcher.start();
@@ -199,8 +200,10 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void multipleSources() throws Exception {
-		File folder1 = this.temp.newFolder();
-		File folder2 = this.temp.newFolder();
+		File folder1 = new File(this.tempDir, UUID.randomUUID().toString());
+		folder1.mkdir();
+		File folder2 = new File(this.tempDir, UUID.randomUUID().toString());
+		folder2.mkdir();
 		this.watcher.addSourceFolder(folder1);
 		this.watcher.addSourceFolder(folder2);
 		this.watcher.start();
@@ -223,7 +226,8 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void multipleListeners() throws Exception {
-		File folder = this.temp.newFolder();
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<>();
 		this.watcher.addSourceFolder(folder);
 		this.watcher.addListener(listener2Changes::addAll);
@@ -238,7 +242,8 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void modifyDeleteAndAdd() throws Exception {
-		File folder = this.temp.newFolder();
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		File modify = touch(new File(folder, "modify.txt"));
 		File delete = touch(new File(folder, "delete.txt"));
 		this.watcher.addSourceFolder(folder);
@@ -258,7 +263,8 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void withTriggerFilter() throws Exception {
-		File folder = this.temp.newFolder();
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		File file = touch(new File(folder, "file.txt"));
 		File trigger = touch(new File(folder, "trigger.txt"));
 		this.watcher.addSourceFolder(folder);
@@ -285,7 +291,8 @@ public class FileSystemWatcherTests {
 	}
 
 	private File startWithNewFolder() throws IOException {
-		File folder = this.temp.newFolder();
+		File folder = new File(this.tempDir, UUID.randomUUID().toString());
+		folder.mkdir();
 		this.watcher.addSourceFolder(folder);
 		this.watcher.start();
 		return folder;

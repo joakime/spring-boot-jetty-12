@@ -18,11 +18,11 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
@@ -37,14 +37,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 public class FolderSnapshotTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private File folder;
 
 	private FolderSnapshot initialSnapshot;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		this.folder = createTestFolderStructure();
 		this.initialSnapshot = new FolderSnapshot(this.folder);
@@ -58,14 +58,15 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void folderMustNotBeFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "file");
+		file.createNewFile();
 		assertThatIllegalArgumentException().isThrownBy(() -> new FolderSnapshot(file))
 				.withMessageContaining("Folder '" + file + "' must not be a file");
 	}
 
 	@Test
 	public void folderDoesNotHaveToExist() throws Exception {
-		File file = new File(this.temporaryFolder.getRoot(), "does/not/exist");
+		File file = new File(this.tempDir, "does/not/exist");
 		FolderSnapshot snapshot = new FolderSnapshot(file);
 		assertThat(snapshot).isEqualTo(new FolderSnapshot(file));
 	}
@@ -149,7 +150,7 @@ public class FolderSnapshotTests {
 	}
 
 	private File createTestFolderStructure() throws IOException {
-		File root = this.temporaryFolder.newFolder();
+		File root = new File(this.tempDir, UUID.randomUUID().toString());
 		File folder1 = new File(root, "folder1");
 		folder1.mkdirs();
 		FileCopyUtils.copy("abc".getBytes(), new File(folder1, "file1"));

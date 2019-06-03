@@ -22,16 +22,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ThreadFactory;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
@@ -54,17 +55,15 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class RestarterTests {
 
-	@Rule
-	public OutputCaptureRule out = new OutputCaptureRule();
-
-	@Before
+	@BeforeEach
 	public void setup() {
 		RestarterInitializer.setRestarterInstance();
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		Restarter.clearInstance();
 	}
@@ -77,12 +76,12 @@ public class RestarterTests {
 	}
 
 	@Test
-	public void testRestart() throws Exception {
+	public void testRestart(CapturedOutput capturedOutput) throws Exception {
 		Restarter.clearInstance();
 		Thread thread = new Thread(SampleApplication::main);
 		thread.start();
 		Thread.sleep(2600);
-		String output = this.out.toString();
+		String output = capturedOutput.toString();
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0")).isGreaterThan(1);
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1")).isGreaterThan(1);
 		assertThat(CloseCountingApplicationListener.closed).isGreaterThan(0);

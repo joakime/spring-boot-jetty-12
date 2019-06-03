@@ -25,20 +25,20 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.Executor;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,10 +50,8 @@ import static org.mockito.Mockito.verify;
  * @author Rob Winch
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class HttpTunnelConnectionTests {
-
-	@Rule
-	public OutputCaptureRule outputCapture = new OutputCaptureRule();
 
 	private String url;
 
@@ -66,7 +64,7 @@ public class HttpTunnelConnectionTests {
 
 	private MockClientHttpRequestFactory requestFactory = new MockClientHttpRequestFactory();
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.url = "http://localhost:12345";
@@ -144,12 +142,13 @@ public class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	public void connectFailureLogsWarning() throws Exception {
+	public void connectFailureLogsWarning(CapturedOutput capturedOutput)
+			throws Exception {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);
 		assertThat(tunnel.isOpen()).isFalse();
-		this.outputCapture.expect(containsString(
-				"Failed to connect to remote application at http://localhost:12345"));
+		assertThat(capturedOutput).contains(
+				"Failed to connect to remote application at http://localhost:12345");
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {

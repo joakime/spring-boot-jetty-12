@@ -29,10 +29,9 @@ import java.util.List;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.FileCopyUtils;
@@ -55,9 +54,6 @@ public class RestartClassLoaderTests {
 
 	private static final String PACKAGE_PATH = PACKAGE.replace('.', '/');
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	private File sampleJarFile;
 
 	private URLClassLoader parentClassLoader;
@@ -66,9 +62,9 @@ public class RestartClassLoaderTests {
 
 	private RestartClassLoader reloadClassLoader;
 
-	@Before
-	public void setup() throws Exception {
-		this.sampleJarFile = createSampleJarFile();
+	@BeforeEach
+	public void setup(@TempDir File tempDir) throws Exception {
+		this.sampleJarFile = createSampleJarFile(tempDir);
 		URL url = this.sampleJarFile.toURI().toURL();
 		ClassLoader classLoader = getClass().getClassLoader();
 		URL[] urls = new URL[] { url };
@@ -78,8 +74,8 @@ public class RestartClassLoaderTests {
 				this.updatedFiles);
 	}
 
-	private File createSampleJarFile() throws IOException {
-		File file = this.temp.newFile("sample.jar");
+	private File createSampleJarFile(File tempDir) throws IOException {
+		File file = new File(tempDir, "sample.jar");
 		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(file));
 		jarOutputStream.putNextEntry(new ZipEntry(PACKAGE_PATH + "/Sample.class"));
 		StreamUtils.copy(getClass().getResourceAsStream("Sample.class"), jarOutputStream);

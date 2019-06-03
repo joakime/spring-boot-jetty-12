@@ -27,9 +27,9 @@ import java.util.function.Supplier;
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.jasper.EmbeddedServletOptions;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -71,14 +71,12 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Vladimir Tsanev
  */
+@ExtendWith(MockRestarter.class)
 public class LocalDevToolsAutoConfigurationTests {
-
-	@Rule
-	public MockRestarter mockRestarter = new MockRestarter();
 
 	private ConfigurableApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		if (this.context != null) {
 			this.context.close();
@@ -173,21 +171,23 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartTriggeredOnClassPathChangeWithRestart() throws Exception {
+	public void restartTriggeredOnClassPathChangeWithRestart(Restarter restarter)
+			throws Exception {
 		this.context = getContext(() -> initializeAndRun(Config.class));
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.emptySet(), true);
 		this.context.publishEvent(event);
-		verify(this.mockRestarter.getMock()).restart(any(FailureHandler.class));
+		verify(restarter).restart(any(FailureHandler.class));
 	}
 
 	@Test
-	public void restartNotTriggeredOnClassPathChangeWithRestart() throws Exception {
+	public void restartNotTriggeredOnClassPathChangeWithRestart(Restarter restarter)
+			throws Exception {
 		this.context = getContext(() -> initializeAndRun(Config.class));
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.emptySet(), false);
 		this.context.publishEvent(event);
-		verify(this.mockRestarter.getMock(), never()).restart();
+		verify(restarter, never()).restart();
 	}
 
 	@Test

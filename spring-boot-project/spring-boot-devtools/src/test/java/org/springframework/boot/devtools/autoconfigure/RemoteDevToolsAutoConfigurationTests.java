@@ -19,10 +19,10 @@ package org.springframework.boot.devtools.autoconfigure;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -52,14 +52,12 @@ import static org.mockito.Mockito.mock;
  * @author Rob Winch
  * @author Phillip Webb
  */
+@ExtendWith(MockRestarter.class)
 public class RemoteDevToolsAutoConfigurationTests {
 
 	private static final String DEFAULT_CONTEXT_PATH = RemoteDevToolsProperties.DEFAULT_CONTEXT_PATH;
 
 	private static final String DEFAULT_SECRET_HEADER_NAME = RemoteDevToolsProperties.DEFAULT_SECRET_HEADER_NAME;
-
-	@Rule
-	public MockRestarter mockRestarter = new MockRestarter();
 
 	private AnnotationConfigServletWebApplicationContext context;
 
@@ -69,14 +67,14 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 	private MockFilterChain chain;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.request = new MockHttpServletRequest();
 		this.response = new MockHttpServletResponse();
 		this.chain = new MockFilterChain();
 	}
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();

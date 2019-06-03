@@ -16,16 +16,16 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -42,16 +42,13 @@ import static org.mockito.Mockito.verify;
 public class DevToolsPooledDataSourceAutoConfigurationTests
 		extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
-
-	@Before
-	public void before() throws IOException {
+	@BeforeEach
+	public void before(@TempDir File tempDir) throws IOException {
 		System.setProperty("derby.stream.error.file",
-				this.temp.newFile("derby.log").getAbsolutePath());
+				new File(tempDir, "derby.log").getAbsolutePath());
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		System.clearProperty("derby.stream.error.file");
 	}

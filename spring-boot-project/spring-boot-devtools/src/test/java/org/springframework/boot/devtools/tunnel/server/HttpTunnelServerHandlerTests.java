@@ -16,7 +16,7 @@
 
 package org.springframework.boot.devtools.tunnel.server;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;

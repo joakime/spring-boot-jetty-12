@@ -18,8 +18,8 @@ package org.springframework.boot.devtools.autoconfigure;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +37,7 @@ public class OnEnabledDevToolsConditionTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class);

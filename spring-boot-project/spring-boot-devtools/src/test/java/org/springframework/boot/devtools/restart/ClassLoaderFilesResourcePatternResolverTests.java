@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@ package org.springframework.boot.devtools.restart;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.restart.ClassLoaderFilesResourcePatternResolver.DeletedClassLoaderFileResource;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
@@ -54,14 +53,11 @@ import static org.mockito.Mockito.verify;
  */
 public class ClassLoaderFilesResourcePatternResolverTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	private ClassLoaderFiles files;
 
 	private ClassLoaderFilesResourcePatternResolver resolver;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.files = new ClassLoaderFiles();
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(
@@ -89,8 +85,8 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void getResourceWhenDeletedShouldReturnDeletedResource() throws Exception {
-		File folder = this.temp.newFolder();
+	public void getResourceWhenDeletedShouldReturnDeletedResource(@TempDir File folder)
+			throws Exception {
 		File file = createFile(folder, "name.class");
 		this.files.addFile(folder.getName(), "name.class",
 				new ClassLoaderFile(Kind.DELETED, null));
@@ -100,8 +96,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void getResourcesShouldReturnResources() throws Exception {
-		File folder = this.temp.newFolder();
+	public void getResourcesShouldReturnResources(@TempDir File folder) throws Exception {
 		createFile(folder, "name.class");
 		Resource[] resources = this.resolver
 				.getResources("file:" + folder.getAbsolutePath() + "/**");
@@ -109,8 +104,8 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void getResourcesWhenDeletedShouldFilterDeleted() throws Exception {
-		File folder = this.temp.newFolder();
+	public void getResourcesWhenDeletedShouldFilterDeleted(@TempDir File folder)
+			throws Exception {
 		createFile(folder, "name.class");
 		this.files.addFile(folder.getName(), "name.class",
 				new ClassLoaderFile(Kind.DELETED, null));

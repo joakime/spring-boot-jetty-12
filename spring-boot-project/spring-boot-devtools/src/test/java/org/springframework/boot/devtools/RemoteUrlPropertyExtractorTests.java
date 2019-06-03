@@ -17,8 +17,8 @@
 package org.springframework.boot.devtools;
 
 import ch.qos.logback.classic.Logger;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 public class RemoteUrlPropertyExtractorTests {
 
-	@After
+	@AfterEach
 	public void preventRunFailuresFromPollutingLoggerContext() {
 		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class))
 				.getLoggerContext().getTurboFilterList().clear();

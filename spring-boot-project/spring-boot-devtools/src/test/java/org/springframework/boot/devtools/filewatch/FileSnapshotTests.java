@@ -19,11 +19,11 @@ package org.springframework.boot.devtools.filewatch;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.FileCopyUtils;
 
@@ -42,8 +42,8 @@ public class FileSnapshotTests {
 	private static final long MODIFIED = new Date().getTime()
 			- TimeUnit.DAYS.toMillis(10);
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
 	public void fileMustNotBeNull() {
@@ -53,8 +53,9 @@ public class FileSnapshotTests {
 
 	@Test
 	public void fileMustNotBeAFolder() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSnapshot(this.temporaryFolder.newFolder()))
+		File file = new File(this.tempDir, "file");
+		file.mkdir();
+		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(file))
 				.withMessageContaining("File must not be a folder");
 	}
 
@@ -93,7 +94,7 @@ public class FileSnapshotTests {
 	}
 
 	private File createNewFile(String content, long lastModified) throws IOException {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, UUID.randomUUID().toString());
 		setupFile(file, content, lastModified);
 		return file;
 	}

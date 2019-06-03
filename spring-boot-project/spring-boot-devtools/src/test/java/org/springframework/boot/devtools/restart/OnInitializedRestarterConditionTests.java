@@ -18,9 +18,9 @@ package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,8 +41,8 @@ public class OnInitializedRestarterConditionTests {
 
 	private static Object wait = new Object();
 
-	@Before
-	@After
+	@BeforeEach
+	@AfterEach
 	public void cleanup() {
 		Restarter.clearInstance();
 	}

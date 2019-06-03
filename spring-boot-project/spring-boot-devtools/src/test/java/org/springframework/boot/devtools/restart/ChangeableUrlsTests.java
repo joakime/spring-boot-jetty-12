@@ -21,14 +21,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.UUID;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipOutputStream;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.StringUtils;
 
@@ -42,8 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ChangeableUrlsTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
 	public void folderUrl() throws Exception {
@@ -53,7 +53,9 @@ public class ChangeableUrlsTests {
 
 	@Test
 	public void fileUrl() throws Exception {
-		URL url = this.temporaryFolder.newFile().toURI().toURL();
+		File file = new File(this.tempDir, "file");
+		file.createNewFile();
+		URL url = file.toURI().toURL();
 		assertThat(ChangeableUrls.fromUrls(url)).isEmpty();
 	}
 
@@ -80,8 +82,11 @@ public class ChangeableUrlsTests {
 
 	@Test
 	public void urlsFromJarClassPathAreConsidered() throws Exception {
-		File relative = this.temporaryFolder.newFolder();
-		URL absoluteUrl = this.temporaryFolder.newFolder().toURI().toURL();
+		File relative = new File(this.tempDir, UUID.randomUUID().toString());
+		relative.mkdir();
+		File absolute = new File(this.tempDir, UUID.randomUUID().toString());
+		absolute.mkdirs();
+		URL absoluteUrl = absolute.toURI().toURL();
 		File jarWithClassPath = makeJarFileWithUrlsInManifestClassPath(
 				"project-core/target/classes/", "project-web/target/classes/",
 				"does-not-exist/target/classes", relative.getName() + "/", absoluteUrl);
@@ -98,7 +103,7 @@ public class ChangeableUrlsTests {
 	}
 
 	private URL makeUrl(String name) throws IOException {
-		File file = this.temporaryFolder.newFolder();
+		File file = new File(this.tempDir, UUID.randomUUID().toString());
 		file = new File(file, name);
 		file = new File(file, "target");
 		file = new File(file, "classes");
@@ -107,7 +112,7 @@ public class ChangeableUrlsTests {
 	}
 
 	private File makeJarFileWithUrlsInManifestClassPath(Object... urls) throws Exception {
-		File classpathJar = this.temporaryFolder.newFile("classpath.jar");
+		File classpathJar = new File(this.tempDir, "classpath.jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue(Attributes.Name.MANIFEST_VERSION.toString(),
 				"1.0");
@@ -118,7 +123,7 @@ public class ChangeableUrlsTests {
 	}
 
 	private URL makeJarFileWithNoManifest() throws Exception {
-		File classpathJar = this.temporaryFolder.newFile("no-manifest.jar");
+		File classpathJar = new File(this.tempDir, "no-manifest.jar");
 		new ZipOutputStream(new FileOutputStream(classpathJar)).close();
 		return classpathJar.toURI().toURL();
 	}
