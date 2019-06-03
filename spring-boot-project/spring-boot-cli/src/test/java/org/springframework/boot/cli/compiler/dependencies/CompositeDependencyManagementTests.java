@@ -18,8 +18,8 @@ package org.springframework.boot.cli.compiler.dependencies;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -39,7 +39,7 @@ public class CompositeDependencyManagementTests {
 	@Mock
 	private DependencyManagement dependencyManagement2;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}

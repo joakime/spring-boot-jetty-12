@@ -27,10 +27,9 @@ import java.util.zip.ZipOutputStream;
 import joptsimple.OptionSet;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
@@ -48,9 +47,6 @@ import static org.mockito.Mockito.verify;
  */
 public class InitCommandTests extends AbstractHttpClientMockTests {
 
-	@Rule
-	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
-
 	private final TestableInitCommandOptionHandler handler;
 
 	private final InitCommand command;
@@ -58,7 +54,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	@Captor
 	private ArgumentCaptor<HttpUriRequest> requestCaptor;
 
-	@Before
+	@BeforeEach
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
 	}
@@ -113,42 +109,40 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void generateProjectAndExtract() throws Exception {
-		File folder = this.temporaryFolder.newFolder();
+	public void generateProjectAndExtract(@TempDir File tempDir) throws Exception {
 		byte[] archive = createFakeZipArchive("test.txt", "Fake content");
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
-		assertThat(this.command.run("--extract", folder.getAbsolutePath()))
+		assertThat(this.command.run("--extract", tempDir.getAbsolutePath()))
 				.isEqualTo(ExitStatus.OK);
-		File archiveFile = new File(folder, "test.txt");
+		File archiveFile = new File(tempDir, "test.txt");
 		assertThat(archiveFile).exists();
 	}
 
 	@Test
-	public void generateProjectAndExtractWillNotWriteEntriesOutsideOutputLocation()
-			throws Exception {
-		File folder = this.temporaryFolder.newFolder();
+	public void generateProjectAndExtractWillNotWriteEntriesOutsideOutputLocation(
+			@TempDir File tempDir) throws Exception {
 		byte[] archive = createFakeZipArchive("../outside.txt", "Fake content");
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
-		assertThat(this.command.run("--extract", folder.getAbsolutePath()))
+		assertThat(this.command.run("--extract", tempDir.getAbsolutePath()))
 				.isEqualTo(ExitStatus.ERROR);
-		File archiveFile = new File(folder.getParentFile(), "outside.txt");
+		File archiveFile = new File(tempDir.getParentFile(), "outside.txt");
 		assertThat(archiveFile).doesNotExist();
 	}
 
 	@Test
-	public void generateProjectAndExtractWithConvention() throws Exception {
-		File folder = this.temporaryFolder.newFolder();
+	public void generateProjectAndExtractWithConvention(@TempDir File tempDir)
+			throws Exception {
 		byte[] archive = createFakeZipArchive("test.txt", "Fake content");
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
-		assertThat(this.command.run(folder.getAbsolutePath() + "/"))
+		assertThat(this.command.run(tempDir.getAbsolutePath() + "/"))
 				.isEqualTo(ExitStatus.OK);
-		File archiveFile = new File(folder, "test.txt");
+		File archiveFile = new File(tempDir, "test.txt");
 		assertThat(archiveFile).exists();
 	}
 
@@ -192,8 +186,8 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void generateProjectAndExtractUnsupportedArchive() throws Exception {
-		File folder = this.temporaryFolder.newFolder();
+	public void generateProjectAndExtractUnsupportedArchive(@TempDir File tempDir)
+			throws Exception {
 		String fileName = UUID.randomUUID().toString() + ".zip";
 		File file = new File(fileName);
 		assertThat(file.exists()).as("file should not exist").isFalse();
@@ -202,7 +196,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 			MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 					"application/foobar", fileName, archive);
 			mockSuccessfulProjectGeneration(request);
-			assertThat(this.command.run("--extract", folder.getAbsolutePath()))
+			assertThat(this.command.run("--extract", tempDir.getAbsolutePath()))
 					.isEqualTo(ExitStatus.OK);
 			assertThat(file.exists()).as("file should have been saved instead").isTrue();
 		}
@@ -212,8 +206,8 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void generateProjectAndExtractUnknownContentType() throws Exception {
-		File folder = this.temporaryFolder.newFolder();
+	public void generateProjectAndExtractUnknownContentType(@TempDir File tempDir)
+			throws Exception {
 		String fileName = UUID.randomUUID().toString() + ".zip";
 		File file = new File(fileName);
 		assertThat(file.exists()).as("file should not exist").isFalse();
@@ -222,7 +216,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 			MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 					null, fileName, archive);
 			mockSuccessfulProjectGeneration(request);
-			assertThat(this.command.run("--extract", folder.getAbsolutePath()))
+			assertThat(this.command.run("--extract", tempDir.getAbsolutePath()))
 					.isEqualTo(ExitStatus.OK);
 			assertThat(file.exists()).as("file should have been saved instead").isTrue();
 		}
@@ -232,8 +226,9 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void fileNotOverwrittenByDefault() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	public void fileNotOverwrittenByDefault(@TempDir File tempDir) throws Exception {
+		File file = new File(tempDir, "test.file");
+		file.createNewFile();
 		long fileLength = file.length();
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", file.getAbsolutePath());
@@ -245,8 +240,9 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void overwriteFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	public void overwriteFile(@TempDir File tempDir) throws Exception {
+		File file = new File(tempDir, "test.file");
+		file.createNewFile();
 		long fileLength = file.length();
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", file.getAbsolutePath());
@@ -256,9 +252,9 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void fileInArchiveNotOverwrittenByDefault() throws Exception {
-		File folder = this.temporaryFolder.newFolder();
-		File conflict = new File(folder, "test.txt");
+	public void fileInArchiveNotOverwrittenByDefault(@TempDir File tempDir)
+			throws Exception {
+		File conflict = new File(tempDir, "test.txt");
 		assertThat(conflict.createNewFile()).as("Should have been able to create file")
 				.isTrue();
 		long fileLength = conflict.length();
@@ -267,7 +263,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
-		assertThat(this.command.run("--extract", folder.getAbsolutePath()))
+		assertThat(this.command.run("--extract", tempDir.getAbsolutePath()))
 				.isEqualTo(ExitStatus.ERROR);
 		assertThat(conflict.length()).as("File should not have changed")
 				.isEqualTo(fileLength);
@@ -301,9 +297,8 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void overwriteFileInArchive() throws Exception {
-		File folder = this.temporaryFolder.newFolder();
-		File conflict = new File(folder, "test.txt");
+	public void overwriteFileInArchive(@TempDir File tempDir) throws Exception {
+		File conflict = new File(tempDir, "test.txt");
 		assertThat(conflict.createNewFile()).as("Should have been able to create file")
 				.isTrue();
 		long fileLength = conflict.length();
@@ -312,7 +307,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
-		assertThat(this.command.run("--force", "--extract", folder.getAbsolutePath()))
+		assertThat(this.command.run("--force", "--extract", tempDir.getAbsolutePath()))
 				.isEqualTo(ExitStatus.OK);
 		assertThat(fileLength != conflict.length()).as("File should have changed")
 				.isTrue();

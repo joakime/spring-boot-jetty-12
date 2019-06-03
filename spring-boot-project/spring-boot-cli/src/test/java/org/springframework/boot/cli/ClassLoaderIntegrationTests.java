@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,12 @@
 
 package org.springframework.boot.cli;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,10 +30,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ClassLoaderIntegrationTests {
 
-	@Rule
-	public CliTester cli = new CliTester("src/test/resources/");
+	@RegisterExtension
+	private CliTester cli;
+
+	ClassLoaderIntegrationTests(CapturedOutput capturedOutput) {
+		this.cli = new CliTester("src/test/resources/", capturedOutput);
+	}
 
 	@Test
 	public void runWithIsolatedClassLoader() throws Exception {

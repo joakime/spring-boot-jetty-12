@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.io.ReaderSource;
 import org.codehaus.groovy.transform.ASTTransformation;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
@@ -83,8 +83,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 	private final ASTTransformation transformation = new ResolveDependencyCoordinatesTransformation(
 			this.resolutionContext);
 
-	@Before
-	public void setupExpectations() {
+	@BeforeEach
+	public void setUpExpectations() {
 		given(this.coordinatesResolver.getGroupId("spring-core"))
 				.willReturn("org.springframework");
 	}

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.assertj.core.api.Condition;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
@@ -46,7 +46,7 @@ public class GroovyGrabDependencyResolverTests {
 
 	private DependencyResolver resolver;
 
-	@Before
+	@BeforeEach
 	public void setupResolver() {
 		GroovyCompilerConfiguration configuration = new GroovyCompilerConfiguration() {
 

@@ -23,8 +23,8 @@ import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
 import org.eclipse.aether.transfer.TransferResource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +48,7 @@ public final class DetailedProgressReporterTests {
 
 	private final DefaultRepositorySystemSession session = new DefaultRepositorySystemSession();
 
-	@Before
+	@BeforeEach
 	public void initialize() {
 		new DetailedProgressReporter(this.session, this.out);
 	}
