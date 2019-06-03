@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.metrics.web.client;
 import java.io.IOException;
 
 import io.micrometer.core.instrument.Tag;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;

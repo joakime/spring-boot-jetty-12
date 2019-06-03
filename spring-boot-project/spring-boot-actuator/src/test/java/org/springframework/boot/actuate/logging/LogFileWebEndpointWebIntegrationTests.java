@@ -19,13 +19,12 @@ package org.springframework.boot.actuate.logging;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -41,43 +40,45 @@ import org.springframework.util.FileCopyUtils;
  *
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
 public class LogFileWebEndpointWebIntegrationTests {
 
-	private static ConfigurableApplicationContext context;
+	private ConfigurableApplicationContext context;
 
-	private static WebTestClient client;
+	private WebTestClient client;
 
 	@Rule
 	public final TemporaryFolder temp = new TemporaryFolder();
 
 	private File logFile;
 
-	@Before
-	public void setUp() throws IOException {
-		this.logFile = this.temp.newFile();
+	@BeforeEach
+	public void setUp(@TempDir File temp, WebTestClient client,
+			ConfigurableApplicationContext context) throws IOException {
+		this.logFile = new File(temp, "test.log");
+		this.client = client;
+		this.context = context;
 		FileCopyUtils.copy("--TEST--".getBytes(), this.logFile);
 	}
 
-	@Test
+	@WebEndpointTest
 	public void getRequestProduces404ResponseWhenLogFileNotFound() {
-		client.get().uri("/actuator/logfile").exchange().expectStatus().isNotFound();
+		this.client.get().uri("/actuator/logfile").exchange().expectStatus().isNotFound();
 	}
 
-	@Test
+	@WebEndpointTest
 	public void getRequestProducesResponseWithLogFile() {
 		TestPropertyValues.of("logging.file.name:" + this.logFile.getAbsolutePath())
-				.applyTo(context);
-		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk()
+				.applyTo(this.context);
+		this.client.get().uri("/actuator/logfile").exchange().expectStatus().isOk()
 				.expectHeader().contentType("text/plain; charset=UTF-8")
 				.expectBody(String.class).isEqualTo("--TEST--");
 	}
 
-	@Test
+	@WebEndpointTest
 	public void getRequestThatAcceptsTextPlainProducesResponseWithLogFile() {
 		TestPropertyValues.of("logging.file:" + this.logFile.getAbsolutePath())
-				.applyTo(context);
-		client.get().uri("/actuator/logfile").accept(MediaType.TEXT_PLAIN).exchange()
+				.applyTo(this.context);
+		this.client.get().uri("/actuator/logfile").accept(MediaType.TEXT_PLAIN).exchange()
 				.expectStatus().isOk().expectHeader()
 				.contentType("text/plain; charset=UTF-8").expectBody(String.class)
 				.isEqualTo("--TEST--");

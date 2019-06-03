@@ -19,11 +19,9 @@ package org.springframework.boot.actuate.env;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -32,97 +30,100 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@RunWith(WebEndpointRunners.class)
 public class EnvironmentEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
+	private ConfigurableApplicationContext context;
 
-	private static ConfigurableApplicationContext context;
+	private WebTestClient client;
 
-	@Before
-	public void prepareEnvironment() {
+	@BeforeEach
+	public void prepareEnvironment(ConfigurableApplicationContext context,
+			WebTestClient client) {
 		TestPropertyValues.of("foo:bar", "fool:baz").applyTo(context);
+		this.client = client;
+		this.context = context;
 	}
 
-	@Test
+	@WebEndpointTest
 	public void home() {
-		client.get().uri("/actuator/env").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("propertySources[?(@.name=='systemProperties')]").exists();
+		this.client.get().uri("/actuator/env").exchange().expectStatus().isOk()
+				.expectBody().jsonPath("propertySources[?(@.name=='systemProperties')]")
+				.exists();
 	}
 
-	@Test
+	@WebEndpointTest
 	public void sub() {
-		client.get().uri("/actuator/env/foo").exchange().expectStatus().isOk()
+		this.client.get().uri("/actuator/env/foo").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("property.source").isEqualTo("test")
 				.jsonPath("property.value").isEqualTo("bar");
 	}
 
-	@Test
+	@WebEndpointTest
 	public void regex() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("food", null);
-		EnvironmentEndpointWebIntegrationTests.context.getEnvironment()
-				.getPropertySources().addFirst(new MapPropertySource("null-value", map));
-		client.get().uri("/actuator/env?pattern=foo.*").exchange().expectStatus().isOk()
-				.expectBody().jsonPath(forProperty("test", "foo")).isEqualTo("bar")
+		this.context.getEnvironment().getPropertySources()
+				.addFirst(new MapPropertySource("null-value", map));
+		this.client.get().uri("/actuator/env?pattern=foo.*").exchange().expectStatus()
+				.isOk().expectBody().jsonPath(forProperty("test", "foo")).isEqualTo("bar")
 				.jsonPath(forProperty("test", "fool")).isEqualTo("baz");
 	}
 
-	@Test
+	@WebEndpointTest
 	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
-		context.getEnvironment().getPropertySources()
+		this.context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
-		client.get().uri("/actuator/env/my.foo").exchange().expectStatus().isOk()
+		this.client.get().uri("/actuator/env/my.foo").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("property.value").isEqualTo("${my.bar}")
 				.jsonPath(forPropertyEntry("unresolved-placeholder"))
 				.isEqualTo("${my.bar}");
 	}
 
-	@Test
+	@WebEndpointTest
 	public void nestedPathWithSensitivePlaceholderShouldSanitize() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
-		context.getEnvironment().getPropertySources()
+		this.context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("placeholder", map));
-		client.get().uri("/actuator/env/my.foo").exchange().expectStatus().isOk()
+		this.client.get().uri("/actuator/env/my.foo").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("property.value").isEqualTo("******")
 				.jsonPath(forPropertyEntry("placeholder")).isEqualTo("******");
 	}
 
-	@Test
+	@WebEndpointTest
 	public void nestedPathForUnknownKeyShouldReturn404AndBody() {
-		client.get().uri("/actuator/env/this.does.not.exist").exchange().expectStatus()
-				.isNotFound().expectBody().jsonPath("property").doesNotExist()
-				.jsonPath("propertySources[?(@.name=='test')]").exists()
+		this.client.get().uri("/actuator/env/this.does.not.exist").exchange()
+				.expectStatus().isNotFound().expectBody().jsonPath("property")
+				.doesNotExist().jsonPath("propertySources[?(@.name=='test')]").exists()
 				.jsonPath("propertySources[?(@.name=='systemProperties')]").exists()
 				.jsonPath("propertySources[?(@.name=='systemEnvironment')]").exists();
 	}
 
-	@Test
+	@WebEndpointTest
 	public void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
-		context.getEnvironment().getPropertySources()
+		this.context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
-		client.get().uri("/actuator/env?pattern=my.*").exchange().expectStatus().isOk()
-				.expectBody()
+		this.client.get().uri("/actuator/env?pattern=my.*").exchange().expectStatus()
+				.isOk().expectBody()
 				.jsonPath(
 						"propertySources[?(@.name=='unresolved-placeholder')].properties.['my.foo'].value")
 				.isEqualTo("${my.bar}");
 	}
 
-	@Test
+	@WebEndpointTest
 	public void nestedPathMatchedByRegexWithSensitivePlaceholderShouldSanitize() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
-		context.getEnvironment().getPropertySources()
+		this.context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("placeholder", map));
-		client.get().uri("/actuator/env?pattern=my.*").exchange().expectStatus().isOk()
-				.expectBody().jsonPath(forProperty("placeholder", "my.foo"))
+		this.client.get().uri("/actuator/env?pattern=my.*").exchange().expectStatus()
+				.isOk().expectBody().jsonPath(forProperty("placeholder", "my.foo"))
 				.isEqualTo("******");
 	}
 

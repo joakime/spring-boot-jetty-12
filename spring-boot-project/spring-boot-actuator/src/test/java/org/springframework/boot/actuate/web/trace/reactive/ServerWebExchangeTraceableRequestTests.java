@@ -19,8 +19,8 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -42,7 +42,7 @@ public class ServerWebExchangeTraceableRequestTests {
 
 	private ServerHttpRequest request;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.exchange = mock(ServerWebExchange.class);
 		this.request = mock(ServerHttpRequest.class);

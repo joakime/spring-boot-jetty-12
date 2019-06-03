@@ -20,10 +20,8 @@ import java.time.Instant;
 import java.util.Collections;
 
 import net.minidev.json.JSONArray;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -35,13 +33,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Vedran Pavic
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
 public class AuditEventsEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void allEvents() {
+	@WebEndpointTest
+	public void allEvents(WebTestClient client) {
 		client.get().uri((builder) -> builder.path("/actuator/auditevents").build())
 				.exchange().expectStatus().isOk().expectBody()
 				.jsonPath("events.[*].principal")
@@ -49,8 +44,8 @@ public class AuditEventsEndpointWebIntegrationTests {
 						.appendElement("user"));
 	}
 
-	@Test
-	public void eventsAfter() {
+	@WebEndpointTest
+	public void eventsAfter(WebTestClient client) {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T13:00:00%2B00:00").build())
@@ -58,8 +53,8 @@ public class AuditEventsEndpointWebIntegrationTests {
 				.isEmpty();
 	}
 
-	@Test
-	public void eventsWithPrincipal() {
+	@WebEndpointTest
+	public void eventsWithPrincipal(WebTestClient client) {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("principal", "user").build())
@@ -68,8 +63,8 @@ public class AuditEventsEndpointWebIntegrationTests {
 				.isEqualTo(new JSONArray().appendElement("user"));
 	}
 
-	@Test
-	public void eventsWithType() {
+	@WebEndpointTest
+	public void eventsWithType(WebTestClient client) {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("type", "logout").build())

@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.integration;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -33,13 +30,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Tim Ysewyn
  */
-@RunWith(WebEndpointRunners.class)
 public class IntegrationGraphEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void graph() {
+	@WebEndpointTest
+	public void graph(WebTestClient client) {
 		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isOk().expectBody()
 				.jsonPath("contentDescriptor.providerVersion").isNotEmpty()
@@ -47,8 +41,8 @@ public class IntegrationGraphEndpointWebIntegrationTests {
 				.jsonPath("contentDescriptor.provider").isEqualTo("spring-integration");
 	}
 
-	@Test
-	public void rebuild() {
+	@WebEndpointTest
+	public void rebuild(WebTestClient client) {
 		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isNoContent();
 	}

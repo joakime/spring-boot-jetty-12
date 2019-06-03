@@ -21,14 +21,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import net.minidev.json.JSONArray;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -53,29 +51,27 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
 public class LoggersEndpointWebIntegrationTests {
 
-	private static ConfigurableApplicationContext context;
-
-	private static WebTestClient client;
+	private WebTestClient client;
 
 	private LoggingSystem loggingSystem;
 
-	@Before
-	@After
-	public void resetMocks() {
+	@BeforeEach
+	@AfterEach
+	public void resetMocks(ConfigurableApplicationContext context, WebTestClient client) {
+		this.client = client;
 		this.loggingSystem = context.getBean(LoggingSystem.class);
 		Mockito.reset(this.loggingSystem);
 		given(this.loggingSystem.getSupportedLogLevels())
 				.willReturn(EnumSet.allOf(LogLevel.class));
 	}
 
-	@Test
+	@WebEndpointTest
 	public void getLoggerShouldReturnAllLoggerConfigurations() {
 		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Collections
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
-		client.get().uri("/actuator/loggers").exchange().expectStatus().isOk()
+		this.client.get().uri("/actuator/loggers").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("$.length()").isEqualTo(2).jsonPath("levels")
 				.isEqualTo(jsonArrayOf("OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG",
 						"TRACE"))
@@ -85,72 +81,72 @@ public class LoggersEndpointWebIntegrationTests {
 				.jsonPath("loggers.ROOT.effectiveLevel").isEqualTo("DEBUG");
 	}
 
-	@Test
+	@WebEndpointTest
 	public void getLoggerShouldReturnLogLevels() {
 		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
-		client.get().uri("/actuator/loggers/ROOT").exchange().expectStatus().isOk()
+		this.client.get().uri("/actuator/loggers/ROOT").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("$.length()").isEqualTo(2)
 				.jsonPath("configuredLevel").isEqualTo(null).jsonPath("effectiveLevel")
 				.isEqualTo("DEBUG");
 	}
 
-	@Test
+	@WebEndpointTest
 	public void getLoggersWhenLoggerNotFoundShouldReturnNotFound() {
-		client.get().uri("/actuator/loggers/com.does.not.exist").exchange().expectStatus()
-				.isNotFound();
+		this.client.get().uri("/actuator/loggers/com.does.not.exist").exchange()
+				.expectStatus().isNotFound();
 	}
 
-	@Test
+	@WebEndpointTest
 	public void setLoggerUsingApplicationJsonShouldSetLogLevel() {
-		client.post().uri("/actuator/loggers/ROOT")
+		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.APPLICATION_JSON)
 				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange()
 				.expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
-	@Test
+	@WebEndpointTest
 	public void setLoggerUsingActuatorV2JsonShouldSetLogLevel() {
-		client.post().uri("/actuator/loggers/ROOT")
+		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.singletonMap("configuredLevel", "debug")).exchange()
 				.expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}
 
-	@Test
+	@WebEndpointTest
 	public void setLoggerWithWrongLogLevelResultInBadRequestResponse() {
-		client.post().uri("/actuator/loggers/ROOT")
+		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.APPLICATION_JSON)
 				.syncBody(Collections.singletonMap("configuredLevel", "other")).exchange()
 				.expectStatus().isBadRequest();
 		verifyZeroInteractions(this.loggingSystem);
 	}
 
-	@Test
+	@WebEndpointTest
 	public void setLoggerWithNullLogLevel() {
-		client.post().uri("/actuator/loggers/ROOT")
+		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.singletonMap("configuredLevel", null)).exchange()
 				.expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 
-	@Test
+	@WebEndpointTest
 	public void setLoggerWithNoLogLevel() {
-		client.post().uri("/actuator/loggers/ROOT")
+		this.client.post().uri("/actuator/loggers/ROOT")
 				.contentType(MediaType.parseMediaType(ActuatorMediaType.V2_JSON))
 				.syncBody(Collections.emptyMap()).exchange().expectStatus().isNoContent();
 		verify(this.loggingSystem).setLogLevel("ROOT", null);
 	}
 
-	@Test
+	@WebEndpointTest
 	public void logLevelForLoggerWithNameThatCouldBeMistakenForAPathExtension() {
 		given(this.loggingSystem.getLoggerConfiguration("com.png"))
 				.willReturn(new LoggerConfiguration("com.png", null, LogLevel.DEBUG));
-		client.get().uri("/actuator/loggers/com.png").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("$.length()").isEqualTo(2)
+		this.client.get().uri("/actuator/loggers/com.png").exchange().expectStatus()
+				.isOk().expectBody().jsonPath("$.length()").isEqualTo(2)
 				.jsonPath("configuredLevel").isEqualTo(null).jsonPath("effectiveLevel")
 				.isEqualTo("DEBUG");
 	}
