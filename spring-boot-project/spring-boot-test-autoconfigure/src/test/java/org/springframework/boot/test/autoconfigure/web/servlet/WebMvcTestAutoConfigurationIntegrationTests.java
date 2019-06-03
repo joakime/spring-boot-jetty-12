@@ -16,8 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
@@ -27,7 +26,6 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
@@ -40,7 +38,6 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  * @author Andy Wilkinson
  * @author Levi Puot Paul
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
 public class WebMvcTestAutoConfigurationIntegrationTests {
 

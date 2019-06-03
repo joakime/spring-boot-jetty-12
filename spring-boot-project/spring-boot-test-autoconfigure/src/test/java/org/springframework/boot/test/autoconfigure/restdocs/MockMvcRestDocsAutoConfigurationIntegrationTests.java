@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,12 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.io.File;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.testsupport.BuildOutput;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.FileSystemUtils;
 
@@ -39,7 +37,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
 public class MockMvcRestDocsAutoConfigurationIntegrationTests {
@@ -49,7 +46,7 @@ public class MockMvcRestDocsAutoConfigurationIntegrationTests {
 
 	private File generatedSnippets;
 
-	@Before
+	@BeforeEach
 	public void deleteSnippets() {
 		this.generatedSnippets = new File(new BuildOutput(getClass()).getRootLocation(),
 				"generated-snippets");

@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.reactive;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;

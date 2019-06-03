@@ -18,14 +18,12 @@ package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
 import javax.validation.ConstraintViolationException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.util.NestedServletException;
 
@@ -41,7 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
 @WithMockUser
 public class WebMvcTestAllControllersIntegrationTests {
