@@ -54,8 +54,8 @@ public class RequestMappingConditionsDescription {
 		this.methods = requestMapping.getMethodsCondition().getMethods();
 		this.params = requestMapping.getParamsCondition().getExpressions().stream()
 				.map(NameValueExpressionDescription::new).collect(Collectors.toList());
-		this.patterns = requestMapping.getPatternsCondition().getPatterns().stream()
-				.map(PathPattern::getPatternString).collect(Collectors.toSet());
+		this.patterns = requestMapping.getPatternsCondition().getPatterns().stream().map(PathPattern::getPatternString)
+				.collect(Collectors.toSet());
 		this.produces = requestMapping.getProducesCondition().getExpressions().stream()
 				.map(MediaTypeExpressionDescription::new).collect(Collectors.toList());
 	}

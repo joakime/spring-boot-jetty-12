@@ -67,8 +67,7 @@ public class RestartServer {
 	 * local classpath
 	 * @param classLoader the application classloader
 	 */
-	public RestartServer(SourceFolderUrlFilter sourceFolderUrlFilter,
-			ClassLoader classLoader) {
+	public RestartServer(SourceFolderUrlFilter sourceFolderUrlFilter, ClassLoader classLoader) {
 		Assert.notNull(sourceFolderUrlFilter, "SourceFolderUrlFilter must not be null");
 		Assert.notNull(classLoader, "ClassLoader must not be null");
 		this.sourceFolderUrlFilter = sourceFolderUrlFilter;
@@ -97,8 +96,7 @@ public class RestartServer {
 		restart(urls, files);
 	}
 
-	private boolean updateFileSystem(URL url, String name,
-			ClassLoaderFile classLoaderFile) {
+	private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {
 		if (!isFolderUrl(url.toString())) {
 			return false;
 		}
@@ -128,8 +126,7 @@ public class RestartServer {
 		for (URL url : urls) {
 			if (this.sourceFolderUrlFilter.isMatch(sourceFolder, url)) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("URL " + url + " matched against source folder "
-							+ sourceFolder);
+					logger.debug("URL " + url + " matched against source folder " + sourceFolder);
 				}
 				matchingUrls.add(url);
 			}

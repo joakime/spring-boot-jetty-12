@@ -25,8 +25,7 @@ import org.springframework.context.ApplicationListener;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-public abstract class AbstractAuditListener
-		implements ApplicationListener<AuditApplicationEvent> {
+public abstract class AbstractAuditListener implements ApplicationListener<AuditApplicationEvent> {
 
 	@Override
 	public void onApplicationEvent(AuditApplicationEvent event) {

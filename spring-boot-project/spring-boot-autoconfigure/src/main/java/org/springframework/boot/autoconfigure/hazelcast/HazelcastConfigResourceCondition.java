@@ -37,19 +37,17 @@ public abstract class HazelcastConfigResourceCondition extends ResourceCondition
 
 	private final String configSystemProperty;
 
-	protected HazelcastConfigResourceCondition(String configSystemProperty,
-			String... resourceLocations) {
+	protected HazelcastConfigResourceCondition(String configSystemProperty, String... resourceLocations) {
 		super("Hazelcast", "spring.hazelcast.config", resourceLocations);
 		Assert.notNull(configSystemProperty, "ConfigSystemProperty must not be null");
 		this.configSystemProperty = configSystemProperty;
 	}
 
 	@Override
-	protected ConditionOutcome getResourceOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
+	protected ConditionOutcome getResourceOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if (System.getProperty(this.configSystemProperty) != null) {
-			return ConditionOutcome.match(startConditionMessage().because(
-					"System property '" + this.configSystemProperty + "' is set."));
+			return ConditionOutcome.match(
+					startConditionMessage().because("System property '" + this.configSystemProperty + "' is set."));
 		}
 		return super.getResourceOutcome(context, metadata);
 	}

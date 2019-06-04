@@ -41,17 +41,14 @@ public class DependencyManagementArtifactCoordinatesResolverTests {
 	@Before
 	public void setup() {
 		this.dependencyManagement = mock(DependencyManagement.class);
-		given(this.dependencyManagement.find("a1"))
-				.willReturn(new Dependency("g1", "a1", "0"));
+		given(this.dependencyManagement.find("a1")).willReturn(new Dependency("g1", "a1", "0"));
 		given(this.dependencyManagement.getSpringBootVersion()).willReturn("1");
-		this.resolver = new DependencyManagementArtifactCoordinatesResolver(
-				this.dependencyManagement);
+		this.resolver = new DependencyManagementArtifactCoordinatesResolver(this.dependencyManagement);
 	}
 
 	@Test
 	public void getGroupIdForBootArtifact() {
-		assertThat(this.resolver.getGroupId("spring-boot-something"))
-				.isEqualTo("org.springframework.boot");
+		assertThat(this.resolver.getGroupId("spring-boot-something")).isEqualTo("org.springframework.boot");
 		verify(this.dependencyManagement, never()).find(anyString());
 	}
 

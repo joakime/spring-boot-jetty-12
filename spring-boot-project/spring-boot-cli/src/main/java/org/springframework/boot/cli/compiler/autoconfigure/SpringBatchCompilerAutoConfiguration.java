@@ -38,10 +38,8 @@ public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfigurat
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.batch.core.Job")
-				.add("spring-boot-starter-batch");
-		dependencies.ifAnyMissingClasses("org.springframework.jdbc.core.JdbcTemplate")
-				.add("spring-jdbc");
+		dependencies.ifAnyMissingClasses("org.springframework.batch.core.Job").add("spring-boot-starter-batch");
+		dependencies.ifAnyMissingClasses("org.springframework.jdbc.core.JdbcTemplate").add("spring-jdbc");
 	}
 
 	@Override
@@ -53,14 +51,10 @@ public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfigurat
 				"org.springframework.batch.core.configuration.annotation.JobBuilderFactory",
 				"org.springframework.batch.core.configuration.annotation.StepBuilderFactory",
 				"org.springframework.batch.core.configuration.annotation.EnableBatchProcessing",
-				"org.springframework.batch.core.Step",
-				"org.springframework.batch.core.StepExecution",
-				"org.springframework.batch.core.StepContribution",
-				"org.springframework.batch.core.Job",
-				"org.springframework.batch.core.JobExecution",
-				"org.springframework.batch.core.JobParameter",
-				"org.springframework.batch.core.JobParameters",
-				"org.springframework.batch.core.launch.JobLauncher",
+				"org.springframework.batch.core.Step", "org.springframework.batch.core.StepExecution",
+				"org.springframework.batch.core.StepContribution", "org.springframework.batch.core.Job",
+				"org.springframework.batch.core.JobExecution", "org.springframework.batch.core.JobParameter",
+				"org.springframework.batch.core.JobParameters", "org.springframework.batch.core.launch.JobLauncher",
 				"org.springframework.batch.core.converter.JobParametersConverter",
 				"org.springframework.batch.core.converter.DefaultJobParametersConverter");
 	}

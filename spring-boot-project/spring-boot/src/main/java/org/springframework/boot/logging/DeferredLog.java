@@ -184,8 +184,7 @@ public class DeferredLog implements Log {
 	public void replayTo(Log destination) {
 		synchronized (this.lines) {
 			for (Line line : this.lines) {
-				logTo(destination, line.getLevel(), line.getMessage(),
-						line.getThrowable());
+				logTo(destination, line.getLevel(), line.getMessage(), line.getThrowable());
 			}
 			this.lines.clear();
 		}
@@ -214,8 +213,7 @@ public class DeferredLog implements Log {
 		return destination;
 	}
 
-	private static void logTo(Log log, LogLevel level, Object message,
-			Throwable throwable) {
+	private static void logTo(Log log, LogLevel level, Object message, Throwable throwable) {
 		switch (level) {
 		case TRACE:
 			log.trace(message, throwable);

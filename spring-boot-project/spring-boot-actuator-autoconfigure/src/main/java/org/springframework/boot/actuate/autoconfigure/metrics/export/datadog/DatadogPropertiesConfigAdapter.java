@@ -26,8 +26,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class DatadogPropertiesConfigAdapter extends
-		StepRegistryPropertiesConfigAdapter<DatadogProperties> implements DatadogConfig {
+class DatadogPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<DatadogProperties>
+		implements DatadogConfig {
 
 	DatadogPropertiesConfigAdapter(DatadogProperties properties) {
 		super(properties);
@@ -40,8 +40,7 @@ class DatadogPropertiesConfigAdapter extends
 
 	@Override
 	public String applicationKey() {
-		return get(DatadogProperties::getApplicationKey,
-				DatadogConfig.super::applicationKey);
+		return get(DatadogProperties::getApplicationKey, DatadogConfig.super::applicationKey);
 	}
 
 	@Override

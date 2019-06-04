@@ -67,12 +67,10 @@ public class HttpRestartServer {
 	 * @param response the response
 	 * @throws IOException in case of I/O errors
 	 */
-	public void handle(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		try {
 			Assert.state(request.getHeaders().getContentLength() > 0, "No content");
-			ObjectInputStream objectInputStream = new ObjectInputStream(
-					request.getBody());
+			ObjectInputStream objectInputStream = new ObjectInputStream(request.getBody());
 			ClassLoaderFiles files = (ClassLoaderFiles) objectInputStream.readObject();
 			objectInputStream.close();
 			this.server.updateAndRestart(files);

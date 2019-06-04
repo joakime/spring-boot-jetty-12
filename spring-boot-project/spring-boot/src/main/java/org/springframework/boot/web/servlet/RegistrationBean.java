@@ -47,8 +47,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	public final void onStartup(ServletContext servletContext) throws ServletException {
 		String description = getDescription();
 		if (!isEnabled()) {
-			logger.info(StringUtils.capitalize(description)
-					+ " was not registered (disabled)");
+			logger.info(StringUtils.capitalize(description) + " was not registered (disabled)");
 			return;
 		}
 		register(description, servletContext);

@@ -47,8 +47,8 @@ public class IgnoreTopLevelConverterNotFoundBindHandler extends AbstractBindHand
 	}
 
 	@Override
-	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Exception error) throws Exception {
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
 		if (context.getDepth() == 0 && error instanceof ConverterNotFoundException) {
 			return null;
 		}

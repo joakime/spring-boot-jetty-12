@@ -112,14 +112,10 @@ public class TextResourceOriginTests {
 
 	@Test
 	public void equalsAndHashCodeShouldResourceAndLocation() {
-		TextResourceOrigin origin1 = new TextResourceOrigin(
-				new ClassPathResource("foo.txt"), new Location(1, 2));
-		TextResourceOrigin origin2 = new TextResourceOrigin(
-				new ClassPathResource("foo.txt"), new Location(1, 2));
-		TextResourceOrigin origin3 = new TextResourceOrigin(
-				new ClassPathResource("foo.txt"), new Location(2, 2));
-		TextResourceOrigin origin4 = new TextResourceOrigin(
-				new ClassPathResource("foo2.txt"), new Location(1, 2));
+		TextResourceOrigin origin1 = new TextResourceOrigin(new ClassPathResource("foo.txt"), new Location(1, 2));
+		TextResourceOrigin origin2 = new TextResourceOrigin(new ClassPathResource("foo.txt"), new Location(1, 2));
+		TextResourceOrigin origin3 = new TextResourceOrigin(new ClassPathResource("foo.txt"), new Location(2, 2));
+		TextResourceOrigin origin4 = new TextResourceOrigin(new ClassPathResource("foo2.txt"), new Location(1, 2));
 		assertThat(origin1.hashCode()).isEqualTo(origin1.hashCode());
 		assertThat(origin1.hashCode()).isEqualTo(origin2.hashCode());
 		assertThat(origin1.hashCode()).isNotEqualTo(origin3.hashCode());

@@ -41,13 +41,11 @@ final class DurationToNumberConverter implements GenericConverter {
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
-		return convert((Duration) source, getDurationUnit(sourceType),
-				targetType.getObjectType());
+		return convert((Duration) source, getDurationUnit(sourceType), targetType.getObjectType());
 	}
 
 	private ChronoUnit getDurationUnit(TypeDescriptor sourceType) {
@@ -57,8 +55,8 @@ final class DurationToNumberConverter implements GenericConverter {
 
 	private Object convert(Duration source, ChronoUnit unit, Class<?> type) {
 		try {
-			return type.getConstructor(String.class).newInstance(String
-					.valueOf(DurationStyle.Unit.fromChronoUnit(unit).longValue(source)));
+			return type.getConstructor(String.class)
+					.newInstance(String.valueOf(DurationStyle.Unit.fromChronoUnit(unit).longValue(source)));
 		}
 		catch (Exception ex) {
 			ReflectionUtils.rethrowRuntimeException(ex);

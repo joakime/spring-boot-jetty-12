@@ -40,8 +40,7 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
-		this.webServer = spy(
-				new MockServletWebServer(mergeInitializers(initializers), getPort()));
+		this.webServer = spy(new MockServletWebServer(mergeInitializers(initializers), getPort()));
 		return this.webServer;
 	}
 
@@ -54,22 +53,18 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 	}
 
 	public RegisteredServlet getRegisteredServlet(int index) {
-		return (getWebServer() != null) ? getWebServer().getRegisteredServlet(index)
-				: null;
+		return (getWebServer() != null) ? getWebServer().getRegisteredServlet(index) : null;
 	}
 
 	public RegisteredFilter getRegisteredFilter(int index) {
-		return (getWebServer() != null) ? getWebServer().getRegisteredFilters(index)
-				: null;
+		return (getWebServer() != null) ? getWebServer().getRegisteredFilters(index) : null;
 	}
 
 	public static class MockServletWebServer
-			extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer
-			implements WebServer {
+			extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer implements WebServer {
 
 		public MockServletWebServer(ServletContextInitializer[] initializers, int port) {
-			super(Arrays.stream(initializers)
-					.map((initializer) -> (Initializer) initializer::onStartup)
+			super(Arrays.stream(initializers).map((initializer) -> (Initializer) initializer::onStartup)
 					.toArray(Initializer[]::new), port);
 		}
 

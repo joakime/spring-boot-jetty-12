@@ -35,7 +35,6 @@ public interface EndpointObjectNameFactory {
 	 * @return the {@link ObjectName} to use for the endpoint
 	 * @throws MalformedObjectNameException if the object name is invalid
 	 */
-	ObjectName getObjectName(ExposableJmxEndpoint endpoint)
-			throws MalformedObjectNameException;
+	ObjectName getObjectName(ExposableJmxEndpoint endpoint) throws MalformedObjectNameException;
 
 }

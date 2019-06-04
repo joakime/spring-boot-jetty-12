@@ -41,16 +41,14 @@ public final class MockDurationTypeDescriptor {
 	public static TypeDescriptor get(ChronoUnit unit, DurationStyle style) {
 		TypeDescriptor descriptor = mock(TypeDescriptor.class);
 		if (unit != null) {
-			DurationUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", unit), DurationUnit.class, null);
-			given(descriptor.getAnnotation(DurationUnit.class))
-					.willReturn(unitAnnotation);
+			DurationUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(Collections.singletonMap("value", unit),
+					DurationUnit.class, null);
+			given(descriptor.getAnnotation(DurationUnit.class)).willReturn(unitAnnotation);
 		}
 		if (style != null) {
-			DurationFormat formatAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", style), DurationFormat.class, null);
-			given(descriptor.getAnnotation(DurationFormat.class))
-					.willReturn(formatAnnotation);
+			DurationFormat formatAnnotation = AnnotationUtils
+					.synthesizeAnnotation(Collections.singletonMap("value", style), DurationFormat.class, null);
+			given(descriptor.getAnnotation(DurationFormat.class)).willReturn(formatAnnotation);
 		}
 		given(descriptor.getType()).willReturn((Class) Duration.class);
 		given(descriptor.getObjectType()).willReturn((Class) Duration.class);

@@ -38,9 +38,8 @@ class LaunchedApplication {
 
 	private final BiFunction<Integer, File, Process> remoteProcessRestarter;
 
-	LaunchedApplication(File classesDirectory, File standardOut, File standardError,
-			Process localProcess, Process remoteProcess,
-			BiFunction<Integer, File, Process> remoteProcessRestarter) {
+	LaunchedApplication(File classesDirectory, File standardOut, File standardError, Process localProcess,
+			Process remoteProcess, BiFunction<Integer, File, Process> remoteProcessRestarter) {
 		this.classesDirectory = classesDirectory;
 		this.standardOut = standardOut;
 		this.standardError = standardError;
@@ -52,8 +51,7 @@ class LaunchedApplication {
 	public void restartRemote(int port) throws InterruptedException {
 		if (this.remoteProcessRestarter != null) {
 			stop(this.remoteProcess);
-			this.remoteProcess = this.remoteProcessRestarter.apply(port,
-					this.classesDirectory);
+			this.remoteProcess = this.remoteProcessRestarter.apply(port, this.classesDirectory);
 		}
 	}
 

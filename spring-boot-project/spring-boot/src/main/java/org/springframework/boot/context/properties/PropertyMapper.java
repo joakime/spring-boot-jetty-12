@@ -229,8 +229,7 @@ public final class PropertyMapper {
 		 * @return a new filtered source instance
 		 */
 		public Source<T> whenNonNull() {
-			return new Source<>(new NullPointerExceptionSafeSupplier<>(this.supplier),
-					Objects::nonNull);
+			return new Source<>(new NullPointerExceptionSafeSupplier<>(this.supplier), Objects::nonNull);
 		}
 
 		/**

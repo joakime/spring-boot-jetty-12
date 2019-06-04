@@ -33,8 +33,8 @@ public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 
 	private final BatchProperties properties;
 
-	public BatchDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, BatchProperties properties) {
+	public BatchDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+			BatchProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "BatchProperties must not be null");
 		this.properties = properties;

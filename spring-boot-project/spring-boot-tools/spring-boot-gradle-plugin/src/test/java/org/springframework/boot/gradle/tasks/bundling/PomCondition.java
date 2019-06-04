@@ -44,8 +44,8 @@ class PomCondition extends Condition<File> {
 	}
 
 	private PomCondition(Set<String> expectedContents, Set<String> notExpectedContents) {
-		super(new TextDescription("Pom file containing %s and not containing %s",
-				expectedContents, notExpectedContents));
+		super(new TextDescription("Pom file containing %s and not containing %s", expectedContents,
+				notExpectedContents));
 		this.expectedContents = expectedContents;
 		this.notExpectedContents = notExpectedContents;
 	}
@@ -73,8 +73,8 @@ class PomCondition extends Condition<File> {
 
 	@Override
 	public Description description() {
-		return new TextDescription("Pom file containing %s and not containing %s",
-				this.expectedContents, this.notExpectedContents);
+		return new TextDescription("Pom file containing %s and not containing %s", this.expectedContents,
+				this.notExpectedContents);
 	}
 
 	PomCondition groupId(String groupId) {
@@ -83,8 +83,7 @@ class PomCondition extends Condition<File> {
 	}
 
 	PomCondition artifactId(String artifactId) {
-		this.expectedContents
-				.add(String.format("<artifactId>%s</artifactId>", artifactId));
+		this.expectedContents.add(String.format("<artifactId>%s</artifactId>", artifactId));
 		return this;
 	}
 

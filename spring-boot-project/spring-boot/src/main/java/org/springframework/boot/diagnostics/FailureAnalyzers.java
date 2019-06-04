@@ -67,13 +67,11 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	}
 
 	private List<FailureAnalyzer> loadFailureAnalyzers(ClassLoader classLoader) {
-		List<String> analyzerNames = SpringFactoriesLoader
-				.loadFactoryNames(FailureAnalyzer.class, classLoader);
+		List<String> analyzerNames = SpringFactoriesLoader.loadFactoryNames(FailureAnalyzer.class, classLoader);
 		List<FailureAnalyzer> analyzers = new ArrayList<>();
 		for (String analyzerName : analyzerNames) {
 			try {
-				Constructor<?> constructor = ClassUtils.forName(analyzerName, classLoader)
-						.getDeclaredConstructor();
+				Constructor<?> constructor = ClassUtils.forName(analyzerName, classLoader).getDeclaredConstructor();
 				ReflectionUtils.makeAccessible(constructor);
 				analyzers.add((FailureAnalyzer) constructor.newInstance());
 			}
@@ -85,15 +83,13 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 		return analyzers;
 	}
 
-	private void prepareFailureAnalyzers(List<FailureAnalyzer> analyzers,
-			ConfigurableApplicationContext context) {
+	private void prepareFailureAnalyzers(List<FailureAnalyzer> analyzers, ConfigurableApplicationContext context) {
 		for (FailureAnalyzer analyzer : analyzers) {
 			prepareAnalyzer(context, analyzer);
 		}
 	}
 
-	private void prepareAnalyzer(ConfigurableApplicationContext context,
-			FailureAnalyzer analyzer) {
+	private void prepareAnalyzer(ConfigurableApplicationContext context, FailureAnalyzer analyzer) {
 		if (analyzer instanceof BeanFactoryAware) {
 			((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
 		}
@@ -124,8 +120,8 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	}
 
 	private boolean report(FailureAnalysis analysis, ClassLoader classLoader) {
-		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader
-				.loadFactories(FailureAnalysisReporter.class, classLoader);
+		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader.loadFactories(FailureAnalysisReporter.class,
+				classLoader);
 		if (analysis == null || reporters.isEmpty()) {
 			return false;
 		}

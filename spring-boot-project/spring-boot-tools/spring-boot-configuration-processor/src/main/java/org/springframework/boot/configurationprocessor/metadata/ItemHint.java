@@ -45,8 +45,7 @@ public class ItemHint implements Comparable<ItemHint> {
 	public ItemHint(String name, List<ValueHint> values, List<ValueProvider> providers) {
 		this.name = toCanonicalName(name);
 		this.values = (values != null) ? new ArrayList<>(values) : new ArrayList<>();
-		this.providers = (providers != null) ? new ArrayList<>(providers)
-				: new ArrayList<>();
+		this.providers = (providers != null) ? new ArrayList<>(providers) : new ArrayList<>();
 	}
 
 	private String toCanonicalName(String name) {
@@ -82,8 +81,7 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	@Override
 	public String toString() {
-		return "ItemHint{" + "name='" + this.name + "', values=" + this.values
-				+ ", providers=" + this.providers + '}';
+		return "ItemHint{" + "name='" + this.name + "', values=" + this.values + ", providers=" + this.providers + '}';
 	}
 
 	/**
@@ -110,8 +108,7 @@ public class ItemHint implements Comparable<ItemHint> {
 
 		@Override
 		public String toString() {
-			return "ValueHint{" + "value=" + this.value + ", description='"
-					+ this.description + '\'' + '}';
+			return "ValueHint{" + "value=" + this.value + ", description='" + this.description + '\'' + '}';
 		}
 
 	}
@@ -140,8 +137,7 @@ public class ItemHint implements Comparable<ItemHint> {
 
 		@Override
 		public String toString() {
-			return "ValueProvider{" + "name='" + this.name + "', parameters="
-					+ this.parameters + '}';
+			return "ValueProvider{" + "name='" + this.name + "', parameters=" + this.parameters + '}';
 		}
 
 	}

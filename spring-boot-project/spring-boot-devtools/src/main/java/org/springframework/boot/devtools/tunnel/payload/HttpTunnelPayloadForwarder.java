@@ -55,8 +55,7 @@ public class HttpTunnelPayloadForwarder {
 		synchronized (this.monitor) {
 			long seq = payload.getSequence();
 			if (this.lastRequestSeq != seq - 1) {
-				Assert.state(this.queue.size() < MAXIMUM_QUEUE_SIZE,
-						"Too many messages queued");
+				Assert.state(this.queue.size() < MAXIMUM_QUEUE_SIZE, "Too many messages queued");
 				this.queue.put(seq, payload);
 				return;
 			}

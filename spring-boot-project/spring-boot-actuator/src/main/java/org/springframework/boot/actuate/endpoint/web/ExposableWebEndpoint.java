@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public interface ExposableWebEndpoint
-		extends ExposableEndpoint<WebOperation>, PathMappedEndpoint {
+public interface ExposableWebEndpoint extends ExposableEndpoint<WebOperation>, PathMappedEndpoint {
 
 }

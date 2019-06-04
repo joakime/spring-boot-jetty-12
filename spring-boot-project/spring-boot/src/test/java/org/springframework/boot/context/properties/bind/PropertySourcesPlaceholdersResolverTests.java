@@ -43,8 +43,7 @@ public class PropertySourcesPlaceholdersResolverTests {
 	@Test
 	public void placeholderResolverIfEnvironmentNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new PropertySourcesPlaceholdersResolver((Environment) null))
+				.isThrownBy(() -> new PropertySourcesPlaceholdersResolver((Environment) null))
 				.withMessageContaining("Environment must not be null");
 	}
 
@@ -73,8 +72,7 @@ public class PropertySourcesPlaceholdersResolverTests {
 	@Test
 	public void resolveIfHelperPresentShouldUseIt() {
 		MutablePropertySources sources = getPropertySources();
-		TestPropertyPlaceholderHelper helper = new TestPropertyPlaceholderHelper("$<",
-				">");
+		TestPropertyPlaceholderHelper helper = new TestPropertyPlaceholderHelper("$<", ">");
 		this.resolver = new PropertySourcesPlaceholdersResolver(sources, helper);
 		Object resolved = this.resolver.resolvePlaceholders("$<FOO>");
 		assertThat(resolved).isEqualTo("hello world");
@@ -90,8 +88,7 @@ public class PropertySourcesPlaceholdersResolverTests {
 
 	static class TestPropertyPlaceholderHelper extends PropertyPlaceholderHelper {
 
-		TestPropertyPlaceholderHelper(String placeholderPrefix,
-				String placeholderSuffix) {
+		TestPropertyPlaceholderHelper(String placeholderPrefix, String placeholderSuffix) {
 			super(placeholderPrefix, placeholderSuffix);
 		}
 

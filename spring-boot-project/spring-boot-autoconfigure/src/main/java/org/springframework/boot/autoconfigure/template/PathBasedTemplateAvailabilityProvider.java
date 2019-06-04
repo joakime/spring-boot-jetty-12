@@ -32,8 +32,7 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @since 1.4.6
  */
-public abstract class PathBasedTemplateAvailabilityProvider
-		implements TemplateAvailabilityProvider {
+public abstract class PathBasedTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	private final String className;
 
@@ -43,20 +42,18 @@ public abstract class PathBasedTemplateAvailabilityProvider
 
 	@SuppressWarnings("unchecked")
 	public PathBasedTemplateAvailabilityProvider(String className,
-			Class<? extends TemplateAvailabilityProperties> propertiesClass,
-			String propertyPrefix) {
+			Class<? extends TemplateAvailabilityProperties> propertiesClass, String propertyPrefix) {
 		this.className = className;
 		this.propertiesClass = (Class<TemplateAvailabilityProperties>) propertiesClass;
 		this.propertyPrefix = propertyPrefix;
 	}
 
 	@Override
-	public boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader) {
+	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
+			ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent(this.className, classLoader)) {
 			Binder binder = Binder.get(environment);
-			TemplateAvailabilityProperties properties = binder
-					.bind(this.propertyPrefix, this.propertiesClass)
+			TemplateAvailabilityProperties properties = binder.bind(this.propertyPrefix, this.propertiesClass)
 					.orElseCreate(this.propertiesClass);
 			return isTemplateAvailable(view, resourceLoader, properties);
 		}

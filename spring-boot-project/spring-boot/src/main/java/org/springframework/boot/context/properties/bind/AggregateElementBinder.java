@@ -47,7 +47,6 @@ interface AggregateElementBinder {
 	 * @param source the source of the elements or {@code null} to use all sources
 	 * @return a bound object or {@code null}
 	 */
-	Object bind(ConfigurationPropertyName name, Bindable<?> target,
-			ConfigurationPropertySource source);
+	Object bind(ConfigurationPropertyName name, Bindable<?> target, ConfigurationPropertySource source);
 
 }

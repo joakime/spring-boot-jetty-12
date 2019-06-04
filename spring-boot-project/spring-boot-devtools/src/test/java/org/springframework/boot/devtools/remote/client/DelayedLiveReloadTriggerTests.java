@@ -71,47 +71,42 @@ public class DelayedLiveReloadTriggerTests {
 		MockitoAnnotations.initMocks(this);
 		given(this.errorRequest.execute()).willReturn(this.errorResponse);
 		given(this.okRequest.execute()).willReturn(this.okResponse);
-		given(this.errorResponse.getStatusCode())
-				.willReturn(HttpStatus.INTERNAL_SERVER_ERROR);
+		given(this.errorResponse.getStatusCode()).willReturn(HttpStatus.INTERNAL_SERVER_ERROR);
 		given(this.okResponse.getStatusCode()).willReturn(HttpStatus.OK);
-		this.trigger = new DelayedLiveReloadTrigger(this.liveReloadServer,
-				this.requestFactory, URL);
+		this.trigger = new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, URL);
 	}
 
 	@Test
 	public void liveReloadServerMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
 				.withMessageContaining("LiveReloadServer must not be null");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
 				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	public void urlMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
-						this.requestFactory, null))
+				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
-						this.requestFactory, ""))
+				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, ""))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void triggerReloadOnStatus() throws Exception {
-		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET))
-				.willThrow(new IOException())
+		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(new IOException())
 				.willReturn(this.errorRequest, this.okRequest);
 		long startTime = System.currentTimeMillis();
 		this.trigger.setTimings(10, 200, 30000);
@@ -122,8 +117,7 @@ public class DelayedLiveReloadTriggerTests {
 
 	@Test
 	public void timeout() throws Exception {
-		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET))
-				.willThrow(new IOException());
+		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(new IOException());
 		this.trigger.setTimings(10, 0, 10);
 		this.trigger.run();
 		verify(this.liveReloadServer, never()).triggerReload();

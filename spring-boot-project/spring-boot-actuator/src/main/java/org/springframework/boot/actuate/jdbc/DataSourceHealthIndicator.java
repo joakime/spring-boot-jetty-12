@@ -49,8 +49,7 @@ import org.springframework.util.StringUtils;
  * @author Arthur Kalimullin
  * @since 2.0.0
  */
-public class DataSourceHealthIndicator extends AbstractHealthIndicator
-		implements InitializingBean {
+public class DataSourceHealthIndicator extends AbstractHealthIndicator implements InitializingBean {
 
 	private static final String DEFAULT_QUERY = "SELECT 1";
 
@@ -91,8 +90,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.state(this.dataSource != null,
-				"DataSource for DataSourceHealthIndicator must be specified");
+		Assert.state(this.dataSource != null, "DataSource for DataSourceHealthIndicator must be specified");
 	}
 
 	@Override
@@ -112,8 +110,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 		if (StringUtils.hasText(validationQuery)) {
 			try {
 				// Avoid calling getObject as it breaks MySQL on Java 7
-				List<Object> results = this.jdbcTemplate.query(validationQuery,
-						new SingleColumnRowMapper());
+				List<Object> results = this.jdbcTemplate.query(validationQuery, new SingleColumnRowMapper());
 				Object result = DataAccessUtils.requiredSingleResult(results);
 				builder.withDetail("result", result);
 			}

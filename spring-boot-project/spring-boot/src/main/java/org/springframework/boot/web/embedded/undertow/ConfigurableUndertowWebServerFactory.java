@@ -31,8 +31,7 @@ import org.springframework.boot.web.server.ConfigurableWebServerFactory;
  * @see UndertowServletWebServerFactory
  * @see UndertowReactiveWebServerFactory
  */
-public interface ConfigurableUndertowWebServerFactory
-		extends ConfigurableWebServerFactory {
+public interface ConfigurableUndertowWebServerFactory extends ConfigurableWebServerFactory {
 
 	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the

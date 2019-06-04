@@ -45,11 +45,10 @@ class JettyEmbeddedErrorHandler extends ErrorHandler {
 	}
 
 	@Override
-	public void handle(String target, Request baseRequest, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 		String method = request.getMethod();
-		if (!HttpMethod.GET.is(method) && !HttpMethod.POST.is(method)
-				&& !HttpMethod.HEAD.is(method)) {
+		if (!HttpMethod.GET.is(method) && !HttpMethod.POST.is(method) && !HttpMethod.HEAD.is(method)) {
 			request = new ErrorHttpServletRequest(request);
 		}
 		this.delegate.handle(target, baseRequest, request, response);
@@ -65,8 +64,7 @@ class JettyEmbeddedErrorHandler extends ErrorHandler {
 
 		@Override
 		public String getMethod() {
-			return (this.simulateGetMethod ? HttpMethod.GET.toString()
-					: super.getMethod());
+			return (this.simulateGetMethod ? HttpMethod.GET.toString() : super.getMethod());
 		}
 
 		@Override

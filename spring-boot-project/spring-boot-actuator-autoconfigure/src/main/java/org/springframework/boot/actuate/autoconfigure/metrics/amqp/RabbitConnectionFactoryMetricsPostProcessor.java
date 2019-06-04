@@ -50,19 +50,16 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) {
 		if (bean instanceof AbstractConnectionFactory) {
-			bindConnectionFactoryToRegistry(getMeterRegistry(), beanName,
-					(AbstractConnectionFactory) bean);
+			bindConnectionFactoryToRegistry(getMeterRegistry(), beanName, (AbstractConnectionFactory) bean);
 		}
 		return bean;
 	}
 
 	private void bindConnectionFactoryToRegistry(MeterRegistry registry, String beanName,
 			AbstractConnectionFactory connectionFactory) {
-		ConnectionFactory rabbitConnectionFactory = connectionFactory
-				.getRabbitConnectionFactory();
+		ConnectionFactory rabbitConnectionFactory = connectionFactory.getRabbitConnectionFactory();
 		String connectionFactoryName = getConnectionFactoryName(beanName);
-		new RabbitMetrics(rabbitConnectionFactory, Tags.of("name", connectionFactoryName))
-				.bindTo(registry);
+		new RabbitMetrics(rabbitConnectionFactory, Tags.of("name", connectionFactoryName)).bindTo(registry);
 	}
 
 	/**
@@ -73,8 +70,7 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 	private String getConnectionFactoryName(String beanName) {
 		if (beanName.length() > CONNECTION_FACTORY_SUFFIX.length()
 				&& StringUtils.endsWithIgnoreCase(beanName, CONNECTION_FACTORY_SUFFIX)) {
-			return beanName.substring(0,
-					beanName.length() - CONNECTION_FACTORY_SUFFIX.length());
+			return beanName.substring(0, beanName.length() - CONNECTION_FACTORY_SUFFIX.length());
 		}
 		return beanName;
 	}

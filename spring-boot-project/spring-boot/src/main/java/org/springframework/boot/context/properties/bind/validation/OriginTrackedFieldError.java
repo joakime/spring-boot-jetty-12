@@ -31,9 +31,8 @@ final class OriginTrackedFieldError extends FieldError implements OriginProvider
 	private final Origin origin;
 
 	private OriginTrackedFieldError(FieldError fieldError, Origin origin) {
-		super(fieldError.getObjectName(), fieldError.getField(),
-				fieldError.getRejectedValue(), fieldError.isBindingFailure(),
-				fieldError.getCodes(), fieldError.getArguments(),
+		super(fieldError.getObjectName(), fieldError.getField(), fieldError.getRejectedValue(),
+				fieldError.isBindingFailure(), fieldError.getCodes(), fieldError.getArguments(),
 				fieldError.getDefaultMessage());
 		this.origin = origin;
 	}

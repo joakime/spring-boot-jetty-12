@@ -40,21 +40,17 @@ public class ConfigurationProcessorIntegrationTests {
 
 	@BeforeClass
 	public static void readMetadata() throws IOException {
-		Resource resource = new ClassPathResource(
-				"META-INF/spring-configuration-metadata.json");
+		Resource resource = new ClassPathResource("META-INF/spring-configuration-metadata.json");
 		assertThat(resource.exists()).isTrue();
 		// Make sure the right file is detected
-		assertThat(resource.getURL().toString())
-				.contains("spring-boot-configuration-processor-tests");
-		repository = ConfigurationMetadataRepositoryJsonBuilder
-				.create(resource.getInputStream()).build();
+		assertThat(resource.getURL().toString()).contains("spring-boot-configuration-processor-tests");
+		repository = ConfigurationMetadataRepositoryJsonBuilder.create(resource.getInputStream()).build();
 
 	}
 
 	@Test
 	public void extractTypeFromAnnotatedGetter() {
-		ConfigurationMetadataProperty property = repository.getAllProperties()
-				.get("annotated.name");
+		ConfigurationMetadataProperty property = repository.getAllProperties().get("annotated.name");
 		assertThat(property).isNotNull();
 		assertThat(property.getType()).isEqualTo("java.lang.String");
 	}

@@ -39,15 +39,13 @@ import static org.mockito.Mockito.verify;
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("HikariCP-*.jar")
-public class DevToolsEmbeddedDataSourceAutoConfigurationTests
-		extends AbstractDevToolsDataSourceAutoConfigurationTests {
+public class DevToolsEmbeddedDataSourceAutoConfigurationTests extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguredDataSourceIsNotShutdown() throws SQLException {
-		ConfigurableApplicationContext context = createContext(
-				DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class);
-		Statement statement = configureDataSourceBehavior(
-				context.getBean(DataSource.class));
+		ConfigurableApplicationContext context = createContext(DataSourceAutoConfiguration.class,
+				DataSourceSpyConfiguration.class);
+		Statement statement = configureDataSourceBehavior(context.getBean(DataSource.class));
 		context.close();
 		verify(statement, never()).execute("SHUTDOWN");
 	}

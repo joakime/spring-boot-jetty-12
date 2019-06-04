@@ -31,8 +31,7 @@ public abstract class AbstractPropertyMapperTests {
 	protected abstract PropertyMapper getMapper();
 
 	protected final Iterator<String> namesFromString(String name) {
-		return Arrays.stream(getMapper().map(name))
-				.map((mapping) -> mapping.getConfigurationPropertyName().toString())
+		return Arrays.stream(getMapper().map(name)).map((mapping) -> mapping.getConfigurationPropertyName().toString())
 				.iterator();
 	}
 

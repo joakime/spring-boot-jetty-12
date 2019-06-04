@@ -42,19 +42,18 @@ public class BackCompatibilityBinderIntegrationTests {
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("FOO_ZK_NODES", "foo"));
 		environment.getPropertySources().addFirst(propertySource);
-		ExampleCamelCaseBean result = Binder.get(environment)
-				.bind("foo", Bindable.of(ExampleCamelCaseBean.class)).get();
+		ExampleCamelCaseBean result = Binder.get(environment).bind("foo", Bindable.of(ExampleCamelCaseBean.class))
+				.get();
 		assertThat(result.getZkNodes()).isEqualTo("foo");
 	}
 
 	@Test
 	public void bindWhenUsingSystemEnvironmentToOverride() {
 		MockEnvironment environment = new MockEnvironment();
-		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(
-				"override", Collections.singletonMap("foo.password", "test"));
+		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource("override",
+				Collections.singletonMap("foo.password", "test"));
 		environment.getPropertySources().addFirst(propertySource);
-		PasswordProperties result = Binder.get(environment)
-				.bind("foo", Bindable.of(PasswordProperties.class)).get();
+		PasswordProperties result = Binder.get(environment).bind("foo", Bindable.of(PasswordProperties.class)).get();
 		assertThat(result.getPassword()).isEqualTo("test");
 	}
 

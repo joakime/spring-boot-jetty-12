@@ -56,8 +56,8 @@ public class OriginTrackedFieldErrorTests {
 
 	@Test
 	public void toStringShouldAddOrigin() {
-		assertThat(OriginTrackedFieldError.of(FIELD_ERROR, ORIGIN).toString()).isEqualTo(
-				"Field error in object 'foo' on field 'bar': rejected value [null]"
+		assertThat(OriginTrackedFieldError.of(FIELD_ERROR, ORIGIN).toString())
+				.isEqualTo("Field error in object 'foo' on field 'bar': rejected value [null]"
 						+ "; codes []; arguments []; default message [faf]; origin afile");
 	}
 

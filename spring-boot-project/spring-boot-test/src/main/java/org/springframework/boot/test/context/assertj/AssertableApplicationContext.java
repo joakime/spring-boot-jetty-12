@@ -35,8 +35,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @see ApplicationContext
  */
 public interface AssertableApplicationContext
-		extends ApplicationContextAssertProvider<ConfigurableApplicationContext>,
-		ConfigurableApplicationContext {
+		extends ApplicationContextAssertProvider<ConfigurableApplicationContext>, ConfigurableApplicationContext {
 
 	/**
 	 * Factory method to create a new {@link AssertableApplicationContext} instance.
@@ -45,8 +44,7 @@ public interface AssertableApplicationContext
 	 * to start.
 	 * @return an {@link AssertableApplicationContext} instance
 	 */
-	static AssertableApplicationContext get(
-			Supplier<? extends ConfigurableApplicationContext> contextSupplier) {
+	static AssertableApplicationContext get(Supplier<? extends ConfigurableApplicationContext> contextSupplier) {
 		return ApplicationContextAssertProvider.get(AssertableApplicationContext.class,
 				ConfigurableApplicationContext.class, contextSupplier);
 	}

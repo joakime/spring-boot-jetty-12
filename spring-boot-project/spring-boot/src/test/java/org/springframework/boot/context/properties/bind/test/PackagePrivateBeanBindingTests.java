@@ -54,8 +54,8 @@ public class PackagePrivateBeanBindingTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "999");
 		this.sources.add(source);
-		ExamplePackagePrivateBean bean = this.binder
-				.bind(this.name, Bindable.of(ExamplePackagePrivateBean.class)).get();
+		ExamplePackagePrivateBean bean = this.binder.bind(this.name, Bindable.of(ExamplePackagePrivateBean.class))
+				.get();
 		assertThat(bean.getBar()).isEqualTo(999);
 	}
 

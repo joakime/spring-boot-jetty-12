@@ -33,8 +33,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Andy Wilkinson
  * @since 2.0.6
  */
-public class DataSourceClosingSpringLiquibase extends SpringLiquibase
-		implements DisposableBean {
+public class DataSourceClosingSpringLiquibase extends SpringLiquibase implements DisposableBean {
 
 	private volatile boolean closeDataSourceOnceMigrated = true;
 

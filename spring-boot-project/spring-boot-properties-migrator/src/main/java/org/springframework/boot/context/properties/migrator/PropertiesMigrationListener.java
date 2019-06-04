@@ -41,11 +41,9 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class PropertiesMigrationListener
-		implements ApplicationListener<SpringApplicationEvent> {
+public class PropertiesMigrationListener implements ApplicationListener<SpringApplicationEvent> {
 
-	private static final Log logger = LogFactory
-			.getLog(PropertiesMigrationListener.class);
+	private static final Log logger = LogFactory.getLog(PropertiesMigrationListener.class);
 
 	private PropertiesMigrationReport report;
 
@@ -56,8 +54,7 @@ public class PropertiesMigrationListener
 		if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
-		if (event instanceof ApplicationReadyEvent
-				|| event instanceof ApplicationFailedEvent) {
+		if (event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent) {
 			logLegacyPropertiesReport();
 		}
 	}
@@ -78,8 +75,8 @@ public class PropertiesMigrationListener
 		}
 	}
 
-	private ConfigurationMetadataRepository loadRepository(
-			ConfigurationMetadataRepositoryJsonBuilder builder) throws IOException {
+	private ConfigurationMetadataRepository loadRepository(ConfigurationMetadataRepositoryJsonBuilder builder)
+			throws IOException {
 		Resource[] resources = new PathMatchingResourcePatternResolver()
 				.getResources("classpath*:/META-INF/spring-configuration-metadata.json");
 		for (Resource resource : resources) {

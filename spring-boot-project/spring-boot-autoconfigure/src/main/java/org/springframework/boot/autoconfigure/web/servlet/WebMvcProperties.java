@@ -107,8 +107,7 @@ public class WebMvcProperties {
 		return this.messageCodesResolverFormat;
 	}
 
-	public void setMessageCodesResolverFormat(
-			DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
+	public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
@@ -148,8 +147,7 @@ public class WebMvcProperties {
 		return this.throwExceptionIfNoHandlerFound;
 	}
 
-	public void setThrowExceptionIfNoHandlerFound(
-			boolean throwExceptionIfNoHandlerFound) {
+	public void setThrowExceptionIfNoHandlerFound(boolean throwExceptionIfNoHandlerFound) {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 

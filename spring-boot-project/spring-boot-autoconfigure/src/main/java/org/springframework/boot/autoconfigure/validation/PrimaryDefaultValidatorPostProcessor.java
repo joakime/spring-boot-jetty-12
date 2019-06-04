@@ -38,8 +38,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *
  * @author Stephane Nicoll
  */
-class PrimaryDefaultValidatorPostProcessor
-		implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 	/**
 	 * The bean name of the auto-configured Validator.
@@ -56,8 +55,7 @@ class PrimaryDefaultValidatorPostProcessor
 	}
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		BeanDefinition definition = getAutoConfiguredValidator(registry);
 		if (definition != null) {
 			definition.setPrimary(!hasPrimarySpringValidator(registry));
@@ -67,8 +65,8 @@ class PrimaryDefaultValidatorPostProcessor
 	private BeanDefinition getAutoConfiguredValidator(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(VALIDATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(VALIDATOR_BEAN_NAME);
-			if (definition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE && isTypeMatch(
-					VALIDATOR_BEAN_NAME, LocalValidatorFactoryBean.class)) {
+			if (definition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE
+					&& isTypeMatch(VALIDATOR_BEAN_NAME, LocalValidatorFactoryBean.class)) {
 				return definition;
 			}
 		}
@@ -80,8 +78,8 @@ class PrimaryDefaultValidatorPostProcessor
 	}
 
 	private boolean hasPrimarySpringValidator(BeanDefinitionRegistry registry) {
-		String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-				this.beanFactory, Validator.class, false, false);
+		String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Validator.class,
+				false, false);
 		for (String validatorBean : validatorBeans) {
 			BeanDefinition definition = registry.getBeanDefinition(validatorBean);
 			if (definition != null && definition.isPrimary()) {

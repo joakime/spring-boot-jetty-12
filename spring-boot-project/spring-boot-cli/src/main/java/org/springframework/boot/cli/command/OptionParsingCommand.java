@@ -33,8 +33,7 @@ public abstract class OptionParsingCommand extends AbstractCommand {
 
 	private final OptionHandler handler;
 
-	protected OptionParsingCommand(String name, String description,
-			OptionHandler handler) {
+	protected OptionParsingCommand(String name, String description, OptionHandler handler) {
 		super(name, description);
 		this.handler = handler;
 	}

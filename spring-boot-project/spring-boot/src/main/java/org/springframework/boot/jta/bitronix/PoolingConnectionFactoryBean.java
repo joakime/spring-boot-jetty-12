@@ -105,8 +105,7 @@ public class PoolingConnectionFactoryBean extends PoolingConnectionFactory
 	}
 
 	@Override
-	public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean)
-			throws Exception {
+	public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean) throws Exception {
 		if (xaFactory instanceof DirectXAConnectionFactory) {
 			xaFactory = ((DirectXAConnectionFactory) xaFactory).getConnectionFactory();
 		}
@@ -133,8 +132,7 @@ public class PoolingConnectionFactoryBean extends PoolingConnectionFactory
 		}
 
 		@Override
-		public XAConnection createXAConnection(String userName, String password)
-				throws JMSException {
+		public XAConnection createXAConnection(String userName, String password) throws JMSException {
 			return this.connectionFactory.createXAConnection(userName, password);
 		}
 

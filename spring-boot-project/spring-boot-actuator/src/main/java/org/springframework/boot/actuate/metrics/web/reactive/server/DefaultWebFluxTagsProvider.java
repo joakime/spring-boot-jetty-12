@@ -32,11 +32,9 @@ import org.springframework.web.server.ServerWebExchange;
 public class DefaultWebFluxTagsProvider implements WebFluxTagsProvider {
 
 	@Override
-	public Iterable<Tag> httpRequestTags(ServerWebExchange exchange,
-			Throwable exception) {
-		return Arrays.asList(WebFluxTags.method(exchange), WebFluxTags.uri(exchange),
-				WebFluxTags.exception(exception), WebFluxTags.status(exchange),
-				WebFluxTags.outcome(exchange));
+	public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable exception) {
+		return Arrays.asList(WebFluxTags.method(exchange), WebFluxTags.uri(exchange), WebFluxTags.exception(exception),
+				WebFluxTags.status(exchange), WebFluxTags.outcome(exchange));
 	}
 
 }

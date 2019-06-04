@@ -29,8 +29,7 @@ import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
  *
  * @author Andy Wilkinson
  */
-class RestDocsMockMvcBuilderCustomizer
-		implements InitializingBean, MockMvcBuilderCustomizer {
+class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockMvcBuilderCustomizer {
 
 	private final RestDocsProperties properties;
 
@@ -38,8 +37,7 @@ class RestDocsMockMvcBuilderCustomizer
 
 	private final RestDocumentationResultHandler resultHandler;
 
-	RestDocsMockMvcBuilderCustomizer(RestDocsProperties properties,
-			MockMvcRestDocumentationConfigurer delegate,
+	RestDocsMockMvcBuilderCustomizer(RestDocsProperties properties, MockMvcRestDocumentationConfigurer delegate,
 			RestDocumentationResultHandler resultHandler) {
 		this.properties = properties;
 		this.delegate = delegate;

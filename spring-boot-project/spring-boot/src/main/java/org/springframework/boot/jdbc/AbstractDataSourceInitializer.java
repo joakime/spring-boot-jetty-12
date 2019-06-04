@@ -41,8 +41,7 @@ public abstract class AbstractDataSourceInitializer {
 
 	private final ResourceLoader resourceLoader;
 
-	protected AbstractDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader) {
+	protected AbstractDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader) {
 		Assert.notNull(dataSource, "DataSource must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.dataSource = dataSource;
@@ -90,9 +89,8 @@ public abstract class AbstractDataSourceInitializer {
 
 	protected String getDatabaseName() {
 		try {
-			String productName = JdbcUtils.commonDatabaseName(JdbcUtils
-					.extractDatabaseMetaData(this.dataSource, "getDatabaseProductName")
-					.toString());
+			String productName = JdbcUtils.commonDatabaseName(
+					JdbcUtils.extractDatabaseMetaData(this.dataSource, "getDatabaseProductName").toString());
 			DatabaseDriver databaseDriver = DatabaseDriver.fromProductName(productName);
 			if (databaseDriver == DatabaseDriver.UNKNOWN) {
 				throw new IllegalStateException("Unable to detect database type");

@@ -42,13 +42,11 @@ final class StringToDurationConverter implements GenericConverter {
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
 		}
-		return convert(source.toString(), getStyle(targetType),
-				getDurationUnit(targetType));
+		return convert(source.toString(), getStyle(targetType), getDurationUnit(targetType));
 	}
 
 	private DurationStyle getStyle(TypeDescriptor targetType) {

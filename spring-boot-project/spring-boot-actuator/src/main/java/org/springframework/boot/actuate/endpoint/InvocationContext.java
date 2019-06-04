@@ -39,8 +39,7 @@ public class InvocationContext {
 	 * @param securityContext the current security context. Never {@code null}
 	 * @param arguments the arguments available to the operation. Never {@code null}
 	 */
-	public InvocationContext(SecurityContext securityContext,
-			Map<String, Object> arguments) {
+	public InvocationContext(SecurityContext securityContext, Map<String, Object> arguments) {
 		Assert.notNull(securityContext, "SecurityContext must not be null");
 		Assert.notNull(arguments, "Arguments must not be null");
 		this.securityContext = securityContext;

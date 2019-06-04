@@ -33,8 +33,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 final class ConfigurationPropertiesJsr303Validator implements Validator {
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
-			"javax.validation.ValidatorFactory",
-			"javax.validation.bootstrap.GenericBootstrap" };
+			"javax.validation.ValidatorFactory", "javax.validation.bootstrap.GenericBootstrap" };
 
 	private final Delegate delegate;
 

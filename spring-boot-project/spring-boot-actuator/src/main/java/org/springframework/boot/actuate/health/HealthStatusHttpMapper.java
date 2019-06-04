@@ -42,8 +42,7 @@ public class HealthStatusHttpMapper {
 
 	private void setupDefaultStatusMapping() {
 		addStatusMapping(Status.DOWN, WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
-		addStatusMapping(Status.OUT_OF_SERVICE,
-				WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
+		addStatusMapping(Status.OUT_OF_SERVICE, WebEndpointResponse.STATUS_SERVICE_UNAVAILABLE);
 	}
 
 	/**
@@ -103,9 +102,8 @@ public class HealthStatusHttpMapper {
 		String code = getUniformValue(status.getCode());
 		if (code != null) {
 			return this.statusMapping.entrySet().stream()
-					.filter((entry) -> code.equals(getUniformValue(entry.getKey())))
-					.map(Map.Entry::getValue).findFirst()
-					.orElse(WebEndpointResponse.STATUS_OK);
+					.filter((entry) -> code.equals(getUniformValue(entry.getKey()))).map(Map.Entry::getValue)
+					.findFirst().orElse(WebEndpointResponse.STATUS_OK);
 		}
 		return WebEndpointResponse.STATUS_OK;
 	}

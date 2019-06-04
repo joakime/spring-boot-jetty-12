@@ -55,12 +55,11 @@ public class TestJarFile {
 		addClass(filename, classToCopy, null);
 	}
 
-	public void addClass(String filename, Class<?> classToCopy, Long time)
-			throws IOException {
+	public void addClass(String filename, Class<?> classToCopy, Long time) throws IOException {
 		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
-		InputStream inputStream = getClass().getResourceAsStream(
-				"/" + classToCopy.getName().replace('.', '/') + ".class");
+		InputStream inputStream = getClass()
+				.getResourceAsStream("/" + classToCopy.getName().replace('.', '/') + ".class");
 		copyToFile(inputStream, file);
 		if (time != null) {
 			file.setLastModified(time);

@@ -41,8 +41,7 @@ public class CollectionToDelimitedStringConverterTests {
 
 	private final ConversionService conversionService;
 
-	public CollectionToDelimitedStringConverterTests(String name,
-			ConversionService conversionService) {
+	public CollectionToDelimitedStringConverterTests(String name, ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
@@ -78,9 +77,8 @@ public class CollectionToDelimitedStringConverterTests {
 		if (this.conversionService instanceof ApplicationConversionService) {
 			Data data = new Data();
 			data.type = Arrays.asList(1, 2, 3);
-			String converted = (String) this.conversionService.convert(
-					data.type, TypeDescriptor
-							.nested(ReflectionUtils.findField(Data.class, "type"), 0),
+			String converted = (String) this.conversionService.convert(data.type,
+					TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "type"), 0),
 					TypeDescriptor.valueOf(String.class));
 			assertThat(converted).isEqualTo("1.2.3");
 		}
@@ -95,8 +93,7 @@ public class CollectionToDelimitedStringConverterTests {
 
 	@Parameters(name = "{0}")
 	public static Iterable<Object[]> conversionServices() {
-		return new ConversionServiceParameters(
-				CollectionToDelimitedStringConverterTests::addConverter);
+		return new ConversionServiceParameters(CollectionToDelimitedStringConverterTests::addConverter);
 	}
 
 	private static void addConverter(FormattingConversionService service) {

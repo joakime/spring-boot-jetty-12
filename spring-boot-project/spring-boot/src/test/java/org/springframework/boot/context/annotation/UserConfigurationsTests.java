@@ -32,10 +32,8 @@ public class UserConfigurationsTests {
 
 	@Test
 	public void ofShouldCreateUnorderedConfigurations() {
-		UserConfigurations configurations = UserConfigurations.of(OutputStream.class,
-				InputStream.class);
-		assertThat(Configurations.getClasses(configurations))
-				.containsExactly(OutputStream.class, InputStream.class);
+		UserConfigurations configurations = UserConfigurations.of(OutputStream.class, InputStream.class);
+		assertThat(Configurations.getClasses(configurations)).containsExactly(OutputStream.class, InputStream.class);
 	}
 
 }

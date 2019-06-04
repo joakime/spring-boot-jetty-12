@@ -34,8 +34,7 @@ import org.apache.commons.logging.Log;
  */
 class DocumentRoot {
 
-	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
-			"static" };
+	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public", "static" };
 
 	private final Log logger;
 
@@ -127,8 +126,7 @@ class DocumentRoot {
 		}
 		if (codeSourceFile != null && codeSourceFile.exists()) {
 			String path = codeSourceFile.getAbsolutePath();
-			int webInfPathIndex = path
-					.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
+			int webInfPathIndex = path.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
 			if (webInfPathIndex >= 0) {
 				path = path.substring(0, webInfPathIndex);
 				return new File(path);

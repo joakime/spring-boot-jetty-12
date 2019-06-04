@@ -87,8 +87,7 @@ public class CouchbaseTestServer implements TestRule {
 
 		private final Cluster cluster;
 
-		CouchbaseStatement(Statement base, CouchbaseEnvironment environment,
-				Cluster cluster) {
+		CouchbaseStatement(Statement base, CouchbaseEnvironment environment, Cluster cluster) {
 			this.base = base;
 			this.environment = environment;
 			this.cluster = cluster;
@@ -101,8 +100,7 @@ public class CouchbaseTestServer implements TestRule {
 			}
 			catch (BeanCreationException ex) {
 				if ("couchbaseClient".equals(ex.getBeanName())) {
-					throw new AssumptionViolatedException(
-							"Skipping test due to Couchbase error " + ex.getMessage(),
+					throw new AssumptionViolatedException("Skipping test due to Couchbase error " + ex.getMessage(),
 							ex);
 				}
 			}
@@ -112,8 +110,7 @@ public class CouchbaseTestServer implements TestRule {
 					this.environment.shutdownAsync();
 				}
 				catch (Exception ex) {
-					logger.warn("Exception while trying to cleanup couchbase resource",
-							ex);
+					logger.warn("Exception while trying to cleanup couchbase resource", ex);
 				}
 			}
 		}
@@ -124,8 +121,7 @@ public class CouchbaseTestServer implements TestRule {
 
 		@Override
 		public void evaluate() throws Throwable {
-			throw new AssumptionViolatedException(
-					"Skipping test due to Couchbase not being available");
+			throw new AssumptionViolatedException("Skipping test due to Couchbase not being available");
 		}
 
 	}

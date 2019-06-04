@@ -54,8 +54,8 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	protected void loadConfiguration(LoggingInitializationContext initializationContext,
-			String location, LogFile logFile) {
+	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
+			LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		if (initializationContext != null) {
 			applySystemProperties(initializationContext.getEnvironment(), logFile);
@@ -90,8 +90,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 	private boolean isJulUsingASingleConsoleHandlerAtMost() {
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
-		return handlers.length == 0
-				|| (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
+		return handlers.length == 0 || (handlers.length == 1 && handlers[0] instanceof ConsoleHandler);
 	}
 
 	private void removeJdkLoggingBridgeHandler() {

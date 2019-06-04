@@ -41,14 +41,14 @@ import org.springframework.util.StringUtils;
  */
 public final class RepositoryConfigurationFactory {
 
-	private static final RepositoryConfiguration MAVEN_CENTRAL = new RepositoryConfiguration(
-			"central", URI.create("https://repo.maven.apache.org/maven2/"), false);
+	private static final RepositoryConfiguration MAVEN_CENTRAL = new RepositoryConfiguration("central",
+			URI.create("https://repo.maven.apache.org/maven2/"), false);
 
-	private static final RepositoryConfiguration SPRING_MILESTONE = new RepositoryConfiguration(
-			"spring-milestone", URI.create("https://repo.spring.io/milestone"), false);
+	private static final RepositoryConfiguration SPRING_MILESTONE = new RepositoryConfiguration("spring-milestone",
+			URI.create("https://repo.spring.io/milestone"), false);
 
-	private static final RepositoryConfiguration SPRING_SNAPSHOT = new RepositoryConfiguration(
-			"spring-snapshot", URI.create("https://repo.spring.io/snapshot"), true);
+	private static final RepositoryConfiguration SPRING_SNAPSHOT = new RepositoryConfiguration("spring-snapshot",
+			URI.create("https://repo.spring.io/snapshot"), true);
 
 	private RepositoryConfigurationFactory() {
 	}
@@ -65,10 +65,8 @@ public final class RepositoryConfigurationFactory {
 			repositoryConfiguration.add(SPRING_MILESTONE);
 			repositoryConfiguration.add(SPRING_SNAPSHOT);
 		}
-		addDefaultCacheAsRepository(mavenSettings.getLocalRepository(),
-				repositoryConfiguration);
-		addActiveProfileRepositories(mavenSettings.getActiveProfiles(),
-				repositoryConfiguration);
+		addDefaultCacheAsRepository(mavenSettings.getLocalRepository(), repositoryConfiguration);
+		addActiveProfileRepositories(mavenSettings.getActiveProfiles(), repositoryConfiguration);
 		return repositoryConfiguration;
 	}
 
@@ -85,16 +83,15 @@ public final class RepositoryConfigurationFactory {
 			List<RepositoryConfiguration> configurations) {
 		for (Profile activeProfile : activeProfiles) {
 			Interpolator interpolator = new RegexBasedInterpolator();
-			interpolator.addValueSource(
-					new PropertiesBasedValueSource(activeProfile.getProperties()));
+			interpolator.addValueSource(new PropertiesBasedValueSource(activeProfile.getProperties()));
 			for (Repository repository : activeProfile.getRepositories()) {
 				configurations.add(getRepositoryConfiguration(interpolator, repository));
 			}
 		}
 	}
 
-	private static RepositoryConfiguration getRepositoryConfiguration(
-			Interpolator interpolator, Repository repository) {
+	private static RepositoryConfiguration getRepositoryConfiguration(Interpolator interpolator,
+			Repository repository) {
 		String name = interpolate(interpolator, repository.getId());
 		String url = interpolate(interpolator, repository.getUrl());
 		boolean snapshotsEnabled = false;

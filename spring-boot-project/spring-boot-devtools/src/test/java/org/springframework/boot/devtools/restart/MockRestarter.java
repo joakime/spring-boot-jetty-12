@@ -60,17 +60,16 @@ public class MockRestarter implements TestRule {
 	private void setup() {
 		Restarter.setInstance(this.mock);
 		given(this.mock.getInitialUrls()).willReturn(new URL[] {});
-		given(this.mock.getOrAddAttribute(anyString(), any(ObjectFactory.class)))
-				.willAnswer((invocation) -> {
-					String name = invocation.getArgument(0);
-					ObjectFactory factory = invocation.getArgument(1);
-					Object attribute = MockRestarter.this.attributes.get(name);
-					if (attribute == null) {
-						attribute = factory.getObject();
-						MockRestarter.this.attributes.put(name, attribute);
-					}
-					return attribute;
-				});
+		given(this.mock.getOrAddAttribute(anyString(), any(ObjectFactory.class))).willAnswer((invocation) -> {
+			String name = invocation.getArgument(0);
+			ObjectFactory factory = invocation.getArgument(1);
+			Object attribute = MockRestarter.this.attributes.get(name);
+			if (attribute == null) {
+				attribute = factory.getObject();
+				MockRestarter.this.attributes.put(name, attribute);
+			}
+			return attribute;
+		});
 		given(this.mock.getThreadFactory()).willReturn(Thread::new);
 	}
 

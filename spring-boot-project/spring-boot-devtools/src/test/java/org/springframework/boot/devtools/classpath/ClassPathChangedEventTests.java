@@ -37,16 +37,14 @@ public class ClassPathChangedEventTests {
 
 	@Test
 	public void changeSetMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathChangedEvent(this.source, null, false))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangedEvent(this.source, null, false))
 				.withMessageContaining("ChangeSet must not be null");
 	}
 
 	@Test
 	public void getChangeSet() {
 		Set<ChangedFiles> changeSet = new LinkedHashSet<>();
-		ClassPathChangedEvent event = new ClassPathChangedEvent(this.source, changeSet,
-				false);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.source, changeSet, false);
 		assertThat(event.getChangeSet()).isSameAs(changeSet);
 	}
 

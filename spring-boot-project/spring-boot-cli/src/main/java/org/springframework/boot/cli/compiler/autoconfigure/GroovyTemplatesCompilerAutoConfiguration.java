@@ -40,8 +40,7 @@ public class GroovyTemplatesCompilerAutoConfiguration extends CompilerAutoConfig
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("groovy.text.TemplateEngine")
-				.add("groovy-templates");
+		dependencies.ifAnyMissingClasses("groovy.text.TemplateEngine").add("groovy-templates");
 	}
 
 	@Override

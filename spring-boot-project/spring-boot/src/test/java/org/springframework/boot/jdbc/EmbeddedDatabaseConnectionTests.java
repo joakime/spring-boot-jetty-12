@@ -42,21 +42,18 @@ public class EmbeddedDatabaseConnectionTests {
 
 	@Test
 	public void hsqlCustomDatabaseName() {
-		assertThat(EmbeddedDatabaseConnection.HSQL.getUrl("myhsql"))
-				.isEqualTo("jdbc:hsqldb:mem:myhsql");
+		assertThat(EmbeddedDatabaseConnection.HSQL.getUrl("myhsql")).isEqualTo("jdbc:hsqldb:mem:myhsql");
 	}
 
 	@Test
 	public void getUrlWithNullDatabaseName() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 
 	@Test
 	public void getUrlWithEmptyDatabaseName() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
+		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 

@@ -51,8 +51,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * @see FilterRegistrationBean
  * @see DelegatingFilterProxy
  */
-public class DelegatingFilterProxyRegistrationBean
-		extends AbstractFilterRegistrationBean<DelegatingFilterProxy>
+public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistrationBean<DelegatingFilterProxy>
 		implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
@@ -75,8 +74,7 @@ public class DelegatingFilterProxyRegistrationBean
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -86,8 +84,7 @@ public class DelegatingFilterProxyRegistrationBean
 
 	@Override
 	public DelegatingFilterProxy getFilter() {
-		return new DelegatingFilterProxy(this.targetBeanName,
-				getWebApplicationContext()) {
+		return new DelegatingFilterProxy(this.targetBeanName, getWebApplicationContext()) {
 
 			@Override
 			protected void initFilterBean() throws ServletException {

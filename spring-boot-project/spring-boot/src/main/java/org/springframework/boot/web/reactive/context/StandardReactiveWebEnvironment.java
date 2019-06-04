@@ -27,7 +27,6 @@ import org.springframework.core.env.StandardEnvironment;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class StandardReactiveWebEnvironment extends StandardEnvironment
-		implements ConfigurableReactiveWebEnvironment {
+public class StandardReactiveWebEnvironment extends StandardEnvironment implements ConfigurableReactiveWebEnvironment {
 
 }

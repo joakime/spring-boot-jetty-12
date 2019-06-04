@@ -36,8 +36,8 @@ import org.springframework.boot.loader.tools.LibraryScope;
 public class WarCommand extends ArchiveCommand {
 
 	public WarCommand() {
-		super("war", "Create a self-contained executable war "
-				+ "file from a Spring Groovy script", new WarOptionHandler());
+		super("war", "Create a self-contained executable war " + "file from a Spring Groovy script",
+				new WarOptionHandler());
 	}
 
 	private static final class WarOptionHandler extends ArchiveOptionHandler {
@@ -49,8 +49,7 @@ public class WarCommand extends ArchiveCommand {
 		@Override
 		protected LibraryScope getLibraryScope(File file) {
 			String fileName = file.getName();
-			if (fileName.contains("tomcat-embed")
-					|| fileName.contains("spring-boot-starter-tomcat")) {
+			if (fileName.contains("tomcat-embed") || fileName.contains("spring-boot-starter-tomcat")) {
 				return LibraryScope.PROVIDED;
 			}
 			return LibraryScope.COMPILE;
@@ -58,16 +57,13 @@ public class WarCommand extends ArchiveCommand {
 
 		@Override
 		protected void addCliClasses(JarWriter writer) throws IOException {
-			addClass(writer, null, "org.springframework.boot."
-					+ "cli.app.SpringApplicationWebApplicationInitializer");
+			addClass(writer, null, "org.springframework.boot." + "cli.app.SpringApplicationWebApplicationInitializer");
 			super.addCliClasses(writer);
 		}
 
 		@Override
-		protected void writeClasspathEntry(JarWriter writer,
-				ResourceMatcher.MatchedResource entry) throws IOException {
-			writer.writeEntry(getLayout().getClassesLocation() + entry.getName(),
-					new FileInputStream(entry.getFile()));
+		protected void writeClasspathEntry(JarWriter writer, ResourceMatcher.MatchedResource entry) throws IOException {
+			writer.writeEntry(getLayout().getClassesLocation() + entry.getName(), new FileInputStream(entry.getFile()));
 		}
 
 	}

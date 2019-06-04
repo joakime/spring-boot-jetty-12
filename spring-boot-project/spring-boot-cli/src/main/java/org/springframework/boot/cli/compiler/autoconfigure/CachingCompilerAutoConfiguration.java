@@ -38,15 +38,13 @@ public class CachingCompilerAutoConfiguration extends CompilerAutoConfiguration 
 	}
 
 	@Override
-	public void applyDependencies(DependencyCustomizer dependencies)
-			throws CompilationFailedException {
+	public void applyDependencies(DependencyCustomizer dependencies) throws CompilationFailedException {
 		dependencies.add("spring-context-support");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("org.springframework.cache",
-				"org.springframework.cache.annotation",
+		imports.addStarImports("org.springframework.cache", "org.springframework.cache.annotation",
 				"org.springframework.cache.concurrent");
 	}
 

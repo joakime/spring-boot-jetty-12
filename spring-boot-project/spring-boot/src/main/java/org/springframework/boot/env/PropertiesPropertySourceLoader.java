@@ -42,14 +42,13 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public List<PropertySource<?>> load(String name, Resource resource)
-			throws IOException {
+	public List<PropertySource<?>> load(String name, Resource resource) throws IOException {
 		Map<String, ?> properties = loadProperties(resource);
 		if (properties.isEmpty()) {
 			return Collections.emptyList();
 		}
-		return Collections.singletonList(new OriginTrackedMapPropertySource(name,
-				Collections.unmodifiableMap(properties), true));
+		return Collections
+				.singletonList(new OriginTrackedMapPropertySource(name, Collections.unmodifiableMap(properties), true));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

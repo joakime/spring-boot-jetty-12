@@ -29,8 +29,8 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @since 2.0.4
  */
-public class DispatcherServletRegistrationBean extends
-		ServletRegistrationBean<DispatcherServlet> implements DispatcherServletPath {
+public class DispatcherServletRegistrationBean extends ServletRegistrationBean<DispatcherServlet>
+		implements DispatcherServletPath {
 
 	private final String path;
 
@@ -54,14 +54,12 @@ public class DispatcherServletRegistrationBean extends
 
 	@Override
 	public void setUrlMappings(Collection<String> urlMappings) {
-		throw new UnsupportedOperationException(
-				"URL Mapping cannot be changed on a DispatcherServlet registration");
+		throw new UnsupportedOperationException("URL Mapping cannot be changed on a DispatcherServlet registration");
 	}
 
 	@Override
 	public void addUrlMappings(String... urlMappings) {
-		throw new UnsupportedOperationException(
-				"URL Mapping cannot be changed on a DispatcherServlet registration");
+		throw new UnsupportedOperationException("URL Mapping cannot be changed on a DispatcherServlet registration");
 	}
 
 }

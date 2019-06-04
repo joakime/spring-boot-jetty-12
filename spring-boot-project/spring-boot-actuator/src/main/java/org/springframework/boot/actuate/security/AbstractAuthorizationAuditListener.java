@@ -31,8 +31,8 @@ import org.springframework.security.access.event.AbstractAuthorizationEvent;
  * @author Vedran Pavic
  * @since 1.3.0
  */
-public abstract class AbstractAuthorizationAuditListener implements
-		ApplicationListener<AbstractAuthorizationEvent>, ApplicationEventPublisherAware {
+public abstract class AbstractAuthorizationAuditListener
+		implements ApplicationListener<AbstractAuthorizationEvent>, ApplicationEventPublisherAware {
 
 	private ApplicationEventPublisher publisher;
 

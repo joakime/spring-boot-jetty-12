@@ -54,8 +54,7 @@ public class OriginTrackedValueTests {
 		OriginTrackedValue tracked2 = OriginTrackedValue.of(value1, mock(Origin.class));
 		OriginTrackedValue tracked3 = OriginTrackedValue.of(new Object());
 		assertThat(tracked1.hashCode()).isEqualTo(tracked2.hashCode());
-		assertThat(tracked1).isEqualTo(tracked1).isEqualTo(tracked2)
-				.isNotEqualTo(tracked3);
+		assertThat(tracked1).isEqualTo(tracked1).isEqualTo(tracked2).isNotEqualTo(tracked3);
 	}
 
 	@Test

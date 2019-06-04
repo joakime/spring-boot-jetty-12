@@ -30,23 +30,19 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public class FreeMarkerTemplateAvailabilityProvider
-		extends PathBasedTemplateAvailabilityProvider {
+public class FreeMarkerTemplateAvailabilityProvider extends PathBasedTemplateAvailabilityProvider {
 
 	public FreeMarkerTemplateAvailabilityProvider() {
-		super("freemarker.template.Configuration",
-				FreeMarkerTemplateAvailabilityProperties.class, "spring.freemarker");
+		super("freemarker.template.Configuration", FreeMarkerTemplateAvailabilityProperties.class, "spring.freemarker");
 	}
 
-	static final class FreeMarkerTemplateAvailabilityProperties
-			extends TemplateAvailabilityProperties {
+	static final class FreeMarkerTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
 
 		private List<String> templateLoaderPath = new ArrayList<>(
 				Arrays.asList(FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH));
 
 		FreeMarkerTemplateAvailabilityProperties() {
-			super(FreeMarkerProperties.DEFAULT_PREFIX,
-					FreeMarkerProperties.DEFAULT_SUFFIX);
+			super(FreeMarkerProperties.DEFAULT_PREFIX, FreeMarkerProperties.DEFAULT_SUFFIX);
 		}
 
 		@Override

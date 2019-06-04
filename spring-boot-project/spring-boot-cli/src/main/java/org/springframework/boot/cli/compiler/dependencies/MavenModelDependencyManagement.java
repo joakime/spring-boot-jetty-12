@@ -46,17 +46,13 @@ public class MavenModelDependencyManagement implements DependencyManagement {
 
 	private static List<Dependency> extractDependenciesFromModel(Model model) {
 		List<Dependency> dependencies = new ArrayList<>();
-		for (org.apache.maven.model.Dependency mavenDependency : model
-				.getDependencyManagement().getDependencies()) {
+		for (org.apache.maven.model.Dependency mavenDependency : model.getDependencyManagement().getDependencies()) {
 			List<Exclusion> exclusions = new ArrayList<>();
-			for (org.apache.maven.model.Exclusion mavenExclusion : mavenDependency
-					.getExclusions()) {
-				exclusions.add(new Exclusion(mavenExclusion.getGroupId(),
-						mavenExclusion.getArtifactId()));
+			for (org.apache.maven.model.Exclusion mavenExclusion : mavenDependency.getExclusions()) {
+				exclusions.add(new Exclusion(mavenExclusion.getGroupId(), mavenExclusion.getArtifactId()));
 			}
-			Dependency dependency = new Dependency(mavenDependency.getGroupId(),
-					mavenDependency.getArtifactId(), mavenDependency.getVersion(),
-					exclusions);
+			Dependency dependency = new Dependency(mavenDependency.getGroupId(), mavenDependency.getArtifactId(),
+					mavenDependency.getVersion(), exclusions);
 			dependencies.add(dependency);
 		}
 		return dependencies;

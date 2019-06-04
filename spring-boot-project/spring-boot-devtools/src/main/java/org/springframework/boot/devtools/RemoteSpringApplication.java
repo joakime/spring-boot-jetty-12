@@ -53,8 +53,7 @@ public final class RemoteSpringApplication {
 
 	private void run(String[] args) {
 		Restarter.initialize(args, RestartInitializer.NONE);
-		SpringApplication application = new SpringApplication(
-				RemoteClientConfiguration.class);
+		SpringApplication application = new SpringApplication(RemoteClientConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setBanner(getBanner());
 		application.setInitializers(getInitializers());
@@ -80,8 +79,7 @@ public final class RemoteSpringApplication {
 	}
 
 	private Banner getBanner() {
-		ClassPathResource banner = new ClassPathResource("remote-banner.txt",
-				RemoteSpringApplication.class);
+		ClassPathResource banner = new ClassPathResource("remote-banner.txt", RemoteSpringApplication.class);
 		return new ResourceBanner(banner);
 	}
 

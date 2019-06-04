@@ -42,8 +42,7 @@ public class NumberToDataSizeConverterTests {
 
 	private final ConversionService conversionService;
 
-	public NumberToDataSizeConverterTests(String name,
-			ConversionService conversionService) {
+	public NumberToDataSizeConverterTests(String name, ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
@@ -69,15 +68,12 @@ public class NumberToDataSizeConverterTests {
 	private DataSize convert(Integer source, DataUnit defaultUnit) {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
-			DataSizeUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", defaultUnit), DataSizeUnit.class,
-					null);
-			given(targetType.getAnnotation(DataSizeUnit.class))
-					.willReturn(unitAnnotation);
+			DataSizeUnit unitAnnotation = AnnotationUtils
+					.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), DataSizeUnit.class, null);
+			given(targetType.getAnnotation(DataSizeUnit.class)).willReturn(unitAnnotation);
 		}
 		given(targetType.getType()).willReturn((Class) DataSize.class);
-		return (DataSize) this.conversionService.convert(source,
-				TypeDescriptor.forObject(source), targetType);
+		return (DataSize) this.conversionService.convert(source, TypeDescriptor.forObject(source), targetType);
 	}
 
 	@Parameterized.Parameters(name = "{0}")

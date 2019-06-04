@@ -119,8 +119,7 @@ public abstract class Configurations {
 		List<Configurations> ordered = new ArrayList<>(configurations);
 		ordered.sort(COMPARATOR);
 		List<Configurations> collated = collate(ordered);
-		LinkedHashSet<Class<?>> classes = collated.stream()
-				.flatMap(Configurations::streamClasses)
+		LinkedHashSet<Class<?>> classes = collated.stream().flatMap(Configurations::streamClasses)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 		return ClassUtils.toClassArray(classes);
 	}
@@ -129,8 +128,7 @@ public abstract class Configurations {
 		return configurations.getClasses().stream();
 	}
 
-	private static List<Configurations> collate(
-			List<Configurations> orderedConfigurations) {
+	private static List<Configurations> collate(List<Configurations> orderedConfigurations) {
 		LinkedList<Configurations> collated = new LinkedList<>();
 		for (Configurations item : orderedConfigurations) {
 			if (collated.isEmpty() || collated.getLast().getClass() != item.getClass()) {

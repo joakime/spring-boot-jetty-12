@@ -36,8 +36,7 @@ public class JerseyRequestMatcherProvider implements RequestMatcherProvider {
 
 	@Override
 	public RequestMatcher getRequestMatcher(String pattern) {
-		return new AntPathRequestMatcher(
-				this.jerseyApplicationPath.getRelativePath(pattern));
+		return new AntPathRequestMatcher(this.jerseyApplicationPath.getRelativePath(pattern));
 	}
 
 }

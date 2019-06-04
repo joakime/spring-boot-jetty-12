@@ -30,23 +30,19 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
  * @author Dave Syer
  * @since 1.1.0
  */
-public class GroovyTemplateAvailabilityProvider
-		extends PathBasedTemplateAvailabilityProvider {
+public class GroovyTemplateAvailabilityProvider extends PathBasedTemplateAvailabilityProvider {
 
 	public GroovyTemplateAvailabilityProvider() {
-		super("groovy.text.TemplateEngine", GroovyTemplateAvailabilityProperties.class,
-				"spring.groovy.template");
+		super("groovy.text.TemplateEngine", GroovyTemplateAvailabilityProperties.class, "spring.groovy.template");
 	}
 
-	static final class GroovyTemplateAvailabilityProperties
-			extends TemplateAvailabilityProperties {
+	static final class GroovyTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
 
 		private List<String> resourceLoaderPath = new ArrayList<>(
 				Arrays.asList(GroovyTemplateProperties.DEFAULT_RESOURCE_LOADER_PATH));
 
 		GroovyTemplateAvailabilityProperties() {
-			super(GroovyTemplateProperties.DEFAULT_PREFIX,
-					GroovyTemplateProperties.DEFAULT_SUFFIX);
+			super(GroovyTemplateProperties.DEFAULT_PREFIX, GroovyTemplateProperties.DEFAULT_SUFFIX);
 		}
 
 		@Override

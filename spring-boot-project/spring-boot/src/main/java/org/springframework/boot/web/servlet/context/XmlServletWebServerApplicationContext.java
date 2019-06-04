@@ -37,8 +37,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * @see ServletWebServerApplicationContext
  * @see XmlWebApplicationContext
  */
-public class XmlServletWebServerApplicationContext
-		extends ServletWebServerApplicationContext {
+public class XmlServletWebServerApplicationContext extends ServletWebServerApplicationContext {
 
 	private final XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(this);
 
@@ -79,8 +78,7 @@ public class XmlServletWebServerApplicationContext
 	 * specified resource name
 	 * @param resourceNames relatively-qualified names of resources to load
 	 */
-	public XmlServletWebServerApplicationContext(Class<?> relativeClass,
-			String... resourceNames) {
+	public XmlServletWebServerApplicationContext(Class<?> relativeClass, String... resourceNames) {
 		load(relativeClass, resourceNames);
 		refresh();
 	}

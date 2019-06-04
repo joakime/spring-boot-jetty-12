@@ -30,8 +30,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  *
  * @author Alex Derkach
  */
-class CouchbaseReactiveRepositoriesRegistrar
-		extends AbstractRepositoryConfigurationSourceSupport {
+class CouchbaseReactiveRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

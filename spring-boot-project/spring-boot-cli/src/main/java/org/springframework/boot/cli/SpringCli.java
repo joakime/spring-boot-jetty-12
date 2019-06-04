@@ -68,8 +68,7 @@ public final class SpringCli {
 	}
 
 	private static void addServiceLoaderCommands(CommandRunner runner) {
-		ServiceLoader<CommandFactory> factories = ServiceLoader
-				.load(CommandFactory.class);
+		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class);
 		for (CommandFactory factory : factories) {
 			runner.addCommands(factory.getCommands());
 		}
@@ -81,8 +80,7 @@ public final class SpringCli {
 
 	private static URL[] getExtensionURLs() {
 		List<URL> urls = new ArrayList<>();
-		String home = SystemPropertyUtils
-				.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
+		String home = SystemPropertyUtils.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
 		File extDirectory = new File(new File(home, "lib"), "ext");
 		if (extDirectory.isDirectory()) {
 			for (File file : extDirectory.listFiles()) {

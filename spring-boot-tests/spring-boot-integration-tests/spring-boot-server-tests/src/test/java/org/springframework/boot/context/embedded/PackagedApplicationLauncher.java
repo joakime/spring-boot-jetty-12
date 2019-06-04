@@ -30,8 +30,7 @@ import org.springframework.boot.testsupport.BuildOutput;
  */
 class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 
-	PackagedApplicationLauncher(ApplicationBuilder applicationBuilder,
-			BuildOutput buildOutput) {
+	PackagedApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
 		super(applicationBuilder, buildOutput);
 	}
 
@@ -47,8 +46,7 @@ class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 
 	@Override
 	protected List<String> getArguments(File archive, File serverPortFile) {
-		return Arrays.asList("-jar", archive.getAbsolutePath(),
-				serverPortFile.getAbsolutePath());
+		return Arrays.asList("-jar", archive.getAbsolutePath(), serverPortFile.getAbsolutePath());
 	}
 
 }

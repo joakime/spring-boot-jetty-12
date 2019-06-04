@@ -69,16 +69,13 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 	private static List<Object> createParameters(String packaging, String container,
 			List<Class<? extends AbstractApplicationLauncher>> applicationLaunchers) {
 		List<Object> parameters = new ArrayList<>();
-		ApplicationBuilder applicationBuilder = new ApplicationBuilder(temporaryFolder,
-				packaging, container);
+		ApplicationBuilder applicationBuilder = new ApplicationBuilder(temporaryFolder, packaging, container);
 		for (Class<? extends AbstractApplicationLauncher> launcherClass : applicationLaunchers) {
 			try {
 				AbstractApplicationLauncher launcher = launcherClass
-						.getDeclaredConstructor(ApplicationBuilder.class,
-								BuildOutput.class)
+						.getDeclaredConstructor(ApplicationBuilder.class, BuildOutput.class)
 						.newInstance(applicationBuilder, buildOutput);
-				String name = StringUtils.capitalize(container) + ": "
-						+ launcher.getDescription(packaging);
+				String name = StringUtils.capitalize(container) + ": " + launcher.getDescription(packaging);
 				parameters.add(new Object[] { name, launcher });
 			}
 			catch (Exception ex) {
@@ -88,8 +85,7 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 		return parameters;
 	}
 
-	protected AbstractEmbeddedServletContainerIntegrationTests(String name,
-			AbstractApplicationLauncher launcher) {
+	protected AbstractEmbeddedServletContainerIntegrationTests(String name, AbstractApplicationLauncher launcher) {
 		this.launcher = launcher;
 		this.rest.setErrorHandler(new ResponseErrorHandler() {
 
@@ -108,14 +104,12 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 			@Override
 			public URI expand(String uriTemplate, Object... uriVariables) {
-				return URI.create(
-						"http://localhost:" + launcher.getHttpPort() + uriTemplate);
+				return URI.create("http://localhost:" + launcher.getHttpPort() + uriTemplate);
 			}
 
 			@Override
 			public URI expand(String uriTemplate, Map<String, ?> uriVariables) {
-				return URI.create(
-						"http://localhost:" + launcher.getHttpPort() + uriTemplate);
+				return URI.create("http://localhost:" + launcher.getHttpPort() + uriTemplate);
 			}
 
 		});

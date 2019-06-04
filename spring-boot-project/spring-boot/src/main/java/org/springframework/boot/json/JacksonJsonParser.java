@@ -52,14 +52,12 @@ public class JacksonJsonParser extends AbstractJsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		return tryParse(() -> getObjectMapper().readValue(json, MAP_TYPE),
-				Exception.class);
+		return tryParse(() -> getObjectMapper().readValue(json, MAP_TYPE), Exception.class);
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		return tryParse(() -> getObjectMapper().readValue(json, LIST_TYPE),
-				Exception.class);
+		return tryParse(() -> getObjectMapper().readValue(json, LIST_TYPE), Exception.class);
 	}
 
 	private ObjectMapper getObjectMapper() {

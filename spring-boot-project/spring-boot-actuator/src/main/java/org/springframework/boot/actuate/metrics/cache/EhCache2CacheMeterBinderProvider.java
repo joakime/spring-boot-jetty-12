@@ -28,8 +28,7 @@ import org.springframework.cache.ehcache.EhCacheCache;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class EhCache2CacheMeterBinderProvider
-		implements CacheMeterBinderProvider<EhCacheCache> {
+public class EhCache2CacheMeterBinderProvider implements CacheMeterBinderProvider<EhCacheCache> {
 
 	@Override
 	public MeterBinder getMeterBinder(EhCacheCache cache, Iterable<Tag> tags) {

@@ -44,8 +44,7 @@ public class SpringTransactionProvider implements TransactionProvider {
 
 	@Override
 	public void begin(TransactionContext context) {
-		TransactionDefinition definition = new DefaultTransactionDefinition(
-				TransactionDefinition.PROPAGATION_NESTED);
+		TransactionDefinition definition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_NESTED);
 		TransactionStatus status = this.transactionManager.getTransaction(definition);
 		context.transaction(new SpringTransaction(status));
 	}

@@ -36,8 +36,8 @@ public class RandomPortWebTestClientExampleTests {
 
 	@Test
 	public void exampleTest() {
-		this.webClient.get().uri("/").exchange().expectStatus().isOk()
-				.expectBody(String.class).isEqualTo("Hello World");
+		this.webClient.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class)
+				.isEqualTo("Hello World");
 	}
 
 }

@@ -42,8 +42,8 @@ public class MessageInterpolatorFactoryWithoutElIntegrationTests {
 	@Test
 	public void defaultMessageInterpolatorShouldFail() {
 		// Sanity test
-		assertThatExceptionOfType(ValidationException.class).isThrownBy(
-				Validation.byDefaultProvider().configure()::getDefaultMessageInterpolator)
+		assertThatExceptionOfType(ValidationException.class)
+				.isThrownBy(Validation.byDefaultProvider().configure()::getDefaultMessageInterpolator)
 				.withMessageContaining("javax.el.ExpressionFactory");
 	}
 

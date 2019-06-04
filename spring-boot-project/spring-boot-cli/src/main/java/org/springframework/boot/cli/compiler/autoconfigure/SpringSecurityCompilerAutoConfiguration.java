@@ -32,8 +32,7 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableWebSecurity",
-				"EnableGlobalMethodSecurity");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableWebSecurity", "EnableGlobalMethodSecurity");
 	}
 
 	@Override
@@ -48,8 +47,7 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 		imports.addImports("org.springframework.security.core.Authentication",
 				"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity",
 				"org.springframework.security.core.authority.AuthorityUtils")
-				.addStarImports(
-						"org.springframework.security.config.annotation.web.configuration",
+				.addStarImports("org.springframework.security.config.annotation.web.configuration",
 						"org.springframework.security.authentication",
 						"org.springframework.security.config.annotation.web",
 						"org.springframework.security.config.annotation.web.builders");

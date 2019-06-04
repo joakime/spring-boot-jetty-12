@@ -33,10 +33,8 @@ class KotlinPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
-		String kotlinVersion = project.getPlugins().getPlugin(KotlinPluginWrapper.class)
-				.getKotlinPluginVersion();
-		ExtraPropertiesExtension extraProperties = project.getExtensions()
-				.getExtraProperties();
+		String kotlinVersion = project.getPlugins().getPlugin(KotlinPluginWrapper.class).getKotlinPluginVersion();
+		ExtraPropertiesExtension extraProperties = project.getExtensions().getExtraProperties();
 		if (!extraProperties.has("kotlin.version")) {
 			extraProperties.set("kotlin.version", kotlinVersion);
 		}

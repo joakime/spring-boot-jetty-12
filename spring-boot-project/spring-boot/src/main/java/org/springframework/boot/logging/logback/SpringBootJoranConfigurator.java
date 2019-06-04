@@ -42,10 +42,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	public void addInstanceRules(RuleStore rs) {
 		super.addInstanceRules(rs);
 		Environment environment = this.initializationContext.getEnvironment();
-		rs.addRule(new ElementSelector("configuration/springProperty"),
-				new SpringPropertyAction(environment));
-		rs.addRule(new ElementSelector("*/springProfile"),
-				new SpringProfileAction(environment));
+		rs.addRule(new ElementSelector("configuration/springProperty"), new SpringPropertyAction(environment));
+		rs.addRule(new ElementSelector("*/springProfile"), new SpringProfileAction(environment));
 		rs.addRule(new ElementSelector("*/springProfile/*"), new NOPAction());
 	}
 

@@ -50,8 +50,7 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 	 * @param flyway the flyway instance
 	 * @param migrationStrategy the migration strategy or {@code null}
 	 */
-	public FlywayMigrationInitializer(Flyway flyway,
-			FlywayMigrationStrategy migrationStrategy) {
+	public FlywayMigrationInitializer(Flyway flyway, FlywayMigrationStrategy migrationStrategy) {
 		Assert.notNull(flyway, "Flyway must not be null");
 		this.flyway = flyway;
 		this.migrationStrategy = migrationStrategy;

@@ -29,17 +29,15 @@ import org.springframework.boot.cli.compiler.maven.MavenSettingsReader;
  *
  * @author Andy Wilkinson
  */
-public class SettingsXmlRepositorySystemSessionAutoConfiguration
-		implements RepositorySystemSessionAutoConfiguration {
+public class SettingsXmlRepositorySystemSessionAutoConfiguration implements RepositorySystemSessionAutoConfiguration {
 
 	@Override
-	public void apply(DefaultRepositorySystemSession session,
-			RepositorySystem repositorySystem) {
+	public void apply(DefaultRepositorySystemSession session, RepositorySystem repositorySystem) {
 		MavenSettings settings = getSettings(session);
 		String localRepository = settings.getLocalRepository();
 		if (localRepository != null) {
-			session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(
-					session, new LocalRepository(localRepository)));
+			session.setLocalRepositoryManager(
+					repositorySystem.newLocalRepositoryManager(session, new LocalRepository(localRepository)));
 		}
 	}
 

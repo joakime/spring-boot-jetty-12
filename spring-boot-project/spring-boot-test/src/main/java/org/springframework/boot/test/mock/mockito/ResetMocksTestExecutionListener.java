@@ -42,8 +42,7 @@ import org.springframework.util.ClassUtils;
  */
 public class ResetMocksTestExecutionListener extends AbstractTestExecutionListener {
 
-	private static final boolean MOCKITO_IS_PRESENT = ClassUtils.isPresent(
-			"org.mockito.MockSettings",
+	private static final boolean MOCKITO_IS_PRESENT = ClassUtils.isPresent("org.mockito.MockSettings",
 			ResetMocksTestExecutionListener.class.getClassLoader());
 
 	@Override
@@ -71,12 +70,10 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		}
 	}
 
-	private void resetMocks(ConfigurableApplicationContext applicationContext,
-			MockReset reset) {
+	private void resetMocks(ConfigurableApplicationContext applicationContext, MockReset reset) {
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		String[] names = beanFactory.getBeanDefinitionNames();
-		Set<String> instantiatedSingletons = new HashSet<>(
-				Arrays.asList(beanFactory.getSingletonNames()));
+		Set<String> instantiatedSingletons = new HashSet<>(Arrays.asList(beanFactory.getSingletonNames()));
 		for (String name : names) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
 			if (definition.isSingleton() && instantiatedSingletons.contains(name)) {

@@ -31,8 +31,7 @@ import org.springframework.core.env.Environment;
  * @author Madhura Bhave
  * @since 1.2.2
  */
-public class MustacheEnvironmentCollector extends DefaultCollector
-		implements EnvironmentAware {
+public class MustacheEnvironmentCollector extends DefaultCollector implements EnvironmentAware {
 
 	private ConfigurableEnvironment environment;
 

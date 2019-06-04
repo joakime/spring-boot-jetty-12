@@ -26,8 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class SignalFxPropertiesConfigAdapter
-		extends StepRegistryPropertiesConfigAdapter<SignalFxProperties>
+public class SignalFxPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<SignalFxProperties>
 		implements SignalFxConfig {
 
 	public SignalFxPropertiesConfigAdapter(SignalFxProperties properties) {

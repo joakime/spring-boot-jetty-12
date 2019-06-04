@@ -25,8 +25,7 @@ public interface CityRepository extends JpaRepository<City, Long> {
 	@Override
 	Page<City> findAll(Pageable pageable);
 
-	Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country,
-			Pageable pageable);
+	Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country, Pageable pageable);
 
 	City findByNameAndCountryAllIgnoringCase(String name, String country);
 

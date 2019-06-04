@@ -60,8 +60,7 @@ public class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 
 	@Test
 	public void bindWhenTopLevelContextAndExceptionIgnorableShouldNotFail() {
-		this.binder.bind("example", Bindable.of(Example.class),
-				new IgnoreTopLevelConverterNotFoundBindHandler());
+		this.binder.bind("example", Bindable.of(Example.class), new IgnoreTopLevelConverterNotFoundBindHandler());
 	}
 
 	@Test

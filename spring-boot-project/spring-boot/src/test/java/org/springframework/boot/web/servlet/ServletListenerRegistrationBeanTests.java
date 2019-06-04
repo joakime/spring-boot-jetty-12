@@ -63,14 +63,13 @@ public class ServletListenerRegistrationBeanTests {
 				this.listener);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, never())
-				.addListener(any(ServletContextListener.class));
+		verify(this.servletContext, never()).addListener(any(ServletContextListener.class));
 	}
 
 	@Test
 	public void cannotRegisterUnsupportedType() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new ServletListenerRegistrationBean<>(new EventListener() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ServletListenerRegistrationBean<>(new EventListener() {
 
 				})).withMessageContaining("Listener is not of a supported type");
 	}

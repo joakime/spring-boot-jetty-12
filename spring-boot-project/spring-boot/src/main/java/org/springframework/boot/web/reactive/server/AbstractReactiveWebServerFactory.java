@@ -24,8 +24,7 @@ import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public abstract class AbstractReactiveWebServerFactory
-		extends AbstractConfigurableWebServerFactory
+public abstract class AbstractReactiveWebServerFactory extends AbstractConfigurableWebServerFactory
 		implements ConfigurableReactiveWebServerFactory {
 
 	public AbstractReactiveWebServerFactory() {

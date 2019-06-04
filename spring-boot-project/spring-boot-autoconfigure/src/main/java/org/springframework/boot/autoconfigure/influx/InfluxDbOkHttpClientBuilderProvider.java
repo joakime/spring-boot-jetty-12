@@ -29,7 +29,6 @@ import org.influxdb.InfluxDB;
  * @since 2.1.0
  */
 @FunctionalInterface
-public interface InfluxDbOkHttpClientBuilderProvider
-		extends Supplier<OkHttpClient.Builder> {
+public interface InfluxDbOkHttpClientBuilderProvider extends Supplier<OkHttpClient.Builder> {
 
 }

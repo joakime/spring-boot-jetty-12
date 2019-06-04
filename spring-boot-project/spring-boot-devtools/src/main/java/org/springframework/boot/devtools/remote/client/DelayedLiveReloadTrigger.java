@@ -59,8 +59,8 @@ class DelayedLiveReloadTrigger implements Runnable {
 
 	private long timeout = TIMEOUT;
 
-	DelayedLiveReloadTrigger(OptionalLiveReloadServer liveReloadServer,
-			ClientHttpRequestFactory requestFactory, String url) {
+	DelayedLiveReloadTrigger(OptionalLiveReloadServer liveReloadServer, ClientHttpRequestFactory requestFactory,
+			String url) {
 		Assert.notNull(liveReloadServer, "LiveReloadServer must not be null");
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
 		Assert.hasLength(url, "URL must not be empty");

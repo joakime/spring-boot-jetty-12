@@ -37,8 +37,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
 public class ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor
 		extends AbstractDependsOnBeanFactoryPostProcessor {
 
-	public ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(
-			String... dependsOn) {
+	public ReactiveStreamsMongoClientDependsOnBeanFactoryPostProcessor(String... dependsOn) {
 		super(MongoClient.class, ReactiveMongoClientFactoryBean.class, dependsOn);
 	}
 

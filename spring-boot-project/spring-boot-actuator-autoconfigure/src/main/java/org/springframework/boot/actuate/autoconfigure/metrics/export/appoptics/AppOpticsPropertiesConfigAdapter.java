@@ -25,8 +25,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  *
  * @author Stephane Nicoll
  */
-class AppOpticsPropertiesConfigAdapter
-		extends StepRegistryPropertiesConfigAdapter<AppOpticsProperties>
+class AppOpticsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<AppOpticsProperties>
 		implements AppOpticsConfig {
 
 	AppOpticsPropertiesConfigAdapter(AppOpticsProperties properties) {

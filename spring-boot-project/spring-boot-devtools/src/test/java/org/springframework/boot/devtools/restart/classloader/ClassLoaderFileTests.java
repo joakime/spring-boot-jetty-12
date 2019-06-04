@@ -34,29 +34,25 @@ public class ClassLoaderFileTests {
 
 	@Test
 	public void kindMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassLoaderFile(null, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(null, null))
 				.withMessageContaining("Kind must not be null");
 	}
 
 	@Test
 	public void addedContentsMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
 				.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
 	public void modifiedContentsMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
 				.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
 	public void deletedContentsMustBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
 				.withMessageContaining("Contents must be null");
 	}
 

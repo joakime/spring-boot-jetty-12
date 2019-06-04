@@ -41,8 +41,8 @@ public interface WebMvcTagsProvider {
 	 * @param exception the current exception, if any
 	 * @return tags to associate with metrics for the request and response exchange
 	 */
-	Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response,
-			Object handler, Throwable exception);
+	Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response, Object handler,
+			Throwable exception);
 
 	/**
 	 * Provides tags to be used by {@link LongTaskTimer long task timers}.

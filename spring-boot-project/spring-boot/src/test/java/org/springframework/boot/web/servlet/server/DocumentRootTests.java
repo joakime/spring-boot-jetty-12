@@ -42,11 +42,9 @@ public class DocumentRootTests {
 
 	@Test
 	public void explodedWarFileDocumentRootWhenRunningFromExplodedWar() throws Exception {
-		File webInfClasses = this.temporaryFolder.newFolder("test.war", "WEB-INF", "lib",
-				"spring-boot.jar");
+		File webInfClasses = this.temporaryFolder.newFolder("test.war", "WEB-INF", "lib", "spring-boot.jar");
 		File directory = this.documentRoot.getExplodedWarFileDocumentRoot(webInfClasses);
-		assertThat(directory)
-				.isEqualTo(webInfClasses.getParentFile().getParentFile().getParentFile());
+		assertThat(directory).isEqualTo(webInfClasses.getParentFile().getParentFile().getParentFile());
 	}
 
 	@Test
@@ -58,16 +56,14 @@ public class DocumentRootTests {
 
 	@Test
 	public void codeSourceArchivePath() throws Exception {
-		CodeSource codeSource = new CodeSource(new URL("file", "", "/some/test/path/"),
-				(Certificate[]) null);
+		CodeSource codeSource = new CodeSource(new URL("file", "", "/some/test/path/"), (Certificate[]) null);
 		File codeSourceArchive = this.documentRoot.getCodeSourceArchive(codeSource);
 		assertThat(codeSourceArchive).isEqualTo(new File("/some/test/path/"));
 	}
 
 	@Test
 	public void codeSourceArchivePathContainingSpaces() throws Exception {
-		CodeSource codeSource = new CodeSource(
-				new URL("file", "", "/test/path/with%20space/"), (Certificate[]) null);
+		CodeSource codeSource = new CodeSource(new URL("file", "", "/test/path/with%20space/"), (Certificate[]) null);
 		File codeSourceArchive = this.documentRoot.getCodeSourceArchive(codeSource);
 		assertThat(codeSourceArchive).isEqualTo(new File("/test/path/with space/"));
 	}

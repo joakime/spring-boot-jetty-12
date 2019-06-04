@@ -30,8 +30,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphiteProperties>
-		implements GraphiteConfig {
+class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphiteProperties> implements GraphiteConfig {
 
 	GraphitePropertiesConfigAdapter(GraphiteProperties properties) {
 		super(properties);
@@ -59,8 +58,7 @@ class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphitePr
 
 	@Override
 	public TimeUnit durationUnits() {
-		return get(GraphiteProperties::getDurationUnits,
-				GraphiteConfig.super::durationUnits);
+		return get(GraphiteProperties::getDurationUnits, GraphiteConfig.super::durationUnits);
 	}
 
 	@Override
@@ -80,8 +78,7 @@ class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphitePr
 
 	@Override
 	public String[] tagsAsPrefix() {
-		return get(GraphiteProperties::getTagsAsPrefix,
-				GraphiteConfig.super::tagsAsPrefix);
+		return get(GraphiteProperties::getTagsAsPrefix, GraphiteConfig.super::tagsAsPrefix);
 	}
 
 }

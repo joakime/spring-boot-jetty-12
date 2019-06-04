@@ -95,8 +95,7 @@ public class OriginTrackedValue implements OriginProvider {
 	/**
 	 * {@link OriginTrackedValue} for a {@link CharSequence}.
 	 */
-	private static class OriginTrackedCharSequence extends OriginTrackedValue
-			implements CharSequence {
+	private static class OriginTrackedCharSequence extends OriginTrackedValue implements CharSequence {
 
 		OriginTrackedCharSequence(CharSequence value, Origin origin) {
 			super(value, origin);

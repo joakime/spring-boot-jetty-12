@@ -38,8 +38,7 @@ import org.springframework.web.server.ServerWebExchange;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public abstract class ApplicationContextServerWebExchangeMatcher<C>
-		implements ServerWebExchangeMatcher {
+public abstract class ApplicationContextServerWebExchangeMatcher<C> implements ServerWebExchangeMatcher {
 
 	private final Class<? extends C> contextClass;
 
@@ -63,8 +62,7 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 	 * @param context a supplier for the initialized context (may throw an exception)
 	 * @return if the exchange matches
 	 */
-	protected abstract Mono<MatchResult> matches(ServerWebExchange exchange,
-			Supplier<C> context);
+	protected abstract Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<C> context);
 
 	protected Supplier<C> getContext(ServerWebExchange exchange) {
 		if (this.context == null) {
@@ -89,8 +87,7 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 	@SuppressWarnings("unchecked")
 	private Supplier<C> createContext(ServerWebExchange exchange) {
 		ApplicationContext context = exchange.getApplicationContext();
-		Assert.state(context != null,
-				"No ApplicationContext found on ServerWebExchange.");
+		Assert.state(context != null, "No ApplicationContext found on ServerWebExchange.");
 		if (this.contextClass.isInstance(context)) {
 			return () -> (C) context;
 		}

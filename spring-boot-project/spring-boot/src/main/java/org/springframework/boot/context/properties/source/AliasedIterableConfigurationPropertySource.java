@@ -27,8 +27,7 @@ import org.springframework.util.CollectionUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-class AliasedIterableConfigurationPropertySource
-		extends AliasedConfigurationPropertySource
+class AliasedIterableConfigurationPropertySource extends AliasedConfigurationPropertySource
 		implements IterableConfigurationPropertySource {
 
 	AliasedIterableConfigurationPropertySource(IterableConfigurationPropertySource source,

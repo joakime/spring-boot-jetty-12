@@ -58,8 +58,7 @@ public class SecurityProperties {
 	 * other filters registered with the container). There is no connection between this
 	 * and the {@code @Order} on a WebSecurityConfigurer.
 	 */
-	public static final int DEFAULT_FILTER_ORDER = OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER
-			- 100;
+	public static final int DEFAULT_FILTER_ORDER = OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100;
 
 	private final Filter filter = new Filter();
 
@@ -83,8 +82,8 @@ public class SecurityProperties {
 		/**
 		 * Security filter chain dispatcher types.
 		 */
-		private Set<DispatcherType> dispatcherTypes = new HashSet<>(Arrays.asList(
-				DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
+		private Set<DispatcherType> dispatcherTypes = new HashSet<>(
+				Arrays.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 		public int getOrder() {
 			return this.order;

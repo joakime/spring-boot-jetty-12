@@ -39,8 +39,7 @@ public class JerseySetStatusOverSendErrorExample {
 
 		public JerseyConfig() {
 			register(Endpoint.class);
-			setProperties(Collections.singletonMap(
-					"jersey.config.server.response.setStatusOverSendError", true));
+			setProperties(Collections.singletonMap("jersey.config.server.response.setStatusOverSendError", true));
 		}
 
 	}

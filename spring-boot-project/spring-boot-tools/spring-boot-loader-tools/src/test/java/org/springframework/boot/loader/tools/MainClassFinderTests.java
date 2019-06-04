@@ -81,18 +81,16 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> MainClassFinder
-						.findSingleMainClass(this.testJarFile.getJarFile(), ""))
-				.withMessageContaining("Unable to find a single main class "
-						+ "from the following candidates [a.B, a.b.c.E]");
+				.isThrownBy(() -> MainClassFinder.findSingleMainClass(this.testJarFile.getJarFile(), ""))
+				.withMessageContaining(
+						"Unable to find a single main class " + "from the following candidates [a.B, a.b.c.E]");
 	}
 
 	@Test
 	public void findSingleJarSearchPrefersAnnotatedMainClass() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", AnnotatedClassWithMainMethod.class);
-		String mainClass = MainClassFinder.findSingleMainClass(
-				this.testJarFile.getJarFile(), "",
+		String mainClass = MainClassFinder.findSingleMainClass(this.testJarFile.getJarFile(), "",
 				"org.springframework.boot.loader.tools.sample.SomeApplication");
 		assertThat(mainClass).isEqualTo("a.b.c.E");
 	}
@@ -101,8 +99,7 @@ public class MainClassFinderTests {
 	public void findMainClassInJarSubLocation() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
-		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(),
-				"a/");
+		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarFile(), "a/");
 		assertThat(actual).isEqualTo("B");
 
 	}
@@ -137,18 +134,16 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> MainClassFinder
-						.findSingleMainClass(this.testJarFile.getJarSource()))
-				.withMessageContaining("Unable to find a single main class "
-						+ "from the following candidates [a.B, a.b.c.E]");
+				.isThrownBy(() -> MainClassFinder.findSingleMainClass(this.testJarFile.getJarSource()))
+				.withMessageContaining(
+						"Unable to find a single main class " + "from the following candidates [a.B, a.b.c.E]");
 	}
 
 	@Test
 	public void findSingleFolderSearchPrefersAnnotatedMainClass() throws Exception {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", AnnotatedClassWithMainMethod.class);
-		String mainClass = MainClassFinder.findSingleMainClass(
-				this.testJarFile.getJarSource(),
+		String mainClass = MainClassFinder.findSingleMainClass(this.testJarFile.getJarSource(),
 				"org.springframework.boot.loader.tools.sample.SomeApplication");
 		assertThat(mainClass).isEqualTo("a.b.c.E");
 	}

@@ -25,8 +25,7 @@ public class AdvancedConfigurationExample {
 
 	// tag::configuration[]
 	@TestConfiguration
-	public static class CustomizationConfiguration
-			implements RestDocsRestAssuredConfigurationCustomizer {
+	public static class CustomizationConfiguration implements RestDocsRestAssuredConfigurationCustomizer {
 
 		@Override
 		public void customize(RestAssuredRestDocumentationConfigurer configurer) {

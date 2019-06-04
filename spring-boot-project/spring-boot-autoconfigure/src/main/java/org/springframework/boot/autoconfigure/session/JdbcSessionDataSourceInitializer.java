@@ -33,8 +33,8 @@ public class JdbcSessionDataSourceInitializer extends AbstractDataSourceInitiali
 
 	private final JdbcSessionProperties properties;
 
-	public JdbcSessionDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
+	public JdbcSessionDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+			JdbcSessionProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "JdbcSessionProperties must not be null");
 		this.properties = properties;

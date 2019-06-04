@@ -32,8 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER,
-		ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Value("${local.management.port}")

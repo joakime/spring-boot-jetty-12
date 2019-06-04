@@ -35,8 +35,7 @@ public class EnvironmentPostProcessorExampleTests {
 	@Test
 	public void applyEnvironmentPostProcessor() {
 		assertThat(this.environment.containsProperty("test.foo.bar")).isFalse();
-		new EnvironmentPostProcessorExample().postProcessEnvironment(this.environment,
-				new SpringApplication());
+		new EnvironmentPostProcessorExample().postProcessEnvironment(this.environment, new SpringApplication());
 		assertThat(this.environment.containsProperty("test.foo.bar")).isTrue();
 		assertThat(this.environment.getProperty("test.foo.bar")).isEqualTo("value");
 	}

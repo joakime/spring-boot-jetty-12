@@ -34,8 +34,7 @@ public class CompressionTests {
 
 	@Test
 	public void defaultCompressableMimeTypesMatchesTomcatsDefault() {
-		assertThat(new Compression().getMimeTypes())
-				.containsExactlyInAnyOrder(getTomcatDefaultCompressableMimeTypes());
+		assertThat(new Compression().getMimeTypes()).containsExactlyInAnyOrder(getTomcatDefaultCompressableMimeTypes());
 	}
 
 	private String[] getTomcatDefaultCompressableMimeTypes() {

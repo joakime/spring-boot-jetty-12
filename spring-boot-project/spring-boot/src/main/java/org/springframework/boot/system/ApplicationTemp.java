@@ -79,8 +79,7 @@ public class ApplicationTemp {
 				byte[] hash = generateHash(this.sourceClass);
 				this.dir = new File(getTempDirectory(), toHexString(hash));
 				this.dir.mkdirs();
-				Assert.state(this.dir.exists(),
-						() -> "Unable to create temp directory " + this.dir);
+				Assert.state(this.dir.exists(), () -> "Unable to create temp directory " + this.dir);
 			}
 		}
 		return this.dir;
@@ -91,8 +90,7 @@ public class ApplicationTemp {
 		Assert.state(StringUtils.hasLength(property), "No 'java.io.tmpdir' property set");
 		File file = new File(property);
 		Assert.state(file.exists(), () -> "Temp directory " + file + " does not exist");
-		Assert.state(file.isDirectory(),
-				() -> "Temp location " + file + " is not a directory");
+		Assert.state(file.isDirectory(), () -> "Temp location " + file + " is not a directory");
 		return file;
 	}
 

@@ -39,11 +39,9 @@ public class AnsiOutputApplicationListener
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
-		Binder.get(environment)
-				.bind("spring.output.ansi.enabled", AnsiOutput.Enabled.class)
+		Binder.get(environment).bind("spring.output.ansi.enabled", AnsiOutput.Enabled.class)
 				.ifBound(AnsiOutput::setEnabled);
-		AnsiOutput.setConsoleAvailable(environment
-				.getProperty("spring.output.ansi.console-available", Boolean.class));
+		AnsiOutput.setConsoleAvailable(environment.getProperty("spring.output.ansi.console-available", Boolean.class));
 	}
 
 	@Override

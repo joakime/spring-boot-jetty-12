@@ -47,8 +47,7 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 
 	private int httpPort;
 
-	protected AbstractApplicationLauncher(ApplicationBuilder applicationBuilder,
-			BuildOutput buildOutput) {
+	protected AbstractApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
 		this.applicationBuilder = applicationBuilder;
 		this.buildOutput = buildOutput;
 	}
@@ -81,8 +80,7 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 		List<String> arguments = new ArrayList<>();
 		arguments.add(System.getProperty("java.home") + "/bin/java");
 		arguments.addAll(getArguments(archive, serverPortFile));
-		ProcessBuilder processBuilder = new ProcessBuilder(
-				StringUtils.toStringArray(arguments));
+		ProcessBuilder processBuilder = new ProcessBuilder(StringUtils.toStringArray(arguments));
 		if (workingDirectory != null) {
 			processBuilder.directory(workingDirectory);
 		}
@@ -97,16 +95,14 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 		long end = System.currentTimeMillis() + 30000;
 		while (serverPortFile.length() == 0) {
 			if (System.currentTimeMillis() > end) {
-				throw new IllegalStateException(
-						"server.port file was not written within 30 seconds");
+				throw new IllegalStateException("server.port file was not written within 30 seconds");
 			}
 			if (!process.isAlive()) {
 				throw new IllegalStateException("Application failed to launch");
 			}
 			Thread.sleep(100);
 		}
-		return Integer
-				.parseInt(FileCopyUtils.copyToString(new FileReader(serverPortFile)));
+		return Integer.parseInt(FileCopyUtils.copyToString(new FileReader(serverPortFile)));
 	}
 
 	private static class ConsoleCopy extends Thread {

@@ -37,8 +37,7 @@ import org.springframework.boot.cli.util.Log;
 public class UninstallCommand extends OptionParsingCommand {
 
 	public UninstallCommand() {
-		super("uninstall", "Uninstall dependencies from the lib/ext directory",
-				new UninstallOptionHandler());
+		super("uninstall", "Uninstall dependencies from the lib/ext directory", new UninstallOptionHandler());
 	}
 
 	@Override
@@ -62,8 +61,7 @@ public class UninstallCommand extends OptionParsingCommand {
 			try {
 				if (options.has(this.allOption)) {
 					if (!args.isEmpty()) {
-						throw new IllegalArgumentException(
-								"Please use --all without specifying any dependencies");
+						throw new IllegalArgumentException("Please use --all without specifying any dependencies");
 					}
 					new Installer(options, this).uninstallAll();
 				}

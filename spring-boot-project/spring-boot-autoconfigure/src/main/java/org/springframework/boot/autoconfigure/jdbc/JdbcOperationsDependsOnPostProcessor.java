@@ -32,8 +32,7 @@ import org.springframework.jdbc.core.JdbcOperations;
  * @since 2.0.4
  * @see BeanDefinition#setDependsOn(String[])
  */
-public class JdbcOperationsDependsOnPostProcessor
-		extends AbstractDependsOnBeanFactoryPostProcessor {
+public class JdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	public JdbcOperationsDependsOnPostProcessor(String... dependsOn) {
 		super(JdbcOperations.class, dependsOn);

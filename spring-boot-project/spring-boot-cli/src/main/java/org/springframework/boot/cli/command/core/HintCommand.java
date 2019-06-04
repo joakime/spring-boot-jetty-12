@@ -59,8 +59,7 @@ public class HintCommand extends AbstractCommand {
 			}
 			else if (!arguments.isEmpty() && !starting.isEmpty()) {
 				String command = arguments.remove(0);
-				showCommandOptionHints(command, Collections.unmodifiableList(arguments),
-						starting);
+				showCommandOptionHints(command, Collections.unmodifiableList(arguments), starting);
 			}
 		}
 		catch (Exception ex) {
@@ -83,12 +82,10 @@ public class HintCommand extends AbstractCommand {
 			return false;
 		}
 		return command.getName().startsWith(starting)
-				|| (this.commandRunner.isOptionCommand(command)
-						&& ("--" + command.getName()).startsWith(starting));
+				|| (this.commandRunner.isOptionCommand(command) && ("--" + command.getName()).startsWith(starting));
 	}
 
-	private void showCommandOptionHints(String commandName,
-			List<String> specifiedArguments, String starting) {
+	private void showCommandOptionHints(String commandName, List<String> specifiedArguments, String starting) {
 		Command command = this.commandRunner.findCommand(commandName);
 		if (command != null) {
 			for (OptionHelp help : command.getOptionsHelp()) {

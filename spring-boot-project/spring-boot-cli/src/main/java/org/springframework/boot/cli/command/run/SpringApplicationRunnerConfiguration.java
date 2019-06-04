@@ -25,8 +25,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
  *
  * @author Phillip Webb
  */
-public interface SpringApplicationRunnerConfiguration
-		extends GroovyCompilerConfiguration {
+public interface SpringApplicationRunnerConfiguration extends GroovyCompilerConfiguration {
 
 	/**
 	 * Returns {@code true} if the source file should be monitored for changes and

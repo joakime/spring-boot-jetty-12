@@ -38,24 +38,20 @@ public class PropertySourceOriginTests {
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new PropertySourceOrigin(null, "name"))
+		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(null, "name"))
 				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new PropertySourceOrigin(mock(PropertySource.class), null))
+				.isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))
 				.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
+		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
 				.withMessageContaining("PropertyName must not be empty");
 	}
 
@@ -95,8 +91,7 @@ public class PropertySourceOriginTests {
 	public void getWhenPropertySourceSupportsOriginLookupButNoOriginShouldWrap() {
 		PropertySource<?> propertySource = mock(PropertySource.class,
 				withSettings().extraInterfaces(OriginLookup.class));
-		assertThat(PropertySourceOrigin.get(propertySource, "foo"))
-				.isInstanceOf(PropertySourceOrigin.class);
+		assertThat(PropertySourceOrigin.get(propertySource, "foo")).isInstanceOf(PropertySourceOrigin.class);
 	}
 
 	@Test

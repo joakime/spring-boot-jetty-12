@@ -26,8 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class AliasedIterableConfigurationPropertySourceTests
-		extends AliasedConfigurationPropertySourceTests {
+public class AliasedIterableConfigurationPropertySourceTests extends AliasedConfigurationPropertySourceTests {
 
 	@Test
 	public void streamShouldIncludeAliases() {
@@ -36,10 +35,8 @@ public class AliasedIterableConfigurationPropertySourceTests
 		source.put("foo.baz", "biff");
 		IterableConfigurationPropertySource aliased = source
 				.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
-		assertThat(aliased.stream()).containsExactly(
-				ConfigurationPropertyName.of("foo.bar"),
-				ConfigurationPropertyName.of("foo.bar1"),
-				ConfigurationPropertyName.of("foo.baz"));
+		assertThat(aliased.stream()).containsExactly(ConfigurationPropertyName.of("foo.bar"),
+				ConfigurationPropertyName.of("foo.bar1"), ConfigurationPropertyName.of("foo.baz"));
 	}
 
 }

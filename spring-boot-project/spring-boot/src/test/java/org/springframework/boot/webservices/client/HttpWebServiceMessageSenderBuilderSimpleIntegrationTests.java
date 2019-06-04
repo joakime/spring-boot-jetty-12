@@ -50,17 +50,14 @@ public class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 
 	@Test
 	public void buildWithCustomTimeouts() {
-		WebServiceMessageSender messageSender = this.builder
-				.setConnectTimeout(Duration.ofSeconds(5))
+		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
 				.setReadTimeout(Duration.ofSeconds(2)).build();
-		SimpleClientHttpRequestFactory requestFactory = assertSimpleClientRequestFactory(
-				messageSender);
+		SimpleClientHttpRequestFactory requestFactory = assertSimpleClientRequestFactory(messageSender);
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 5000);
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 2000);
 	}
 
-	private SimpleClientHttpRequestFactory assertSimpleClientRequestFactory(
-			WebServiceMessageSender messageSender) {
+	private SimpleClientHttpRequestFactory assertSimpleClientRequestFactory(WebServiceMessageSender messageSender) {
 		assertThat(messageSender).isInstanceOf(ClientHttpRequestMessageSender.class);
 		ClientHttpRequestMessageSender sender = (ClientHttpRequestMessageSender) messageSender;
 		ClientHttpRequestFactory requestFactory = sender.getRequestFactory();

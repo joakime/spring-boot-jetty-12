@@ -31,8 +31,8 @@ import org.springframework.security.authentication.event.AbstractAuthenticationE
  * @author Vedran Pavic
  * @since 1.3.0
  */
-public abstract class AbstractAuthenticationAuditListener implements
-		ApplicationListener<AbstractAuthenticationEvent>, ApplicationEventPublisherAware {
+public abstract class AbstractAuthenticationAuditListener
+		implements ApplicationListener<AbstractAuthenticationEvent>, ApplicationEventPublisherAware {
 
 	private ApplicationEventPublisher publisher;
 

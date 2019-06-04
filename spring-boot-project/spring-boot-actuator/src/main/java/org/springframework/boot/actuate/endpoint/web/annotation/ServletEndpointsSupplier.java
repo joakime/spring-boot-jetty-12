@@ -26,7 +26,6 @@ import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface ServletEndpointsSupplier
-		extends EndpointsSupplier<ExposableServletEndpoint> {
+public interface ServletEndpointsSupplier extends EndpointsSupplier<ExposableServletEndpoint> {
 
 }

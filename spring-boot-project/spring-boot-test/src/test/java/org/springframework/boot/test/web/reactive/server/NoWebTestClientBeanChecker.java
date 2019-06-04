@@ -35,8 +35,8 @@ class NoWebTestClientBeanChecker implements ImportSelector, BeanFactoryAware {
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-				(ListableBeanFactory) beanFactory, WebTestClient.class)).isEmpty();
+		assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) beanFactory,
+				WebTestClient.class)).isEmpty();
 	}
 
 	@Override

@@ -45,20 +45,18 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	private List<HandlerExceptionResolver> resolvers;
 
 	@Override
-	public ModelAndView resolveException(HttpServletRequest request,
-			HttpServletResponse response, Object handler, Exception ex) {
+	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
+			Exception ex) {
 		if (this.resolvers == null) {
 			this.resolvers = extractResolvers();
 		}
-		return this.resolvers.stream().map(
-				(resolver) -> resolver.resolveException(request, response, handler, ex))
+		return this.resolvers.stream().map((resolver) -> resolver.resolveException(request, response, handler, ex))
 				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	private List<HandlerExceptionResolver> extractResolvers() {
 		List<HandlerExceptionResolver> list = new ArrayList<>();
-		list.addAll(
-				this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
+		list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		if (list.isEmpty()) {

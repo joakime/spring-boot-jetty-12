@@ -27,8 +27,7 @@ import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class HazelcastCacheMeterBinderProvider
-		implements CacheMeterBinderProvider<HazelcastCache> {
+public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvider<HazelcastCache> {
 
 	@Override
 	public MeterBinder getMeterBinder(HazelcastCache cache, Iterable<Tag> tags) {

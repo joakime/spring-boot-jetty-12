@@ -33,8 +33,8 @@ public class IntegrationDataSourceInitializer extends AbstractDataSourceInitiali
 
 	private final IntegrationProperties.Jdbc properties;
 
-	public IntegrationDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, IntegrationProperties properties) {
+	public IntegrationDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+			IntegrationProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "IntegrationProperties must not be null");
 		this.properties = properties.getJdbc();

@@ -97,15 +97,13 @@ class OriginTrackedPropertiesLoader {
 		}
 	}
 
-	private void put(Map<String, OriginTrackedValue> result, String key,
-			OriginTrackedValue value) {
+	private void put(Map<String, OriginTrackedValue> result, String key, OriginTrackedValue value) {
 		if (!key.isEmpty()) {
 			result.put(key, value);
 		}
 	}
 
-	private String loadKey(StringBuilder buffer, CharacterReader reader)
-			throws IOException {
+	private String loadKey(StringBuilder buffer, CharacterReader reader) throws IOException {
 		buffer.setLength(0);
 		boolean previousWhitespace = false;
 		while (!reader.isEndOfLine()) {
@@ -123,8 +121,8 @@ class OriginTrackedPropertiesLoader {
 		return buffer.toString();
 	}
 
-	private OriginTrackedValue loadValue(StringBuilder buffer, CharacterReader reader,
-			boolean splitLists) throws IOException {
+	private OriginTrackedValue loadValue(StringBuilder buffer, CharacterReader reader, boolean splitLists)
+			throws IOException {
 		buffer.setLength(0);
 		while (reader.isWhiteSpace() && !reader.isEndOfLine()) {
 			reader.read();
@@ -155,8 +153,8 @@ class OriginTrackedPropertiesLoader {
 		private int character;
 
 		CharacterReader(Resource resource) throws IOException {
-			this.reader = new LineNumberReader(new InputStreamReader(
-					resource.getInputStream(), StandardCharsets.ISO_8859_1));
+			this.reader = new LineNumberReader(
+					new InputStreamReader(resource.getInputStream(), StandardCharsets.ISO_8859_1));
 		}
 
 		@Override
@@ -240,8 +238,7 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		public boolean isWhiteSpace() {
-			return !this.escaped && (this.character == ' ' || this.character == '\t'
-					|| this.character == '\f');
+			return !this.escaped && (this.character == ' ' || this.character == '\t' || this.character == '\f');
 		}
 
 		public boolean isEndOfFile() {

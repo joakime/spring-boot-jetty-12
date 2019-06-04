@@ -77,8 +77,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 	 * @param requestFactory the HTTP request factory
 	 * @param executor the executor used to handle connections
 	 */
-	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory,
-			Executor executor) {
+	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory, Executor executor) {
 		Assert.hasLength(url, "URL must not be empty");
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
 		try {
@@ -88,19 +87,16 @@ public class HttpTunnelConnection implements TunnelConnection {
 			throw new IllegalArgumentException("Malformed URL '" + url + "'");
 		}
 		this.requestFactory = requestFactory;
-		this.executor = (executor != null) ? executor
-				: Executors.newCachedThreadPool(new TunnelThreadFactory());
+		this.executor = (executor != null) ? executor : Executors.newCachedThreadPool(new TunnelThreadFactory());
 	}
 
 	@Override
-	public TunnelChannel open(WritableByteChannel incomingChannel, Closeable closeable)
-			throws Exception {
+	public TunnelChannel open(WritableByteChannel incomingChannel, Closeable closeable) throws Exception {
 		logger.trace("Opening HTTP tunnel to " + this.uri);
 		return new TunnelChannel(incomingChannel, closeable);
 	}
 
-	protected final ClientHttpRequest createRequest(boolean hasPayload)
-			throws IOException {
+	protected final ClientHttpRequest createRequest(boolean hasPayload) throws IOException {
 		HttpMethod method = hasPayload ? HttpMethod.POST : HttpMethod.GET;
 		return this.requestFactory.createRequest(this.uri, method);
 	}
@@ -141,8 +137,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 		public int write(ByteBuffer src) throws IOException {
 			int size = src.remaining();
 			if (size > 0) {
-				openNewConnection(
-						new HttpTunnelPayload(this.requestSeq.incrementAndGet(), src));
+				openNewConnection(new HttpTunnelPayload(this.requestSeq.incrementAndGet(), src));
 			}
 			return size;
 		}
@@ -157,8 +152,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 					}
 					catch (IOException ex) {
 						if (ex instanceof ConnectException) {
-							logger.warn("Failed to connect to remote application at "
-									+ HttpTunnelConnection.this.uri);
+							logger.warn("Failed to connect to remote application at " + HttpTunnelConnection.this.uri);
 						}
 						else {
 							logger.trace("Unexpected connection error", ex);

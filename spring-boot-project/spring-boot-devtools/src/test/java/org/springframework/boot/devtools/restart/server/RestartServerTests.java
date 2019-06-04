@@ -48,8 +48,7 @@ public class RestartServerTests {
 
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RestartServer((SourceFolderUrlFilter) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new RestartServer((SourceFolderUrlFilter) null))
 				.withMessageContaining("SourceFolderUrlFilter must not be null");
 	}
 
@@ -60,8 +59,7 @@ public class RestartServerTests {
 		URL url3 = new URL("file:/proj/module-c.jar!/");
 		URL url4 = new URL("file:/proj/module-d.jar!/");
 		URLClassLoader classLoaderA = new URLClassLoader(new URL[] { url1, url2 });
-		URLClassLoader classLoaderB = new URLClassLoader(new URL[] { url3, url4 },
-				classLoaderA);
+		URLClassLoader classLoaderB = new URLClassLoader(new URL[] { url3, url4 }, classLoaderA);
 		SourceFolderUrlFilter filter = new DefaultSourceFolderUrlFilter();
 		MockRestartServer server = new MockRestartServer(filter, classLoaderB);
 		ClassLoaderFiles files = new ClassLoaderFiles();
@@ -114,8 +112,7 @@ public class RestartServerTests {
 
 	private static class MockRestartServer extends RestartServer {
 
-		MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter,
-				ClassLoader classLoader) {
+		MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter, ClassLoader classLoader) {
 			super(sourceFolderUrlFilter, classLoader);
 		}
 

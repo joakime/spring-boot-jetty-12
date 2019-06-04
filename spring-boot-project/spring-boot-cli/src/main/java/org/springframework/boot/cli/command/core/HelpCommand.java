@@ -94,12 +94,11 @@ public class HelpCommand extends AbstractCommand {
 		String commandName = args[0];
 		for (Command command : this.commandRunner) {
 			if (command.getName().equals(commandName)) {
-				Log.info(this.commandRunner.getName() + command.getName() + " - "
-						+ command.getDescription());
+				Log.info(this.commandRunner.getName() + command.getName() + " - " + command.getDescription());
 				Log.info("");
 				if (command.getUsageHelp() != null) {
-					Log.info("usage: " + this.commandRunner.getName() + command.getName()
-							+ " " + command.getUsageHelp());
+					Log.info("usage: " + this.commandRunner.getName() + command.getName() + " "
+							+ command.getUsageHelp());
 					Log.info("");
 				}
 				if (command.getHelp() != null) {

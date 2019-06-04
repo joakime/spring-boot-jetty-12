@@ -81,8 +81,7 @@ public class SilentExitExceptionHandlerTests {
 		private Throwable thrown;
 
 		TestThread() {
-			setUncaughtExceptionHandler(
-					(thread, exception) -> TestThread.this.thrown = exception);
+			setUncaughtExceptionHandler((thread, exception) -> TestThread.this.thrown = exception);
 		}
 
 		public Throwable getThrown() {
@@ -96,8 +95,7 @@ public class SilentExitExceptionHandlerTests {
 
 	}
 
-	private static class TestSilentExitExceptionHandler
-			extends SilentExitExceptionHandler {
+	private static class TestSilentExitExceptionHandler extends SilentExitExceptionHandler {
 
 		private boolean nonZeroExitCodePrevented;
 

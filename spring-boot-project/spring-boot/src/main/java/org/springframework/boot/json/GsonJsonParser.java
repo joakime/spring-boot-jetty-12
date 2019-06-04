@@ -41,14 +41,12 @@ public class GsonJsonParser extends AbstractJsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		return parseMap(json,
-				(trimmed) -> this.gson.fromJson(trimmed, MAP_TYPE.getType()));
+		return parseMap(json, (trimmed) -> this.gson.fromJson(trimmed, MAP_TYPE.getType()));
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		return parseList(json,
-				(trimmed) -> this.gson.fromJson(trimmed, LIST_TYPE.getType()));
+		return parseList(json, (trimmed) -> this.gson.fromJson(trimmed, LIST_TYPE.getType()));
 	}
 
 	private static final class MapTypeToken extends TypeToken<Map<String, Object>> {

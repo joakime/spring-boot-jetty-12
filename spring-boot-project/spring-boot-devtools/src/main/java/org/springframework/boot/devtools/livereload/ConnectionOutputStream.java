@@ -41,8 +41,8 @@ class ConnectionOutputStream extends FilterOutputStream {
 
 	public void writeHttp(InputStream content, String contentType) throws IOException {
 		byte[] bytes = FileCopyUtils.copyToByteArray(content);
-		writeHeaders("HTTP/1.1 200 OK", "Content-Type: " + contentType,
-				"Content-Length: " + bytes.length, "Connection: close");
+		writeHeaders("HTTP/1.1 200 OK", "Content-Type: " + contentType, "Content-Length: " + bytes.length,
+				"Connection: close");
 		write(bytes);
 		flush();
 	}

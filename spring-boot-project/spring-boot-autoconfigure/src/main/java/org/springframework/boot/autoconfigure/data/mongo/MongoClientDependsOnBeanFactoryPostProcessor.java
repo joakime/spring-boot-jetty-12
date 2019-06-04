@@ -34,8 +34,7 @@ import org.springframework.data.mongodb.core.MongoClientFactoryBean;
  * @since 1.3.0
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class MongoClientDependsOnBeanFactoryPostProcessor
-		extends AbstractDependsOnBeanFactoryPostProcessor {
+public class MongoClientDependsOnBeanFactoryPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	public MongoClientDependsOnBeanFactoryPostProcessor(String... dependsOn) {
 		super(MongoClient.class, MongoClientFactoryBean.class, dependsOn);

@@ -47,26 +47,24 @@ public abstract class AbstractBindHandler implements BindHandler {
 	}
 
 	@Override
-	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
-			BindContext context) {
+	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
 		return this.parent.onStart(name, target, context);
 	}
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) {
+	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		return this.parent.onSuccess(name, target, context, result);
 	}
 
 	@Override
-	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Exception error) throws Exception {
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
 		return this.parent.onFailure(name, target, context, error);
 	}
 
 	@Override
-	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
+	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
+			throws Exception {
 		this.parent.onFinish(name, target, context, result);
 	}
 

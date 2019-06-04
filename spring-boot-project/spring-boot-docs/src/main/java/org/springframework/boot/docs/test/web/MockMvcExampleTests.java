@@ -41,8 +41,7 @@ public class MockMvcExampleTests {
 
 	@Test
 	public void exampleTest() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(content().string("Hello World"));
+		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Hello World"));
 	}
 
 }

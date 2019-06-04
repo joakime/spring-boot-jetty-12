@@ -45,40 +45,36 @@ public class StaticResourceJarsTests {
 	@Test
 	public void includeJarWithStaticResources() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
-		List<URL> staticResourceJarUrls = new StaticResourceJars()
-				.getUrlsFrom(jarFile.toURI().toURL());
+		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
 	@Test
 	public void includeJarWithStaticResourcesWithUrlEncodedSpaces() throws Exception {
 		File jarFile = createResourcesJar("test resources.jar");
-		List<URL> staticResourceJarUrls = new StaticResourceJars()
-				.getUrlsFrom(jarFile.toURI().toURL());
+		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
 	@Test
 	public void includeJarWithStaticResourcesWithPlusInItsPath() throws Exception {
 		File jarFile = createResourcesJar("test + resources.jar");
-		List<URL> staticResourceJarUrls = new StaticResourceJars()
-				.getUrlsFrom(jarFile.toURI().toURL());
+		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
 	@Test
 	public void excludeJarWithoutStaticResources() throws Exception {
 		File jarFile = createJar("dependency.jar");
-		List<URL> staticResourceJarUrls = new StaticResourceJars()
-				.getUrlsFrom(jarFile.toURI().toURL());
+		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
 		assertThat(staticResourceJarUrls).hasSize(0);
 	}
 
 	@Test
 	public void uncPathsAreTolerated() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
-		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(
-				jarFile.toURI().toURL(), new URL("file://unc.example.com/test.jar"));
+		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL(),
+				new URL("file://unc.example.com/test.jar"));
 		assertThat(staticResourceJarUrls).hasSize(1);
 	}
 
@@ -99,11 +95,9 @@ public class StaticResourceJarsTests {
 		return createJar(name, null);
 	}
 
-	private File createJar(String name, Consumer<JarOutputStream> customizer)
-			throws IOException {
+	private File createJar(String name, Consumer<JarOutputStream> customizer) throws IOException {
 		File jarFile = this.temporaryFolder.newFile(name);
-		JarOutputStream jarOutputStream = new JarOutputStream(
-				new FileOutputStream(jarFile));
+		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarFile));
 		if (customizer != null) {
 			customizer.accept(jarOutputStream);
 		}

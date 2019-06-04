@@ -134,8 +134,7 @@ public class HttpTunnelPayload {
 	 * @return payload data or {@code null}
 	 * @throws IOException in case of I/O errors
 	 */
-	public static ByteBuffer getPayloadData(ReadableByteChannel channel)
-			throws IOException {
+	public static ByteBuffer getPayloadData(ReadableByteChannel channel) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		try {
 			int amountRead = channel.read(buffer);

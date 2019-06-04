@@ -55,26 +55,22 @@ public class DataSourceBuilderTests {
 
 	@Test
 	public void defaultToTomcatIfHikariIsNotAvailable() {
-		this.dataSource = DataSourceBuilder
-				.create(new HidePackagesClassLoader("com.zaxxer.hikari"))
-				.url("jdbc:h2:test").build();
-		assertThat(this.dataSource)
-				.isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
+		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari")).url("jdbc:h2:test")
+				.build();
+		assertThat(this.dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
 	}
 
 	@Test
 	public void defaultToCommonsDbcp2AsLastResort() {
 		this.dataSource = DataSourceBuilder
-				.create(new HidePackagesClassLoader("com.zaxxer.hikari",
-						"org.apache.tomcat.jdbc.pool"))
+				.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
 				.url("jdbc:h2:test").build();
 		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
 	}
 
 	@Test
 	public void specificTypeOfDataSource() {
-		HikariDataSource hikariDataSource = DataSourceBuilder.create()
-				.type(HikariDataSource.class).build();
+		HikariDataSource hikariDataSource = DataSourceBuilder.create().type(HikariDataSource.class).build();
 		assertThat(hikariDataSource).isInstanceOf(HikariDataSource.class);
 	}
 
@@ -88,8 +84,7 @@ public class DataSourceBuilderTests {
 		}
 
 		@Override
-		protected Class<?> loadClass(String name, boolean resolve)
-				throws ClassNotFoundException {
+		protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 			if (Arrays.stream(this.hiddenPackages).anyMatch(name::startsWith)) {
 				throw new ClassNotFoundException();
 			}

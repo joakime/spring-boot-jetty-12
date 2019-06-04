@@ -40,14 +40,13 @@ abstract class AbstractApplicationLauncher implements ApplicationLauncher {
 	protected final void copyApplicationTo(File location) throws IOException {
 		FileSystemUtils.deleteRecursively(location);
 		location.mkdirs();
-		FileSystemUtils.copyRecursively(
-				new File(this.directories.getTestClassesDirectory(), "com"),
+		FileSystemUtils.copyRecursively(new File(this.directories.getTestClassesDirectory(), "com"),
 				new File(location, "com"));
 	}
 
 	protected final List<String> getDependencyJarPaths() {
-		return Stream.of(this.directories.getDependenciesDirectory().listFiles())
-				.map(File::getAbsolutePath).collect(Collectors.toList());
+		return Stream.of(this.directories.getDependenciesDirectory().listFiles()).map(File::getAbsolutePath)
+				.collect(Collectors.toList());
 	}
 
 	protected final Directories getDirectories() {

@@ -73,10 +73,9 @@ public class MustacheView extends AbstractTemplateView {
 	}
 
 	@Override
-	protected void renderMergedTemplateModel(Map<String, Object> model,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Template template = createTemplate(
-				getApplicationContext().getResource(this.getUrl()));
+	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		Template template = createTemplate(getApplicationContext().getResource(this.getUrl()));
 		if (template != null) {
 			template.execute(model, response.getWriter());
 		}

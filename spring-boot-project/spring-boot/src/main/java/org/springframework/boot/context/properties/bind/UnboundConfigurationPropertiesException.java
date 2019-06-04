@@ -35,8 +35,7 @@ public class UnboundConfigurationPropertiesException extends RuntimeException {
 
 	private final Set<ConfigurationProperty> unboundProperties;
 
-	public UnboundConfigurationPropertiesException(
-			Set<ConfigurationProperty> unboundProperties) {
+	public UnboundConfigurationPropertiesException(Set<ConfigurationProperty> unboundProperties) {
 		super(buildMessage(unboundProperties));
 		this.unboundProperties = Collections.unmodifiableSet(unboundProperties);
 	}
@@ -48,8 +47,7 @@ public class UnboundConfigurationPropertiesException extends RuntimeException {
 	private static String buildMessage(Set<ConfigurationProperty> unboundProperties) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("The elements [");
-		String message = unboundProperties.stream().map((p) -> p.getName().toString())
-				.collect(Collectors.joining(","));
+		String message = unboundProperties.stream().map((p) -> p.getName().toString()).collect(Collectors.joining(","));
 		builder.append(message).append("] were left unbound.");
 		return builder.toString();
 	}

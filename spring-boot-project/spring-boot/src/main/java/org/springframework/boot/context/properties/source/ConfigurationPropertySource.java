@@ -50,8 +50,7 @@ public interface ConfigurationPropertySource {
 	 * @param name the name to check
 	 * @return if the source contains any descendants
 	 */
-	default ConfigurationPropertyState containsDescendantOf(
-			ConfigurationPropertyName name) {
+	default ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return ConfigurationPropertyState.UNKNOWN;
 	}
 
@@ -61,8 +60,7 @@ public interface ConfigurationPropertySource {
 	 * @param filter the filter to match
 	 * @return a filtered {@link ConfigurationPropertySource} instance
 	 */
-	default ConfigurationPropertySource filter(
-			Predicate<ConfigurationPropertyName> filter) {
+	default ConfigurationPropertySource filter(Predicate<ConfigurationPropertyName> filter) {
 		return new FilteredConfigurationPropertiesSource(this, filter);
 	}
 
@@ -71,8 +69,7 @@ public interface ConfigurationPropertySource {
 	 * @param aliases a function that returns a stream of aliases for any given name
 	 * @return a {@link ConfigurationPropertySource} instance supporting name aliases
 	 */
-	default ConfigurationPropertySource withAliases(
-			ConfigurationPropertyNameAliases aliases) {
+	default ConfigurationPropertySource withAliases(ConfigurationPropertyNameAliases aliases) {
 		return new AliasedConfigurationPropertySource(this, aliases);
 	}
 

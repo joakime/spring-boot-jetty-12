@@ -53,14 +53,13 @@ public class IgnoreErrorsBindHandlerTests {
 
 	@Test
 	public void bindWhenNotIgnoringErrorsShouldFail() {
-		assertThatExceptionOfType(BindException.class).isThrownBy(
-				() -> this.binder.bind("example", Bindable.of(Example.class)));
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)));
 	}
 
 	@Test
 	public void bindWhenIgnoringErrorsShouldBind() {
-		Example bound = this.binder.bind("example", Bindable.of(Example.class),
-				new IgnoreErrorsBindHandler()).get();
+		Example bound = this.binder.bind("example", Bindable.of(Example.class), new IgnoreErrorsBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo(0);
 	}
 

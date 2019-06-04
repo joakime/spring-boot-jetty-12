@@ -58,8 +58,8 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 	}
 
 	@Override
-	public void processResource(String resource, InputStream inputStream,
-			List<Relocator> relocators) throws IOException {
+	public void processResource(String resource, InputStream inputStream, List<Relocator> relocators)
+			throws IOException {
 		Properties properties = new Properties();
 		properties.load(inputStream);
 		inputStream.close();

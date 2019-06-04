@@ -31,8 +31,7 @@ class MissingRequiredConfigurationFailureAnalyzer
 		extends AbstractFailureAnalyzer<MissingRequiredConfigurationException> {
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			MissingRequiredConfigurationException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure, MissingRequiredConfigurationException cause) {
 		StringBuilder description = new StringBuilder();
 		description.append(cause.getMessage());
 		if (!cause.getMessage().endsWith(".")) {

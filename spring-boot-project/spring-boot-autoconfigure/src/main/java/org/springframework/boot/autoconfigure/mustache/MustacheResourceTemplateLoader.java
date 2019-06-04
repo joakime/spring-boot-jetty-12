@@ -39,8 +39,7 @@ import org.springframework.core.io.ResourceLoader;
  * @see Mustache
  * @see Resource
  */
-public class MustacheResourceTemplateLoader
-		implements TemplateLoader, ResourceLoaderAware {
+public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceLoaderAware {
 
 	private String prefix = "";
 
@@ -77,8 +76,7 @@ public class MustacheResourceTemplateLoader
 
 	@Override
 	public Reader getTemplate(String name) throws Exception {
-		return new InputStreamReader(this.resourceLoader
-				.getResource(this.prefix + name + this.suffix).getInputStream(),
+		return new InputStreamReader(this.resourceLoader.getResource(this.prefix + name + this.suffix).getInputStream(),
 				this.charSet);
 	}
 

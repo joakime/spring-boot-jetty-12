@@ -47,20 +47,19 @@ class JvmLauncher implements TestRule {
 	@Override
 	public Statement apply(Statement base, Description description) {
 		this.outputDirectory = new File(this.buildOutput.getRootLocation(),
-				"output/" + NON_ALPHABET_PATTERN.matcher(description.getMethodName())
-						.replaceAll(""));
+				"output/" + NON_ALPHABET_PATTERN.matcher(description.getMethodName()).replaceAll(""));
 		this.outputDirectory.mkdirs();
 		return base;
 	}
 
 	LaunchedJvm launch(String name, String classpath, String... args) throws IOException {
-		List<String> command = new ArrayList<>(Arrays
-				.asList(System.getProperty("java.home") + "/bin/java", "-cp", classpath));
+		List<String> command = new ArrayList<>(
+				Arrays.asList(System.getProperty("java.home") + "/bin/java", "-cp", classpath));
 		command.addAll(Arrays.asList(args));
 		File standardOut = new File(this.outputDirectory, name + ".out");
 		File standardError = new File(this.outputDirectory, name + ".err");
-		Process process = new ProcessBuilder(StringUtils.toStringArray(command))
-				.redirectError(standardError).redirectOutput(standardOut).start();
+		Process process = new ProcessBuilder(StringUtils.toStringArray(command)).redirectError(standardError)
+				.redirectOutput(standardOut).start();
 		return new LaunchedJvm(process, standardOut, standardError);
 	}
 

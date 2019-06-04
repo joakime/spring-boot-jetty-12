@@ -35,8 +35,7 @@ public class SpringBootExceptionHandlerTests {
 
 	private final UncaughtExceptionHandler parent = mock(UncaughtExceptionHandler.class);
 
-	private final SpringBootExceptionHandler handler = new SpringBootExceptionHandler(
-			this.parent);
+	private final SpringBootExceptionHandler handler = new SpringBootExceptionHandler(this.parent);
 
 	@Test
 	public void uncaughtExceptionDoesNotForwardLoggedErrorToParent() {
@@ -50,8 +49,7 @@ public class SpringBootExceptionHandlerTests {
 	@Test
 	public void uncaughtExceptionForwardsLogConfigurationErrorToParent() {
 		Thread thread = Thread.currentThread();
-		Exception ex = new Exception(
-				"[stuff] Logback configuration error detected [stuff]");
+		Exception ex = new Exception("[stuff] Logback configuration error detected [stuff]");
 		this.handler.registerLoggedException(ex);
 		this.handler.uncaughtException(thread, ex);
 		verify(this.parent).uncaughtException(thread, ex);
@@ -60,8 +58,8 @@ public class SpringBootExceptionHandlerTests {
 	@Test
 	public void uncaughtExceptionForwardsWrappedLogConfigurationErrorToParent() {
 		Thread thread = Thread.currentThread();
-		Exception ex = new InvocationTargetException(new Exception(
-				"[stuff] Logback configuration error detected [stuff]", new Exception()));
+		Exception ex = new InvocationTargetException(
+				new Exception("[stuff] Logback configuration error detected [stuff]", new Exception()));
 		this.handler.registerLoggedException(ex);
 		this.handler.uncaughtException(thread, ex);
 		verify(this.parent).uncaughtException(thread, ex);

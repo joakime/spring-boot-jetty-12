@@ -37,15 +37,12 @@ import org.springframework.web.context.WebApplicationContext;
 public class FiltersMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	@Override
-	public List<FilterRegistrationMappingDescription> describeMappings(
-			ApplicationContext context) {
+	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (!(context instanceof WebApplicationContext)) {
 			return Collections.emptyList();
 		}
-		return ((WebApplicationContext) context).getServletContext()
-				.getFilterRegistrations().values().stream()
-				.map(FilterRegistrationMappingDescription::new)
-				.collect(Collectors.toList());
+		return ((WebApplicationContext) context).getServletContext().getFilterRegistrations().values().stream()
+				.map(FilterRegistrationMappingDescription::new).collect(Collectors.toList());
 	}
 
 	@Override

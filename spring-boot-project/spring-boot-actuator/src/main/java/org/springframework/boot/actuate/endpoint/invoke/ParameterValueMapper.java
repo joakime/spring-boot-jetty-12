@@ -37,7 +37,6 @@ public interface ParameterValueMapper {
 	 * @return a value suitable for that parameter
 	 * @throws ParameterMappingException when a mapping failure occurs
 	 */
-	Object mapParameterValue(OperationParameter parameter, Object value)
-			throws ParameterMappingException;
+	Object mapParameterValue(OperationParameter parameter, Object value) throws ParameterMappingException;
 
 }

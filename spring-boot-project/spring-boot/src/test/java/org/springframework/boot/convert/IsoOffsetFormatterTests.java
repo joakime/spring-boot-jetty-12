@@ -45,8 +45,8 @@ public class IsoOffsetFormatterTests {
 	@Test
 	public void convertShouldConvertStringToIsoDate() {
 		OffsetDateTime now = OffsetDateTime.now();
-		OffsetDateTime converted = this.conversionService.convert(
-				DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now), OffsetDateTime.class);
+		OffsetDateTime converted = this.conversionService.convert(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now),
+				OffsetDateTime.class);
 		assertThat(converted).isEqualTo(now);
 	}
 
@@ -54,8 +54,7 @@ public class IsoOffsetFormatterTests {
 	public void convertShouldConvertIsoDateToString() {
 		OffsetDateTime now = OffsetDateTime.now();
 		String converted = this.conversionService.convert(now, String.class);
-		assertThat(converted).isNotNull()
-				.startsWith(now.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+		assertThat(converted).isNotNull().startsWith(now.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 	}
 
 	@Parameters(name = "{0}")

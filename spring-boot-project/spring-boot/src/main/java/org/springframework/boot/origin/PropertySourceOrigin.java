@@ -62,8 +62,7 @@ public class PropertySourceOrigin implements Origin {
 
 	@Override
 	public String toString() {
-		return "\"" + this.propertyName + "\" from property source \""
-				+ this.propertySource.getName() + "\"";
+		return "\"" + this.propertyName + "\" from property source \"" + this.propertySource.getName() + "\"";
 	}
 
 	/**

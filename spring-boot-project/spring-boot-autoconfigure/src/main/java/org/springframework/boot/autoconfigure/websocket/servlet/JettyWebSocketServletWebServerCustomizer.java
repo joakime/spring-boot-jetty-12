@@ -43,8 +43,7 @@ public class JettyWebSocketServletWebServerCustomizer
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
-				ServerContainer serverContainer = WebSocketServerContainerInitializer
-						.configureContext(context);
+				ServerContainer serverContainer = WebSocketServerContainerInitializer.configureContext(context);
 				ShutdownThread.deregister(serverContainer);
 			}
 

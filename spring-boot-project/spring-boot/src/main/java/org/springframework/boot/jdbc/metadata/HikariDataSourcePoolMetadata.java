@@ -29,8 +29,7 @@ import org.springframework.beans.DirectFieldAccessor;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class HikariDataSourcePoolMetadata
-		extends AbstractDataSourcePoolMetadata<HikariDataSource> {
+public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<HikariDataSource> {
 
 	public HikariDataSourcePoolMetadata(HikariDataSource dataSource) {
 		super(dataSource);
@@ -47,8 +46,7 @@ public class HikariDataSourcePoolMetadata
 	}
 
 	private HikariPool getHikariPool() {
-		return (HikariPool) new DirectFieldAccessor(getDataSource())
-				.getPropertyValue("pool");
+		return (HikariPool) new DirectFieldAccessor(getDataSource()).getPropertyValue("pool");
 	}
 
 	@Override

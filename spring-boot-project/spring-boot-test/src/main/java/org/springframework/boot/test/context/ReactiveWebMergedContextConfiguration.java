@@ -27,8 +27,7 @@ import org.springframework.test.context.MergedContextConfiguration;
  */
 public class ReactiveWebMergedContextConfiguration extends MergedContextConfiguration {
 
-	public ReactiveWebMergedContextConfiguration(
-			MergedContextConfiguration mergedConfig) {
+	public ReactiveWebMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
 		super(mergedConfig);
 	}
 

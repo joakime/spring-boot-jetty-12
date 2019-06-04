@@ -44,8 +44,7 @@ public class TunnelClientTests {
 
 	@Test
 	public void listenPortMustNotBeNegative() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
+		assertThatIllegalArgumentException().isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
 				.withMessageContaining("ListenPort must be greater than or equal to 0");
 	}
 
@@ -117,8 +116,7 @@ public class TunnelClientTests {
 		private int openedTimes;
 
 		@Override
-		public WritableByteChannel open(WritableByteChannel incomingChannel,
-				Closeable closeable) {
+		public WritableByteChannel open(WritableByteChannel incomingChannel, Closeable closeable) {
 			this.openedTimes++;
 			this.open = true;
 			return new TunnelChannel(incomingChannel, closeable);

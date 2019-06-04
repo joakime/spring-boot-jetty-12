@@ -44,14 +44,12 @@ public class UndertowWebSocketServletWebServerCustomizer
 		return 0;
 	}
 
-	private static class WebsocketDeploymentInfoCustomizer
-			implements UndertowDeploymentInfoCustomizer {
+	private static class WebsocketDeploymentInfoCustomizer implements UndertowDeploymentInfoCustomizer {
 
 		@Override
 		public void customize(DeploymentInfo deploymentInfo) {
 			WebSocketDeploymentInfo info = new WebSocketDeploymentInfo();
-			deploymentInfo.addServletContextAttribute(
-					WebSocketDeploymentInfo.ATTRIBUTE_NAME, info);
+			deploymentInfo.addServletContextAttribute(WebSocketDeploymentInfo.ATTRIBUTE_NAME, info);
 		}
 
 	}

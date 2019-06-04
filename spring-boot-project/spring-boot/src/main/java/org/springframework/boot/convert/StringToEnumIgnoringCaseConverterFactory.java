@@ -30,8 +30,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-final class StringToEnumIgnoringCaseConverterFactory
-		implements ConverterFactory<String, Enum> {
+final class StringToEnumIgnoringCaseConverterFactory implements ConverterFactory<String, Enum> {
 
 	@Override
 	public <T extends Enum> Converter<String, T> getConverter(Class<T> targetType) {
@@ -39,8 +38,7 @@ final class StringToEnumIgnoringCaseConverterFactory
 		while (enumType != null && !enumType.isEnum()) {
 			enumType = enumType.getSuperclass();
 		}
-		Assert.notNull(enumType, () -> "The target type " + targetType.getName()
-				+ " does not refer to an enum");
+		Assert.notNull(enumType, () -> "The target type " + targetType.getName() + " does not refer to an enum");
 		return new StringToEnum(enumType);
 	}
 
@@ -73,14 +71,13 @@ final class StringToEnumIgnoringCaseConverterFactory
 					return candidate;
 				}
 			}
-			throw new IllegalArgumentException("No enum constant "
-					+ this.enumType.getCanonicalName() + "." + source);
+			throw new IllegalArgumentException("No enum constant " + this.enumType.getCanonicalName() + "." + source);
 		}
 
 		private String getLettersAndDigits(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
-			name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit)
-					.map(Character::toLowerCase).forEach(canonicalName::append);
+			name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit).map(Character::toLowerCase)
+					.forEach(canonicalName::append);
 			return canonicalName.toString();
 		}
 

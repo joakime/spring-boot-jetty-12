@@ -43,8 +43,7 @@ public class ExitCodeGeneratorsTests {
 
 	@Test
 	public void addWhenGeneratorIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ExitCodeGenerators().add(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ExitCodeGenerators().add(null))
 				.withMessageContaining("Generator must not be null");
 	}
 

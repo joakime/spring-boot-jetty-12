@@ -40,8 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class WebServerPortFileWriter
-		implements ApplicationListener<WebServerInitializedEvent> {
+public class WebServerPortFileWriter implements ApplicationListener<WebServerInitializedEvent> {
 
 	private static final String DEFAULT_FILE_NAME = "application.port";
 
@@ -125,16 +124,14 @@ public class WebServerPortFileWriter
 
 	private String getServerNamespace(ApplicationContext applicationContext) {
 		if (applicationContext instanceof WebServerApplicationContext) {
-			return ((WebServerApplicationContext) applicationContext)
-					.getServerNamespace();
+			return ((WebServerApplicationContext) applicationContext).getServerNamespace();
 		}
 		return null;
 	}
 
 	private boolean isUpperCase(String name) {
 		for (int i = 0; i < name.length(); i++) {
-			if (Character.isLetter(name.charAt(i))
-					&& !Character.isUpperCase(name.charAt(i))) {
+			if (Character.isLetter(name.charAt(i)) && !Character.isUpperCase(name.charAt(i))) {
 				return false;
 			}
 		}

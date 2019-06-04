@@ -40,11 +40,9 @@ final class Versions {
 
 	public static String getBootVersion() {
 		String baseDir = StringUtils.cleanPath(new File(".").getAbsolutePath());
-		String mainBaseDir = evaluateExpression("pom.xml",
-				PROPERTIES + "/*[local-name()='main.basedir']/text()");
+		String mainBaseDir = evaluateExpression("pom.xml", PROPERTIES + "/*[local-name()='main.basedir']/text()");
 		mainBaseDir = mainBaseDir.replace("${basedir}", baseDir);
-		return evaluateExpression(mainBaseDir + "/pom.xml",
-				PROPERTIES + "/*[local-name()='revision']/text()");
+		return evaluateExpression(mainBaseDir + "/pom.xml", PROPERTIES + "/*[local-name()='revision']/text()");
 	}
 
 	private static String evaluateExpression(String file, String expression) {

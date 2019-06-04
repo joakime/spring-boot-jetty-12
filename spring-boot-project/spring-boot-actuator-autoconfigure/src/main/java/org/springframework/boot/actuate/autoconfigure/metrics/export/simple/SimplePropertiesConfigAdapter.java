@@ -29,8 +29,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class SimplePropertiesConfigAdapter
-		extends PropertiesConfigAdapter<SimpleProperties> implements SimpleConfig {
+public class SimplePropertiesConfigAdapter extends PropertiesConfigAdapter<SimpleProperties> implements SimpleConfig {
 
 	public SimplePropertiesConfigAdapter(SimpleProperties properties) {
 		super(properties);

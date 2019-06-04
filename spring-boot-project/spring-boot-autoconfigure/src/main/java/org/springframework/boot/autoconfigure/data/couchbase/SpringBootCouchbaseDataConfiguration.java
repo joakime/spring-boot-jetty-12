@@ -51,8 +51,7 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 
 	private final CouchbaseConfigurer couchbaseConfigurer;
 
-	SpringBootCouchbaseDataConfiguration(ApplicationContext applicationContext,
-			CouchbaseDataProperties properties,
+	SpringBootCouchbaseDataConfiguration(ApplicationContext applicationContext, CouchbaseDataProperties properties,
 			ObjectProvider<CouchbaseConfigurer> couchbaseConfigurer) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
@@ -71,8 +70,7 @@ class SpringBootCouchbaseDataConfiguration extends AbstractCouchbaseDataConfigur
 
 	@Override
 	protected Set<Class<?>> getInitialEntitySet() throws ClassNotFoundException {
-		return new EntityScanner(this.applicationContext).scan(Document.class,
-				Persistent.class);
+		return new EntityScanner(this.applicationContext).scan(Document.class, Persistent.class);
 	}
 
 	@Override

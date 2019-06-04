@@ -39,32 +39,27 @@ public class DurationToNumberConverterTests {
 
 	private final ConversionService conversionService;
 
-	public DurationToNumberConverterTests(String name,
-			ConversionService conversionService) {
+	public DurationToNumberConverterTests(String name, ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
 	@Test
 	public void convertWithoutStyleShouldReturnMs() {
-		Long converted = this.conversionService.convert(Duration.ofSeconds(1),
-				Long.class);
+		Long converted = this.conversionService.convert(Duration.ofSeconds(1), Long.class);
 		assertThat(converted).isEqualTo(1000);
 	}
 
 	@Test
 	public void convertWithFormatShouldUseIgnoreFormat() {
-		Integer converted = (Integer) this.conversionService.convert(
-				Duration.ofSeconds(1),
-				MockDurationTypeDescriptor.get(null, DurationStyle.ISO8601),
-				TypeDescriptor.valueOf(Integer.class));
+		Integer converted = (Integer) this.conversionService.convert(Duration.ofSeconds(1),
+				MockDurationTypeDescriptor.get(null, DurationStyle.ISO8601), TypeDescriptor.valueOf(Integer.class));
 		assertThat(converted).isEqualTo(1000);
 	}
 
 	@Test
 	public void convertWithFormatAndUnitShouldUseFormatAndUnit() {
 		Byte converted = (Byte) this.conversionService.convert(Duration.ofSeconds(1),
-				MockDurationTypeDescriptor.get(ChronoUnit.SECONDS, null),
-				TypeDescriptor.valueOf(Byte.class));
+				MockDurationTypeDescriptor.get(ChronoUnit.SECONDS, null), TypeDescriptor.valueOf(Byte.class));
 		assertThat(converted).isEqualTo((byte) 1);
 	}
 

@@ -55,8 +55,7 @@ public enum ConfigurationPropertyState {
 	 * @return {@link #PRESENT} if the iterable contains a matching item, otherwise
 	 * {@link #ABSENT}.
 	 */
-	static <T> ConfigurationPropertyState search(Iterable<T> source,
-			Predicate<T> predicate) {
+	static <T> ConfigurationPropertyState search(Iterable<T> source, Predicate<T> predicate) {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(predicate, "Predicate must not be null");
 		for (T item : source) {

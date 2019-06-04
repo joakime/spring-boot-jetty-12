@@ -49,12 +49,9 @@ public class CompleteTwoDataSourcesExampleTests {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(2);
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertThat(this.context.getBean("firstDataSource")).isSameAs(dataSource);
-		assertThat(dataSource.getConnection().getMetaData().getURL())
-				.startsWith("jdbc:h2:mem:");
-		DataSource secondDataSource = this.context.getBean("secondDataSource",
-				DataSource.class);
-		assertThat(secondDataSource.getConnection().getMetaData().getURL())
-				.startsWith("jdbc:h2:mem:");
+		assertThat(dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
+		DataSource secondDataSource = this.context.getBean("secondDataSource", DataSource.class);
+		assertThat(secondDataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
 	}
 
 }

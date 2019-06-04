@@ -40,11 +40,9 @@ class WebServletHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	public void doHandle(Map<String, Object> attributes,
-			ScannedGenericBeanDefinition beanDefinition,
+	public void doHandle(Map<String, Object> attributes, ScannedGenericBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder
-				.rootBeanDefinition(ServletRegistrationBean.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServletRegistrationBean.class);
 		builder.addPropertyValue("asyncSupported", attributes.get("asyncSupported"));
 		builder.addPropertyValue("initParameters", extractInitParameters(attributes));
 		builder.addPropertyValue("loadOnStartup", attributes.get("loadOnStartup"));
@@ -52,28 +50,23 @@ class WebServletHandler extends ServletComponentHandler {
 		builder.addPropertyValue("name", name);
 		builder.addPropertyValue("servlet", beanDefinition);
 		builder.addPropertyValue("urlMappings", extractUrlPatterns(attributes));
-		builder.addPropertyValue("multipartConfig",
-				determineMultipartConfig(beanDefinition));
+		builder.addPropertyValue("multipartConfig", determineMultipartConfig(beanDefinition));
 		registry.registerBeanDefinition(name, builder.getBeanDefinition());
 	}
 
-	private String determineName(Map<String, Object> attributes,
-			BeanDefinition beanDefinition) {
-		return (String) (StringUtils.hasText((String) attributes.get("name"))
-				? attributes.get("name") : beanDefinition.getBeanClassName());
+	private String determineName(Map<String, Object> attributes, BeanDefinition beanDefinition) {
+		return (String) (StringUtils.hasText((String) attributes.get("name")) ? attributes.get("name")
+				: beanDefinition.getBeanClassName());
 	}
 
-	private MultipartConfigElement determineMultipartConfig(
-			ScannedGenericBeanDefinition beanDefinition) {
+	private MultipartConfigElement determineMultipartConfig(ScannedGenericBeanDefinition beanDefinition) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
 				.getAnnotationAttributes(MultipartConfig.class.getName());
 		if (attributes == null) {
 			return null;
 		}
-		return new MultipartConfigElement((String) attributes.get("location"),
-				(Long) attributes.get("maxFileSize"),
-				(Long) attributes.get("maxRequestSize"),
-				(Integer) attributes.get("fileSizeThreshold"));
+		return new MultipartConfigElement((String) attributes.get("location"), (Long) attributes.get("maxFileSize"),
+				(Long) attributes.get("maxRequestSize"), (Integer) attributes.get("fileSizeThreshold"));
 	}
 
 }

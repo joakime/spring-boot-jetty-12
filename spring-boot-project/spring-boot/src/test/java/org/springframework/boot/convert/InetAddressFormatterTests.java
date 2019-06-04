@@ -46,8 +46,7 @@ public class InetAddressFormatterTests {
 	}
 
 	@Test
-	public void convertFromInetAddressToStringShouldConvert()
-			throws UnknownHostException {
+	public void convertFromInetAddressToStringShouldConvert() throws UnknownHostException {
 		assumeResolves("example.com", true);
 		InetAddress address = InetAddress.getByName("example.com");
 		String converted = this.conversionService.convert(address, String.class);
@@ -57,8 +56,7 @@ public class InetAddressFormatterTests {
 	@Test
 	public void convertFromStringToInetAddressShouldConvert() {
 		assumeResolves("example.com", true);
-		InetAddress converted = this.conversionService.convert("example.com",
-				InetAddress.class);
+		InetAddress converted = this.conversionService.convert("example.com", InetAddress.class);
 		assertThat(converted.toString()).startsWith("example.com");
 	}
 
@@ -66,15 +64,14 @@ public class InetAddressFormatterTests {
 	public void convertFromStringToInetAddressWhenHostDoesNotExistShouldThrowException() {
 		String missingDomain = "ireallydontexist.example.com";
 		assumeResolves(missingDomain, false);
-		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(
-				() -> this.conversionService.convert(missingDomain, InetAddress.class));
+		assertThatExceptionOfType(ConversionFailedException.class)
+				.isThrownBy(() -> this.conversionService.convert(missingDomain, InetAddress.class));
 	}
 
 	private void assumeResolves(String host, boolean expectedToResolve) {
 		boolean resolved = isResolvable(host);
 		if (resolved != expectedToResolve) {
-			throw new AssumptionViolatedException(
-					"Host " + host + " resolved " + resolved);
+			throw new AssumptionViolatedException("Host " + host + " resolved " + resolved);
 		}
 	}
 

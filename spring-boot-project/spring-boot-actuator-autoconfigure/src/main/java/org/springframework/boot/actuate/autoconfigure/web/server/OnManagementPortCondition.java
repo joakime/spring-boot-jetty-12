@@ -39,24 +39,20 @@ class OnManagementPortCondition extends SpringBootCondition {
 	private static final String CLASS_NAME_WEB_APPLICATION_CONTEXT = "org.springframework.web.context.WebApplicationContext";
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Management Port");
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition("Management Port");
 		if (!isWebApplicationContext(context)) {
-			return ConditionOutcome
-					.noMatch(message.because("non web application context"));
+			return ConditionOutcome.noMatch(message.because("non web application context"));
 		}
-		Map<String, Object> attributes = metadata
-				.getAnnotationAttributes(ConditionalOnManagementPort.class.getName());
+		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnManagementPort.class.getName());
 		ManagementPortType requiredType = (ManagementPortType) attributes.get("value");
 		ManagementPortType actualType = ManagementPortType.get(context.getEnvironment());
 		if (actualType == requiredType) {
-			return ConditionOutcome.match(message.because(
-					"actual port type (" + actualType + ") matched required type"));
+			return ConditionOutcome
+					.match(message.because("actual port type (" + actualType + ") matched required type"));
 		}
-		return ConditionOutcome.noMatch(message.because("actual port type (" + actualType
-				+ ") did not match required type (" + requiredType + ")"));
+		return ConditionOutcome.noMatch(message
+				.because("actual port type (" + actualType + ") did not match required type (" + requiredType + ")"));
 	}
 
 	private boolean isWebApplicationContext(ConditionContext context) {
@@ -64,8 +60,7 @@ class OnManagementPortCondition extends SpringBootCondition {
 		if (resourceLoader instanceof ConfigurableReactiveWebApplicationContext) {
 			return true;
 		}
-		if (!ClassUtils.isPresent(CLASS_NAME_WEB_APPLICATION_CONTEXT,
-				context.getClassLoader())) {
+		if (!ClassUtils.isPresent(CLASS_NAME_WEB_APPLICATION_CONTEXT, context.getClassLoader())) {
 			return false;
 		}
 		return resourceLoader instanceof WebApplicationContext;

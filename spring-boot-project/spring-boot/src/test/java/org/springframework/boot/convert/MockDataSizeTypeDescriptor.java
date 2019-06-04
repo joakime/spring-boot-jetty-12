@@ -40,10 +40,9 @@ public final class MockDataSizeTypeDescriptor {
 	public static TypeDescriptor get(DataUnit unit) {
 		TypeDescriptor descriptor = mock(TypeDescriptor.class);
 		if (unit != null) {
-			DataSizeUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", unit), DataSizeUnit.class, null);
-			given(descriptor.getAnnotation(DataSizeUnit.class))
-					.willReturn(unitAnnotation);
+			DataSizeUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(Collections.singletonMap("value", unit),
+					DataSizeUnit.class, null);
+			given(descriptor.getAnnotation(DataSizeUnit.class)).willReturn(unitAnnotation);
 		}
 		given(descriptor.getType()).willReturn((Class) DataSize.class);
 		given(descriptor.getObjectType()).willReturn((Class) DataSize.class);

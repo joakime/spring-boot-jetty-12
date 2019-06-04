@@ -57,8 +57,7 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
@@ -66,13 +65,11 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 		return convert(sourceCollection, sourceType, targetType);
 	}
 
-	private Object convert(Collection<?> source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	private Object convert(Collection<?> source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source.isEmpty()) {
 			return "";
 		}
-		return source.stream()
-				.map((element) -> convertElement(element, sourceType, targetType))
+		return source.stream().map((element) -> convertElement(element, sourceType, targetType))
 				.collect(Collectors.joining(getDelimiter(sourceType)));
 	}
 
@@ -81,10 +78,9 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 		return (annotation != null) ? annotation.value() : ",";
 	}
 
-	private String convertElement(Object element, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		return String.valueOf(this.conversionService.convert(element,
-				sourceType.elementTypeDescriptor(element), targetType));
+	private String convertElement(Object element, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return String.valueOf(
+				this.conversionService.convert(element, sourceType.elementTypeDescriptor(element), targetType));
 	}
 
 }

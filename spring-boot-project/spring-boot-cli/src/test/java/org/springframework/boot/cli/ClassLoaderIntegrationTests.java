@@ -34,8 +34,7 @@ public class ClassLoaderIntegrationTests {
 	@Test
 	public void runWithIsolatedClassLoader() throws Exception {
 		// CLI classes or dependencies should not be exposed to the app
-		String output = this.cli.run("classloader-test-app.groovy",
-				SpringCli.class.getName());
+		String output = this.cli.run("classloader-test-app.groovy", SpringCli.class.getName());
 		assertThat(output).contains("HasClasses-false-true-false");
 	}
 

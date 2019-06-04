@@ -54,8 +54,7 @@ public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 
 		@Override
 		public InputStream getInputStream() throws IOException {
-			return new ByteArrayInputStream(
-					ClassLoaderFileURLStreamHandler.this.file.getContents());
+			return new ByteArrayInputStream(ClassLoaderFileURLStreamHandler.this.file.getContents());
 		}
 
 		@Override

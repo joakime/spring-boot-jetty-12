@@ -44,12 +44,11 @@ public enum DurationStyle {
 				Matcher matcher = matcher(value);
 				Assert.state(matcher.matches(), "Does not match simple duration pattern");
 				String suffix = matcher.group(2);
-				return (StringUtils.hasLength(suffix) ? Unit.fromSuffix(suffix)
-						: Unit.fromChronoUnit(unit)).parse(matcher.group(1));
+				return (StringUtils.hasLength(suffix) ? Unit.fromSuffix(suffix) : Unit.fromChronoUnit(unit))
+						.parse(matcher.group(1));
 			}
 			catch (Exception ex) {
-				throw new IllegalArgumentException(
-						"'" + value + "' is not a valid simple duration", ex);
+				throw new IllegalArgumentException("'" + value + "' is not a valid simple duration", ex);
 			}
 		}
 
@@ -71,8 +70,7 @@ public enum DurationStyle {
 				return Duration.parse(value);
 			}
 			catch (Exception ex) {
-				throw new IllegalArgumentException(
-						"'" + value + "' is not a valid ISO-8601 duration", ex);
+				throw new IllegalArgumentException("'" + value + "' is not a valid ISO-8601 duration", ex);
 			}
 		}
 

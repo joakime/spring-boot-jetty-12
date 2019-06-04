@@ -39,16 +39,14 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	}
 
 	@Override
-	public void applyDependencies(DependencyCustomizer dependencies)
-			throws CompilationFailedException {
+	public void applyDependencies(DependencyCustomizer dependencies) throws CompilationFailedException {
 		dependencies.add("spring-jms", "javax.jms-api");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("javax.jms", "org.springframework.jms.annotation",
-				"org.springframework.jms.config", "org.springframework.jms.core",
-				"org.springframework.jms.listener",
+		imports.addStarImports("javax.jms", "org.springframework.jms.annotation", "org.springframework.jms.config",
+				"org.springframework.jms.core", "org.springframework.jms.listener",
 				"org.springframework.jms.listener.adapter");
 	}
 

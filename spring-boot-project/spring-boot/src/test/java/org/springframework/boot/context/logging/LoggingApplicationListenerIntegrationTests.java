@@ -44,8 +44,8 @@ public class LoggingApplicationListenerIntegrationTests {
 
 	@Test
 	public void loggingSystemRegisteredInTheContext() {
-		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(
-				SampleService.class).web(WebApplicationType.NONE).run()) {
+		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
+				.web(WebApplicationType.NONE).run()) {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.loggingSystem).isNotNull();
 		}
@@ -53,9 +53,8 @@ public class LoggingApplicationListenerIntegrationTests {
 
 	@Test
 	public void loggingPerformedDuringChildApplicationStartIsNotLost() {
-		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE)
-				.child(Config.class).web(WebApplicationType.NONE)
-				.listeners(new ApplicationListener<ApplicationStartingEvent>() {
+		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE).child(Config.class)
+				.web(WebApplicationType.NONE).listeners(new ApplicationListener<ApplicationStartingEvent>() {
 
 					private final Logger logger = LoggerFactory.getLogger(getClass());
 

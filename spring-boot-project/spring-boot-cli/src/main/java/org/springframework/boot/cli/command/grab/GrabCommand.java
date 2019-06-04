@@ -39,8 +39,7 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 public class GrabCommand extends OptionParsingCommand {
 
 	public GrabCommand() {
-		super("grab", "Download a spring groovy script's dependencies to ./repository",
-				new GrabOptionHandler());
+		super("grab", "Download a spring groovy script's dependencies to ./repository", new GrabOptionHandler());
 	}
 
 	private static final class GrabOptionHandler extends CompilerOptionHandler {
@@ -50,8 +49,8 @@ public class GrabCommand extends OptionParsingCommand {
 			SourceOptions sourceOptions = new SourceOptions(options);
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
-			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(
-					options, this, repositoryConfiguration);
+			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(options, this,
+					repositoryConfiguration);
 			if (System.getProperty("grape.root") == null) {
 				System.setProperty("grape.root", ".");
 			}

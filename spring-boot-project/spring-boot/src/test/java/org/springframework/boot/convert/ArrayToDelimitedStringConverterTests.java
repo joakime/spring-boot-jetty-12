@@ -38,8 +38,7 @@ public class ArrayToDelimitedStringConverterTests {
 
 	private final ConversionService conversionService;
 
-	public ArrayToDelimitedStringConverterTests(String name,
-			ConversionService conversionService) {
+	public ArrayToDelimitedStringConverterTests(String name, ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
@@ -75,9 +74,8 @@ public class ArrayToDelimitedStringConverterTests {
 		if (this.conversionService instanceof ApplicationConversionService) {
 			Data data = new Data();
 			data.type = new int[] { 1, 2, 3 };
-			String converted = (String) this.conversionService.convert(
-					data.type, TypeDescriptor
-							.nested(ReflectionUtils.findField(Data.class, "type"), 0),
+			String converted = (String) this.conversionService.convert(data.type,
+					TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "type"), 0),
 					TypeDescriptor.valueOf(String.class));
 			assertThat(converted).isEqualTo("1.2.3");
 		}
@@ -92,8 +90,7 @@ public class ArrayToDelimitedStringConverterTests {
 
 	@Parameters(name = "{0}")
 	public static Iterable<Object[]> conversionServices() {
-		return new ConversionServiceParameters(
-				ArrayToDelimitedStringConverterTests::addConverter);
+		return new ConversionServiceParameters(ArrayToDelimitedStringConverterTests::addConverter);
 	}
 
 	private static void addConverter(FormattingConversionService service) {

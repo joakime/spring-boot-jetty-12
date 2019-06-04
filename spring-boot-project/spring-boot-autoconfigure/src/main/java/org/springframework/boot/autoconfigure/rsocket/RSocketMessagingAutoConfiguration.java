@@ -37,15 +37,13 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RSocketRequester.class, RSocketFactory.class,
-		TcpServerTransport.class })
+@ConditionalOnClass({ RSocketRequester.class, RSocketFactory.class, TcpServerTransport.class })
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 public class RSocketMessagingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MessageHandlerAcceptor messageHandlerAcceptor(
-			RSocketStrategies rSocketStrategies) {
+	public MessageHandlerAcceptor messageHandlerAcceptor(RSocketStrategies rSocketStrategies) {
 		MessageHandlerAcceptor acceptor = new MessageHandlerAcceptor();
 		acceptor.setRSocketStrategies(rSocketStrategies);
 		return acceptor;

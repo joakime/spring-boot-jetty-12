@@ -39,8 +39,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 class SkipSslVerificationHttpRequestFactory extends SimpleClientHttpRequestFactory {
 
 	@Override
-	protected void prepareConnection(HttpURLConnection connection, String httpMethod)
-			throws IOException {
+	protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
 		if (connection instanceof HttpsURLConnection) {
 			prepareHttpsConnection((HttpsURLConnection) connection);
 		}
@@ -59,8 +58,7 @@ class SkipSslVerificationHttpRequestFactory extends SimpleClientHttpRequestFacto
 
 	private SSLSocketFactory createSslSocketFactory() throws Exception {
 		SSLContext context = SSLContext.getInstance("TLS");
-		context.init(null, new TrustManager[] { new SkipX509TrustManager() },
-				new SecureRandom());
+		context.init(null, new TrustManager[] { new SkipX509TrustManager() }, new SecureRandom());
 		return context.getSocketFactory();
 	}
 

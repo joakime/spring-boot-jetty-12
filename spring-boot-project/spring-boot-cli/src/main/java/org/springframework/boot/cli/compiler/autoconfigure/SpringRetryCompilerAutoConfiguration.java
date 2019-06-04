@@ -33,15 +33,13 @@ public class SpringRetryCompilerAutoConfiguration extends CompilerAutoConfigurat
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableRetry", "Retryable",
-				"Recover");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableRetry", "Retryable", "Recover");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses("org.springframework.retry.annotation.EnableRetry")
-				.add("spring-retry", "spring-boot-starter-aop");
+		dependencies.ifAnyMissingClasses("org.springframework.retry.annotation.EnableRetry").add("spring-retry",
+				"spring-boot-starter-aop");
 	}
 
 	@Override

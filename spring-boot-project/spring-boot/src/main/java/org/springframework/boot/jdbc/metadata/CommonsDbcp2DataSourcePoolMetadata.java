@@ -26,8 +26,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class CommonsDbcp2DataSourcePoolMetadata
-		extends AbstractDataSourcePoolMetadata<BasicDataSource> {
+public class CommonsDbcp2DataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<BasicDataSource> {
 
 	public CommonsDbcp2DataSourcePoolMetadata(BasicDataSource dataSource) {
 		super(dataSource);

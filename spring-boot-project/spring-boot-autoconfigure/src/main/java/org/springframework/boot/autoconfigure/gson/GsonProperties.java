@@ -101,8 +101,7 @@ public class GsonProperties {
 		return this.excludeFieldsWithoutExposeAnnotation;
 	}
 
-	public void setExcludeFieldsWithoutExposeAnnotation(
-			Boolean excludeFieldsWithoutExposeAnnotation) {
+	public void setExcludeFieldsWithoutExposeAnnotation(Boolean excludeFieldsWithoutExposeAnnotation) {
 		this.excludeFieldsWithoutExposeAnnotation = excludeFieldsWithoutExposeAnnotation;
 	}
 
@@ -118,8 +117,7 @@ public class GsonProperties {
 		return this.enableComplexMapKeySerialization;
 	}
 
-	public void setEnableComplexMapKeySerialization(
-			Boolean enableComplexMapKeySerialization) {
+	public void setEnableComplexMapKeySerialization(Boolean enableComplexMapKeySerialization) {
 		this.enableComplexMapKeySerialization = enableComplexMapKeySerialization;
 	}
 
@@ -127,8 +125,7 @@ public class GsonProperties {
 		return this.disableInnerClassSerialization;
 	}
 
-	public void setDisableInnerClassSerialization(
-			Boolean disableInnerClassSerialization) {
+	public void setDisableInnerClassSerialization(Boolean disableInnerClassSerialization) {
 		this.disableInnerClassSerialization = disableInnerClassSerialization;
 	}
 
@@ -136,8 +133,7 @@ public class GsonProperties {
 		return this.longSerializationPolicy;
 	}
 
-	public void setLongSerializationPolicy(
-			LongSerializationPolicy longSerializationPolicy) {
+	public void setLongSerializationPolicy(LongSerializationPolicy longSerializationPolicy) {
 		this.longSerializationPolicy = longSerializationPolicy;
 	}
 

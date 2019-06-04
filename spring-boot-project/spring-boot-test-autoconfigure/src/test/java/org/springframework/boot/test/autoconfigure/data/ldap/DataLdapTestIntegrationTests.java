@@ -59,11 +59,10 @@ public class DataLdapTestIntegrationTests {
 		LdapQuery ldapQuery = LdapQueryBuilder.query().where("cn").is("Bob Smith");
 		Optional<ExampleEntry> entry = this.exampleRepository.findOne(ldapQuery);
 		assertThat(entry.isPresent()).isTrue();
-		assertThat(entry.get().getDn()).isEqualTo(LdapUtils
-				.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
+		assertThat(entry.get().getDn())
+				.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
 		assertThat(this.ldapTemplate.findOne(ldapQuery, ExampleEntry.class).getDn())
-				.isEqualTo(LdapUtils.newLdapName(
-						"cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
+				.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
 	}
 
 	@Test

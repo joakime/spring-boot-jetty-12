@@ -36,7 +36,7 @@ public interface OperationInvokerAdvisor {
 	 * @param invoker the invoker to advise
 	 * @return an potentially new operation invoker with support for additional features
 	 */
-	OperationInvoker apply(EndpointId endpointId, OperationType operationType,
-			OperationParameters parameters, OperationInvoker invoker);
+	OperationInvoker apply(EndpointId endpointId, OperationType operationType, OperationParameters parameters,
+			OperationInvoker invoker);
 
 }

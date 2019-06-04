@@ -37,7 +37,7 @@ public interface TemplateAvailabilityProvider {
 	 * @param resourceLoader the resource loader
 	 * @return if the template is available
 	 */
-	boolean isTemplateAvailable(String view, Environment environment,
-			ClassLoader classLoader, ResourceLoader resourceLoader);
+	boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
+			ResourceLoader resourceLoader);
 
 }

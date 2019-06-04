@@ -30,8 +30,8 @@ import org.springframework.core.Ordered;
  * @author Yunkun Huang
  * @since 2.0.0
  */
-public class ReactiveWebServerFactoryCustomizer implements
-		WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, Ordered {
+public class ReactiveWebServerFactoryCustomizer
+		implements WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, Ordered {
 
 	private final ServerProperties serverProperties;
 

@@ -23,7 +23,6 @@ import org.springframework.boot.testsupport.context.AbstractConfigurationClassTe
  *
  * @author Andy Wilkinson
  */
-public class AutoConfigureConfigurationClassTests
-		extends AbstractConfigurationClassTests {
+public class AutoConfigureConfigurationClassTests extends AbstractConfigurationClassTests {
 
 }

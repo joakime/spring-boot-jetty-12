@@ -46,28 +46,23 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 
 	private static final Log logger = LogFactory.getLog(WelcomePageHandlerMapping.class);
 
-	private static final List<MediaType> MEDIA_TYPES_ALL = Collections
-			.singletonList(MediaType.ALL);
+	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
-			ApplicationContext applicationContext, Optional<Resource> welcomePage,
-			String staticPathPattern) {
+			ApplicationContext applicationContext, Optional<Resource> welcomePage, String staticPathPattern) {
 		if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
 			logger.info("Adding welcome page: " + welcomePage.get());
 			setRootViewName("forward:index.html");
 		}
-		else if (welcomeTemplateExists(templateAvailabilityProviders,
-				applicationContext)) {
+		else if (welcomeTemplateExists(templateAvailabilityProviders, applicationContext)) {
 			logger.info("Adding welcome page template: index");
 			setRootViewName("index");
 		}
 	}
 
-	private boolean welcomeTemplateExists(
-			TemplateAvailabilityProviders templateAvailabilityProviders,
+	private boolean welcomeTemplateExists(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext) {
-		return templateAvailabilityProviders.getProvider("index",
-				applicationContext) != null;
+		return templateAvailabilityProviders.getProvider("index", applicationContext) != null;
 	}
 
 	private void setRootViewName(String viewName) {

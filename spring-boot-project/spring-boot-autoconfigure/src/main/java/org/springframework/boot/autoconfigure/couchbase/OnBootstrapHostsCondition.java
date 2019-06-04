@@ -29,8 +29,7 @@ import org.springframework.boot.autoconfigure.condition.OnPropertyListCondition;
 class OnBootstrapHostsCondition extends OnPropertyListCondition {
 
 	OnBootstrapHostsCondition() {
-		super("spring.couchbase.bootstrap-hosts",
-				() -> ConditionMessage.forCondition("Couchbase Bootstrap Hosts"));
+		super("spring.couchbase.bootstrap-hosts", () -> ConditionMessage.forCondition("Couchbase Bootstrap Hosts"));
 	}
 
 }

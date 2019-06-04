@@ -33,8 +33,7 @@ import org.springframework.util.StringUtils;
  */
 final class AutoConfigurationMetadataLoader {
 
-	protected static final String PATH = "META-INF/"
-			+ "spring-autoconfigure-metadata.properties";
+	protected static final String PATH = "META-INF/" + "spring-autoconfigure-metadata.properties";
 
 	private AutoConfigurationMetadataLoader() {
 	}
@@ -49,14 +48,12 @@ final class AutoConfigurationMetadataLoader {
 					: ClassLoader.getSystemResources(path);
 			Properties properties = new Properties();
 			while (urls.hasMoreElements()) {
-				properties.putAll(PropertiesLoaderUtils
-						.loadProperties(new UrlResource(urls.nextElement())));
+				properties.putAll(PropertiesLoaderUtils.loadProperties(new UrlResource(urls.nextElement())));
 			}
 			return loadMetadata(properties);
 		}
 		catch (IOException ex) {
-			throw new IllegalArgumentException(
-					"Unable to load @ConditionalOnClass location [" + path + "]", ex);
+			throw new IllegalArgumentException("Unable to load @ConditionalOnClass location [" + path + "]", ex);
 		}
 	}
 
@@ -67,8 +64,7 @@ final class AutoConfigurationMetadataLoader {
 	/**
 	 * {@link AutoConfigurationMetadata} implementation backed by a properties file.
 	 */
-	private static class PropertiesAutoConfigurationMetadata
-			implements AutoConfigurationMetadata {
+	private static class PropertiesAutoConfigurationMetadata implements AutoConfigurationMetadata {
 
 		private final Properties properties;
 
@@ -98,11 +94,9 @@ final class AutoConfigurationMetadataLoader {
 		}
 
 		@Override
-		public Set<String> getSet(String className, String key,
-				Set<String> defaultValue) {
+		public Set<String> getSet(String className, String key, Set<String> defaultValue) {
 			String value = get(className, key);
-			return (value != null) ? StringUtils.commaDelimitedListToSet(value)
-					: defaultValue;
+			return (value != null) ? StringUtils.commaDelimitedListToSet(value) : defaultValue;
 		}
 
 		@Override

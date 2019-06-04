@@ -31,11 +31,10 @@ import io.micrometer.core.instrument.Tags;
 public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 
 	@Override
-	public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response,
-			Object handler, Throwable exception) {
-		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, response),
-				WebMvcTags.exception(exception), WebMvcTags.status(response),
-				WebMvcTags.outcome(response));
+	public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response, Object handler,
+			Throwable exception) {
+		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, response), WebMvcTags.exception(exception),
+				WebMvcTags.status(response), WebMvcTags.outcome(response));
 	}
 
 	@Override

@@ -32,8 +32,7 @@ public class CloudFoundryAuthorizationException extends RuntimeException {
 		this(reason, message, null);
 	}
 
-	public CloudFoundryAuthorizationException(Reason reason, String message,
-			Throwable cause) {
+	public CloudFoundryAuthorizationException(Reason reason, String message, Throwable cause) {
 		super(message, cause);
 		this.reason = reason;
 	}

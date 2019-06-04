@@ -40,8 +40,7 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 
 	private final Supplier<File> exploded;
 
-	ExplodedApplicationLauncher(ApplicationBuilder applicationBuilder,
-			BuildOutput buildOutput) {
+	ExplodedApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
 		super(applicationBuilder, buildOutput);
 		this.exploded = () -> new File(buildOutput.getRootLocation(), "exploded");
 	}
@@ -58,8 +57,7 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 
 	@Override
 	protected List<String> getArguments(File archive, File serverPortFile) {
-		String mainClass = (archive.getName().endsWith(".war")
-				? "org.springframework.boot.loader.WarLauncher"
+		String mainClass = (archive.getName().endsWith(".war") ? "org.springframework.boot.loader.WarLauncher"
 				: "org.springframework.boot.loader.JarLauncher");
 		try {
 			explodeArchive(archive);

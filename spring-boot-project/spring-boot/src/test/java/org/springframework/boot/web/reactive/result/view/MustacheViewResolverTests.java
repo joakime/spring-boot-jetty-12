@@ -32,8 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MustacheViewResolverTests {
 
-	private final String prefix = "classpath:/"
-			+ getClass().getPackage().getName().replace(".", "/") + "/";
+	private final String prefix = "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/";
 
 	private MustacheViewResolver resolver = new MustacheViewResolver();
 
@@ -48,15 +47,12 @@ public class MustacheViewResolverTests {
 
 	@Test
 	public void resolveNonExistent() {
-		assertThat(
-				this.resolver.resolveViewName("bar", null).block(Duration.ofSeconds(30)))
-						.isNull();
+		assertThat(this.resolver.resolveViewName("bar", null).block(Duration.ofSeconds(30))).isNull();
 	}
 
 	@Test
 	public void resolveExisting() {
-		assertThat(this.resolver.resolveViewName("template", null)
-				.block(Duration.ofSeconds(30))).isNotNull();
+		assertThat(this.resolver.resolveViewName("template", null).block(Duration.ofSeconds(30))).isNotNull();
 	}
 
 }

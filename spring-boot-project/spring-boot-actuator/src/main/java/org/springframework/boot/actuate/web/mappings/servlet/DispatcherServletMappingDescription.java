@@ -32,8 +32,7 @@ public class DispatcherServletMappingDescription {
 
 	private final DispatcherServletMappingDetails details;
 
-	DispatcherServletMappingDescription(String predicate, String handler,
-			DispatcherServletMappingDetails details) {
+	DispatcherServletMappingDescription(String predicate, String handler, DispatcherServletMappingDetails details) {
 		this.handler = handler;
 		this.predicate = predicate;
 		this.details = details;

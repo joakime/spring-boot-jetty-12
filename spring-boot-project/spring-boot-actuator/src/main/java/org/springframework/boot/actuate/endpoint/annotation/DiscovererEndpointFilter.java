@@ -25,8 +25,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
-public abstract class DiscovererEndpointFilter
-		implements EndpointFilter<DiscoveredEndpoint<?>> {
+public abstract class DiscovererEndpointFilter implements EndpointFilter<DiscoveredEndpoint<?>> {
 
 	private final Class<? extends EndpointDiscoverer<?, ?>> discoverer;
 
@@ -34,8 +33,7 @@ public abstract class DiscovererEndpointFilter
 	 * Create a new {@link DiscovererEndpointFilter} instance.
 	 * @param discoverer the required discoverer
 	 */
-	protected DiscovererEndpointFilter(
-			Class<? extends EndpointDiscoverer<?, ?>> discoverer) {
+	protected DiscovererEndpointFilter(Class<? extends EndpointDiscoverer<?, ?>> discoverer) {
 		Assert.notNull(discoverer, "Discoverer must not be null");
 		this.discoverer = discoverer;
 	}

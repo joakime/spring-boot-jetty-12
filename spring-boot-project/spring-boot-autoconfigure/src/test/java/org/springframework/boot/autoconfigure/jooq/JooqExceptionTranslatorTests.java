@@ -84,8 +84,7 @@ public class JooqExceptionTranslatorTests {
 		given(configuration.dialect()).willReturn(this.dialect);
 		given(context.sqlException()).willReturn(this.sqlException);
 		this.exceptionTranslator.exception(context);
-		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor
-				.forClass(RuntimeException.class);
+		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor.forClass(RuntimeException.class);
 		verify(context).exception(captor.capture());
 		assertThat(captor.getValue()).isInstanceOf(BadSqlGrammarException.class);
 	}

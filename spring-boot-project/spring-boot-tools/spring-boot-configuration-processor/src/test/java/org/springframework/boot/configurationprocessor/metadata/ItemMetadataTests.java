@@ -34,14 +34,12 @@ public class ItemMetadataTests {
 
 	@Test
 	public void newItemMetadataPrefixWithCamelCaseSuffix() {
-		assertThat(newItemMetadataPrefix("prefix.", "myValue"))
-				.isEqualTo("prefix.my-value");
+		assertThat(newItemMetadataPrefix("prefix.", "myValue")).isEqualTo("prefix.my-value");
 	}
 
 	@Test
 	public void newItemMetadataPrefixWithUpperCamelCaseSuffix() {
-		assertThat(newItemMetadataPrefix("prefix.", "MyValue"))
-				.isEqualTo("prefix.my-value");
+		assertThat(newItemMetadataPrefix("prefix.", "MyValue")).isEqualTo("prefix.my-value");
 	}
 
 	private String newItemMetadataPrefix(String prefix, String suffix) {

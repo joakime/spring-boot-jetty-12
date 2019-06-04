@@ -73,36 +73,31 @@ public class HttpHeaderInterceptorTests {
 
 	@Test
 	public void constructorNullHeaderName() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
 				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
 	public void constructorEmptyHeaderName() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
 				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
 	public void constructorNullHeaderValue() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
 				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
 	public void constructorEmptyHeaderValue() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
+		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
 				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
 	public void intercept() throws IOException {
-		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body,
-				this.execution);
+		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body, this.execution);
 		assertThat(this.request.getHeaders().getFirst(this.name)).isEqualTo(this.value);
 		assertThat(result).isEqualTo(this.response);
 	}

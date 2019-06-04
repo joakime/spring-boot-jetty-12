@@ -27,8 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class RestartScopeInitializer
-		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class RestartScopeInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {

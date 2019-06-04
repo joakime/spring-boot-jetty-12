@@ -61,8 +61,7 @@ class RestDocsWebTestClientBuilderCustomizer implements WebTestClientBuilderCust
 		if (port == null) {
 			return true;
 		}
-		return (scheme.equals("http") && port == 80)
-				|| (scheme.equals("https") && port == 443);
+		return (scheme.equals("http") && port == 80) || (scheme.equals("https") && port == 443);
 	}
 
 }

@@ -41,8 +41,7 @@ final class StringToDataSizeConverter implements GenericConverter {
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (ObjectUtils.isEmpty(source)) {
 			return null;
 		}

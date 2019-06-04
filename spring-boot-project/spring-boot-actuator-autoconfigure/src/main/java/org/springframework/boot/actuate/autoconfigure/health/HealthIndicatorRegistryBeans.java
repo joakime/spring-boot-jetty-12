@@ -41,8 +41,7 @@ final class HealthIndicatorRegistryBeans {
 		Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
 		indicators.putAll(applicationContext.getBeansOfType(HealthIndicator.class));
 		if (ClassUtils.isPresent("reactor.core.publisher.Flux", null)) {
-			new ReactiveHealthIndicators().get(applicationContext)
-					.forEach(indicators::putIfAbsent);
+			new ReactiveHealthIndicators().get(applicationContext).forEach(indicators::putIfAbsent);
 		}
 		HealthIndicatorRegistryFactory factory = new HealthIndicatorRegistryFactory();
 		return factory.createHealthIndicatorRegistry(indicators);

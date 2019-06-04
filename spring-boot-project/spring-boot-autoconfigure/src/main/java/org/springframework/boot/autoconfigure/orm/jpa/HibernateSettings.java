@@ -43,8 +43,7 @@ public class HibernateSettings {
 
 	public HibernateSettings hibernatePropertiesCustomizers(
 			Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
-		this.hibernatePropertiesCustomizers = new ArrayList<>(
-				hibernatePropertiesCustomizers);
+		this.hibernatePropertiesCustomizers = new ArrayList<>(hibernatePropertiesCustomizers);
 		return this;
 	}
 

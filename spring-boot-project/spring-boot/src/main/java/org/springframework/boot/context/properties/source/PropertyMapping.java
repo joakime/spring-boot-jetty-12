@@ -38,8 +38,7 @@ class PropertyMapping {
 	 * @param configurationPropertyName the {@link ConfigurationPropertySource}
 	 * {@link ConfigurationPropertyName}
 	 */
-	PropertyMapping(String propertySourceName,
-			ConfigurationPropertyName configurationPropertyName) {
+	PropertyMapping(String propertySourceName, ConfigurationPropertyName configurationPropertyName) {
 		this.propertySourceName = propertySourceName;
 		this.configurationPropertyName = configurationPropertyName;
 	}

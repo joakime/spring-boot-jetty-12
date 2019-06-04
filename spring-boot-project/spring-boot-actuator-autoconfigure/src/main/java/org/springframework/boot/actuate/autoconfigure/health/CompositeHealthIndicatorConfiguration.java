@@ -45,15 +45,13 @@ public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndi
 			return createHealthIndicator(beans.values().iterator().next());
 		}
 		HealthIndicatorRegistry registry = new DefaultHealthIndicatorRegistry();
-		beans.forEach(
-				(name, source) -> registry.register(name, createHealthIndicator(source)));
+		beans.forEach((name, source) -> registry.register(name, createHealthIndicator(source)));
 		return new CompositeHealthIndicator(this.healthAggregator, registry);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected H createHealthIndicator(S source) {
-		Class<?>[] generics = ResolvableType
-				.forClass(CompositeHealthIndicatorConfiguration.class, getClass())
+		Class<?>[] generics = ResolvableType.forClass(CompositeHealthIndicatorConfiguration.class, getClass())
 				.resolveGenerics();
 		Class<H> indicatorClass = (Class<H>) generics[0];
 		Class<S> sourceClass = (Class<S>) generics[1];
@@ -61,8 +59,8 @@ public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndi
 			return indicatorClass.getConstructor(sourceClass).newInstance(source);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create indicator " + indicatorClass
-					+ " for source " + sourceClass, ex);
+			throw new IllegalStateException(
+					"Unable to create indicator " + indicatorClass + " for source " + sourceClass, ex);
 		}
 	}
 

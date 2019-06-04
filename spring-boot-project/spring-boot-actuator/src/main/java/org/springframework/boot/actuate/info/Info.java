@@ -62,8 +62,7 @@ public final class Info {
 	public <T> T get(String id, Class<T> type) {
 		Object value = get(id);
 		if (value != null && type != null && !type.isInstance(value)) {
-			throw new IllegalStateException("Info entry is not of required type ["
-					+ type.getName() + "]: " + value);
+			throw new IllegalStateException("Info entry is not of required type [" + type.getName() + "]: " + value);
 		}
 		return (T) value;
 	}

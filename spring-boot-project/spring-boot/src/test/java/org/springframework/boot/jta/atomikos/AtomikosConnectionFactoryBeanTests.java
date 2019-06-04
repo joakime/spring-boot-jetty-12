@@ -32,8 +32,7 @@ public class AtomikosConnectionFactoryBeanTests {
 
 	@Test
 	public void beanMethods() throws Exception {
-		MockAtomikosConnectionFactoryBean bean = spy(
-				new MockAtomikosConnectionFactoryBean());
+		MockAtomikosConnectionFactoryBean bean = spy(new MockAtomikosConnectionFactoryBean());
 		bean.setBeanName("bean");
 		bean.afterPropertiesSet();
 		assertThat(bean.getUniqueResourceName()).isEqualTo("bean");
@@ -44,8 +43,7 @@ public class AtomikosConnectionFactoryBeanTests {
 	}
 
 	@SuppressWarnings("serial")
-	private static class MockAtomikosConnectionFactoryBean
-			extends AtomikosConnectionFactoryBean {
+	private static class MockAtomikosConnectionFactoryBean extends AtomikosConnectionFactoryBean {
 
 		@Override
 		public synchronized void init() {

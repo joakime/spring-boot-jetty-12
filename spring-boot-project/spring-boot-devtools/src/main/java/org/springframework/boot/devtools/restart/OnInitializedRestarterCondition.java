@@ -32,10 +32,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnInitializedRestarterCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("Initialized Restarter Condition");
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition("Initialized Restarter Condition");
 		Restarter restarter = getRestarter();
 		if (restarter == null) {
 			return ConditionOutcome.noMatch(message.because("unavailable"));

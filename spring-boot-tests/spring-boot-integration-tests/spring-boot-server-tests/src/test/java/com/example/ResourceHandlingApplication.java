@@ -39,31 +39,28 @@ import org.springframework.context.annotation.Bean;
 public class ResourceHandlingApplication {
 
 	public static void main(String[] args) {
-		new SpringApplicationBuilder(ResourceHandlingApplication.class)
-				.properties("server.port:0")
+		new SpringApplicationBuilder(ResourceHandlingApplication.class).properties("server.port:0")
 				.listeners(new WebServerPortFileWriter(args[0])).run(args);
 	}
 
 	@Bean
 	public ServletRegistrationBean<?> resourceServletRegistration() {
-		ServletRegistrationBean<?> registration = new ServletRegistrationBean<HttpServlet>(
-				new HttpServlet() {
+		ServletRegistrationBean<?> registration = new ServletRegistrationBean<HttpServlet>(new HttpServlet() {
 
-					@Override
-					protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-							throws ServletException, IOException {
-						URL resource = getServletContext()
-								.getResource(req.getQueryString());
-						if (resource == null) {
-							resp.sendError(404);
-						}
-						else {
-							resp.getWriter().println(resource);
-							resp.getWriter().flush();
-						}
-					}
+			@Override
+			protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+					throws ServletException, IOException {
+				URL resource = getServletContext().getResource(req.getQueryString());
+				if (resource == null) {
+					resp.sendError(404);
+				}
+				else {
+					resp.getWriter().println(resource);
+					resp.getWriter().flush();
+				}
+			}
 
-				});
+		});
 		registration.addUrlMappings("/servletContext");
 		return registration;
 	}

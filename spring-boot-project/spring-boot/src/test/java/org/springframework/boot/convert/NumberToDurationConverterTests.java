@@ -43,8 +43,7 @@ public class NumberToDurationConverterTests {
 
 	private final ConversionService conversionService;
 
-	public NumberToDurationConverterTests(String name,
-			ConversionService conversionService) {
+	public NumberToDurationConverterTests(String name, ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
@@ -70,15 +69,12 @@ public class NumberToDurationConverterTests {
 	private Duration convert(Integer source, ChronoUnit defaultUnit) {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
-			DurationUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", defaultUnit), DurationUnit.class,
-					null);
-			given(targetType.getAnnotation(DurationUnit.class))
-					.willReturn(unitAnnotation);
+			DurationUnit unitAnnotation = AnnotationUtils
+					.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), DurationUnit.class, null);
+			given(targetType.getAnnotation(DurationUnit.class)).willReturn(unitAnnotation);
 		}
 		given(targetType.getType()).willReturn((Class) Duration.class);
-		return (Duration) this.conversionService.convert(source,
-				TypeDescriptor.forObject(source), targetType);
+		return (Duration) this.conversionService.convert(source, TypeDescriptor.forObject(source), targetType);
 	}
 
 	@Parameters(name = "{0}")

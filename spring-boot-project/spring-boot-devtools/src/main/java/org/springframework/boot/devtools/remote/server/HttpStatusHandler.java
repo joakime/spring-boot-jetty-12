@@ -51,8 +51,7 @@ public class HttpStatusHandler implements Handler {
 	}
 
 	@Override
-	public void handle(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		response.setStatusCode(this.status);
 	}
 

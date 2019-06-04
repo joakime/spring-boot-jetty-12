@@ -31,8 +31,7 @@ public class HealthIndicatorRegistryFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;
 
-	public HealthIndicatorRegistryFactory(
-			Function<String, String> healthIndicatorNameFactory) {
+	public HealthIndicatorRegistryFactory(Function<String, String> healthIndicatorNameFactory) {
 		this.healthIndicatorNameFactory = healthIndicatorNameFactory;
 	}
 
@@ -46,8 +45,7 @@ public class HealthIndicatorRegistryFactory {
 	 * @return a {@link HealthIndicator} that delegates to the specified
 	 * {@code healthIndicators}.
 	 */
-	public HealthIndicatorRegistry createHealthIndicatorRegistry(
-			Map<String, HealthIndicator> healthIndicators) {
+	public HealthIndicatorRegistry createHealthIndicatorRegistry(Map<String, HealthIndicator> healthIndicators) {
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 		return initialize(new DefaultHealthIndicatorRegistry(), healthIndicators);
 	}

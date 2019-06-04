@@ -37,8 +37,7 @@ class ConditionEvaluationReportAutoConfigurationImportListener
 	@Override
 	public void onAutoConfigurationImportEvent(AutoConfigurationImportEvent event) {
 		if (this.beanFactory != null) {
-			ConditionEvaluationReport report = ConditionEvaluationReport
-					.get(this.beanFactory);
+			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
 			report.recordEvaluationCandidates(event.getCandidateConfigurations());
 			report.recordExclusions(event.getExclusions());
 		}

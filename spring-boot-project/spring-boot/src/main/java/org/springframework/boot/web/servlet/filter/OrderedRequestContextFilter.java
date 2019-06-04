@@ -25,8 +25,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class OrderedRequestContextFilter extends RequestContextFilter
-		implements OrderedFilter {
+public class OrderedRequestContextFilter extends RequestContextFilter implements OrderedFilter {
 
 	// Order defaults to after Spring Session filter
 	private int order = REQUEST_WRAPPER_FILTER_MAX_ORDER - 105;

@@ -106,8 +106,7 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 		PropertyMapper map = PropertyMapper.get();
 		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
 		factory.setDataSource(this.dataSource);
-		map.from(this.properties::getTablePrefix).whenHasText()
-				.to(factory::setTablePrefix);
+		map.from(this.properties::getTablePrefix).whenHasText().to(factory::setTablePrefix);
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}
@@ -123,10 +122,8 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.dataSource).to(factory::setDataSource);
-		map.from(this::determineIsolationLevel).whenNonNull()
-				.to(factory::setIsolationLevelForCreate);
-		map.from(this.properties::getTablePrefix).whenHasText()
-				.to(factory::setTablePrefix);
+		map.from(this::determineIsolationLevel).whenNonNull().to(factory::setIsolationLevelForCreate);
+		map.from(this.properties::getTablePrefix).whenHasText().to(factory::setTablePrefix);
 		map.from(this::getTransactionManager).to(factory::setTransactionManager);
 		factory.afterPropertiesSet();
 		return factory.getObject();

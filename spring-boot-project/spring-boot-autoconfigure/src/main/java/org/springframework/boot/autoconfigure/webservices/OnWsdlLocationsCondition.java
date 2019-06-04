@@ -28,8 +28,7 @@ import org.springframework.boot.autoconfigure.condition.OnPropertyListCondition;
 class OnWsdlLocationsCondition extends OnPropertyListCondition {
 
 	OnWsdlLocationsCondition() {
-		super("spring.webservices.wsdl-locations",
-				() -> ConditionMessage.forCondition("WSDL locations"));
+		super("spring.webservices.wsdl-locations", () -> ConditionMessage.forCondition("WSDL locations"));
 	}
 
 }

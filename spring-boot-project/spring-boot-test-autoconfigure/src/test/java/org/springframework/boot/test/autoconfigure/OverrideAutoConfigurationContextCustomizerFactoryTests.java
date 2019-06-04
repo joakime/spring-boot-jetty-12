@@ -33,31 +33,26 @@ public class OverrideAutoConfigurationContextCustomizerFactoryTests {
 
 	@Test
 	public void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(NoAnnotation.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
 	public void getContextCustomizerWhenHasAnnotationEnabledTrueShouldReturnNull() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(WithAnnotationEnabledTrue.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithAnnotationEnabledTrue.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
 	public void getContextCustomizerWhenHasAnnotationEnabledFalseShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory
-				.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	public void hashCodeAndEquals() {
-		ContextCustomizer customizer1 = this.factory
-				.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
-		ContextCustomizer customizer2 = this.factory
-				.createContextCustomizer(WithSameAnnotation.class, null);
+		ContextCustomizer customizer1 = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
+		ContextCustomizer customizer2 = this.factory.createContextCustomizer(WithSameAnnotation.class, null);
 		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
 		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2);
 	}

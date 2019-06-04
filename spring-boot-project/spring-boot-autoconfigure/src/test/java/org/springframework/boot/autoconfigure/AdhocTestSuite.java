@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorContro
  * @author Dave Syer
  */
 @RunWith(Suite.class)
-@SuiteClasses({ BasicErrorControllerDirectMockMvcTests.class,
-		JmxAutoConfigurationTests.class, IntegrationAutoConfigurationTests.class })
+@SuiteClasses({ BasicErrorControllerDirectMockMvcTests.class, JmxAutoConfigurationTests.class,
+		IntegrationAutoConfigurationTests.class })
 @Ignore
 public class AdhocTestSuite {
 

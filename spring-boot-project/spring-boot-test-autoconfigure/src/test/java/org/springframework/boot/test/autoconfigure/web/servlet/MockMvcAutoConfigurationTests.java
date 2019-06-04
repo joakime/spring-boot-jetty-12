@@ -39,8 +39,7 @@ public class MockMvcAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			MockMvc mockMvc = context.getBean(MockMvc.class);
 			assertThat(context).hasSingleBean(DispatcherServlet.class);
-			assertThat(context.getBean(DispatcherServlet.class))
-					.isEqualTo(mockMvc.getDispatcherServlet());
+			assertThat(context.getBean(DispatcherServlet.class)).isEqualTo(mockMvc.getDispatcherServlet());
 		});
 	}
 

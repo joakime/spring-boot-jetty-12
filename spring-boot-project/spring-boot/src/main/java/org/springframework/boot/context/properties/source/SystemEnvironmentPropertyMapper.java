@@ -41,11 +41,9 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		String name = convertName(configurationPropertyName);
 		String legacyName = convertLegacyName(configurationPropertyName);
 		if (name.equals(legacyName)) {
-			return new PropertyMapping[] {
-					new PropertyMapping(name, configurationPropertyName) };
+			return new PropertyMapping[] { new PropertyMapping(name, configurationPropertyName) };
 		}
-		return new PropertyMapping[] {
-				new PropertyMapping(name, configurationPropertyName),
+		return new PropertyMapping[] { new PropertyMapping(name, configurationPropertyName),
 				new PropertyMapping(legacyName, configurationPropertyName) };
 	}
 
@@ -60,8 +58,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {
 		try {
-			return ConfigurationPropertyName.adapt(propertySourceName, '_',
-					this::processElementValue);
+			return ConfigurationPropertyName.adapt(propertySourceName, '_', this::processElementValue);
 		}
 		catch (Exception ex) {
 			return null;

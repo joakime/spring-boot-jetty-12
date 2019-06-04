@@ -33,8 +33,7 @@ import org.springframework.core.env.PropertySource;
  * @since 2.0.0
  * @see OriginTrackedValue
  */
-public final class OriginTrackedMapPropertySource extends MapPropertySource
-		implements OriginLookup<String> {
+public final class OriginTrackedMapPropertySource extends MapPropertySource implements OriginLookup<String> {
 
 	private final boolean immutable;
 

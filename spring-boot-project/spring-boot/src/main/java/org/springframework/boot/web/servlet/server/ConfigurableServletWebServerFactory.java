@@ -41,8 +41,7 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @see ServletWebServerFactory
  * @see WebServerFactoryCustomizer
  */
-public interface ConfigurableServletWebServerFactory
-		extends ConfigurableWebServerFactory, ServletWebServerFactory {
+public interface ConfigurableServletWebServerFactory extends ConfigurableWebServerFactory, ServletWebServerFactory {
 
 	/**
 	 * Sets the context path for the web server. The context should start with a "/"

@@ -39,8 +39,8 @@ public class SpringBootCouchbaseConfigurer implements CouchbaseConfigurer {
 
 	private final Bucket bucket;
 
-	public SpringBootCouchbaseConfigurer(CouchbaseEnvironment env, Cluster cluster,
-			ClusterInfo clusterInfo, Bucket bucket) {
+	public SpringBootCouchbaseConfigurer(CouchbaseEnvironment env, Cluster cluster, ClusterInfo clusterInfo,
+			Bucket bucket) {
 		this.env = env;
 		this.cluster = cluster;
 		this.clusterInfo = clusterInfo;

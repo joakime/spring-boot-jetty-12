@@ -33,8 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MustacheViewResolverTests {
 
-	private final String prefix = "classpath:/"
-			+ getClass().getPackage().getName().replace(".", "/") + "/";
+	private final String prefix = "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/";
 
 	private MustacheViewResolver resolver = new MustacheViewResolver();
 

@@ -61,8 +61,8 @@ public class EncodePasswordCommandTests {
 		ExitStatus status = command.run("boot");
 		verify(this.log).info(this.message.capture());
 		assertThat(this.message.getValue()).startsWith("{bcrypt}");
-		assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder()
-				.matches("boot", this.message.getValue())).isTrue();
+		assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder().matches("boot", this.message.getValue()))
+				.isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 
@@ -72,8 +72,7 @@ public class EncodePasswordCommandTests {
 		ExitStatus status = command.run("-a", "bcrypt", "boot");
 		verify(this.log).info(this.message.capture());
 		assertThat(this.message.getValue()).doesNotStartWith("{");
-		assertThat(new BCryptPasswordEncoder().matches("boot", this.message.getValue()))
-				.isTrue();
+		assertThat(new BCryptPasswordEncoder().matches("boot", this.message.getValue())).isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 
@@ -83,8 +82,7 @@ public class EncodePasswordCommandTests {
 		ExitStatus status = command.run("-a", "pbkdf2", "boot");
 		verify(this.log).info(this.message.capture());
 		assertThat(this.message.getValue()).doesNotStartWith("{");
-		assertThat(new Pbkdf2PasswordEncoder().matches("boot", this.message.getValue()))
-				.isTrue();
+		assertThat(new Pbkdf2PasswordEncoder().matches("boot", this.message.getValue())).isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 
@@ -92,8 +90,7 @@ public class EncodePasswordCommandTests {
 	public void encodeWithUnknownAlgorithmShouldExitWithError() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("--algorithm", "bad", "boot");
-		verify(this.log)
-				.error("Unknown algorithm, valid options are: default,bcrypt,pbkdf2");
+		verify(this.log).error("Unknown algorithm, valid options are: default,bcrypt,pbkdf2");
 		assertThat(status).isEqualTo(ExitStatus.ERROR);
 	}
 

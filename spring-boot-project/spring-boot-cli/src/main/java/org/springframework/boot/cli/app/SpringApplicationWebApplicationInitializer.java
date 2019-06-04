@@ -32,8 +32,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class SpringApplicationWebApplicationInitializer
-		extends SpringBootServletInitializer {
+public class SpringApplicationWebApplicationInitializer extends SpringBootServletInitializer {
 
 	/**
 	 * The entry containing the source class.
@@ -75,8 +74,7 @@ public class SpringApplicationWebApplicationInitializer
 			for (int i = 0; i < this.sources.length; i++) {
 				sourceClasses[i] = classLoader.loadClass(this.sources[i]);
 			}
-			return builder.sources(sourceClasses)
-					.properties("spring.groovy.template.check-template-location=false");
+			return builder.sources(sourceClasses).properties("spring.groovy.template.check-template-location=false");
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

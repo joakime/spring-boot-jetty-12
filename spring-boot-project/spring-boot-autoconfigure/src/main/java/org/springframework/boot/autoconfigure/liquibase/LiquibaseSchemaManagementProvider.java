@@ -42,9 +42,8 @@ class LiquibaseSchemaManagementProvider implements SchemaManagementProvider {
 
 	@Override
 	public SchemaManagement getSchemaManagement(DataSource dataSource) {
-		return StreamSupport.stream(this.liquibaseInstances.spliterator(), false)
-				.map(SpringLiquibase::getDataSource).filter(dataSource::equals)
-				.findFirst().map((managedDataSource) -> SchemaManagement.MANAGED)
+		return StreamSupport.stream(this.liquibaseInstances.spliterator(), false).map(SpringLiquibase::getDataSource)
+				.filter(dataSource::equals).findFirst().map((managedDataSource) -> SchemaManagement.MANAGED)
 				.orElse(SchemaManagement.UNMANAGED);
 	}
 

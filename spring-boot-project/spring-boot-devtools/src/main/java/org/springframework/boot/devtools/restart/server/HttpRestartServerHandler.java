@@ -43,8 +43,7 @@ public class HttpRestartServerHandler implements Handler {
 	}
 
 	@Override
-	public void handle(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		this.server.handle(request, response);
 	}
 

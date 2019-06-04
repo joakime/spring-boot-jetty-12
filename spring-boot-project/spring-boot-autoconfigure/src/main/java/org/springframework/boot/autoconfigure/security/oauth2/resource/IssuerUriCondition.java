@@ -33,22 +33,16 @@ import org.springframework.util.StringUtils;
 public class IssuerUriCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage
-				.forCondition("OpenID Connect Issuer URI Condition");
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		ConditionMessage.Builder message = ConditionMessage.forCondition("OpenID Connect Issuer URI Condition");
 		Environment environment = context.getEnvironment();
-		String issuerUri = environment
-				.getProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri");
-		String jwkSetUri = environment
-				.getProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri");
+		String issuerUri = environment.getProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri");
+		String jwkSetUri = environment.getProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri");
 		if (!StringUtils.hasText(issuerUri)) {
-			return ConditionOutcome
-					.noMatch(message.didNotFind("issuer-uri property").atAll());
+			return ConditionOutcome.noMatch(message.didNotFind("issuer-uri property").atAll());
 		}
 		if (StringUtils.hasText(jwkSetUri)) {
-			return ConditionOutcome
-					.noMatch(message.found("jwk-set-uri property").items(jwkSetUri));
+			return ConditionOutcome.noMatch(message.found("jwk-set-uri property").items(jwkSetUri));
 		}
 		return ConditionOutcome.match(message.foundExactly("issuer-uri property"));
 	}

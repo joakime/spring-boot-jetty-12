@@ -125,16 +125,11 @@ public class CorsEndpointProperties {
 		PropertyMapper map = PropertyMapper.get();
 		CorsConfiguration configuration = new CorsConfiguration();
 		map.from(this::getAllowedOrigins).to(configuration::setAllowedOrigins);
-		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty)
-				.to(configuration::setAllowedHeaders);
-		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty)
-				.to(configuration::setAllowedMethods);
-		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty)
-				.to(configuration::setExposedHeaders);
-		map.from(this::getMaxAge).whenNonNull().as(Duration::getSeconds)
-				.to(configuration::setMaxAge);
-		map.from(this::getAllowCredentials).whenNonNull()
-				.to(configuration::setAllowCredentials);
+		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty).to(configuration::setAllowedHeaders);
+		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty).to(configuration::setAllowedMethods);
+		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty).to(configuration::setExposedHeaders);
+		map.from(this::getMaxAge).whenNonNull().as(Duration::getSeconds).to(configuration::setMaxAge);
+		map.from(this::getAllowCredentials).whenNonNull().to(configuration::setAllowCredentials);
 		return configuration;
 	}
 

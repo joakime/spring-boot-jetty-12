@@ -25,7 +25,6 @@ import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface ControllerEndpointsSupplier
-		extends EndpointsSupplier<ExposableControllerEndpoint> {
+public interface ControllerEndpointsSupplier extends EndpointsSupplier<ExposableControllerEndpoint> {
 
 }

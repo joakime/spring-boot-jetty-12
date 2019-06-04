@@ -31,8 +31,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author Eddú Meléndez
  * @since 1.4.1
  */
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-		ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Qualifier

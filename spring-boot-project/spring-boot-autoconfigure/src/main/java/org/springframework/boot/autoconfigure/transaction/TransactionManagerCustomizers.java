@@ -34,17 +34,13 @@ public class TransactionManagerCustomizers {
 
 	private final List<PlatformTransactionManagerCustomizer<?>> customizers;
 
-	public TransactionManagerCustomizers(
-			Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers != null) ? new ArrayList<>(customizers)
-				: Collections.emptyList();
+	public TransactionManagerCustomizers(Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
+		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public void customize(PlatformTransactionManager transactionManager) {
-		LambdaSafe
-				.callbacks(PlatformTransactionManagerCustomizer.class, this.customizers,
-						transactionManager)
+		LambdaSafe.callbacks(PlatformTransactionManagerCustomizer.class, this.customizers, transactionManager)
 				.withLogger(TransactionManagerCustomizers.class)
 				.invoke((customizer) -> customizer.customize(transactionManager));
 	}

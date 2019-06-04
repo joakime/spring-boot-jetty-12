@@ -67,11 +67,9 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	 * @param builder the builder to add details to
 	 * @throws Exception if getting health details failed
 	 */
-	protected void extractResult(Session session, Health.Builder builder)
-			throws Exception {
+	protected void extractResult(Session session, Health.Builder builder) throws Exception {
 		Result result = session.query(CYPHER, Collections.emptyMap());
-		builder.up().withDetail("nodes",
-				result.queryResults().iterator().next().get("nodes"));
+		builder.up().withDetail("nodes", result.queryResults().iterator().next().get("nodes"));
 	}
 
 }

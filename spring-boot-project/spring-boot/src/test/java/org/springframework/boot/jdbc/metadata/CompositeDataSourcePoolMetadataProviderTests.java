@@ -59,20 +59,16 @@ public class CompositeDataSourcePoolMetadataProviderTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.firstProvider.getDataSourcePoolMetadata(this.firstDataSource))
-				.willReturn(this.first);
-		given(this.firstProvider.getDataSourcePoolMetadata(this.secondDataSource))
-				.willReturn(this.second);
+		given(this.firstProvider.getDataSourcePoolMetadata(this.firstDataSource)).willReturn(this.first);
+		given(this.firstProvider.getDataSourcePoolMetadata(this.secondDataSource)).willReturn(this.second);
 	}
 
 	@Test
 	public void createWithProviders() {
 		CompositeDataSourcePoolMetadataProvider provider = new CompositeDataSourcePoolMetadataProvider(
 				Arrays.asList(this.firstProvider, this.secondProvider));
-		assertThat(provider.getDataSourcePoolMetadata(this.firstDataSource))
-				.isSameAs(this.first);
-		assertThat(provider.getDataSourcePoolMetadata(this.secondDataSource))
-				.isSameAs(this.second);
+		assertThat(provider.getDataSourcePoolMetadata(this.firstDataSource)).isSameAs(this.first);
+		assertThat(provider.getDataSourcePoolMetadata(this.secondDataSource)).isSameAs(this.second);
 		assertThat(provider.getDataSourcePoolMetadata(this.unknownDataSource)).isNull();
 	}
 

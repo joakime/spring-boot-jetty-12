@@ -37,7 +37,6 @@ public interface TunnelConnection {
 	 * destined for the remote server
 	 * @throws Exception in case of errors
 	 */
-	WritableByteChannel open(WritableByteChannel incomingChannel, Closeable closeable)
-			throws Exception;
+	WritableByteChannel open(WritableByteChannel incomingChannel, Closeable closeable) throws Exception;
 
 }

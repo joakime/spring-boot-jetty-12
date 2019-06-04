@@ -37,8 +37,7 @@ public class EnvironmentPostProcessorExample implements EnvironmentPostProcessor
 	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment,
-			SpringApplication application) {
+	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		Resource path = new ClassPathResource("com/example/myapp/config.yml");
 		PropertySource<?> propertySource = loadYaml(path);
 		environment.getPropertySources().addLast(propertySource);
@@ -52,8 +51,7 @@ public class EnvironmentPostProcessorExample implements EnvironmentPostProcessor
 			return this.loader.load("custom-resource", path).get(0);
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException(
-					"Failed to load yaml configuration from " + path, ex);
+			throw new IllegalStateException("Failed to load yaml configuration from " + path, ex);
 		}
 	}
 

@@ -36,8 +36,8 @@ public class NonUniqueSessionRepositoryException extends RuntimeException {
 	public NonUniqueSessionRepositoryException(List<Class<?>> availableCandidates) {
 		super("Multiple session repository candidates are available, set the "
 				+ "'spring.session.store-type' property accordingly");
-		this.availableCandidates = (!ObjectUtils.isEmpty(availableCandidates)
-				? availableCandidates : Collections.emptyList());
+		this.availableCandidates = (!ObjectUtils.isEmpty(availableCandidates) ? availableCandidates
+				: Collections.emptyList());
 	}
 
 	public List<Class<?>> getAvailableCandidates() {

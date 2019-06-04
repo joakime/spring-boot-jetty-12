@@ -49,8 +49,7 @@ public class AnsiPropertySourceTests {
 
 	@Test
 	public void getAnsiBackground() {
-		assertThat(this.source.getProperty("AnsiBackground.GREEN"))
-				.isEqualTo(AnsiBackground.GREEN);
+		assertThat(this.source.getProperty("AnsiBackground.GREEN")).isEqualTo(AnsiBackground.GREEN);
 	}
 
 	@Test

@@ -144,8 +144,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 		}
 
 		public void close() throws IOException {
-			logger.trace("Closing tunnel client on port "
-					+ this.serverSocketChannel.socket().getLocalPort());
+			logger.trace("Closing tunnel client on port " + this.serverSocketChannel.socket().getLocalPort());
 			this.serverSocketChannel.close();
 			this.acceptConnections = false;
 			interrupt();
@@ -171,10 +170,10 @@ public class TunnelClient implements SmartInitializingSingleton {
 		private void handleConnection(SocketChannel socketChannel) throws Exception {
 			Closeable closeable = new SocketCloseable(socketChannel);
 			TunnelClient.this.listeners.fireOpenEvent(socketChannel);
-			try (WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection
-					.open(socketChannel, closeable)) {
-				logger.trace("Accepted connection to tunnel client from "
-						+ socketChannel.socket().getRemoteSocketAddress());
+			try (WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection.open(socketChannel,
+					closeable)) {
+				logger.trace(
+						"Accepted connection to tunnel client from " + socketChannel.socket().getRemoteSocketAddress());
 				while (true) {
 					ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 					int amountRead = socketChannel.read(buffer);

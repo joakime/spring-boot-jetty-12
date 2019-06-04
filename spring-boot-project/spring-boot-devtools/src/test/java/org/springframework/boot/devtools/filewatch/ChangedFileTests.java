@@ -39,22 +39,20 @@ public class ChangedFileTests {
 
 	@Test
 	public void sourceFolderMustNotBeNull() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ChangedFile(null, this.temp.newFile(), Type.ADD))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ChangedFile(null, this.temp.newFile(), Type.ADD))
 				.withMessageContaining("SourceFolder must not be null");
 	}
 
 	@Test
 	public void fileMustNotBeNull() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ChangedFile(this.temp.newFolder(), null, Type.ADD))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ChangedFile(this.temp.newFolder(), null, Type.ADD))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void typeMustNotBeNull() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null))
 				.withMessageContaining("Type must not be null");
 	}
 
@@ -67,8 +65,7 @@ public class ChangedFileTests {
 
 	@Test
 	public void getType() throws Exception {
-		ChangedFile changedFile = new ChangedFile(this.temp.newFolder(),
-				this.temp.newFile(), Type.DELETE);
+		ChangedFile changedFile = new ChangedFile(this.temp.newFolder(), this.temp.newFile(), Type.DELETE);
 		assertThat(changedFile.getType()).isEqualTo(Type.DELETE);
 	}
 

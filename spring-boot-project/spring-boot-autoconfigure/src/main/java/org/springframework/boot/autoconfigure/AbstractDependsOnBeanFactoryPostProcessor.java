@@ -42,8 +42,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  * @see BeanDefinition#setDependsOn(String[])
  */
-public abstract class AbstractDependsOnBeanFactoryPostProcessor
-		implements BeanFactoryPostProcessor {
+public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	private final Class<?> beanClass;
 
@@ -64,8 +63,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 	 * @param dependsOn dependencies
 	 * @since 2.0.4
 	 */
-	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
-			String... dependsOn) {
+	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass, String... dependsOn) {
 		this(beanClass, null, dependsOn);
 	}
 
@@ -83,28 +81,25 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 
 	private Iterable<String> getBeanNames(ListableBeanFactory beanFactory) {
 		Set<String> names = new HashSet<>();
-		names.addAll(Arrays.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-				beanFactory, this.beanClass, true, false)));
+		names.addAll(Arrays
+				.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, this.beanClass, true, false)));
 		if (this.factoryBeanClass != null) {
-			for (String factoryBeanName : BeanFactoryUtils
-					.beanNamesForTypeIncludingAncestors(beanFactory,
-							this.factoryBeanClass, true, false)) {
+			for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory,
+					this.factoryBeanClass, true, false)) {
 				names.add(BeanFactoryUtils.transformedBeanName(factoryBeanName));
 			}
 		}
 		return names;
 	}
 
-	private static BeanDefinition getBeanDefinition(String beanName,
-			ConfigurableListableBeanFactory beanFactory) {
+	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
 			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName,
-						(ConfigurableListableBeanFactory) parentBeanFactory);
+				return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
 			}
 			throw ex;
 		}

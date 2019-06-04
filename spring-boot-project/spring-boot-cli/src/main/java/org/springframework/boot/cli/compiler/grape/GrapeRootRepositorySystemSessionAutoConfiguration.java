@@ -32,24 +32,22 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.2.5
  */
-public class GrapeRootRepositorySystemSessionAutoConfiguration
-		implements RepositorySystemSessionAutoConfiguration {
+public class GrapeRootRepositorySystemSessionAutoConfiguration implements RepositorySystemSessionAutoConfiguration {
 
 	@Override
-	public void apply(DefaultRepositorySystemSession session,
-			RepositorySystem repositorySystem) {
+	public void apply(DefaultRepositorySystemSession session, RepositorySystem repositorySystem) {
 		String grapeRoot = System.getProperty("grape.root");
 		if (StringUtils.hasLength(grapeRoot)) {
 			configureLocalRepository(session, repositorySystem, grapeRoot);
 		}
 	}
 
-	private void configureLocalRepository(DefaultRepositorySystemSession session,
-			RepositorySystem repositorySystem, String grapeRoot) {
+	private void configureLocalRepository(DefaultRepositorySystemSession session, RepositorySystem repositorySystem,
+			String grapeRoot) {
 		File repositoryDir = new File(grapeRoot, "repository");
 		LocalRepository localRepository = new LocalRepository(repositoryDir);
-		LocalRepositoryManager localRepositoryManager = repositorySystem
-				.newLocalRepositoryManager(session, localRepository);
+		LocalRepositoryManager localRepositoryManager = repositorySystem.newLocalRepositoryManager(session,
+				localRepository);
 		session.setLocalRepositoryManager(localRepositoryManager);
 	}
 

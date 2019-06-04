@@ -33,8 +33,7 @@ public class TomcatDataSourcePoolMetadataTests
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(
-				createDataSource(0, 2));
+		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(createDataSource(0, 2));
 	}
 
 	@Override
@@ -46,16 +45,14 @@ public class TomcatDataSourcePoolMetadataTests
 	public void getValidationQuery() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery())
-				.isEqualTo("SELECT FROM FOO");
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery()).isEqualTo("SELECT FROM FOO");
 	}
 
 	@Override
 	public void getDefaultAutoCommit() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setDefaultAutoCommit(false);
-		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getDefaultAutoCommit())
-				.isFalse();
+		assertThat(new TomcatDataSourcePoolMetadata(dataSource).getDefaultAutoCommit()).isFalse();
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {

@@ -48,8 +48,7 @@ class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter
 		if (closingQuote == -1) {
 			return false;
 		}
-		int openingQuote = searchBackwards(buffer, closingQuote - 1,
-				buffer.charAt(closingQuote));
+		int openingQuote = searchBackwards(buffer, closingQuote - 1, buffer.charAt(closingQuote));
 		if (openingQuote == -1) {
 			return true;
 		}

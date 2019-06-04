@@ -36,11 +36,9 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.4.0
  */
-public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
-		implements InfoContributor {
+public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> implements InfoContributor {
 
-	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
-			.mapOf(String.class, Object.class);
+	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable.mapOf(String.class, Object.class);
 
 	private final T properties;
 
@@ -92,8 +90,8 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 	 * @return the raw content
 	 */
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
-		return new Binder(ConfigurationPropertySources.from(propertySource))
-				.bind("", STRING_OBJECT_MAP).orElseGet(LinkedHashMap::new);
+		return new Binder(ConfigurationPropertySources.from(propertySource)).bind("", STRING_OBJECT_MAP)
+				.orElseGet(LinkedHashMap::new);
 	}
 
 	/**

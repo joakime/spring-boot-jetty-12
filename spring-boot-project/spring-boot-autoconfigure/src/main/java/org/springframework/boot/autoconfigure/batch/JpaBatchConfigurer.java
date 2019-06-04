@@ -46,16 +46,14 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
 	protected JpaBatchConfigurer(BatchProperties properties, DataSource dataSource,
-			TransactionManagerCustomizers transactionManagerCustomizers,
-			EntityManagerFactory entityManagerFactory) {
+			TransactionManagerCustomizers transactionManagerCustomizers, EntityManagerFactory entityManagerFactory) {
 		super(properties, dataSource, transactionManagerCustomizers);
 		this.entityManagerFactory = entityManagerFactory;
 	}
 
 	@Override
 	protected String determineIsolationLevel() {
-		logger.warn(
-				"JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
+		logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
 		return "ISOLATION_DEFAULT";
 	}
 

@@ -35,7 +35,7 @@ public interface ManagementContextFactory {
 	 * @param configurationClasses the configuration classes
 	 * @return a configured application context
 	 */
-	ConfigurableWebServerApplicationContext createManagementContext(
-			ApplicationContext parent, Class<?>... configurationClasses);
+	ConfigurableWebServerApplicationContext createManagementContext(ApplicationContext parent,
+			Class<?>... configurationClasses);
 
 }

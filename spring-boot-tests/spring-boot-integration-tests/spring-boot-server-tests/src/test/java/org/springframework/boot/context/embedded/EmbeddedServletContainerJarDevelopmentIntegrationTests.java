@@ -40,26 +40,24 @@ public class EmbeddedServletContainerJarDevelopmentIntegrationTests
 
 	@Parameters(name = "{0}")
 	public static Object[] parameters() {
-		return AbstractEmbeddedServletContainerIntegrationTests.parameters("jar", Arrays
-				.asList(BootRunApplicationLauncher.class, IdeApplicationLauncher.class));
+		return AbstractEmbeddedServletContainerIntegrationTests.parameters("jar",
+				Arrays.asList(BootRunApplicationLauncher.class, IdeApplicationLauncher.class));
 	}
 
-	public EmbeddedServletContainerJarDevelopmentIntegrationTests(String name,
-			AbstractApplicationLauncher launcher) {
+	public EmbeddedServletContainerJarDevelopmentIntegrationTests(String name, AbstractApplicationLauncher launcher) {
 		super(name, launcher);
 	}
 
 	@Test
 	public void metaInfResourceFromDependencyIsAvailableViaHttp() {
-		ResponseEntity<String> entity = this.rest
-				.getForEntity("/nested-meta-inf-resource.txt", String.class);
+		ResponseEntity<String> entity = this.rest.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void metaInfResourceFromDependencyIsAvailableViaServletContext() {
-		ResponseEntity<String> entity = this.rest.getForEntity(
-				"/servletContext?/nested-meta-inf-resource.txt", String.class);
+		ResponseEntity<String> entity = this.rest.getForEntity("/servletContext?/nested-meta-inf-resource.txt",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 

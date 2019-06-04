@@ -104,23 +104,19 @@ public class DevToolsSettings {
 	static DevToolsSettings load(String location) {
 		try {
 			DevToolsSettings settings = new DevToolsSettings();
-			Enumeration<URL> urls = Thread.currentThread().getContextClassLoader()
-					.getResources(location);
+			Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(location);
 			while (urls.hasMoreElements()) {
-				settings.add(PropertiesLoaderUtils
-						.loadProperties(new UrlResource(urls.nextElement())));
+				settings.add(PropertiesLoaderUtils.loadProperties(new UrlResource(urls.nextElement())));
 			}
 			if (logger.isDebugEnabled()) {
-				logger.debug("Included patterns for restart : "
-						+ settings.restartIncludePatterns);
-				logger.debug("Excluded patterns for restart : "
-						+ settings.restartExcludePatterns);
+				logger.debug("Included patterns for restart : " + settings.restartIncludePatterns);
+				logger.debug("Excluded patterns for restart : " + settings.restartExcludePatterns);
 			}
 			return settings;
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to load devtools settings from "
-					+ "location [" + location + "]", ex);
+			throw new IllegalStateException("Unable to load devtools settings from " + "location [" + location + "]",
+					ex);
 		}
 	}
 

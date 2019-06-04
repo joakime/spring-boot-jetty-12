@@ -25,8 +25,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  *
  * @author Andy Wilkinson
  */
-class ElasticPropertiesConfigAdapter extends
-		StepRegistryPropertiesConfigAdapter<ElasticProperties> implements ElasticConfig {
+class ElasticPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<ElasticProperties>
+		implements ElasticConfig {
 
 	ElasticPropertiesConfigAdapter(ElasticProperties properties) {
 		super(properties);
@@ -44,20 +44,17 @@ class ElasticPropertiesConfigAdapter extends
 
 	@Override
 	public String indexDateFormat() {
-		return get(ElasticProperties::getIndexDateFormat,
-				ElasticConfig.super::indexDateFormat);
+		return get(ElasticProperties::getIndexDateFormat, ElasticConfig.super::indexDateFormat);
 	}
 
 	@Override
 	public String timestampFieldName() {
-		return get(ElasticProperties::getTimestampFieldName,
-				ElasticConfig.super::timestampFieldName);
+		return get(ElasticProperties::getTimestampFieldName, ElasticConfig.super::timestampFieldName);
 	}
 
 	@Override
 	public boolean autoCreateIndex() {
-		return get(ElasticProperties::isAutoCreateIndex,
-				ElasticConfig.super::autoCreateIndex);
+		return get(ElasticProperties::isAutoCreateIndex, ElasticConfig.super::autoCreateIndex);
 	}
 
 	@Override

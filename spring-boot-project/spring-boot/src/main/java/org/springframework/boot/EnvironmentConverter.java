@@ -85,8 +85,7 @@ final class EnvironmentConverter {
 		return result;
 	}
 
-	private StandardEnvironment createEnvironment(
-			Class<? extends StandardEnvironment> type) {
+	private StandardEnvironment createEnvironment(Class<? extends StandardEnvironment> type) {
 		try {
 			return type.newInstance();
 		}
@@ -95,10 +94,8 @@ final class EnvironmentConverter {
 		}
 	}
 
-	private void copyPropertySources(ConfigurableEnvironment source,
-			StandardEnvironment target) {
-		removePropertySources(target.getPropertySources(),
-				isServletEnvironment(target.getClass(), this.classLoader));
+	private void copyPropertySources(ConfigurableEnvironment source, StandardEnvironment target) {
+		removePropertySources(target.getPropertySources(), isServletEnvironment(target.getClass(), this.classLoader));
 		for (PropertySource<?> propertySource : source.getPropertySources()) {
 			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
 				target.getPropertySources().addLast(propertySource);
@@ -106,11 +103,9 @@ final class EnvironmentConverter {
 		}
 	}
 
-	private boolean isServletEnvironment(Class<?> conversionType,
-			ClassLoader classLoader) {
+	private boolean isServletEnvironment(Class<?> conversionType, ClassLoader classLoader) {
 		try {
-			Class<?> webEnvironmentClass = ClassUtils
-					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
+			Class<?> webEnvironmentClass = ClassUtils.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
 			return webEnvironmentClass.isAssignableFrom(conversionType);
 		}
 		catch (Throwable ex) {
@@ -118,15 +113,13 @@ final class EnvironmentConverter {
 		}
 	}
 
-	private void removePropertySources(MutablePropertySources propertySources,
-			boolean isServletEnvironment) {
+	private void removePropertySources(MutablePropertySources propertySources, boolean isServletEnvironment) {
 		Set<String> names = new HashSet<>();
 		for (PropertySource<?> propertySource : propertySources) {
 			names.add(propertySource.getName());
 		}
 		for (String name : names) {
-			if (!isServletEnvironment
-					|| !SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(name)) {
+			if (!isServletEnvironment || !SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(name)) {
 				propertySources.remove(name);
 			}
 		}

@@ -36,32 +36,27 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnExpressionCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context,
-			AnnotatedTypeMetadata metadata) {
-		String expression = (String) metadata
-				.getAnnotationAttributes(ConditionalOnExpression.class.getName())
+	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		String expression = (String) metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName())
 				.get("value");
 		expression = wrapIfNecessary(expression);
-		ConditionMessage.Builder messageBuilder = ConditionMessage
-				.forCondition(ConditionalOnExpression.class, "(" + expression + ")");
+		ConditionMessage.Builder messageBuilder = ConditionMessage.forCondition(ConditionalOnExpression.class,
+				"(" + expression + ")");
 		expression = context.getEnvironment().resolvePlaceholders(expression);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory != null) {
 			boolean result = evaluateExpression(beanFactory, expression);
 			return new ConditionOutcome(result, messageBuilder.resultedIn(result));
 		}
-		return ConditionOutcome
-				.noMatch(messageBuilder.because("no BeanFactory available."));
+		return ConditionOutcome.noMatch(messageBuilder.because("no BeanFactory available."));
 	}
 
-	private Boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory,
-			String expression) {
+	private Boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory, String expression) {
 		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}
-		BeanExpressionContext expressionContext = new BeanExpressionContext(beanFactory,
-				null);
+		BeanExpressionContext expressionContext = new BeanExpressionContext(beanFactory, null);
 		Object result = resolver.evaluate(expression, expressionContext);
 		return (result != null && (boolean) result);
 	}

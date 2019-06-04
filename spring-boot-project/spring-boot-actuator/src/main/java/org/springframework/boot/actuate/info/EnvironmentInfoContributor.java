@@ -32,8 +32,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 public class EnvironmentInfoContributor implements InfoContributor {
 
-	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
-			.mapOf(String.class, Object.class);
+	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable.mapOf(String.class, Object.class);
 
 	private final ConfigurableEnvironment environment;
 

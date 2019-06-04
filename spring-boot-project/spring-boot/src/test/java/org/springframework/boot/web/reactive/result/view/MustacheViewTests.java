@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MustacheViewTests {
 
-	private final String templateUrl = "classpath:/"
-			+ getClass().getPackage().getName().replace(".", "/") + "/template.html";
+	private final String templateUrl = "classpath:/" + getClass().getPackage().getName().replace(".", "/")
+			+ "/template.html";
 
 	private GenericApplicationContext context = new GenericApplicationContext();
 
@@ -52,17 +52,16 @@ public class MustacheViewTests {
 
 	@Test
 	public void viewResolvesHandlebars() {
-		this.exchange = MockServerWebExchange
-				.from(MockServerHttpRequest.get("/test").build());
+		this.exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
 		view.setUrl(this.templateUrl);
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
-		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML,
-				this.exchange).block(Duration.ofSeconds(30));
-		assertThat(this.exchange.getResponse().getBodyAsString()
-				.block(Duration.ofSeconds(30)).trim()).isEqualTo("Hello Spring");
+		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML, this.exchange)
+				.block(Duration.ofSeconds(30));
+		assertThat(this.exchange.getResponse().getBodyAsString().block(Duration.ofSeconds(30)).trim())
+				.isEqualTo("Hello Spring");
 	}
 
 }

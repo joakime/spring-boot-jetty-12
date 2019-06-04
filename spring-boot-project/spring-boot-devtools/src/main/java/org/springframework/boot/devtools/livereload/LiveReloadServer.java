@@ -52,8 +52,7 @@ public class LiveReloadServer {
 
 	private static final int READ_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(4);
 
-	private final ExecutorService executor = Executors
-			.newCachedThreadPool(new WorkerThreadFactory());
+	private final ExecutorService executor = Executors.newCachedThreadPool(new WorkerThreadFactory());
 
 	private final List<Connection> connections = new ArrayList<>();
 
@@ -232,8 +231,8 @@ public class LiveReloadServer {
 	 * @return a connection
 	 * @throws IOException in case of I/O errors
 	 */
-	protected Connection createConnection(Socket socket, InputStream inputStream,
-			OutputStream outputStream) throws IOException {
+	protected Connection createConnection(Socket socket, InputStream inputStream, OutputStream outputStream)
+			throws IOException {
 		return new Connection(socket, inputStream, outputStream);
 	}
 
@@ -271,8 +270,7 @@ public class LiveReloadServer {
 		private void handle() throws Exception {
 			try {
 				try (OutputStream outputStream = this.socket.getOutputStream()) {
-					Connection connection = createConnection(this.socket,
-							this.inputStream, outputStream);
+					Connection connection = createConnection(this.socket, this.inputStream, outputStream);
 					runConnection(connection);
 				}
 				finally {

@@ -34,8 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathOverrides({ "org.apache.logging.log4j:log4j-core:2.9.0",
-		"org.apache.logging.log4j:log4j-slf4j-impl:2.9.0" })
+@ClassPathOverrides({ "org.apache.logging.log4j:log4j-core:2.9.0", "org.apache.logging.log4j:log4j-slf4j-impl:2.9.0" })
 public class MetricsAutoConfigurationWithLog4j2AndLogbackTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -43,8 +42,7 @@ public class MetricsAutoConfigurationWithLog4j2AndLogbackTests {
 
 	@Test
 	public void doesNotConfigureLogbackMetrics() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).doesNotHaveBean(LogbackMetrics.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(LogbackMetrics.class));
 	}
 
 }

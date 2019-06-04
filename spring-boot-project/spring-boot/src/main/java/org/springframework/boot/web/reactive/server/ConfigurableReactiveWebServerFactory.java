@@ -24,7 +24,6 @@ import org.springframework.boot.web.server.ConfigurableWebServerFactory;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public interface ConfigurableReactiveWebServerFactory
-		extends ConfigurableWebServerFactory, ReactiveWebServerFactory {
+public interface ConfigurableReactiveWebServerFactory extends ConfigurableWebServerFactory, ReactiveWebServerFactory {
 
 }

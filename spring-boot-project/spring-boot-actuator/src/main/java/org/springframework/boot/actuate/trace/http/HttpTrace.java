@@ -59,8 +59,8 @@ public final class HttpTrace {
 	 * exchange, if known
 	 * @since 2.1.0
 	 */
-	public HttpTrace(Request request, Response response, Instant timestamp,
-			Principal principal, Session session, Long timeTaken) {
+	public HttpTrace(Request request, Response response, Instant timestamp, Principal principal, Session session,
+			Long timeTaken) {
 		this.request = request;
 		this.response = response;
 		this.timestamp = timestamp;
@@ -132,8 +132,7 @@ public final class HttpTrace {
 		private final String remoteAddress;
 
 		private Request(TraceableRequest request) {
-			this(request.getMethod(), request.getUri(), request.getHeaders(),
-					request.getRemoteAddress());
+			this(request.getMethod(), request.getUri(), request.getHeaders(), request.getRemoteAddress());
 		}
 
 		/**
@@ -146,8 +145,7 @@ public final class HttpTrace {
 		 * @param remoteAddress remote address from which the request was sent, if known
 		 * @since 2.1.0
 		 */
-		public Request(String method, URI uri, Map<String, List<String>> headers,
-				String remoteAddress) {
+		public Request(String method, URI uri, Map<String, List<String>> headers, String remoteAddress) {
 			this.method = method;
 			this.uri = uri;
 			this.headers = new LinkedHashMap<>(headers);

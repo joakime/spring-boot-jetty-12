@@ -29,8 +29,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class TransactionManagementCompilerAutoConfiguration
-		extends CompilerAutoConfiguration {
+public class TransactionManagementCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
@@ -39,16 +38,13 @@ public class TransactionManagementCompilerAutoConfiguration
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses(
-						"org.springframework.transaction.annotation.Transactional")
-				.add("spring-tx", "spring-boot-starter-aop");
+		dependencies.ifAnyMissingClasses("org.springframework.transaction.annotation.Transactional").add("spring-tx",
+				"spring-boot-starter-aop");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addStarImports("org.springframework.transaction.annotation",
-				"org.springframework.transaction.support");
+		imports.addStarImports("org.springframework.transaction.annotation", "org.springframework.transaction.support");
 		imports.addImports("org.springframework.transaction.PlatformTransactionManager",
 				"org.springframework.transaction.support.AbstractPlatformTransactionManager");
 	}

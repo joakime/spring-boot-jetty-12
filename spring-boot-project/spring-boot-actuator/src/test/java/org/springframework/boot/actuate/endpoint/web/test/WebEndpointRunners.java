@@ -54,8 +54,7 @@ public class WebEndpointRunners extends Suite {
 		super(testClass, createRunners(testClass));
 	}
 
-	private static List<Runner> createRunners(Class<?> testClass)
-			throws InitializationError {
+	private static List<Runner> createRunners(Class<?> testClass) throws InitializationError {
 		List<Runner> runners = new ArrayList<>();
 		runners.add(new WebFluxEndpointsRunner(testClass));
 		runners.add(new WebMvcEndpointRunner(testClass));

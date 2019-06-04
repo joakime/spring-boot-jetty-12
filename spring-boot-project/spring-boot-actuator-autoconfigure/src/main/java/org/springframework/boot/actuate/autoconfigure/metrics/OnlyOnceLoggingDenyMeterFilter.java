@@ -36,8 +36,7 @@ import org.springframework.util.Assert;
  */
 public final class OnlyOnceLoggingDenyMeterFilter implements MeterFilter {
 
-	private static final Log logger = LogFactory
-			.getLog(OnlyOnceLoggingDenyMeterFilter.class);
+	private static final Log logger = LogFactory.getLog(OnlyOnceLoggingDenyMeterFilter.class);
 
 	private final AtomicBoolean alreadyWarned = new AtomicBoolean(false);
 

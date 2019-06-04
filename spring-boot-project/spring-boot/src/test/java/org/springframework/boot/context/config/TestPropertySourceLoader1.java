@@ -38,8 +38,7 @@ class TestPropertySourceLoader1 implements PropertySourceLoader {
 	}
 
 	@Override
-	public List<PropertySource<?>> load(String name, Resource resource)
-			throws IOException {
+	public List<PropertySource<?>> load(String name, Resource resource) throws IOException {
 		Map<String, Object> map = Collections.singletonMap("customloader1", "true");
 		return Collections.singletonList(new MapPropertySource(name, map));
 	}

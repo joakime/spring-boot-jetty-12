@@ -81,8 +81,7 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data the event data
 	 */
-	public AuditEvent(Instant timestamp, String principal, String type,
-			Map<String, Object> data) {
+	public AuditEvent(Instant timestamp, String principal, String type, Map<String, Object> data) {
 		Assert.notNull(timestamp, "Timestamp must not be null");
 		Assert.notNull(type, "Type must not be null");
 		this.timestamp = timestamp;
@@ -140,8 +139,8 @@ public class AuditEvent implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AuditEvent [timestamp=" + this.timestamp + ", principal=" + this.principal
-				+ ", type=" + this.type + ", data=" + this.data + "]";
+		return "AuditEvent [timestamp=" + this.timestamp + ", principal=" + this.principal + ", type=" + this.type
+				+ ", data=" + this.data + "]";
 	}
 
 }

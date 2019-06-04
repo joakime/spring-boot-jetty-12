@@ -43,8 +43,7 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 
 	private final File exploded;
 
-	BootRunApplicationLauncher(ApplicationBuilder applicationBuilder,
-			BuildOutput buildOutput) {
+	BootRunApplicationLauncher(ApplicationBuilder applicationBuilder, BuildOutput buildOutput) {
 		super(applicationBuilder, buildOutput);
 		this.exploded = new File(buildOutput.getRootLocation(), "run");
 	}
@@ -64,11 +63,8 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 			for (File dependency : dependencies.listFiles()) {
 				classpath.add(dependency.getAbsolutePath());
 			}
-			return Arrays.asList("-cp",
-					StringUtils.collectionToDelimitedString(classpath,
-							File.pathSeparator),
-					"com.example.ResourceHandlingApplication",
-					serverPortFile.getAbsolutePath());
+			return Arrays.asList("-cp", StringUtils.collectionToDelimitedString(classpath, File.pathSeparator),
+					"com.example.ResourceHandlingApplication", serverPortFile.getAbsolutePath());
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -111,13 +107,11 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	private String getClassesPath(File archive) {
-		return (archive.getName().endsWith(".jar") ? "BOOT-INF/classes"
-				: "WEB-INF/classes");
+		return (archive.getName().endsWith(".jar") ? "BOOT-INF/classes" : "WEB-INF/classes");
 	}
 
 	private List<String> getLibPaths(File archive) {
-		return (archive.getName().endsWith(".jar")
-				? Collections.singletonList("BOOT-INF/lib")
+		return (archive.getName().endsWith(".jar") ? Collections.singletonList("BOOT-INF/lib")
 				: Arrays.asList("WEB-INF/lib", "WEB-INF/lib-provided"));
 	}
 

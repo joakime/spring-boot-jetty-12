@@ -42,8 +42,7 @@ public class MockCachingProvider implements CachingProvider {
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public CacheManager getCacheManager(URI uri, ClassLoader classLoader,
-			Properties properties) {
+	public CacheManager getCacheManager(URI uri, ClassLoader classLoader, Properties properties) {
 		CacheManager cacheManager = mock(CacheManager.class);
 		given(cacheManager.getURI()).willReturn(uri);
 		given(cacheManager.getClassLoader()).willReturn(classLoader);
@@ -53,14 +52,13 @@ public class MockCachingProvider implements CachingProvider {
 			String cacheName = invocation.getArgument(0);
 			return caches.get(cacheName);
 		});
-		given(cacheManager.createCache(anyString(), any(Configuration.class)))
-				.will((invocation) -> {
-					String cacheName = invocation.getArgument(0);
-					Cache cache = mock(Cache.class);
-					given(cache.getName()).willReturn(cacheName);
-					caches.put(cacheName, cache);
-					return cache;
-				});
+		given(cacheManager.createCache(anyString(), any(Configuration.class))).will((invocation) -> {
+			String cacheName = invocation.getArgument(0);
+			Cache cache = mock(Cache.class);
+			given(cache.getName()).willReturn(cacheName);
+			caches.put(cacheName, cache);
+			return cache;
+		});
 		return cacheManager;
 	}
 

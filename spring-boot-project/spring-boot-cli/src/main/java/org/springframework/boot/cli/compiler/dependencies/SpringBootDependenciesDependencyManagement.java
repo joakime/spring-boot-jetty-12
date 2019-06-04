@@ -30,8 +30,7 @@ import org.apache.maven.model.locator.DefaultModelLocator;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class SpringBootDependenciesDependencyManagement
-		extends MavenModelDependencyManagement {
+public class SpringBootDependenciesDependencyManagement extends MavenModelDependencyManagement {
 
 	public SpringBootDependenciesDependencyManagement() {
 		super(readModel());
@@ -43,12 +42,11 @@ public class SpringBootDependenciesDependencyManagement
 		modelProcessor.setModelReader(new DefaultModelReader());
 
 		try {
-			return modelProcessor.read(SpringBootDependenciesDependencyManagement.class
-					.getResourceAsStream("effective-pom.xml"), null);
+			return modelProcessor.read(
+					SpringBootDependenciesDependencyManagement.class.getResourceAsStream("effective-pom.xml"), null);
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Failed to build model from effective pom",
-					ex);
+			throw new IllegalStateException("Failed to build model from effective pom", ex);
 		}
 	}
 

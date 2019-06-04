@@ -216,8 +216,7 @@ public class ThymeleafProperties {
 		return this.renderHiddenMarkersBeforeCheckboxes;
 	}
 
-	public void setRenderHiddenMarkersBeforeCheckboxes(
-			boolean renderHiddenMarkersBeforeCheckboxes) {
+	public void setRenderHiddenMarkersBeforeCheckboxes(boolean renderHiddenMarkersBeforeCheckboxes) {
 		this.renderHiddenMarkersBeforeCheckboxes = renderHiddenMarkersBeforeCheckboxes;
 	}
 
@@ -254,8 +253,7 @@ public class ThymeleafProperties {
 			return this.producePartialOutputWhileProcessing;
 		}
 
-		public void setProducePartialOutputWhileProcessing(
-				boolean producePartialOutputWhileProcessing) {
+		public void setProducePartialOutputWhileProcessing(boolean producePartialOutputWhileProcessing) {
 			this.producePartialOutputWhileProcessing = producePartialOutputWhileProcessing;
 		}
 

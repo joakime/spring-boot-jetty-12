@@ -36,9 +36,8 @@ import org.springframework.util.ObjectUtils;
  */
 public class ApplicationPid {
 
-	private static final PosixFilePermission[] WRITE_PERMISSIONS = {
-			PosixFilePermission.OWNER_WRITE, PosixFilePermission.GROUP_WRITE,
-			PosixFilePermission.OTHERS_WRITE };
+	private static final PosixFilePermission[] WRITE_PERMISSIONS = { PosixFilePermission.OWNER_WRITE,
+			PosixFilePermission.GROUP_WRITE, PosixFilePermission.OTHERS_WRITE };
 
 	private final String pid;
 
@@ -113,8 +112,7 @@ public class ApplicationPid {
 
 	private boolean canWritePosixFile(File file) throws IOException {
 		try {
-			Set<PosixFilePermission> permissions = Files
-					.getPosixFilePermissions(file.toPath());
+			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(file.toPath());
 			for (PosixFilePermission permission : WRITE_PERMISSIONS) {
 				if (permissions.contains(permission)) {
 					return true;

@@ -132,8 +132,7 @@ public final class BindResult<T> {
 	 * @return the present value
 	 * @throws X if there is no value present
 	 */
-	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier)
-			throws X {
+	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
 		if (this.value == null) {
 			throw exceptionSupplier.get();
 		}

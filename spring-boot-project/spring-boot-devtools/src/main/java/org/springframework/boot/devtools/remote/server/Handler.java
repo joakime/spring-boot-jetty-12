@@ -36,7 +36,6 @@ public interface Handler {
 	 * @param response the response
 	 * @throws IOException in case of I/O errors
 	 */
-	void handle(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException;
+	void handle(ServerHttpRequest request, ServerHttpResponse response) throws IOException;
 
 }

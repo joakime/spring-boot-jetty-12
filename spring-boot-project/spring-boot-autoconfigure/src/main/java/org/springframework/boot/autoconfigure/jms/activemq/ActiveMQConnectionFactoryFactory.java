@@ -48,23 +48,19 @@ class ActiveMQConnectionFactoryFactory {
 			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
-		this.factoryCustomizers = (factoryCustomizers != null) ? factoryCustomizers
-				: Collections.emptyList();
+		this.factoryCustomizers = (factoryCustomizers != null) ? factoryCustomizers : Collections.emptyList();
 	}
 
-	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(
-			Class<T> factoryClass) {
+	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
 		try {
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Unable to create " + "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException("Unable to create " + "ActiveMQConnectionFactory", ex);
 		}
 	}
 
-	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(
-			Class<T> factoryClass) throws Exception {
+	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
 		T factory = createConnectionFactoryInstance(factoryClass);
 		if (this.properties.getCloseTimeout() != null) {
 			factory.setCloseTimeout((int) this.properties.getCloseTimeout().toMillis());
@@ -84,15 +80,14 @@ class ActiveMQConnectionFactoryFactory {
 		return factory;
 	}
 
-	private <T extends ActiveMQConnectionFactory> T createConnectionFactoryInstance(
-			Class<T> factoryClass) throws InstantiationException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException {
+	private <T extends ActiveMQConnectionFactory> T createConnectionFactoryInstance(Class<T> factoryClass)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		String brokerUrl = determineBrokerUrl();
 		String user = this.properties.getUser();
 		String password = this.properties.getPassword();
 		if (StringUtils.hasLength(user) && StringUtils.hasLength(password)) {
-			return factoryClass.getConstructor(String.class, String.class, String.class)
-					.newInstance(user, password, brokerUrl);
+			return factoryClass.getConstructor(String.class, String.class, String.class).newInstance(user, password,
+					brokerUrl);
 		}
 		return factoryClass.getConstructor(String.class).newInstance(brokerUrl);
 	}

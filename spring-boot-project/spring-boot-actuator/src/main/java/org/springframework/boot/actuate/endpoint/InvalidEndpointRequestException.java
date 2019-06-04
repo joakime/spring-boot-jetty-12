@@ -31,8 +31,7 @@ public class InvalidEndpointRequestException extends RuntimeException {
 		this.reason = reason;
 	}
 
-	public InvalidEndpointRequestException(String message, String reason,
-			Throwable cause) {
+	public InvalidEndpointRequestException(String message, String reason, Throwable cause) {
 		super(message, cause);
 		this.reason = reason;
 	}

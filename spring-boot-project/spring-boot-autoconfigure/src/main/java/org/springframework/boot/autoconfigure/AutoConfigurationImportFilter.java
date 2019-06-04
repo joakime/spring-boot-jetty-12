@@ -54,7 +54,6 @@ public interface AutoConfigurationImportFilter {
 	 * {@code autoConfigurationClasses} parameter. Entries containing {@code false} will
 	 * not be imported.
 	 */
-	boolean[] match(String[] autoConfigurationClasses,
-			AutoConfigurationMetadata autoConfigurationMetadata);
+	boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata);
 
 }

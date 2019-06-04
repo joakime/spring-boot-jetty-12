@@ -59,20 +59,17 @@ public interface IterableConfigurationPropertySource
 	Stream<ConfigurationPropertyName> stream();
 
 	@Override
-	default ConfigurationPropertyState containsDescendantOf(
-			ConfigurationPropertyName name) {
+	default ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}
 
 	@Override
-	default IterableConfigurationPropertySource filter(
-			Predicate<ConfigurationPropertyName> filter) {
+	default IterableConfigurationPropertySource filter(Predicate<ConfigurationPropertyName> filter) {
 		return new FilteredIterableConfigurationPropertiesSource(this, filter);
 	}
 
 	@Override
-	default IterableConfigurationPropertySource withAliases(
-			ConfigurationPropertyNameAliases aliases) {
+	default IterableConfigurationPropertySource withAliases(ConfigurationPropertyNameAliases aliases) {
 		return new AliasedIterableConfigurationPropertySource(this, aliases);
 	}
 

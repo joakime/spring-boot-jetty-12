@@ -48,8 +48,7 @@ class ClassPathFileChangeListener implements FileChangeListener {
 	 * @param fileSystemWatcherToStop the file system watcher to stop on a restart (or
 	 * {@code null})
 	 */
-	ClassPathFileChangeListener(ApplicationEventPublisher eventPublisher,
-			ClassPathRestartStrategy restartStrategy,
+	ClassPathFileChangeListener(ApplicationEventPublisher eventPublisher, ClassPathRestartStrategy restartStrategy,
 			FileSystemWatcher fileSystemWatcherToStop) {
 		Assert.notNull(eventPublisher, "EventPublisher must not be null");
 		Assert.notNull(restartStrategy, "RestartStrategy must not be null");

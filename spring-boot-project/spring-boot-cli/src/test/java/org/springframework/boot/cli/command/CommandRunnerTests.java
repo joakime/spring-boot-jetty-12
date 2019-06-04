@@ -94,8 +94,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void runWithoutArguments() throws Exception {
-		assertThatExceptionOfType(NoArgumentsException.class)
-				.isThrownBy(this.commandRunner::run);
+		assertThatExceptionOfType(NoArgumentsException.class).isThrownBy(this.commandRunner::run);
 	}
 
 	@Test
@@ -106,8 +105,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void missingCommand() throws Exception {
-		assertThatExceptionOfType(NoSuchCommandException.class)
-				.isThrownBy(() -> this.commandRunner.run("missing"));
+		assertThatExceptionOfType(NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("missing"));
 	}
 
 	@Test

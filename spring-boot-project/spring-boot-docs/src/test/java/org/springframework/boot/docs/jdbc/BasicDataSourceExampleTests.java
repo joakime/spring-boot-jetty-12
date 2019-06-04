@@ -48,8 +48,7 @@ public class BasicDataSourceExampleTests {
 	public void validateConfiguration() throws SQLException {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(dataSource.getConnection().getMetaData().getURL())
-				.isEqualTo("jdbc:h2:mem:basic");
+		assertThat(dataSource.getConnection().getMetaData().getURL()).isEqualTo("jdbc:h2:mem:basic");
 	}
 
 }

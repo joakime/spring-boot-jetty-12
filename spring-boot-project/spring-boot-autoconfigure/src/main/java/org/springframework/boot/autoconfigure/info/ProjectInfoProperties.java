@@ -52,8 +52,7 @@ public class ProjectInfoProperties {
 		/**
 		 * Location of the generated build-info.properties file.
 		 */
-		private Resource location = new ClassPathResource(
-				"META-INF/build-info.properties");
+		private Resource location = new ClassPathResource("META-INF/build-info.properties");
 
 		/**
 		 * File encoding.

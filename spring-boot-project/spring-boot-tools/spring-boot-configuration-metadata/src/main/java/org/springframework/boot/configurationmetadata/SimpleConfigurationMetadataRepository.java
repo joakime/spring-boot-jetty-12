@@ -29,8 +29,7 @@ import java.util.Map;
  * @since 1.3.0
  */
 @SuppressWarnings("serial")
-public class SimpleConfigurationMetadataRepository
-		implements ConfigurationMetadataRepository, Serializable {
+public class SimpleConfigurationMetadataRepository implements ConfigurationMetadataRepository, Serializable {
 
 	private final Map<String, ConfigurationMetadataGroup> allGroups = new HashMap<>();
 
@@ -73,8 +72,7 @@ public class SimpleConfigurationMetadataRepository
 	 * @param property the property to add
 	 * @param source the source
 	 */
-	public void add(ConfigurationMetadataProperty property,
-			ConfigurationMetadataSource source) {
+	public void add(ConfigurationMetadataProperty property, ConfigurationMetadataSource source) {
 		if (source != null) {
 			putIfAbsent(source.getProperties(), property.getId(), property);
 		}
@@ -93,11 +91,9 @@ public class SimpleConfigurationMetadataRepository
 			}
 			else {
 				// Merge properties
-				group.getProperties().forEach((name, value) -> putIfAbsent(
-						existingGroup.getProperties(), name, value));
+				group.getProperties().forEach((name, value) -> putIfAbsent(existingGroup.getProperties(), name, value));
 				// Merge sources
-				group.getSources().forEach((name,
-						value) -> putIfAbsent(existingGroup.getSources(), name, value));
+				group.getSources().forEach((name, value) -> putIfAbsent(existingGroup.getSources(), name, value));
 			}
 		}
 

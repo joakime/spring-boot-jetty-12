@@ -174,8 +174,7 @@ public class DeferredLogTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void switchTo() {
-		List<String> lines = (List<String>) ReflectionTestUtils.getField(this.deferredLog,
-				"lines");
+		List<String> lines = (List<String>) ReflectionTestUtils.getField(this.deferredLog, "lines");
 		assertThat(lines).isEmpty();
 
 		this.deferredLog.error(this.message, this.throwable);

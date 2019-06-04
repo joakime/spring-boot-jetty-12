@@ -39,15 +39,12 @@ public class CompilerOptionHandler extends OptionHandler {
 
 	@Override
 	protected final void options() {
-		this.noGuessImportsOption = option("no-guess-imports",
-				"Do not attempt to guess imports");
-		this.noGuessDependenciesOption = option("no-guess-dependencies",
-				"Do not attempt to guess dependencies");
-		this.autoconfigureOption = option("autoconfigure",
-				"Add autoconfigure compiler transformations").withOptionalArg()
-						.ofType(Boolean.class).defaultsTo(true);
-		this.classpathOption = option(Arrays.asList("classpath", "cp"),
-				"Additional classpath entries").withRequiredArg();
+		this.noGuessImportsOption = option("no-guess-imports", "Do not attempt to guess imports");
+		this.noGuessDependenciesOption = option("no-guess-dependencies", "Do not attempt to guess dependencies");
+		this.autoconfigureOption = option("autoconfigure", "Add autoconfigure compiler transformations")
+				.withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+		this.classpathOption = option(Arrays.asList("classpath", "cp"), "Additional classpath entries")
+				.withRequiredArg();
 		doOptions();
 	}
 

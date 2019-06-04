@@ -70,8 +70,8 @@ final class JettyHandlerWrappers {
 		}
 
 		@Override
-		public void handle(String target, Request baseRequest, HttpServletRequest request,
-				HttpServletResponse response) throws IOException, ServletException {
+		public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+				throws IOException, ServletException {
 			if (!response.getHeaderNames().contains(SERVER_HEADER)) {
 				response.setHeader(SERVER_HEADER, this.value);
 			}

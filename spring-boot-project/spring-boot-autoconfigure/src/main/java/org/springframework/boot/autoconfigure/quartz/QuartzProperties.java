@@ -108,8 +108,7 @@ public class QuartzProperties {
 		return this.waitForJobsToCompleteOnShutdown;
 	}
 
-	public void setWaitForJobsToCompleteOnShutdown(
-			boolean waitForJobsToCompleteOnShutdown) {
+	public void setWaitForJobsToCompleteOnShutdown(boolean waitForJobsToCompleteOnShutdown) {
 		this.waitForJobsToCompleteOnShutdown = waitForJobsToCompleteOnShutdown;
 	}
 

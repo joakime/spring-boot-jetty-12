@@ -74,8 +74,7 @@ public class DefaultRestartInitializerTests {
 	@Test
 	public void threadNotUsingAppClassLoader() {
 		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
-		ClassLoader classLoader = new MockLauncherClassLoader(
-				getClass().getClassLoader());
+		ClassLoader classLoader = new MockLauncherClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
@@ -84,8 +83,7 @@ public class DefaultRestartInitializerTests {
 
 	@Test
 	public void urlsCanBeRetrieved() {
-		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread()))
-				.isNotEmpty();
+		assertThat(new DefaultRestartInitializer().getUrls(Thread.currentThread())).isNotEmpty();
 	}
 
 	protected void testSkippedStacks(String s) {
@@ -93,8 +91,7 @@ public class DefaultRestartInitializerTests {
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = mock(Thread.class);
 		thread.setName("main");
-		StackTraceElement element = new StackTraceElement(s, "someMethod", "someFile",
-				123);
+		StackTraceElement element = new StackTraceElement(s, "someMethod", "someFile", 123);
 		given(thread.getStackTrace()).willReturn(new StackTraceElement[] { element });
 		given(thread.getContextClassLoader()).willReturn(classLoader);
 		assertThat(initializer.getInitialUrls(thread)).isEqualTo(null);

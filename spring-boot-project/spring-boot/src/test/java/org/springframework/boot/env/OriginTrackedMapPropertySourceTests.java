@@ -37,8 +37,7 @@ public class OriginTrackedMapPropertySourceTests {
 
 	private Map<String, Object> map = new LinkedHashMap<>();
 
-	private OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource(
-			"test", this.map);
+	private OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource("test", this.map);
 
 	private Origin origin = mock(Origin.class);
 

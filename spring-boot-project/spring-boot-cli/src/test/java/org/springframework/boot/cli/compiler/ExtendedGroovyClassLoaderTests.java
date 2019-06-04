@@ -36,8 +36,7 @@ public class ExtendedGroovyClassLoaderTests {
 	@Before
 	public void setup() {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
-		this.defaultScopeGroovyClassLoader = new ExtendedGroovyClassLoader(
-				GroovyCompilerScope.DEFAULT);
+		this.defaultScopeGroovyClassLoader = new ExtendedGroovyClassLoader(GroovyCompilerScope.DEFAULT);
 	}
 
 	@Test
@@ -51,8 +50,7 @@ public class ExtendedGroovyClassLoaderTests {
 	public void filtersNonGroovy() throws Exception {
 		this.contextClassLoader.loadClass("org.springframework.util.StringUtils");
 		assertThatExceptionOfType(ClassNotFoundException.class)
-				.isThrownBy(() -> this.defaultScopeGroovyClassLoader
-						.loadClass("org.springframework.util.StringUtils"));
+				.isThrownBy(() -> this.defaultScopeGroovyClassLoader.loadClass("org.springframework.util.StringUtils"));
 	}
 
 	@Test

@@ -53,8 +53,7 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 * @param linksResolver resolver for determining links to available endpoints
 	 */
-	public WebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints,
+	public WebMvcEndpointHandlerMapping(EndpointMapping endpointMapping, Collection<ExposableWebEndpoint> endpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
 			EndpointLinksResolver linksResolver) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
@@ -74,11 +73,9 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 
 		@Override
 		@ResponseBody
-		public Map<String, Map<String, Link>> links(HttpServletRequest request,
-				HttpServletResponse response) {
+		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
 			return Collections.singletonMap("_links",
-					WebMvcEndpointHandlerMapping.this.linksResolver
-							.resolveLinks(request.getRequestURL().toString()));
+					WebMvcEndpointHandlerMapping.this.linksResolver.resolveLinks(request.getRequestURL().toString()));
 		}
 
 		@Override

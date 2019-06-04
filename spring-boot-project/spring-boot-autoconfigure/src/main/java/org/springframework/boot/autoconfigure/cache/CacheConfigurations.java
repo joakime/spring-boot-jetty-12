@@ -62,8 +62,7 @@ final class CacheConfigurations {
 				return entry.getKey();
 			}
 		}
-		throw new IllegalStateException(
-				"Unknown configuration class " + configurationClassName);
+		throw new IllegalStateException("Unknown configuration class " + configurationClassName);
 	}
 
 }
