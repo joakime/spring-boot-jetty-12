@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,7 @@ public class DataSourceBuilderTests {
 
 	private DataSource dataSource;
 
-	@After
+	@AfterEach
 	public void shutdownDataSource() throws IOException {
 		if (this.dataSource instanceof Closeable) {
 			((Closeable) this.dataSource).close();

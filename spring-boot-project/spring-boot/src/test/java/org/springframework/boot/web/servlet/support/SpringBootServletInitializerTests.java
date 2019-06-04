@@ -20,14 +20,15 @@ import java.util.Collections;
 
 import javax.servlet.ServletContext;
 
-import org.junit.After;
-import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.testsupport.system.OutputCaptureRule;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -52,18 +53,16 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class SpringBootServletInitializerTests {
-
-	@Rule
-	public OutputCaptureRule output = new OutputCaptureRule();
 
 	private ServletContext servletContext = new MockServletContext();
 
 	private SpringApplication application;
 
-	@After
-	public void verifyLoggingOutput() {
-		assertThat(this.output.toString())
+	@AfterEach
+	public void verifyLoggingOutput(CapturedOutput capturedOutput) {
+		assertThat(capturedOutput)
 				.doesNotContain(StandardServletEnvironment.class.getSimpleName());
 	}
 

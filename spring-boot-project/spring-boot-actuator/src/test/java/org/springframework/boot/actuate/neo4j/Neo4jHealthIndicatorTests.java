@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.ogm.exception.CypherException;
@@ -73,7 +72,7 @@ public class Neo4jHealthIndicatorTests {
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Map<String, Object> details = health.getDetails();
 		int nodeCountFromDetails = (int) details.get("nodes");
-		Assert.assertEquals(nodeCount, nodeCountFromDetails);
+		assertThat(nodeCountFromDetails).isEqualTo(nodeCount);
 	}
 
 	@Test

@@ -22,12 +22,13 @@ import java.util.ServiceLoader;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.Assume;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
@@ -47,8 +48,8 @@ public class ConditionalOnJavaTests {
 	private final OnJavaCondition condition = new OnJavaCondition();
 
 	@Test
+	@EnabledOnJre(JRE.JAVA_8)
 	public void doesNotMatchIfBetterVersionIsRequired() {
-		Assume.javaEight();
 		this.contextRunner.withUserConfiguration(Java9Required.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
@@ -92,14 +93,14 @@ public class ConditionalOnJavaTests {
 	}
 
 	@Test
+	@EnabledOnJre(JRE.JAVA_8)
 	public void java8IsDetected() throws Exception {
-		Assume.javaEight();
 		assertThat(getJavaVersion()).isEqualTo("1.8");
 	}
 
 	@Test
+	@EnabledOnJre(JRE.JAVA_8)
 	public void java8IsTheFallback() throws Exception {
-		Assume.javaEight();
 		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class))
 				.isEqualTo("1.8");
 	}

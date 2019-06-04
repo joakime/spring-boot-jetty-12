@@ -16,7 +16,7 @@
 
 package org.springframework.boot;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class OverrideSourcesTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();

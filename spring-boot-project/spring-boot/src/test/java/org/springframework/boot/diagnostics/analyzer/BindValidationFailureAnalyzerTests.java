@@ -24,8 +24,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -51,12 +51,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class BindValidationFailureAnalyzerTests {
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		LocaleContextHolder.setLocale(Locale.US);
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		LocaleContextHolder.resetLocaleContext();
 	}

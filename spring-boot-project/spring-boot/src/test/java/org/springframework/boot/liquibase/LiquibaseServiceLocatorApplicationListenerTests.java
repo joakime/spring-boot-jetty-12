@@ -25,7 +25,7 @@ import java.util.List;
 import liquibase.servicelocator.CustomResolverServiceLocator;
 import liquibase.servicelocator.DefaultPackageScanClassResolver;
 import liquibase.servicelocator.ServiceLocator;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
@@ -47,7 +47,7 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();

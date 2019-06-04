@@ -23,7 +23,7 @@ import java.util.Set;
 
 import javax.xml.transform.sax.SAXTransformerFactory;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -66,7 +66,7 @@ public class WebServiceTemplateBuilderTests {
 	@Mock
 	private ClientInterceptor interceptor;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}

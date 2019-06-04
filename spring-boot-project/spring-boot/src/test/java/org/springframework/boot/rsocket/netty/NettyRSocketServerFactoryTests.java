@@ -30,15 +30,13 @@ import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
 import org.assertj.core.api.Assertions;
-import org.junit.After;
-import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.ServerRSocketFactoryCustomizer;
-import org.springframework.boot.testsupport.system.OutputCaptureRule;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
@@ -59,16 +57,13 @@ import static org.mockito.Mockito.mock;
  */
 public class NettyRSocketServerFactoryTests {
 
-	@Rule
-	public OutputCaptureRule output = new OutputCaptureRule();
-
 	private NettyRSocketServer rSocketServer;
 
 	private RSocketRequester requester;
 
 	private static final Duration TIMEOUT = Duration.ofSeconds(3);
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (this.rSocketServer != null) {
 			try {

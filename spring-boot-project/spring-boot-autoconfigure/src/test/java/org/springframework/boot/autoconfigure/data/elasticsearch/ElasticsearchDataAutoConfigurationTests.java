@@ -17,13 +17,13 @@
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
+import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
@@ -41,11 +41,11 @@ import static org.mockito.Mockito.mock;
  * @author Artur Konczak
  * @author Brian Clozel
  */
-@Testcontainers
+@DisabledWithoutDockerTestcontainers
 public class ElasticsearchDataAutoConfigurationTests {
 
 	@Container
-	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class,
@@ -56,8 +56,9 @@ public class ElasticsearchDataAutoConfigurationTests {
 	public void defaultTransportBeansAreRegistered() {
 		this.contextRunner
 				.withPropertyValues(
-						"spring.data.elasticsearch.cluster-nodes:localhost:"
-								+ elasticsearch.getMappedTransportPort(),
+						"spring.data.elasticsearch.cluster-nodes:"
+								+ elasticsearch.getTcpHost().getHostString() + ":"
+								+ elasticsearch.getTcpHost().getPort(),
 						"spring.data.elasticsearch.cluster-name:docker-cluster")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ElasticsearchTemplate.class)

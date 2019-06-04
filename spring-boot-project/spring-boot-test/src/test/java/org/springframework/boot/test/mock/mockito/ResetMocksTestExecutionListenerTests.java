@@ -16,10 +16,10 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.FixMethodOrder;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runners.MethodSorters;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 @ExtendWith(SpringExtension.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
 public class ResetMocksTestExecutionListenerTests {
 
 	@Autowired

@@ -22,7 +22,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
+	@AfterEach
 	public void close() {
 		if (this.context != null) {
 			this.context.close();

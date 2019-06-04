@@ -16,7 +16,7 @@
 
 package org.springframework.boot;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,7 +35,7 @@ public class ReproTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();

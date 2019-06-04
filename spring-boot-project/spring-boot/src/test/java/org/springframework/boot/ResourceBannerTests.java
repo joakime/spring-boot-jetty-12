@@ -21,7 +21,7 @@ import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ansi.AnsiOutput;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ResourceBannerTests {
 
-	@After
+	@AfterEach
 	public void reset() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}

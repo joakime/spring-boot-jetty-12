@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -41,7 +41,7 @@ public class TypeExcludeFilterTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();

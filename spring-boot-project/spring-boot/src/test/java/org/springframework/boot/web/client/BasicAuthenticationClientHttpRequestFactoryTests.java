@@ -19,8 +19,8 @@ package org.springframework.boot.web.client;
 import java.io.IOException;
 import java.net.URI;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -46,7 +46,7 @@ public class BasicAuthenticationClientHttpRequestFactoryTests {
 
 	private ClientHttpRequestFactory requestFactory;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws IOException {
 		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
 		ClientHttpRequest request = mock(ClientHttpRequest.class);

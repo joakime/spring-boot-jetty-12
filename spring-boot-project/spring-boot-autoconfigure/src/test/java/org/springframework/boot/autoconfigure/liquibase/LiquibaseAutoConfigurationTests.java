@@ -30,6 +30,8 @@ import liquibase.integration.spring.SpringLiquibase;
 import liquibase.logging.core.Slf4jLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -45,7 +47,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.testsupport.Assume;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -128,8 +129,8 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
+	@EnabledOnJre(JRE.JAVA_8)
 	public void changelogSql() {
-		Assume.javaEight();
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
 						"spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.sql")

@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.http.client.config.RequestConfig;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -76,7 +76,7 @@ public class RestTemplateBuilderTests {
 	@Mock
 	private ClientHttpRequestInterceptor interceptor;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}

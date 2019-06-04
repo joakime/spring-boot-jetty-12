@@ -19,10 +19,8 @@ package org.springframework.boot.actuate.logging;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -45,9 +43,6 @@ public class LogFileWebEndpointWebIntegrationTests {
 	private ConfigurableApplicationContext context;
 
 	private WebTestClient client;
-
-	@Rule
-	public final TemporaryFolder temp = new TemporaryFolder();
 
 	private File logFile;
 

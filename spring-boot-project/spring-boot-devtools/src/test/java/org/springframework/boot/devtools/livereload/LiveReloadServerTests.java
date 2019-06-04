@@ -26,9 +26,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.tomcat.websocket.WsWebSocketContainer;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.web.client.RestTemplate;
@@ -71,7 +71,7 @@ public class LiveReloadServerTests {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void servesLivereloadJs() throws Exception {
 		RestTemplate template = new RestTemplate();
 		URI uri = new URI("http://localhost:" + this.port + "/livereload.js");

@@ -120,7 +120,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
@@ -1062,6 +1062,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 			}
 			cause = cause.getCause();
 		}
+
 		fail("Exception did not wrap FailingServletException");
 	}
 

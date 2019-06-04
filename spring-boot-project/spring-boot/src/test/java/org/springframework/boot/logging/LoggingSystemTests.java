@@ -16,7 +16,7 @@
 
 package org.springframework.boot.logging;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.LoggingSystem.NoOpLoggingSystem;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class LoggingSystemTests {
 
-	@After
+	@AfterEach
 	public void clearSystemProperty() {
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 	}

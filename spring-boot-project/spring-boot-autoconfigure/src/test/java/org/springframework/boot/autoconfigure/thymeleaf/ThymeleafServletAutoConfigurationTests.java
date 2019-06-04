@@ -26,8 +26,8 @@ import javax.servlet.DispatcherType;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingRespectLayoutTitleStrategy;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.WebContext;
@@ -41,7 +41,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.system.OutputCaptureRule;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
@@ -59,8 +60,6 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for {@link ThymeleafAutoConfiguration} in Servlet-based applications.
@@ -72,10 +71,8 @@ import static org.hamcrest.Matchers.not;
  * @author Kazuki Shimizu
  * @author Artsiom Yudovin
  */
+@ExtendWith(OutputCaptureExtension.class)
 public class ThymeleafServletAutoConfigurationTests {
-
-	@Rule
-	public OutputCaptureRule output = new OutputCaptureRule();
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
@@ -183,22 +180,22 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void templateLocationDoesNotExist() {
+	public void templateLocationDoesNotExist(CapturedOutput capturedOutput) {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.thymeleaf.prefix:classpath:/no-such-directory/")
-				.run((context) -> this.output
-						.expect(containsString("Cannot find template location")));
+				.run((context) -> assertThat(capturedOutput)
+						.contains("Cannot find template location"));
 	}
 
 	@Test
-	public void templateLocationEmpty() {
+	public void templateLocationEmpty(CapturedOutput capturedOutput) {
 		new File(this.buildOutput.getTestResourcesLocation(),
 				"empty-templates/empty-directory").mkdirs();
 		this.contextRunner.withPropertyValues(
 				"spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/")
-				.run((context) -> this.output
-						.expect(not(containsString("Cannot find template location"))));
+				.run((context) -> assertThat(capturedOutput)
+						.doesNotContain("Cannot find template location"));
 	}
 
 	@Test

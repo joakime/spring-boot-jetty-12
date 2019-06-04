@@ -21,8 +21,8 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
 import com.couchbase.client.java.cluster.ClusterInfo;
 import com.couchbase.client.java.env.CouchbaseEnvironment;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -38,15 +38,13 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
+@ExtendWith(LocalCouchbaseServer.class)
 public class CouchbaseAutoConfigurationIntegrationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
 							CouchbaseAutoConfiguration.class));
-
-	@Rule
-	public final CouchbaseTestServer couchbase = new CouchbaseTestServer();
 
 	@Test
 	public void defaultConfiguration() {

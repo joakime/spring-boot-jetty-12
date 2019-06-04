@@ -27,12 +27,12 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.ElasticsearchContainer;
+import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -45,11 +45,11 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  */
-@Testcontainers
+@DisabledWithoutDockerTestcontainers
 public class RestClientAutoConfigurationTests {
 
 	@Container
-	public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class));
@@ -115,10 +115,8 @@ public class RestClientAutoConfigurationTests {
 
 	@Test
 	public void restClientCanQueryElasticsearchNode() {
-		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:"
-						+ RestClientAutoConfigurationTests.elasticsearch.getMappedPort())
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.uris=http://"
+				+ elasticsearch.getHttpHostAddress()).run((context) -> {
 					RestHighLevelClient client = context
 							.getBean(RestHighLevelClient.class);
 					Map<String, String> source = new HashMap<>();

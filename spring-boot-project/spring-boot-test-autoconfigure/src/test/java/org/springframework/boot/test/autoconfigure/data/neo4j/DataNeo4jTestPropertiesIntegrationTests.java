@@ -19,11 +19,10 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.SkippableContainer;
+import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
@@ -37,15 +36,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Artsiom Yudovin
  */
-@Testcontainers
+@DisabledWithoutDockerTestcontainers
 @ContextConfiguration(
 		initializers = DataNeo4jTestPropertiesIntegrationTests.Initializer.class)
 @DataNeo4jTest(properties = "spring.profiles.active=test")
 public class DataNeo4jTestPropertiesIntegrationTests {
 
 	@Container
-	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<>(
-			() -> new Neo4jContainer<>().withAdminPassword(null));
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withAdminPassword(null);
 
 	@Autowired
 	private Environment environment;
@@ -61,8 +59,7 @@ public class DataNeo4jTestPropertiesIntegrationTests {
 		@Override
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
+			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getBoltUrl())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

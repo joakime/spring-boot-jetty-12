@@ -43,7 +43,7 @@ import org.springframework.jmx.export.MBeanExporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for {@link SpringApplicationAdminJmxAutoConfiguration}.

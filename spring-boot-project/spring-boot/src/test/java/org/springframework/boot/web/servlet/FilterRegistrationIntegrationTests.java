@@ -18,7 +18,7 @@ package org.springframework.boot.web.servlet;
 
 import javax.servlet.Filter;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -38,7 +38,7 @@ public class FilterRegistrationIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();

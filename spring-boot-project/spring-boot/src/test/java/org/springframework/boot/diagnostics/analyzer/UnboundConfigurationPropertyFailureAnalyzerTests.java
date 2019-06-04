@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -43,12 +43,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class UnboundConfigurationPropertyFailureAnalyzerTests {
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		LocaleContextHolder.setLocale(Locale.US);
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		LocaleContextHolder.resetLocaleContext();
 	}

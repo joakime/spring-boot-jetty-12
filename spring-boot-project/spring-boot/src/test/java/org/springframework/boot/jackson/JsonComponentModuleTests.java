@@ -24,7 +24,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -43,7 +43,7 @@ public class JsonComponentModuleTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void closeContext() {
 		if (this.context != null) {
 			this.context.close();

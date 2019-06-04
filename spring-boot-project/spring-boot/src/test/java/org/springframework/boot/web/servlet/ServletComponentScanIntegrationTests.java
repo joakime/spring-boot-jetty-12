@@ -20,7 +20,7 @@ import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
@@ -42,7 +42,7 @@ public class ServletComponentScanIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
-	@After
+	@AfterEach
 	public void cleanUp() {
 		if (this.context != null) {
 			this.context.close();

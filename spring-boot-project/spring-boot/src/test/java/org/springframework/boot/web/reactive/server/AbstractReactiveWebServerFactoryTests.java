@@ -38,15 +38,13 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.junit.After;
-import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
-import org.springframework.boot.testsupport.system.OutputCaptureRule;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -75,12 +73,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 public abstract class AbstractReactiveWebServerFactoryTests {
 
-	@Rule
-	public OutputCaptureRule output = new OutputCaptureRule();
-
 	protected WebServer webServer;
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (this.webServer != null) {
 			try {

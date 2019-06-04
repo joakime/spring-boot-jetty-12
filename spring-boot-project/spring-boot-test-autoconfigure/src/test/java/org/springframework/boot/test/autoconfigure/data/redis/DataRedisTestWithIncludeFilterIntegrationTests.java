@@ -18,10 +18,10 @@ package org.springframework.boot.test.autoconfigure.data.redis;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -36,14 +36,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Jayaram Pradhan
  */
-@Testcontainers
+@DisabledWithoutDockerTestcontainers
 @ContextConfiguration(
 		initializers = DataRedisTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataRedisTest(includeFilters = @Filter(Service.class))
 public class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@Container
-	public static RedisContainer redis = new RedisContainer();
+	static final RedisContainer redis = new RedisContainer();
 
 	@Autowired
 	private ExampleRepository exampleRepository;
@@ -66,7 +66,7 @@ public class DataRedisTestWithIncludeFilterIntegrationTests {
 		@Override
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
+			TestPropertyValues.of("spring.redis.port=" + redis.getFirstMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

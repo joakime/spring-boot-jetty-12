@@ -20,7 +20,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.stream.Stream;
 
-import org.junit.AssumptionViolatedException;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionFailedException;
@@ -28,6 +27,7 @@ import org.springframework.core.convert.ConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 /**
  * Tests for {@link InetAddressFormatter}.
@@ -39,36 +39,31 @@ public class InetAddressFormatterTests {
 	@ConversionServiceTest
 	public void convertFromInetAddressToStringShouldConvert(
 			ConversionService conversionService) throws UnknownHostException {
-		assumeResolves("example.com", true);
-		InetAddress address = InetAddress.getByName("example.com");
-		String converted = conversionService.convert(address, String.class);
-		assertThat(converted).isEqualTo(address.getHostAddress());
+		assumingThat(isResolvable("example.com"), () -> {
+			InetAddress address = InetAddress.getByName("example.com");
+			String converted = conversionService.convert(address, String.class);
+			assertThat(converted).isEqualTo(address.getHostAddress());
+		});
 	}
 
 	@ConversionServiceTest
 	public void convertFromStringToInetAddressShouldConvert(
 			ConversionService conversionService) {
-		assumeResolves("example.com", true);
-		InetAddress converted = conversionService.convert("example.com",
-				InetAddress.class);
-		assertThat(converted.toString()).startsWith("example.com");
+		assumingThat(isResolvable("example.com"), () -> {
+			InetAddress converted = conversionService.convert("example.com",
+					InetAddress.class);
+			assertThat(converted.toString()).startsWith("example.com");
+		});
 	}
 
 	@ConversionServiceTest
 	public void convertFromStringToInetAddressWhenHostDoesNotExistShouldThrowException(
 			ConversionService conversionService) {
 		String missingDomain = "ireallydontexist.example.com";
-		assumeResolves(missingDomain, false);
-		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(
-				() -> conversionService.convert(missingDomain, InetAddress.class));
-	}
-
-	private void assumeResolves(String host, boolean expectedToResolve) {
-		boolean resolved = isResolvable(host);
-		if (resolved != expectedToResolve) {
-			throw new AssumptionViolatedException(
-					"Host " + host + " resolved " + resolved);
-		}
+		assumingThat(!isResolvable("ireallydontexist.example.com"),
+				() -> assertThatExceptionOfType(ConversionFailedException.class)
+						.isThrownBy(() -> conversionService.convert(missingDomain,
+								InetAddress.class)));
 	}
 
 	private boolean isResolvable(String host) {

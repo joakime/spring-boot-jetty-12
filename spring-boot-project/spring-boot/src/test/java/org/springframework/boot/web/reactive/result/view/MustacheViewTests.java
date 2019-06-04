@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.support.GenericApplicationContext;
@@ -45,7 +45,7 @@ public class MustacheViewTests {
 
 	private MockServerWebExchange exchange;
 
-	@Before
+	@BeforeEach
 	public void init() {
 		this.context.refresh();
 	}

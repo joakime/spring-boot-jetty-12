@@ -21,11 +21,11 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Jayaram Pradhan
  */
-@Testcontainers
+@DisabledWithoutDockerTestcontainers
 @ContextConfiguration(initializers = DataRedisTestIntegrationTests.Initializer.class)
 @DataRedisTest
 public class DataRedisTestIntegrationTests {
@@ -85,7 +85,7 @@ public class DataRedisTestIntegrationTests {
 		@Override
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
+			TestPropertyValues.of("spring.redis.port=" + redis.getFirstMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

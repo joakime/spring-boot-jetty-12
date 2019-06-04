@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,24 @@
 
 package org.springframework.boot.testsupport.testcontainers;
 
-import org.testcontainers.containers.GenericContainer;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * A {@link GenericContainer} for Redis.
+ * Customization of {@link Testcontainers @Testcontainers} that disables the tests when
+ * Docker is not available.
  *
  * @author Andy Wilkinson
- * @author Madhura Bhave
  */
-public class RedisContainer extends GenericContainer<RedisContainer> {
-
-	public RedisContainer() {
-		super("redis:4.0.6");
-		addExposedPorts(6379);
-	}
+@ExtendWith(DockerIsAvailableCondition.class)
+@Testcontainers
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface DisabledWithoutDockerTestcontainers {
 
 }
