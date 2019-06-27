@@ -2409,6 +2409,21 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-spring5-common</artifactId>
+				<version>${infinispan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-spring5-embedded</artifactId>
+				<version>${infinispan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-spring5-remote</artifactId>
+				<version>${infinispan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-tasks</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
