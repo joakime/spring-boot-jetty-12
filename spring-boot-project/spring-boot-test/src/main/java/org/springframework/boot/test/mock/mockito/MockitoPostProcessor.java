@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.aop.scope.ScopedObject;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
@@ -359,6 +360,9 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			Assert.state(ReflectionUtils.getField(field, target) == null,
 					() -> "The field " + field + " cannot have an existing value");
 			Object bean = this.beanFactory.getBean(beanName, field.getType());
+			if (bean instanceof ScopedObject) {
+				bean = this.beanFactory.getBean(ScopedProxyUtils.getTargetBeanName(beanName), field.getType());
+			}
 			ReflectionUtils.setField(field, target, bean);
 		}
 		catch (Throwable ex) {
@@ -448,8 +452,11 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof FactoryBean) {
+			if (bean instanceof FactoryBean || bean instanceof ScopedObject) {
 				return bean;
+			}
+			if (ScopedProxyUtils.isScopedTarget(beanName)) {
+				beanName = beanName.substring("scopedTarget.".length());
 			}
 			return this.mockitoPostProcessor.createSpyIfNecessary(bean, beanName);
 		}
