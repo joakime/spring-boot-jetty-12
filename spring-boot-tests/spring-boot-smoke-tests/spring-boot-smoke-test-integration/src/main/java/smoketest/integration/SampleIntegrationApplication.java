@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
@@ -30,6 +31,7 @@ import org.springframework.integration.file.FileReadingMessageSource;
 import org.springframework.integration.file.FileWritingMessageHandler;
 
 @SpringBootApplication
+@EnableConfigurationProperties(ServiceProperties.class)
 public class SampleIntegrationApplication {
 
 	private final ServiceProperties serviceProperties;
