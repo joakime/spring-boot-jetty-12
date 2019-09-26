@@ -1524,6 +1524,28 @@
 								<spring-security-version>${spring-security.version}</spring-security-version>
 								<spring-webservices-version>${spring-ws.version}</spring-webservices-version>							</attributes>
 						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>io.spring.asciidoctor</groupId>
+								<artifactId>spring-asciidoctor-extensions-spring-boot</artifactId>
+								<version>0.3.0.BUILD-SNAPSHOT</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-actuator-autoconfigure</artifactId>
+								<version>${revision}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-autoconfigure</artifactId>
+								<version>${revision}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-devtools</artifactId>
+								<version>${revision}</version>
+							</dependency>
+						</dependencies>
 						<executions>
 							<execution>
 								<id>generate-html-documentation</id>
@@ -1551,9 +1573,9 @@
 										<attribute-missing>warn</attribute-missing>
 									</attributes>
 									<logHandler>
-										<outputToConsole>true</outputToConsole>
+										<outputToConsole>false</outputToConsole>
 										<failIf>
-											<severity>DEBUG</severity>
+											<severity>INFO</severity>
 										</failIf>
 									</logHandler>
 								</configuration>
@@ -1581,6 +1603,12 @@
 										<stylesdir>css/</stylesdir>
 										<stylesheet>spring.css</stylesheet>
 									</attributes>
+									<logHandler>
+										<outputToConsole>false</outputToConsole>
+										<failIf>
+											<severity>INFO</severity>
+										</failIf>
+									</logHandler>
 								</configuration>
 							</execution>
 							<execution>
