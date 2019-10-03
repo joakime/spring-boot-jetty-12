@@ -158,25 +158,29 @@ class JarFileArchiveTests {
 	@Test
 	void nestedZip64ArchivesAreHandledGracefully() throws IOException {
 		File file = new File(this.tempDir, "test.jar");
-		JarOutputStream output = new JarOutputStream(new FileOutputStream(file));
-		JarEntry zip64JarEntry = new JarEntry("nested/zip64.jar");
-		output.putNextEntry(zip64JarEntry);
-		byte[] zip64JarData = writeZip64Jar();
-		zip64JarEntry.setSize(zip64JarData.length);
-		zip64JarEntry.setCompressedSize(zip64JarData.length);
-		zip64JarEntry.setMethod(ZipEntry.STORED);
-		CRC32 crc32 = new CRC32();
-		crc32.update(zip64JarData);
-		zip64JarEntry.setCrc(crc32.getValue());
-		output.write(zip64JarData);
-		output.closeEntry();
-		output.close();
-		JarFileArchive jarFileArchive = new JarFileArchive(file);
-		Archive nestedArchive = jarFileArchive.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));
-		Iterator<Entry> it = nestedArchive.iterator();
-		for (int i = 0; i < 65537; i++) {
-			assertThat(it.hasNext()).as(i + "nth file is present").isTrue();
-			it.next();
+		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
+			JarEntry zip64JarEntry = new JarEntry("nested/zip64.jar");
+			output.putNextEntry(zip64JarEntry);
+			byte[] zip64JarData = writeZip64Jar();
+			zip64JarEntry.setSize(zip64JarData.length);
+			zip64JarEntry.setCompressedSize(zip64JarData.length);
+			zip64JarEntry.setMethod(ZipEntry.STORED);
+			CRC32 crc32 = new CRC32();
+			crc32.update(zip64JarData);
+			zip64JarEntry.setCrc(crc32.getValue());
+			output.write(zip64JarData);
+			output.closeEntry();
+			output.close();
+		}
+		try (JarFileArchive jarFileArchive = new JarFileArchive(file)) {
+			try (JarFileArchive nestedArchive = (JarFileArchive) jarFileArchive
+					.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"))) {
+				Iterator<Entry> it = nestedArchive.iterator();
+				for (int i = 0; i < 65537; i++) {
+					assertThat(it.hasNext()).as(i + "nth file is present").isTrue();
+					it.next();
+				}
+			}
 		}
 	}
 
