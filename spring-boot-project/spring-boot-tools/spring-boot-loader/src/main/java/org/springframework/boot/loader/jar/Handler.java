@@ -96,6 +96,19 @@ public class Handler extends URLStreamHandler {
 
 	private URLConnection openFallbackConnection(URL url, Exception reason) throws IOException {
 		try {
+			String file = url.getFile();
+			if (file.startsWith("war:") && file.contains("*/")) {
+				return new URL(file).openConnection();
+			}
+		}
+		catch (Throwable ex) {
+			// Continue
+		}
+		return openFallbackConnectionWithFallbackHandler(url, reason);
+	}
+
+	private URLConnection openFallbackConnectionWithFallbackHandler(URL url, Exception reason) throws IOException {
+		try {
 			return openConnection(getFallbackHandler(), url);
 		}
 		catch (Exception ex) {
