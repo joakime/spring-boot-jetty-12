@@ -24,7 +24,9 @@ import org.gradle.api.publish.PublicationContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPomDeveloperSpec;
+import org.gradle.api.publish.maven.MavenPomIssueManagement;
 import org.gradle.api.publish.maven.MavenPomLicenseSpec;
+import org.gradle.api.publish.maven.MavenPomOrganization;
 import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
@@ -58,14 +60,24 @@ public class ConventionsPlugin implements Plugin<Project> {
 				publication.from(java);
 			});
 		}
-		publications.withType(MavenPublication.class).all((publication) -> publication.pom(this::customizePom));
+		publications.withType(MavenPublication.class)
+				.all((publication) -> publication.pom((pom) -> customizePom(pom, project)));
 	}
 
-	private void customizePom(MavenPom pom) {
+	private void customizePom(MavenPom pom, Project project) {
 		pom.getUrl().set("https://projects.spring.io/spring-boot/#");
+		pom.getName().set(project.getDescription());
+		pom.getDescription().set(project.provider(project::getDescription));
+		pom.organization(this::customizeOrganization);
 		pom.licenses(this::customizeLicences);
 		pom.developers(this::customizeDevelopers);
 		pom.scm(this::customizeScm);
+		pom.issueManagement(this::customizeIssueManagement);
+	}
+
+	private void customizeOrganization(MavenPomOrganization organization) {
+		organization.getName().set("Pivotal Software, Inc.");
+		organization.getUrl().set("https://spring.io");
 	}
 
 	private void customizeLicences(MavenPomLicenseSpec licences) {
@@ -80,12 +92,20 @@ public class ConventionsPlugin implements Plugin<Project> {
 			developer.getName().set("Pivotal");
 			developer.getEmail().set("info@pivotal.io");
 			developer.getOrganization().set("Pivotal Software, Inc.");
-			developer.getOrganizationUrl().set("http://www.spring.io");
+			developer.getOrganizationUrl().set("https://www.spring.io");
 		});
 	}
 
 	private void customizeScm(MavenPomScm scm) {
+		scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
+		scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
 		scm.getUrl().set("https://github.com/spring-projects/spring-boot");
+
+	}
+
+	private void customizeIssueManagement(MavenPomIssueManagement issueManagement) {
+		issueManagement.getSystem().set("GitHub");
+		issueManagement.getUrl().set("https://github.com/spring-projects/spring-boot/issues");
 	}
 
 }

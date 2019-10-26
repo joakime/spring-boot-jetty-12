@@ -65,7 +65,7 @@ public class ProcessBom extends AbstractTask {
 			}
 			String scope = (String) xpath.evaluate("scope/text()", dependency, XPathConstants.STRING);
 			String type = ("import".equals(scope)) ? "bomImport" : "dependency";
-			System.out.println("    " + type + " '" + groupId + "', '" + artifactId + "'," + version);
+			System.out.println("    " + type + " '" + groupId + "', '" + artifactId + "', " + version);
 		}
 		System.out.println("}");
 	}

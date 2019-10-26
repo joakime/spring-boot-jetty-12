@@ -23,6 +23,7 @@ def pom = new XmlSlurper().parse(new File(args[0], "pom.xml"))
 def allDependencies = [:] as TreeMap
 
 pom.dependencies.dependency.each { dependency ->
+	println dependency
 	def configuration = getConfigurationForDependency(dependency)
 	def dependencies = allDependencies.computeIfAbsent(configuration) { [] }
 	if ('org.springframework.boot' == dependency.groupId.text()) {
@@ -50,6 +51,7 @@ allDependencies.each {configuration, dependencies ->
 	}
 }
 writer.println "}"
+writer.close()
 
 def findProject(String artifactId) {
 	File match
