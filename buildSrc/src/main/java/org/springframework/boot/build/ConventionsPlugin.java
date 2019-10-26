@@ -42,7 +42,10 @@ public class ConventionsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().withType(MavenPublishPlugin.class, (plugin) -> customizeMavenPublishing(project));
-		project.getTasks().withType(Test.class, (test) -> test.useJUnitPlatform());
+		project.getTasks().withType(Test.class, (test) -> {
+			test.useJUnitPlatform();
+			test.setMaxHeapSize("1024M");
+		});
 		project.getPlugins().withType(JavaPlugin.class, (java) -> project.setProperty("sourceCompatibility", "1.8"));
 	}
 
