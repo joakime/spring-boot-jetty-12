@@ -8,6 +8,14 @@ plugins {
 
 description = 'Spring Boot'
 
+configurations {
+	annotationProcessor {
+		attributes {
+			attribute(Attribute.of('org.gradle.usage', Usage), project.objects.named(Usage, 'java-runtime'))
+		}
+	}
+}
+
 dependencies {
 	annotationProcessor enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	annotationProcessor project(':spring-boot-project:spring-boot-tools:spring-boot-configuration-processor')
@@ -99,7 +107,7 @@ dependencies {
 	testImplementation 'org.springframework:spring-context-support'
 	testImplementation 'org.springframework.data:spring-data-redis'
 	testImplementation 'org.xerial:sqlite-jdbc'
-	
+
 	testRuntime 'org.junit.platform:junit-platform-launcher'
 }
 

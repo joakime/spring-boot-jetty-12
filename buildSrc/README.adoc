@@ -3,7 +3,7 @@
 Allows one to publish a BOM from Gradle.
 Properties, dependencies, and other BOMs are applied to the `bom {}` extension.
 
-This plugin applies the `java-library` and `maven-publish` plugins to the Project it's applied to.
+This plugin applies the `java-platform` and `maven-publish` plugins to the Project it's applied to.
 
 == Usage
 

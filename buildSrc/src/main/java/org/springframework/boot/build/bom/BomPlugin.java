@@ -24,7 +24,8 @@ import groovy.xml.QName;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.component.SoftwareComponent;
-import org.gradle.api.plugins.JavaLibraryPlugin;
+import org.gradle.api.plugins.JavaPlatformExtension;
+import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
@@ -44,7 +45,9 @@ public class BomPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
 		plugins.apply(MavenPublishPlugin.class);
-		plugins.apply(JavaLibraryPlugin.class);
+		plugins.apply(JavaPlatformPlugin.class);
+		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
+		javaPlatform.allowDependencies();
 		project.getTasks().create("processBom", ProcessBom.class);
 		BomExtension bom = new BomExtension(project.getDependencies());
 		project.getExtensions().add("bom", bom);
@@ -68,7 +71,7 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		private void configurePublication(MavenPublication publication) {
-			SoftwareComponent javaLibrary = this.project.getComponents().getByName("javaLibraryPlatform");
+			SoftwareComponent javaLibrary = this.project.getComponents().getByName("javaPlatform");
 			publication.from(javaLibrary);
 			publication.pom(this::customizePom);
 		}

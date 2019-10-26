@@ -9,7 +9,11 @@ description = 'Spring Boot Loader Tools'
 def generatedResources = "${buildDir}/generated-resources/main"
 
 configurations {
-	loader
+	loader {
+		attributes {
+			attribute(Attribute.of('org.gradle.usage', Usage), project.objects.named(Usage, 'java-runtime'))
+		}
+	}
 }
 
 dependencies {
