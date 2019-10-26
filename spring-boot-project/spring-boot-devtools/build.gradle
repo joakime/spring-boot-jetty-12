@@ -17,9 +17,10 @@ dependencies {
 
 	optional enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	optional 'javax.servlet:javax.servlet-api'
+	optional 'org.apache.derby:derby'
+	optional 'org.hibernate:hibernate-core'
 	optional 'org.springframework:spring-jdbc'
 	optional 'org.springframework:spring-orm'
-	optional 'org.hibernate:hibernate-core'
 	optional 'org.springframework:spring-web'
 	optional 'org.springframework.security:spring-security-config'
 	optional 'org.springframework.security:spring-security-web'
@@ -31,11 +32,12 @@ dependencies {
 	testImplementation 'ch.qos.logback:logback-classic'
 	testImplementation 'com.h2database:h2'
 	testImplementation 'com.zaxxer:HikariCP'
-	testImplementation 'junit:junit'
+	testImplementation 'org.awaitility:awaitility'
+	testImplementation 'org.junit.jupiter:junit-jupiter'
 	testImplementation 'org.springframework:spring-webmvc'
 	testImplementation 'org.springframework:spring-websocket'
 	testImplementation 'org.springframework.hateoas:spring-hateoas'
-	testImplementation 'org.apache.derby:derby'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.apache.derby:derbyclient'
 	testImplementation 'org.apache.tomcat.embed:tomcat-embed-websocket'
 	testImplementation 'org.apache.tomcat.embed:tomcat-embed-core'
@@ -50,6 +52,8 @@ dependencies {
 	testImplementation 'org.thymeleaf:thymeleaf'
 	testImplementation 'org.thymeleaf:thymeleaf-spring5'
 	testImplementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+	testRuntime 'org.junit.platform:junit-platform-launcher'
 }
 
 compileJava {

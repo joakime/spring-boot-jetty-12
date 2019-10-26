@@ -1642,6 +1642,11 @@
 				<version>${derby.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derbyclient</artifactId>
+				<version>${derby.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpasyncclient</artifactId>
 				<version>${httpasyncclient.version}</version>

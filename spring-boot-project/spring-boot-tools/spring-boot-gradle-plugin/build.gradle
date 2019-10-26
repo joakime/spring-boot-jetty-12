@@ -15,9 +15,9 @@ dependencies {
 	implementation 'org.springframework:spring-core'
 
 	optional enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
-	optional 'org.jetbrains.kotlin:kotlin-gradle-plugin'
+	optional 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50'
 
-	testImplementation 'junit:junit'
+	testImplementation 'org.junit.jupiter:junit-jupiter'
 	testImplementation 'org.assertj:assertj-core'
 	testImplementation 'org.mockito:mockito-core'
 }

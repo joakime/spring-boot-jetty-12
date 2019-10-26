@@ -12,7 +12,7 @@ dependencies {
 	implementation project(':spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata')
 
 	testImplementation project(':spring-boot-project:spring-boot-test')
-	testImplementation 'junit:junit'
+	testImplementation 'org.junit.jupiter:junit-jupiter'
 	testImplementation 'org.assertj:assertj-core'
 	testImplementation 'org.springframework:spring-test'
 }

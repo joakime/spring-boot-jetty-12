@@ -64,11 +64,17 @@ dependencies {
 	testImplementation 'org.hibernate.validator:hibernate-validator'
 	testImplementation 'org.hsqldb:hsqldb'
 	testImplementation 'org.jooq:jooq'
+	testImplementation 'org.junit.platform:junit-platform-engine'
+	testImplementation 'org.junit.jupiter:junit-jupiter'
 	testImplementation 'org.mockito:mockito-core'
 	testImplementation 'org.skyscreamer:jsonassert'
 	testImplementation 'org.springframework.hateoas:spring-hateoas'
 	testImplementation 'org.springframework.plugin:spring-plugin-core'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:neo4j'
 	testImplementation 'org.testcontainers:testcontainers'
+
+	testRuntime 'org.junit.platform:junit-platform-launcher'
 }
 
 compileJava {
@@ -77,4 +83,8 @@ compileJava {
 
 compileTestJava {
 	options.compilerArgs << '-parameters'
+}
+
+test {
+	include '**/*Tests.class'
 }

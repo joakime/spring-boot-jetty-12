@@ -27,7 +27,9 @@ dependencies {
 	implementation "org.hamcrest:hamcrest-library"
 	implementation "org.springframework:spring-core"
 
-	testImplementation "junit:junit"
+	testImplementation "org.junit.jupiter:junit-jupiter"
 	testImplementation "org.springframework:spring-context"
-	testRuntimeOnly "org.hibernate.validator:hibernate-validator"
+
+	testRuntime 'org.hibernate.validator:hibernate-validator'
+	testRuntime 'org.junit.platform:junit-platform-launcher'
 }

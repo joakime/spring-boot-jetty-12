@@ -18,9 +18,9 @@ dependencies {
 	testImplementation enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies"))
 	testImplementation project(":spring-boot-project:spring-boot-tools:spring-boot-test-support")
 	testImplementation "javax.validation:validation-api"
-	testImplementation "junit:junit"
 	testImplementation "org.assertj:assertj-core"
 	testImplementation "org.hamcrest:hamcrest-library"
+	testImplementation "org.junit.jupiter:junit-jupiter"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.projectlombok:lombok"
 	testImplementation "org.springframework:spring-core"

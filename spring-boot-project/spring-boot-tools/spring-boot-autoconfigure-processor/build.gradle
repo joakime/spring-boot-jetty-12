@@ -8,7 +8,7 @@ description = 'Spring Boot AutoConfigure Annotation Processor'
 
 dependencies {
 	testImplementation enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies"))
-	testImplementation "junit:junit"
+	testImplementation "org.junit.jupiter:junit-jupiter"
 	testImplementation "org.assertj:assertj-core"
 	testImplementation project(":spring-boot-project:spring-boot-tools:spring-boot-test-support")
 }
