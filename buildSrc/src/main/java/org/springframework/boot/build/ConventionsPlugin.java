@@ -57,12 +57,14 @@ public class ConventionsPlugin implements Plugin<Project> {
 		}
 
 		PublicationContainer publications = publishing.getPublications();
-		if (publications.isEmpty()) {
-			publishing.getPublications().create("maven", MavenPublication.class, (publication) -> {
-				SoftwareComponent java = project.getComponents().getByName("java");
-				publication.from(java);
-			});
-		}
+		project.afterEvaluate((evaluatedProject) -> {
+			if (publications.isEmpty()) {
+				publishing.getPublications().create("maven", MavenPublication.class, (publication) -> {
+					SoftwareComponent java = project.getComponents().getByName("java");
+					publication.from(java);
+				});
+			}
+		});
 		publications.withType(MavenPublication.class)
 				.all((publication) -> publication.pom((pom) -> customizePom(pom, project)));
 	}
