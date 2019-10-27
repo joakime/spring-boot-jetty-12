@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Tomcat as the embedded servlet container. Default 		servlet container starter used by spring-boot-starter-web"
+description = "Starter for using Tomcat as the embedded servlet container. Default servlet container starter used by spring-boot-starter-web"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

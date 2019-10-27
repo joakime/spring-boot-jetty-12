@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for building hypermedia-based RESTful web application with 		Spring MVC and Spring HATEOAS"
+description = "Starter for building hypermedia-based RESTful web application with Spring MVC and Spring HATEOAS"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

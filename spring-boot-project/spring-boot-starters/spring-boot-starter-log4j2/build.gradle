@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Log4j2 for logging. An alternative to 		spring-boot-starter-logging"
+description = "Starter for using Log4j2 for logging. An alternative to spring-boot-starter-logging"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

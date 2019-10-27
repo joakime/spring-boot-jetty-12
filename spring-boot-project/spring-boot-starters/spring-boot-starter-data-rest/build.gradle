@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for exposing Spring Data repositories over REST using Spring 		Data REST"
+description = "Starter for exposing Spring Data repositories over REST using Spring Data REST"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

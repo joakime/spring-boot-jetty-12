@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for building WebFlux applications using Spring Framework's 		Reactive Web support"
+description = "Starter for building WebFlux applications using Spring Framework's Reactive Web support"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

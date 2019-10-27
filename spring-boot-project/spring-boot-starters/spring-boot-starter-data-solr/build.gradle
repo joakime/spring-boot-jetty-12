@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using the Apache Solr search platform with Spring Data 		Solr"
+description = "Starter for using the Apache Solr search platform with Spring Data Solr"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

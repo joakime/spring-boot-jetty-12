@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for building RESTful web applications using JAX-RS and Jersey. 		An alternative to spring-boot-starter-web"
+description = "Starter for building RESTful web applications using JAX-RS and Jersey. An alternative to spring-boot-starter-web"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

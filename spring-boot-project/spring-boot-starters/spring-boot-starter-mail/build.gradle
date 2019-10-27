@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Java Mail and Spring Framework's email sending 		support"
+description = "Starter for using Java Mail and Spring Framework's email sending support"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

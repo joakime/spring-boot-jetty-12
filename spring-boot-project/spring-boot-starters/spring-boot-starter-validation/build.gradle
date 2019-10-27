@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Java Bean Validation with Hibernate 		Validator"
+description = "Starter for using Java Bean Validation with Hibernate Validator"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

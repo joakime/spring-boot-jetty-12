@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Spring Boot's Actuator which provides production 		ready features to help you monitor and manage your application"
+description = "Starter for using Spring Boot's Actuator which provides production ready features to help you monitor and manage your application"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

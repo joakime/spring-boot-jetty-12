@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for building WebSocket applications using Spring Framework's 		WebSocket support"
+description = "Starter for building WebSocket applications using Spring Framework's WebSocket support"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using MongoDB document-oriented database and Spring Data 		MongoDB Reactive"
+description = "Starter for using MongoDB document-oriented database and Spring Data MongoDB Reactive"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Jetty as the embedded servlet container. An 		alternative to spring-boot-starter-tomcat"
+description = "Starter for using Jetty as the embedded servlet container. An alternative to spring-boot-starter-tomcat"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

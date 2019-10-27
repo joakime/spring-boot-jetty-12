@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Couchbase document-oriented database and Spring Data 		Couchbase Reactive"
+description = "Starter for using Couchbase document-oriented database and Spring Data Couchbase Reactive"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

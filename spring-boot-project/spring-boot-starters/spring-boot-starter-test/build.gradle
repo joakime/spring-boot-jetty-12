@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for testing Spring Boot applications with libraries including 		JUnit, Hamcrest and Mockito"
+description = "Starter for testing Spring Boot applications with libraries including JUnit, Hamcrest and Mockito"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

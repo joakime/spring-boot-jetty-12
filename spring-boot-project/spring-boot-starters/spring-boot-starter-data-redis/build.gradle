@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Redis key-value data store with Spring Data Redis and 		the Lettuce client"
+description = "Starter for using Redis key-value data store with Spring Data Redis and the Lettuce client"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))

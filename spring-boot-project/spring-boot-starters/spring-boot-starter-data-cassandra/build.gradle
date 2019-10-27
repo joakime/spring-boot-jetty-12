@@ -4,7 +4,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = "Starter for using Cassandra distributed database and Spring Data 		Cassandra"
+description = "Starter for using Cassandra distributed database and Spring Data Cassandra"
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
