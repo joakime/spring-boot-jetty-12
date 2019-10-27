@@ -71,7 +71,6 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	private void customizePom(MavenPom pom, Project project) {
 		pom.getUrl().set("https://projects.spring.io/spring-boot/#");
-		pom.getName().set(project.getDescription());
 		pom.getDescription().set(project.provider(project::getDescription));
 		pom.organization(this::customizeOrganization);
 		pom.licenses(this::customizeLicences);
