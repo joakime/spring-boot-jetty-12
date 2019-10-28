@@ -60,6 +60,7 @@ include 'spring-boot-project:spring-boot-starters:spring-boot-starter-oauth2-res
 include 'spring-boot-project:spring-boot-starters:spring-boot-starter-parent'
 include 'spring-boot-project:spring-boot-starters:spring-boot-starter-quartz'
 include 'spring-boot-project:spring-boot-starters:spring-boot-starter-reactor-netty'
+include 'spring-boot-project:spring-boot-starters:spring-boot-starter-rsocket'
 include 'spring-boot-project:spring-boot-starters:spring-boot-starter-security'
 include 'spring-boot-project:spring-boot-starters:spring-boot-starter-test'
 include 'spring-boot-project:spring-boot-starters:spring-boot-starter-thymeleaf'
