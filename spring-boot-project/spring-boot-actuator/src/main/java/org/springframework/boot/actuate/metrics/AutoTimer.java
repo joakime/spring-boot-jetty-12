@@ -68,7 +68,7 @@ public interface AutoTimer {
 
 	/**
 	 * Factory method to create a new {@link Builder Timer.Builder} with auto-timer
-	 * settings {@link #apply(Builder) applied}.
+	 * settings {@link #apply(Timer.Builder) applied}.
 	 * @param name the name of the timer
 	 * @return a new builder instance with auto-settings applied
 	 */
@@ -78,7 +78,7 @@ public interface AutoTimer {
 
 	/**
 	 * Factory method to create a new {@link Builder Timer.Builder} with auto-timer
-	 * settings {@link #apply(Builder) applied}.
+	 * settings {@link #apply(Timer.Builder) applied}.
 	 * @param supplier the builder supplier
 	 * @return a new builder instance with auto-settings applied
 	 */

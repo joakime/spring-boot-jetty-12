@@ -20,6 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublicationContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
@@ -41,7 +42,14 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(MavenPublishPlugin.class, (plugin) -> customizeMavenPublishing(project));
+		project.getPlugins().withType(MavenPublishPlugin.class, (plugin) -> {
+			project.getPlugins().withType(JavaPlugin.class, (java) -> {
+				JavaPluginExtension javaExtension = project.getExtensions().getByType(JavaPluginExtension.class);
+				javaExtension.publishJavadoc();
+				javaExtension.publishSources();
+			});
+			customizeMavenPublishing(project);
+		});
 		project.getTasks().withType(Test.class, (test) -> {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");

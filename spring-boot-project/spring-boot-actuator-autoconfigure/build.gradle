@@ -101,7 +101,10 @@ dependencies {
 	testImplementation 'com.squareup.okhttp3:mockwebserver'
 	testImplementation 'com.jayway.jsonpath:json-path'
 	testImplementation 'io.undertow:undertow-core'
-	testImplementation 'io.undertow:undertow-servlet'
+	testImplementation ('io.undertow:undertow-servlet') {
+		exclude group: 'org.jboss.spec.javax.servlet', module: 'jboss-servlet-api_4.0_spec'
+		exclude group: 'org.jboss.spec.javax.annotation', module: 'jboss-annotations-api_1.2_spec'
+	}
 	testImplementation 'javax.xml.bind:jaxb-api'
 	testImplementation 'org.apache.logging.log4j:log4j-to-slf4j'
 	testImplementation 'org.aspectj:aspectjrt'

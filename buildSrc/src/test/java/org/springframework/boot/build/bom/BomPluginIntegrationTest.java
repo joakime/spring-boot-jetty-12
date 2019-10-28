@@ -87,7 +87,7 @@ public class BomPluginIntegrationTest {
 			assertThat(dependency).textAtPath("groupId").isEqualTo("ch.qos.logback");
 			assertThat(dependency).textAtPath("artifactId").isEqualTo("logback-core");
 			assertThat(dependency).textAtPath("version").isEqualTo("1.2.3");
-			assertThat(dependency).textAtPath("scope").isEqualTo("compile");
+			assertThat(dependency).textAtPath("scope").isNullOrEmpty();
 			assertThat(dependency).textAtPath("type").isNullOrEmpty();
 		});
 	}
