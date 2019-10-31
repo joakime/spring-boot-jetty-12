@@ -8,14 +8,6 @@ plugins {
 
 description = 'Spring Boot'
 
-configurations {
-	annotationProcessor {
-		attributes {
-			attribute(Attribute.of('org.gradle.usage', Usage), project.objects.named(Usage, 'java-runtime'))
-		}
-	}
-}
-
 dependencies {
 	annotationProcessor enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	annotationProcessor project(':spring-boot-project:spring-boot-tools:spring-boot-configuration-processor')
