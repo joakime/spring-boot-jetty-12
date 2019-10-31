@@ -10,6 +10,7 @@ repositories {
 
 dependencies {
 	checkstyle 'io.spring.javaformat:spring-javaformat-checkstyle:0.0.15'
+	implementation 'org.springframework:spring-core:5.2.0.RELEASE'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'org.assertj:assertj-core:3.11.1'
 }
@@ -26,13 +27,17 @@ gradlePlugin {
 			id = "org.springframework.boot.bom"
 			implementationClass = "org.springframework.boot.build.bom.BomPlugin"
 		}
+		conventionsPlugin {
+			id = "org.springframework.boot.conventions"
+			implementationClass = "org.springframework.boot.build.ConventionsPlugin"
+		}
 		optionalDependenciesPlugin {
 			id = "org.springframework.boot.optional-dependencies"
 			implementationClass = "org.springframework.boot.build.optional.OptionalDependenciesPlugin"
 		}
-		buildPlugin {
-			id = "org.springframework.boot.conventions"
-			implementationClass = "org.springframework.boot.build.ConventionsPlugin"
+		starterPlugin {
+			id = "org.springframework.boot.starter"
+			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
 		}
 	}
 }

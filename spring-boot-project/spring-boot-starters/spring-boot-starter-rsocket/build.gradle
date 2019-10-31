@@ -1,7 +1,5 @@
 plugins {
-	id 'java-library'
-	id 'maven-publish'
-	id 'org.springframework.boot.conventions'
+	id 'org.springframework.boot.starter'
 }
 
 description = "Starter for building RSocket clients and servers"

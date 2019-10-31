@@ -37,8 +37,14 @@ dependencies {
 	optional 'io.searchbox:jest'
 	optional 'io.rsocket:rsocket-core'
 	optional 'io.rsocket:rsocket-transport-netty'
-	optional 'io.undertow:undertow-servlet'
-	optional 'io.undertow:undertow-websockets-jsr'
+	optional ('io.undertow:undertow-servlet') {
+		exclude group: 'org.jboss.spec.javax.annotation', module: 'jboss-annotations-api_1.2_spec'
+		exclude group: 'org.jboss.spec.javax.servlet', module: 'jboss-servlet-api_4.0_spec'
+	}
+	optional ('io.undertow:undertow-websockets-jsr') {
+		exclude group: 'org.jboss.spec.javax.annotation', module: 'jboss-annotations-api_1.2_spec'
+		exclude group: 'org.jboss.spec.javax.servlet', module: 'jboss-servlet-api_4.0_spec'
+	}
 	optional 'jakarta.jms:jakarta.jms-api'
 	optional 'jakarta.mail:jakarta.mail-api'
 	optional 'jakarta.json.bind:jakarta.json.bind-api'
