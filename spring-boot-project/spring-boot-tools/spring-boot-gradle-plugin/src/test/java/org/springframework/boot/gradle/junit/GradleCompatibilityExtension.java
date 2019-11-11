@@ -38,7 +38,7 @@ import org.springframework.boot.gradle.testkit.GradleBuildExtension;
  */
 public final class GradleCompatibilityExtension implements TestTemplateInvocationContextProvider {
 
-	private static final List<String> GRADLE_VERSIONS = Arrays.asList("4.10.3", 5.0", "5.1.1", "5.2.1", "5.3.1",
+	private static final List<String> GRADLE_VERSIONS = Arrays.asList("4.10.3", "5.0", "5.1.1", "5.2.1", "5.3.1",
 			"5.4.1", "5.5.1", "5.6.4", "default");
 
 	@Override
