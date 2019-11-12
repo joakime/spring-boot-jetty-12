@@ -14,6 +14,7 @@ repositories {
 }
 
 configurations {
+	autoConfiguration
 	docResources
 	testSlices
 }
@@ -21,6 +22,9 @@ configurations {
 dependencies {
 	docResources 'io.spring.docresources:spring-doc-resources:0.1.3.RELEASE'
 	testSlices project(path: ':spring-boot-project:spring-boot-test-autoconfigure', configuration: 'testSliceMetadata')
+	autoConfiguration project(path: ':spring-boot-project:spring-boot-autoconfigure', configuration: 'autoConfigurationMetadata')
+	autoConfiguration project(path: ':spring-boot-project:spring-boot-actuator-autoconfigure', configuration: 'autoConfigurationMetadata')
+	autoConfiguration project(path: ':spring-boot-project:spring-boot-devtools', configuration: 'autoConfigurationMetadata')
 }
 
 task javadoc(type: Javadoc) {
@@ -69,12 +73,37 @@ task copyDocResourcesJs(type: Sync) {
 	}
 }
 
+task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
+	testSlices = configurations.testSlices
+	outputFile = file("$buildDir/docs/generated/test-slice-auto-configuration.adoc")
+}
+
+task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
+	outputDir = file("$buildDir/docs/generated/starters/")
+}
+
+task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
+	autoConfiguration = configurations.autoConfiguration
+	outputDir = file("$buildDir/docs/generated/auto-configuration-classes/")
+}
+
+task documentDependencyVersions(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
+	dependsOn dependencyVersions
+	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
+	outputFile = file("$buildDir/docs/generated/dependency-versions.adoc")
+}
+
+
 asciidoctorj {
 	// fatalWarnings '.*'
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
+	dependsOn documentTestSlices
+	dependsOn documentStarters
+	dependsOn documentAutoConfigurationClasses
+	dependsOn documentDependencyVersions
 	baseDirFollowsSourceDir()
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
@@ -97,6 +126,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	}
 	attributes	'asciidoc-sources-root': file('src/docs/asciidoc'),
 				'attribute-missing': 'warn',
+				'generated-resources-root': "$buildDir/docs/generated",
 				'sources-root': file('src')
 	if (!(it instanceof org.asciidoctor.gradle.jvm.AsciidoctorPdfTask)) {
 		dependsOn copyDocResourcesJs
@@ -146,13 +176,4 @@ task zip(type: Zip) {
 	from(javadoc) {
 		into 'api'
 	}
-}
-
-task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
-	testSlices = configurations.testSlices
-	outputFile = file("$buildDir/docs/generated/test-slices.adoc")
-}
-
-task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
-	outputDir = file("$buildDir/docs/generated/starters/");
 }

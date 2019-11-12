@@ -139,3 +139,8 @@ compileJava {
 compileTestJava {
 	options.compilerArgs << '-parameters'
 }
+
+task autoConfigurationMetadata(type: org.springframework.boot.build.autoconfigure.AutoConfigurationMetadata) {
+	sourceSet = sourceSets.main
+	outputFile = file("$buildDir/auto-configuration-metadata.properties")
+}

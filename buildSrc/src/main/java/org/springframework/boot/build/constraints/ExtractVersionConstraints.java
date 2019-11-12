@@ -16,11 +16,14 @@
 
 package org.springframework.boot.build.constraints;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.ComponentMetadataDetails;
@@ -45,6 +48,8 @@ public class ExtractVersionConstraints extends AbstractTask {
 
 	private final Map<String, String> versionConstraints = new TreeMap<>();
 
+	private final Set<ConstrainedVersion> constrainedVersions = new TreeSet<>();
+
 	private final List<String> projectPaths = new ArrayList<String>();
 
 	public ExtractVersionConstraints() {
@@ -64,6 +69,11 @@ public class ExtractVersionConstraints extends AbstractTask {
 		return Collections.unmodifiableMap(this.versionConstraints);
 	}
 
+	@Internal
+	public Set<ConstrainedVersion> getConstrainedVersions() {
+		return this.constrainedVersions;
+	}
+
 	@TaskAction
 	void extractVersionConstraints() {
 		this.configuration.resolve();
@@ -72,6 +82,8 @@ public class ExtractVersionConstraints extends AbstractTask {
 					.getByName("apiElements").getAllDependencyConstraints()) {
 				this.versionConstraints.put(constraint.getGroup() + ":" + constraint.getName(),
 						constraint.getVersionConstraint().toString());
+				this.constrainedVersions.add(new ConstrainedVersion(constraint.getGroup(), constraint.getName(),
+						constraint.getVersionConstraint().toString()));
 			}
 		}
 	}
@@ -81,8 +93,47 @@ public class ExtractVersionConstraints extends AbstractTask {
 			for (DependencyConstraintMetadata constraint : dependencyConstraints) {
 				this.versionConstraints.put(constraint.getGroup() + ":" + constraint.getName(),
 						constraint.getVersionConstraint().toString());
+				this.constrainedVersions.add(new ConstrainedVersion(constraint.getGroup(), constraint.getName(),
+						constraint.getVersionConstraint().toString()));
 			}
 		}));
+	}
+
+	public static final class ConstrainedVersion implements Comparable<ConstrainedVersion>, Serializable {
+
+		private final String group;
+
+		private final String artifact;
+
+		private final String version;
+
+		private ConstrainedVersion(String group, String artifact, String version) {
+			this.group = group;
+			this.artifact = artifact;
+			this.version = version;
+		}
+
+		public String getGroup() {
+			return this.group;
+		}
+
+		public String getArtifact() {
+			return this.artifact;
+		}
+
+		public String getVersion() {
+			return this.version;
+		}
+
+		@Override
+		public int compareTo(ConstrainedVersion other) {
+			int groupComparison = this.group.compareTo(other.group);
+			if (groupComparison != 0) {
+				return groupComparison;
+			}
+			return this.artifact.compareTo(other.artifact);
+		}
+
 	}
 
 }

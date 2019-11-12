@@ -59,3 +59,8 @@ dependencies {
 compileJava {
 	options.compilerArgs << "-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=${sourceSets.main.resources.srcDirs}"
 }
+
+task autoConfigurationMetadata(type: org.springframework.boot.build.autoconfigure.AutoConfigurationMetadata) {
+	sourceSet = sourceSets.main
+	outputFile = file("$buildDir/auto-configuration-metadata.properties")
+}
