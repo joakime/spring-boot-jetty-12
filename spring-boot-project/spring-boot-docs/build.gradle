@@ -2,6 +2,8 @@ plugins {
 	id 'org.asciidoctor.jvm.convert' version '2.3.0'
 	id 'org.asciidoctor.jvm.pdf' version '2.3.0'
 	id 'java-base'
+	id 'maven-publish'
+	id 'org.springframework.boot.conventions'
 }
 
 repositories {
@@ -187,5 +189,17 @@ task zip(type: Zip) {
 	}
 	from(javadoc) {
 		into 'api'
+	}
+}
+
+artifacts {
+	archives zip
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact zip
+		}
 	}
 }
