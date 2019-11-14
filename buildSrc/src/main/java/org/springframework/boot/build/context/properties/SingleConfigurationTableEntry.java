@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationdocs;
+package org.springframework.boot.build.context.properties;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 
 /**
  * Table entry containing a single configuration property.
@@ -32,8 +30,8 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 
 	private final String defaultValue;
 
-	SingleConfigurationTableEntry(ConfigurationMetadataProperty property) {
-		this.key = property.getId();
+	SingleConfigurationTableEntry(ConfigurationProperty property) {
+		this.key = property.getName();
 		if (property.getType() != null && property.getType().startsWith("java.util.Map")) {
 			this.key += ".*";
 		}

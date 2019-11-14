@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationdocs;
+package org.springframework.boot.build.context.properties;
 
-import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,23 +25,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-class ConfigurationTableTests {
+public class ConfigurationTableTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	void simpleTable() {
+	public void simpleTable() {
 		ConfigurationTable table = new ConfigurationTable("test");
-		ConfigurationMetadataProperty first = new ConfigurationMetadataProperty();
-		first.setId("spring.test.prop");
-		first.setDefaultValue("something");
-		first.setDescription("This is a description.");
-		first.setType("java.lang.String");
-		ConfigurationMetadataProperty second = new ConfigurationMetadataProperty();
-		second.setId("spring.test.other");
-		second.setDefaultValue("other value");
-		second.setDescription("This is another description.");
-		second.setType("java.lang.String");
+		ConfigurationProperty first = new ConfigurationProperty("spring.test.prop", "java.lang.String", "something",
+				"This is a description.", false);
+		ConfigurationProperty second = new ConfigurationProperty("spring.test.other", "java.lang.String", "other value",
+				"This is another description.", false);
 		table.addEntry(new SingleConfigurationTableEntry(first));
 		table.addEntry(new SingleConfigurationTableEntry(second));
 		assertThat(table.toAsciidocTable()).isEqualTo("[cols=\"1,1,2\", options=\"header\"]" + NEWLINE + "|==="

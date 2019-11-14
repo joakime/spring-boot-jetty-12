@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationdocs;
+package org.springframework.boot.build.context.properties;
 
 /**
  * Simple builder to help construct Asciidoc markup.

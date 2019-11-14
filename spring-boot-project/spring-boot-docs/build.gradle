@@ -15,6 +15,7 @@ repositories {
 
 configurations {
 	autoConfiguration
+	configurationProperties
 	docResources
 	testSlices
 }
@@ -25,6 +26,11 @@ dependencies {
 	autoConfiguration project(path: ':spring-boot-project:spring-boot-autoconfigure', configuration: 'autoConfigurationMetadata')
 	autoConfiguration project(path: ':spring-boot-project:spring-boot-actuator-autoconfigure', configuration: 'autoConfigurationMetadata')
 	autoConfiguration project(path: ':spring-boot-project:spring-boot-devtools', configuration: 'autoConfigurationMetadata')
+	configurationProperties project(path: ':spring-boot-project:spring-boot', configuration: 'configurationPropertiesMetadata')
+	configurationProperties project(path: ':spring-boot-project:spring-boot-actuator', configuration: 'configurationPropertiesMetadata')
+	configurationProperties project(path: ':spring-boot-project:spring-boot-actuator-autoconfigure', configuration: 'configurationPropertiesMetadata')
+	configurationProperties project(path: ':spring-boot-project:spring-boot-autoconfigure', configuration: 'configurationPropertiesMetadata')
+	configurationProperties project(path: ':spring-boot-project:spring-boot-devtools', configuration: 'configurationPropertiesMetadata')
 }
 
 task javadoc(type: Javadoc) {
@@ -93,6 +99,11 @@ task documentDependencyVersions(type: org.springframework.boot.build.constraints
 	outputFile = file("$buildDir/docs/generated/dependency-versions.adoc")
 }
 
+task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
+	configurationPropertyMetadata = configurations.configurationProperties
+	outputDir = file("$buildDir/docs/generated/config-docs/")
+}
+
 
 asciidoctorj {
 	// fatalWarnings '.*'
@@ -104,6 +115,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn documentStarters
 	dependsOn documentAutoConfigurationClasses
 	dependsOn documentDependencyVersions
+	dependsOn documentConfigurationProperties
 	baseDirFollowsSourceDir()
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints

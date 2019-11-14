@@ -11,6 +11,7 @@ repositories {
 dependencies {
 	checkstyle 'io.spring.javaformat:spring-javaformat-checkstyle:0.0.15'
 	implementation 'org.springframework:spring-core:5.2.0.RELEASE'
+	implementation 'com.google.code.gson:gson:2.8.5'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'org.assertj:assertj-core:3.11.1'
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationdocs;
+package org.springframework.boot.build.context.properties;
 
 /**
  * Abstract class for entries in {@link ConfigurationTable}.

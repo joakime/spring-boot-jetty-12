@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationdocs;
+package org.springframework.boot.build.context.properties;
 
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
-
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 
 /**
  * Table entry regrouping a list of configuration properties sharing the same description.
@@ -39,8 +37,8 @@ class CompoundConfigurationTableEntry extends ConfigurationTableEntry {
 		this.configurationKeys = new TreeSet<>();
 	}
 
-	void addConfigurationKeys(ConfigurationMetadataProperty... properties) {
-		Stream.of(properties).map(ConfigurationMetadataProperty::getId).forEach(this.configurationKeys::add);
+	void addConfigurationKeys(ConfigurationProperty... properties) {
+		Stream.of(properties).map(ConfigurationProperty::getName).forEach(this.configurationKeys::add);
 	}
 
 	@Override

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationdocs;
+package org.springframework.boot.build.context.properties;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -28,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepositoryJsonBuilder;
+import org.gradle.api.file.FileCollection;
 
 /**
  * Write Asciidoc documents with configuration properties listings.
@@ -39,14 +37,13 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepos
  */
 public class ConfigurationMetadataDocumentWriter {
 
-	public void writeDocument(Path outputDirectory, DocumentOptions options, InputStream... metadata)
+	public void writeDocument(Path outputDirectory, DocumentOptions options, FileCollection metadataFiles)
 			throws IOException {
 		assertValidOutputDirectory(outputDirectory);
 		if (!Files.exists(outputDirectory)) {
 			Files.createDirectory(outputDirectory);
 		}
-		assertMetadata(metadata);
-		List<ConfigurationTable> tables = createConfigTables(getMetadataProperties(metadata), options);
+		List<ConfigurationTable> tables = createConfigTables(ConfigurationProperties.fromFiles(metadataFiles), options);
 		for (ConfigurationTable table : tables) {
 			writeConfigurationTable(table, outputDirectory);
 		}
@@ -61,24 +58,11 @@ public class ConfigurationMetadataDocumentWriter {
 		}
 	}
 
-	private void assertMetadata(InputStream... metadata) {
-		if (metadata == null || metadata.length < 1) {
-			throw new IllegalArgumentException("missing input metadata");
-		}
-	}
-
-	private Map<String, ConfigurationMetadataProperty> getMetadataProperties(InputStream... metadata)
-			throws IOException {
-		ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder
-				.create(metadata);
-		return builder.build().getAllProperties();
-	}
-
-	private List<ConfigurationTable> createConfigTables(Map<String, ConfigurationMetadataProperty> metadataProperties,
+	private List<ConfigurationTable> createConfigTables(Map<String, ConfigurationProperty> metadataProperties,
 			DocumentOptions options) {
 		List<ConfigurationTable> tables = new ArrayList<>();
 		List<String> unmappedKeys = metadataProperties.values().stream().filter((property) -> !property.isDeprecated())
-				.map(ConfigurationMetadataProperty::getId).collect(Collectors.toList());
+				.map(ConfigurationProperty::getName).collect(Collectors.toList());
 		Map<String, CompoundConfigurationTableEntry> overrides = getOverrides(metadataProperties, unmappedKeys,
 				options);
 		options.getMetadataSections().forEach((id, keyPrefixes) -> tables
@@ -95,8 +79,7 @@ public class ConfigurationMetadataDocumentWriter {
 	}
 
 	private Map<String, CompoundConfigurationTableEntry> getOverrides(
-			Map<String, ConfigurationMetadataProperty> metadataProperties, List<String> unmappedKeys,
-			DocumentOptions options) {
+			Map<String, ConfigurationProperty> metadataProperties, List<String> unmappedKeys, DocumentOptions options) {
 		Map<String, CompoundConfigurationTableEntry> overrides = new HashMap<>();
 		options.getOverrides().forEach((keyPrefix, description) -> {
 			CompoundConfigurationTableEntry entry = new CompoundConfigurationTableEntry(keyPrefix, description);
@@ -111,7 +94,7 @@ public class ConfigurationMetadataDocumentWriter {
 		return overrides;
 	}
 
-	private ConfigurationTable createConfigTable(Map<String, ConfigurationMetadataProperty> metadataProperties,
+	private ConfigurationTable createConfigTable(Map<String, ConfigurationProperty> metadataProperties,
 			List<String> unmappedKeys, Map<String, CompoundConfigurationTableEntry> overrides, String id,
 			List<String> keyPrefixes) {
 		ConfigurationTable table = new ConfigurationTable(id);
@@ -123,7 +106,7 @@ public class ConfigurationMetadataDocumentWriter {
 		List<String> matchingKeys = unmappedKeys.stream()
 				.filter((key) -> keyPrefixes.stream().anyMatch(key::startsWith)).collect(Collectors.toList());
 		for (String matchingKey : matchingKeys) {
-			ConfigurationMetadataProperty property = metadataProperties.get(matchingKey);
+			ConfigurationProperty property = metadataProperties.get(matchingKey);
 			table.addEntry(new SingleConfigurationTableEntry(property));
 		}
 		unmappedKeys.removeAll(matchingKeys);

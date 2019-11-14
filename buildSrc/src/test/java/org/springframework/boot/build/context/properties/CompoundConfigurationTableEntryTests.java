@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationdocs;
+package org.springframework.boot.build.context.properties;
 
-import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,21 +25,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-class CompoundConfigurationTableEntryTests {
+public class CompoundConfigurationTableEntryTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	void simpleProperty() {
-		ConfigurationMetadataProperty firstProp = new ConfigurationMetadataProperty();
-		firstProp.setId("spring.test.first");
-		firstProp.setType("java.lang.String");
-		ConfigurationMetadataProperty secondProp = new ConfigurationMetadataProperty();
-		secondProp.setId("spring.test.second");
-		secondProp.setType("java.lang.String");
-		ConfigurationMetadataProperty thirdProp = new ConfigurationMetadataProperty();
-		thirdProp.setId("spring.test.third");
-		thirdProp.setType("java.lang.String");
+	public void simpleProperty() {
+		ConfigurationProperty firstProp = new ConfigurationProperty("spring.test.first", "java.lang.String");
+		ConfigurationProperty secondProp = new ConfigurationProperty("spring.test.second", "java.lang.String");
+		ConfigurationProperty thirdProp = new ConfigurationProperty("spring.test.third", "java.lang.String");
 		CompoundConfigurationTableEntry entry = new CompoundConfigurationTableEntry("spring.test",
 				"This is a description.");
 		entry.addConfigurationKeys(firstProp, secondProp, thirdProp);

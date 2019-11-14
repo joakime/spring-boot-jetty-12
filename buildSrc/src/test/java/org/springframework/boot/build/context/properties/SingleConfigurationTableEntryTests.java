@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationdocs;
+package org.springframework.boot.build.context.properties;
 
-import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,17 +25,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-class SingleConfigurationTableEntryTests {
+public class SingleConfigurationTableEntryTests {
 
 	private static String NEWLINE = System.lineSeparator();
 
 	@Test
-	void simpleProperty() {
-		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
-		property.setId("spring.test.prop");
-		property.setDefaultValue("something");
-		property.setDescription("This is a description.");
-		property.setType("java.lang.String");
+	public void simpleProperty() {
+		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String", "something",
+				"This is a description.", false);
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
@@ -46,11 +41,9 @@ class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	void noDefaultValue() {
-		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
-		property.setId("spring.test.prop");
-		property.setDescription("This is a description.");
-		property.setType("java.lang.String");
+	public void noDefaultValue() {
+		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String", null,
+				"This is a description.", false);
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
@@ -59,12 +52,9 @@ class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	void defaultValueWithPipes() {
-		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
-		property.setId("spring.test.prop");
-		property.setDefaultValue("first|second");
-		property.setDescription("This is a description.");
-		property.setType("java.lang.String");
+	public void defaultValueWithPipes() {
+		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String",
+				"first|second", "This is a description.", false);
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
@@ -73,12 +63,9 @@ class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	void defaultValueWithBackslash() {
-		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
-		property.setId("spring.test.prop");
-		property.setDefaultValue("first\\second");
-		property.setDescription("This is a description.");
-		property.setType("java.lang.String");
+	public void defaultValueWithBackslash() {
+		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String",
+				"first\\second", "This is a description.", false);
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
@@ -87,11 +74,9 @@ class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	void descriptionWithPipe() {
-		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
-		property.setId("spring.test.prop");
-		property.setDescription("This is a description with a | pipe.");
-		property.setType("java.lang.String");
+	public void descriptionWithPipe() {
+		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String", null,
+				"This is a description with a | pipe.", false);
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
@@ -100,11 +85,9 @@ class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	void mapProperty() {
-		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
-		property.setId("spring.test.prop");
-		property.setDescription("This is a description.");
-		property.setType("java.util.Map<java.lang.String,java.lang.String>");
+	public void mapProperty() {
+		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop",
+				"java.util.Map<java.lang.String,java.lang.String>", null, "This is a description.", false);
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
@@ -113,13 +96,10 @@ class SingleConfigurationTableEntryTests {
 	}
 
 	@Test
-	void listProperty() {
+	public void listProperty() {
 		String[] defaultValue = new String[] { "first", "second", "third" };
-		ConfigurationMetadataProperty property = new ConfigurationMetadataProperty();
-		property.setId("spring.test.prop");
-		property.setDescription("This is a description.");
-		property.setType("java.util.List<java.lang.String>");
-		property.setDefaultValue(defaultValue);
+		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop",
+				"java.util.List<java.lang.String>", defaultValue, "This is a description.", false);
 		SingleConfigurationTableEntry entry = new SingleConfigurationTableEntry(property);
 		AsciidocBuilder builder = new AsciidocBuilder();
 		entry.write(builder);
