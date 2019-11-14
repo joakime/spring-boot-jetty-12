@@ -47,7 +47,7 @@ public class AutoConfigurationMetadata extends AbstractTask {
 		getInputs().file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
 				"META-INF/spring.factories"));
 		Configuration autoConfigurationMetadata = getProject().getConfigurations()
-				.maybeCreate("autoConfigurationMetadata");
+				.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
 		getProject().getArtifacts().add(autoConfigurationMetadata.getName(),
 				getProject().provider((Callable<File>) this::getOutputFile), (artifact) -> artifact.builtBy(this));
 	}

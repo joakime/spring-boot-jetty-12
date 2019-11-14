@@ -23,9 +23,17 @@ checkstyle {
 
 gradlePlugin {
 	plugins {
+		autoConfigurationPlugin {
+			id = "org.springframework.boot.auto-configuration"
+			implementationClass = "org.springframework.boot.build.autoconfigure.AutoConfigurationPlugin"
+		}
 		bomPlugin {
 			id = "org.springframework.boot.bom"
 			implementationClass = "org.springframework.boot.build.bom.BomPlugin"
+		}
+		configurationPropertiesPlugin {
+			id = "org.springframework.boot.configuration-properties"
+			implementationClass = "org.springframework.boot.build.context.properties.ConfigurationPropertiesPlugin"
 		}
 		conventionsPlugin {
 			id = "org.springframework.boot.conventions"

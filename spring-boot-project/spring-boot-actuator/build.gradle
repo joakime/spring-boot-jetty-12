@@ -3,13 +3,12 @@ plugins {
 	id 'org.springframework.boot.optional-dependencies'
 	id 'maven-publish'
 	id 'org.springframework.boot.conventions'
+	id 'org.springframework.boot.configuration-properties'
 }
 
 description = 'Spring Boot Actuator'
 
 dependencies {
-	annotationProcessor project(':spring-boot-project:spring-boot-tools:spring-boot-configuration-processor')
-
 	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	implementation project(':spring-boot-project:spring-boot')
 
@@ -89,7 +88,6 @@ dependencies {
 
 compileJava {
 	options.compilerArgs << '-parameters'
-	options.compilerArgs << "-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=${sourceSets.main.resources.srcDirs}"
 }
 
 compileTestJava {
