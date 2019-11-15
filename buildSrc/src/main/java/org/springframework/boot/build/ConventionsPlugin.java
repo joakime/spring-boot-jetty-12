@@ -42,6 +42,28 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
+		applyJavaConventions(project);
+		applyTestConventions(project);
+		applyAsciidoctorConventions(project);
+		applyMavenPublishingConventions(project);
+	}
+
+	private void applyJavaConventions(Project project) {
+		project.getPlugins().withType(JavaPlugin.class, (java) -> project.setProperty("sourceCompatibility", "1.8"));
+	}
+
+	private void applyTestConventions(Project project) {
+		project.getTasks().withType(Test.class, (test) -> {
+			test.useJUnitPlatform();
+			test.setMaxHeapSize("1024M");
+		});
+	}
+
+	private void applyAsciidoctorConventions(Project project) {
+		new AsciidoctorConventions().apply(project);
+	}
+
+	private void applyMavenPublishingConventions(Project project) {
 		project.getPlugins().withType(MavenPublishPlugin.class, (plugin) -> {
 			project.getPlugins().withType(JavaPlugin.class, (java) -> {
 				JavaPluginExtension javaExtension = project.getExtensions().getByType(JavaPluginExtension.class);
@@ -50,11 +72,6 @@ public class ConventionsPlugin implements Plugin<Project> {
 			});
 			customizeMavenPublishing(project);
 		});
-		project.getTasks().withType(Test.class, (test) -> {
-			test.useJUnitPlatform();
-			test.setMaxHeapSize("1024M");
-		});
-		project.getPlugins().withType(JavaPlugin.class, (java) -> project.setProperty("sourceCompatibility", "1.8"));
 	}
 
 	private void customizeMavenPublishing(Project project) {

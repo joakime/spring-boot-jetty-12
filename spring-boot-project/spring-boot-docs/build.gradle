@@ -1,29 +1,18 @@
 plugins {
-	id 'org.asciidoctor.jvm.convert' version '2.3.0'
-	id 'org.asciidoctor.jvm.pdf' version '2.3.0'
+	id 'org.asciidoctor.jvm.convert'
+	id 'org.asciidoctor.jvm.pdf'
 	id 'java-base'
 	id 'maven-publish'
 	id 'org.springframework.boot.conventions'
 }
 
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		content {
-			includeGroup "io.spring.docresources"
-		}
-	}
-}
-
 configurations {
 	autoConfiguration
 	configurationProperties
-	docResources
 	testSlices
 }
 
 dependencies {
-	docResources 'io.spring.docresources:spring-doc-resources:0.1.3.RELEASE'
 	testSlices project(path: ':spring-boot-project:spring-boot-test-autoconfigure', configuration: 'testSliceMetadata')
 	autoConfiguration project(path: ':spring-boot-project:spring-boot-autoconfigure', configuration: 'autoConfigurationMetadata')
 	autoConfiguration project(path: ':spring-boot-project:spring-boot-actuator-autoconfigure', configuration: 'autoConfigurationMetadata')
@@ -62,25 +51,6 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 	enforcedPlatform(':spring-boot-project:spring-boot-dependencies')
 }
 
-task extractDocResources(type: Sync) {
-	from {
-		configurations.docResources.collect { zipTree(it) }
-	}
-	into "$buildDir/docs/resources"
-}
-
-task copyDocResourcesJs(type: Sync) {
-	destinationDir = file("$buildDir/docs")
-	from (extractDocResources) {
-		include 'js/**'
-		into "asciidoc"
-	}
-	from (extractDocResources) {
-		include 'js/**'
-		into "asciidocMultipage"
-	}
-}
-
 task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
 	testSlices = configurations.testSlices
 	outputFile = file("$buildDir/docs/generated/test-slice-auto-configuration.adoc")
@@ -104,11 +74,6 @@ task documentDependencyVersions(type: org.springframework.boot.build.constraints
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
 	outputDir = file("$buildDir/docs/generated/config-docs/")
-}
-
-
-asciidoctorj {
-	// fatalWarnings '.*'
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
@@ -142,17 +107,6 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 				'attribute-missing': 'warn',
 				'generated-resources-root': "$buildDir/docs/generated",
 				'sources-root': file('src')
-	if (!(it instanceof org.asciidoctor.gradle.jvm.AsciidoctorPdfTask)) {
-		dependsOn copyDocResourcesJs
-		options 'doctype': 'book'
-		attributes	'highlightjsdir': 'js/highlight',
-					'highlightjs-theme': 'github',
-					'linkcss': true,
-					'icons': 'font',
-					'stylesdir': 'css/',
-					'docinfodir': "$buildDir/docs/resources",
-					'stylesheet': "$buildDir/docs/resources/css/spring.css"
-	}
 }
 
 asciidoctor {
