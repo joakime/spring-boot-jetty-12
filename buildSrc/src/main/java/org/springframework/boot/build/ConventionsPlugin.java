@@ -85,8 +85,10 @@ public class ConventionsPlugin implements Plugin<Project> {
 		project.afterEvaluate((evaluatedProject) -> {
 			if (publications.isEmpty()) {
 				publishing.getPublications().create("maven", MavenPublication.class, (publication) -> {
-					SoftwareComponent java = project.getComponents().getByName("java");
-					publication.from(java);
+					SoftwareComponent javaComponent = project.getComponents().findByName("java");
+					if (javaComponent != null) {
+						publication.from(javaComponent);
+					}
 				});
 			}
 		});
