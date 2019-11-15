@@ -4,11 +4,21 @@ plugins {
 	id 'maven-publish'
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.auto-configuration'
+	id 'org.asciidoctor.jvm.convert'
+	id 'org.asciidoctor.jvm.pdf'
 }
 
 description = 'Spring Boot Actuator AutoConfigure'
 
+configurations {
+	asciidoctorExtensions
+	documentation
+}
+
 dependencies {
+	asciidoctorExtensions enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
 	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	implementation project(':spring-boot-project:spring-boot')
 	implementation project(':spring-boot-project:spring-boot-actuator')
@@ -135,4 +145,35 @@ compileJava {
 
 compileTestJava {
 	options.compilerArgs << '-parameters'
+}
+
+asciidoctor {
+	configurations 'asciidoctorExtensions'
+	dependsOn test
+	sources {
+		include 'index.adoc'
+	}
+}
+
+asciidoctorPdf {
+	configurations 'asciidoctorExtensions'
+	dependsOn test
+	sources {
+		include 'index.adoc'
+	}
+}
+
+task zip(type: Zip) {
+	dependsOn asciidoctor, asciidoctorPdf
+	duplicatesStrategy 'fail'
+	from(asciidoctorPdf.outputDir) {
+		into 'pdf'
+	}
+	from(asciidoctor.outputDir) {
+		into 'html'
+	}
+}
+
+artifacts {
+	documentation zip
 }
