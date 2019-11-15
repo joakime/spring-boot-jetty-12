@@ -3,11 +3,28 @@ plugins {
 	id 'org.springframework.boot.optional-dependencies'
 	id 'maven-publish'
 	id 'org.springframework.boot.conventions'
+	id 'org.asciidoctor.jvm.convert'
+	id 'org.asciidoctor.jvm.pdf'
 }
 
 description = 'Spring Boot Gradle Plugin'
 
+configurations {
+	asciidoctorExtensions
+	documentation
+}
+
+repositories {
+	maven {
+		url 'https://repo.spring.io/release'
+		mavenContent {
+			includeGroup 'io.spring.asciidoctor'
+		}
+	}
+}
+
 dependencies {
+	asciidoctorExtensions 'io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.3.0.RELEASE'
 	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	implementation project(':spring-boot-project:spring-boot-tools:spring-boot-loader-tools')
 	implementation 'io.spring.gradle:dependency-management-plugin'
@@ -22,12 +39,6 @@ dependencies {
 	testImplementation 'org.mockito:mockito-core'
 }
 
-jar {
-	manifest {
-		attributes 'Implementation-Version': (version ? version : 'unknown')
-	}
-}
-
 gradlePlugin {
 	plugins {
 		springBootPlugin {
@@ -35,4 +46,73 @@ gradlePlugin {
 			implementationClass = 'org.springframework.boot.gradle.plugin.SpringBootPlugin'
 		}
 	}
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Version': (version ? version : 'unknown')
+	}
+}
+
+task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
+	enforcedPlatform(':spring-boot-project:spring-boot-dependencies')
+}
+
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	dependsOn dependencyVersions
+	doFirst {
+		attributes 'dependency-management-plugin-version': dependencyVersions.versionConstraints['io.spring.gradle:dependency-management-plugin']
+	}
+}
+
+syncDocumentationResourcesForAsciidoctor {
+	from('src/docs/asciidoc/css') {
+		include '*.css'
+		into 'css'
+	}
+}
+
+asciidoctor {
+	configurations 'asciidoctorExtensions'
+	sources {
+		include 'index.adoc'
+	}
+	attributes 'stylesheet': 'style.css'
+}
+
+asciidoctorPdf {
+	sources {
+		include 'index.adoc'
+	}
+}
+
+javadoc {
+	options {
+		author = true
+		docTitle = "Spring Boot Gradle Plugin ${project.version} API"
+		encoding = 'UTF-8'
+		memberLevel = 'protected'
+		outputLevel = 'quiet'
+		splitIndex = true
+		use = true
+		windowTitle = "Spring Boot Gradle Plugin ${project.version} API"
+	}
+}
+
+task zip(type: Zip) {
+	dependsOn asciidoctor, asciidoctorPdf
+	duplicatesStrategy 'fail'
+	from(asciidoctorPdf.outputDir) {
+		into 'reference/pdf'
+	}
+	from(asciidoctor.outputDir) {
+		into 'reference/html'
+	}
+	from(javadoc) {
+		into 'api'
+	}
+}
+
+artifacts {
+	'documentation' zip
 }

@@ -10,6 +10,7 @@ configurations {
 	autoConfiguration
 	configurationProperties
 	testSlices
+	gradlePluginDocumentation
 }
 
 dependencies {
@@ -22,6 +23,7 @@ dependencies {
 	configurationProperties project(path: ':spring-boot-project:spring-boot-actuator-autoconfigure', configuration: 'configurationPropertiesMetadata')
 	configurationProperties project(path: ':spring-boot-project:spring-boot-autoconfigure', configuration: 'configurationPropertiesMetadata')
 	configurationProperties project(path: ':spring-boot-project:spring-boot-devtools', configuration: 'configurationPropertiesMetadata')
+	gradlePluginDocumentation project(path: ':spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin', configuration: 'documentation')
 }
 
 task javadoc(type: Javadoc) {
@@ -144,6 +146,11 @@ task zip(type: Zip) {
 	from(javadoc) {
 		into 'api'
 	}
+	into('gradle-plugin') {
+		from {
+			zipTree(configurations.gradlePluginDocumentation.singleFile)
+		}
+	} 
 }
 
 artifacts {
