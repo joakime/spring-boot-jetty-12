@@ -17,6 +17,7 @@
 package org.test;
 
 import java.lang.management.ManagementFactory;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -39,7 +40,7 @@ public class SampleApplication {
 
 		int waitAttempts = 0;
 		while (!mbean.shutdownInvoked) {
-			if (waitAttempts > 10) {
+			if (waitAttempts > 30) {
 				throw new IllegalStateException(
 						"Shutdown should have been invoked by now");
 			}

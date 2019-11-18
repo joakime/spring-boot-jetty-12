@@ -32,6 +32,9 @@ import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.tasks.testing.Test;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Plugin to apply conventions to projects that are part of Spring Boot's build.
@@ -80,7 +83,6 @@ public class ConventionsPlugin implements Plugin<Project> {
 			publishing.getRepositories()
 					.maven((mavenRepository) -> mavenRepository.setUrl(project.property("deploymentRepository")));
 		}
-
 		PublicationContainer publications = publishing.getPublications();
 		project.afterEvaluate((evaluatedProject) -> {
 			if (publications.isEmpty()) {
@@ -88,6 +90,8 @@ public class ConventionsPlugin implements Plugin<Project> {
 					SoftwareComponent javaComponent = project.getComponents().findByName("java");
 					if (javaComponent != null) {
 						publication.from(javaComponent);
+						publication.versionMapping((strategy) -> strategy.usage("java-runtime",
+								(variantStrategy) -> variantStrategy.fromResolutionResult()));
 					}
 				});
 			}
@@ -104,6 +108,16 @@ public class ConventionsPlugin implements Plugin<Project> {
 		pom.developers(this::customizeDevelopers);
 		pom.scm(this::customizeScm);
 		pom.issueManagement(this::customizeIssueManagement);
+		pom.withXml((xmlProvider) -> {
+			Element pomElement = xmlProvider.asElement();
+			NodeList children = pomElement.getChildNodes();
+			for (int i = 0; i < children.getLength(); i++) {
+				Node child = children.item(i);
+				if ("dependencyManagement".equals(child.getNodeName())) {
+					pomElement.removeChild(child);
+				}
+			}
+		});
 	}
 
 	private void customizeOrganization(MavenPomOrganization organization) {

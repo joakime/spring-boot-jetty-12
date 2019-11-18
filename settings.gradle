@@ -9,6 +9,7 @@ include 'spring-boot-project:spring-boot-tools:spring-boot-configuration-process
 include 'spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin'
 include 'spring-boot-project:spring-boot-tools:spring-boot-loader'
 include 'spring-boot-project:spring-boot-tools:spring-boot-loader-tools'
+include 'spring-boot-project:spring-boot-tools:spring-boot-maven-plugin'
 include 'spring-boot-project:spring-boot-tools:spring-boot-test-support'
 include 'spring-boot-project:spring-boot'
 include 'spring-boot-project:spring-boot-autoconfigure'

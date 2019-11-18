@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
 	checkstyle 'io.spring.javaformat:spring-javaformat-checkstyle:0.0.15'
+	implementation 'org.apache.maven:maven-embedder:3.6.2'
 	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:2.3.0'
 	implementation 'org.springframework:spring-core:5.2.0.RELEASE'
 	implementation 'com.google.code.gson:gson:2.8.5'
@@ -42,6 +43,10 @@ gradlePlugin {
 			id = "org.springframework.boot.conventions"
 			implementationClass = "org.springframework.boot.build.ConventionsPlugin"
 		}
+		mavenPluginPlugin {
+			id = "org.springframework.boot.maven-plugin"
+			implementationClass = "org.springframework.boot.build.mavenplugin.MavenPluginPlugin"
+		}
 		optionalDependenciesPlugin {
 			id = "org.springframework.boot.optional-dependencies"
 			implementationClass = "org.springframework.boot.build.optional.OptionalDependenciesPlugin"
@@ -49,6 +54,10 @@ gradlePlugin {
 		starterPlugin {
 			id = "org.springframework.boot.starter"
 			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
+		}
+		internalPublishPlugin {
+			id = "org.springframework.boot.internal-publish"
+			implementationClass = "org.springframework.boot.build.maven.InternalPublishPlugin"
 		}
 	}
 }

@@ -5,7 +5,7 @@
 	<groupId>org.springframework.boot.maven.it</groupId>
 	<artifactId>build-info-additional-properties</artifactId>
 	<version>0.0.1.BUILD-SNAPSHOT</version>
-	<name>Generate build info</name>
+	<name>Generate build info with additional properties</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>@java.version@</maven.compiler.source>
@@ -34,17 +34,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>@spring-framework.version@</version>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>@jakarta-servlet.version@</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
 </project>

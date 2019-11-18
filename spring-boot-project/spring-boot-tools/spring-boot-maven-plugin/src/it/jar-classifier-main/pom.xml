@@ -27,31 +27,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>@maven-jar-plugin.version@</version>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Not-Used>Foo</Not-Used>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>@spring-framework.version@</version>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>@jakarta-servlet.version@</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
 </project>

@@ -16,23 +16,15 @@
 				<groupId>@project.groupId@</groupId>
 				<artifactId>@project.artifactId@</artifactId>
 				<version>@project.version@</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<fork>false</fork>
-							<jvmArguments>-Dfoo=bar</jvmArguments>
-							<workingDirectory>${project.build.sourceDirectory}</workingDirectory>
-							<systemPropertyVariables>
-								<property1>value1</property1>
-								<property2/>
-							</systemPropertyVariables>
-						</configuration>
-					</execution>
-				</executions>
+				<configuration>
+					<fork>false</fork>
+					<jvmArguments>-Dfoo=bar</jvmArguments>
+					<workingDirectory>${project.build.sourceDirectory}</workingDirectory>
+					<systemPropertyVariables>
+						<property1>value1</property1>
+						<property2/>
+					</systemPropertyVariables>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

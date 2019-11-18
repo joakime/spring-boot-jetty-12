@@ -9,8 +9,8 @@ allprojects {
 		maven { url 'https://repo.spring.io/snapshot' }
 	}
 
-	configurations.all {
-		exclude group: 'commons-logging', module: 'commons-logging'
-		exclude group: 'org.slf4j', module: 'jcl-over-slf4j'
-	}
+	// configurations.all {
+	// 	exclude group: 'commons-logging', module: 'commons-logging'
+	// 	exclude group: 'org.slf4j', module: 'jcl-over-slf4j'
+	// }
 }

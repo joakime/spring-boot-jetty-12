@@ -24,18 +24,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>@maven-jar-plugin.version@</version>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Not-Used>Foo</Not-Used>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -49,12 +37,6 @@
 			<groupId>org.springframework.boot.maven.it.another</groupId>
 			<artifactId>acme-lib</artifactId>
 			<version>0.0.1.BUILD-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>@jakarta-servlet.version@</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

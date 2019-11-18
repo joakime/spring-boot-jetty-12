@@ -12,6 +12,7 @@ configurations {
 	testSlices
 	gradlePluginDocumentation
 	actuatorApiDocumentation
+	mavenPluginDocumentation
 }
 
 dependencies {
@@ -26,6 +27,7 @@ dependencies {
 	configurationProperties project(path: ':spring-boot-project:spring-boot-devtools', configuration: 'configurationPropertiesMetadata')
 	gradlePluginDocumentation project(path: ':spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin', configuration: 'documentation')
 	actuatorApiDocumentation project(path: ':spring-boot-project:spring-boot-actuator-autoconfigure', configuration: 'documentation')
+	mavenPluginDocumentation project(path: ':spring-boot-project:spring-boot-tools:spring-boot-maven-plugin', configuration: 'documentation')
 }
 
 task javadoc(type: Javadoc) {
@@ -134,7 +136,12 @@ task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 }
 
 task zip(type: Zip) {
-	dependsOn asciidoctor, asciidoctorMultipage, asciidoctorPdf, configurations.gradlePluginDocumentation, configurations.actuatorApiDocumentation
+	dependsOn asciidoctor,
+			asciidoctorMultipage,
+			asciidoctorPdf,
+			configurations.gradlePluginDocumentation,
+			configurations.actuatorApiDocumentation,
+			configurations.mavenPluginDocumentation
 	duplicatesStrategy 'fail'
 	from(asciidoctor.outputDir) {
 		into 'reference/htmlsingle'
@@ -156,6 +163,11 @@ task zip(type: Zip) {
 	into('actuator-api') {
 		from {
 			zipTree(configurations.actuatorApiDocumentation.singleFile)
+		}
+	}
+	into('maven-plugin') {
+		from {
+			zipTree(configurations.mavenPluginDocumentation.singleFile)
 		}
 	}
 }
