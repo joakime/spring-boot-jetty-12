@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
@@ -338,6 +339,7 @@ public class Binder {
 			Assert.state(result != null, () -> "Unable to create instance for " + target.getType());
 		}
 		handler.onFinish(name, target, context, result);
+		context.clearConfigurationProperty();
 		return context.getConverter().convert(result, target);
 	}
 
@@ -516,6 +518,8 @@ public class Binder {
 
 		private int depth;
 
+		private Deque<Method> getter = new ArrayDeque<>();
+
 		private final List<ConfigurationPropertySource> source = Arrays.asList((ConfigurationPropertySource) null);
 
 		private int sourcePushCount;
@@ -576,12 +580,25 @@ public class Binder {
 			}
 		}
 
-		private void setConfigurationProperty(ConfigurationProperty configurationProperty) {
+		void setConfigurationProperty(ConfigurationProperty configurationProperty) {
 			this.configurationProperty = configurationProperty;
+		}
+
+		void pushGetter(Method getter) {
+			this.getter.push(getter);
+		}
+
+		@Override
+		public Method getGetter() {
+			return this.getter.peekFirst();
 		}
 
 		void clearConfigurationProperty() {
 			this.configurationProperty = null;
+		}
+
+		void clearGetter() {
+			this.getter.pop();
 		}
 
 		void pushConstructorBoundTypes(Class<?> value) {

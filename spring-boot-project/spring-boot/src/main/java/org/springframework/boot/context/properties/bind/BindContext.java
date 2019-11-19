@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.lang.reflect.Method;
+
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 
@@ -54,5 +56,7 @@ public interface BindContext {
 	 * @return the configuration property (may be {@code null}).
 	 */
 	ConfigurationProperty getConfigurationProperty();
+
+	Method getGetter();
 
 }

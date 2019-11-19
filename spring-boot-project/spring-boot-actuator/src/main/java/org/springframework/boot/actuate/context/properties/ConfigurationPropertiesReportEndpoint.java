@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +30,11 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -40,7 +46,9 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
+import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import com.fasterxml.jackson.databind.ser.ResolvableSerializer;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -56,6 +64,8 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.BoundPropertiesHolder;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.KotlinDetector;
@@ -176,7 +186,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	private void applySerializationModifier(ObjectMapper mapper) {
 		SerializerFactory factory = BeanSerializerFactory.instance
-				.withSerializerModifier(new GenericSerializerModifier());
+				.withSerializerModifier(new GenericSerializerModifier(this.context));
 		mapper.setSerializerFactory(factory);
 	}
 
@@ -301,10 +311,87 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	}
 
+	static class CustomSerializer extends JsonSerializer {
+
+		private final BoundPropertiesHolder bean;
+
+		private final Method member;
+
+		public CustomSerializer(BoundPropertiesHolder bean, Method member) {
+			this.bean = bean;
+			this.member = member;
+		}
+
+		@Override
+		public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+			List<ConfigurationProperty> configurationProperties = this.bean.getProperties().get(this.member);
+			if (configurationProperties != null) {
+				gen.writeStartObject();
+				gen.writeObjectField("value", value);
+				List<ConfigurationProperty> filteredProperties = getFilteredProperties(gen, configurationProperties);
+				if (!filteredProperties.isEmpty()) {
+					writeValues(value, gen, filteredProperties);
+				}
+			}
+			gen.writeEndObject();
+		}
+
+		private void writeValues(Object value, JsonGenerator gen, List<ConfigurationProperty> properties)
+				throws IOException {
+			if (value instanceof Collection) {
+				List<String> origins = properties.stream().filter(c -> c.getOrigin() != null)
+						.map(c -> c.getOrigin().toString()).collect(Collectors.toList());
+				gen.writeObjectField("origins", origins);
+			}
+			else {
+				if (properties.get(0).getOrigin() != null) {
+					gen.writeStringField("origin", properties.get(0).getOrigin().toString());
+				}
+			}
+		}
+
+		private List<ConfigurationProperty> getFilteredProperties(JsonGenerator gen,
+				List<ConfigurationProperty> configurationProperties) {
+			JsonStreamContext mapParent = getMapParent(gen);
+			if (mapParent != null) {
+				String currentName = mapParent.getCurrentName();
+				// FIXME we can't just check for .contains to map it to the right key.
+				return configurationProperties.stream().filter(c -> c.getName().toString().contains(currentName))
+						.collect(Collectors.toList());
+			}
+			return configurationProperties;
+		}
+
+		JsonStreamContext getMapParent(JsonGenerator gen) {
+			JsonStreamContext outputContext = gen.getOutputContext();
+			while (outputContext.getParent() != null) {
+				outputContext = outputContext.getParent();
+				if (outputContext.getCurrentValue() instanceof Map) {
+					return outputContext;
+				}
+			}
+			return null;
+		}
+
+	}
+
 	/**
 	 * {@link BeanSerializerModifier} to return only relevant configuration properties.
 	 */
 	protected static class GenericSerializerModifier extends BeanSerializerModifier {
+
+		private final ApplicationContext applicationContext;
+
+		public GenericSerializerModifier(ApplicationContext context) {
+			this.applicationContext = context;
+		}
+
+		// @Override
+		// public JsonSerializer<?> modifyMapSerializer(SerializationConfig config,
+		// MapType valueType,
+		// BeanDescription beanDesc, JsonSerializer<?> serializer) {
+		// return new CustomMapSerializer(serializer);
+		// }
 
 		@Override
 		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
@@ -313,6 +400,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			Constructor<?> bindConstructor = findBindConstructor(beanDesc.getType().getRawClass());
 			for (BeanPropertyWriter writer : beanProperties) {
 				if (isCandidate(beanDesc, writer, bindConstructor)) {
+					BoundPropertiesHolder bean = applicationContext.getBean(BoundPropertiesHolder.class);
+					Method member = (Method) writer.getMember().getMember();
+					if (bean.getProperties().get(member) != null) {
+						writer.assignSerializer(new CustomSerializer(bean, member));
+					}
 					result.add(writer);
 				}
 			}
@@ -400,6 +492,38 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	}
 
+	static class CustomMapSerializer extends JsonSerializer implements ResolvableSerializer, ContextualSerializer {
+
+		private final JsonSerializer<?> serializer;
+
+		public CustomMapSerializer(JsonSerializer<?> serializer) {
+			this.serializer = serializer;
+		}
+
+		@Override
+		public void resolve(SerializerProvider provider) throws JsonMappingException {
+			if (serializer instanceof ResolvableSerializer) {
+				((ResolvableSerializer) serializer).resolve(provider);
+			}
+		}
+
+		@Override
+		public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+			// FIXME maybe we can do something here
+		}
+
+		@Override
+		public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property)
+				throws JsonMappingException {
+			if (serializer instanceof ContextualSerializer) {
+				JsonSerializer<?> contextual = ((ContextualSerializer) serializer).createContextual(prov, property);
+				return new CustomMapSerializer(contextual);
+			}
+			return serializer;
+		}
+
+	}
+
 	/**
 	 * A description of an application's
 	 * {@link ConfigurationProperties @ConfigurationProperties} beans. Primarily intended
@@ -467,6 +591,27 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		public Map<String, Object> getProperties() {
 			return this.properties;
+		}
+
+	}
+
+	static class BoundProperty {
+
+		private final String origin;
+
+		private final Object value;
+
+		BoundProperty(String origin, Object value) {
+			this.origin = origin;
+			this.value = value;
+		}
+
+		public Object getValue() {
+			return this.value;
+		}
+
+		public String getOrigin() {
+			return this.origin;
 		}
 
 	}

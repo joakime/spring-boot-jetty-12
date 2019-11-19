@@ -32,6 +32,7 @@ import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.BoundPropertiesTrackingBindHandler;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.bind.handler.IgnoreTopLevelConverterNotFoundBindHandler;
@@ -105,7 +106,9 @@ class ConfigurationPropertiesBinder {
 
 	private <T> BindHandler getBindHandler(Bindable<T> target, ConfigurationProperties annotation) {
 		List<Validator> validators = getValidators(target);
-		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
+		BindHandler handler = new BoundPropertiesTrackingBindHandler(
+				((ConfigurableApplicationContext) this.applicationContext).getBeanFactory());
+		handler = new IgnoreTopLevelConverterNotFoundBindHandler(handler);
 		if (annotation.ignoreInvalidFields()) {
 			handler = new IgnoreErrorsBindHandler(handler);
 		}

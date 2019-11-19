@@ -53,7 +53,7 @@ class JavaBeanBinder implements DataObjectBinder {
 			return null;
 		}
 		BeanSupplier<T> beanSupplier = bean.getSupplier(target);
-		boolean bound = bind(propertyBinder, bean, beanSupplier);
+		boolean bound = bind(propertyBinder, bean, beanSupplier, context);
 		return (bound ? beanSupplier.get() : null);
 	}
 
@@ -73,22 +73,30 @@ class JavaBeanBinder implements DataObjectBinder {
 		return false;
 	}
 
-	private <T> boolean bind(DataObjectPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier) {
+	private <T> boolean bind(DataObjectPropertyBinder propertyBinder, Bean<T> bean, BeanSupplier<T> beanSupplier,
+			Context context) {
 		boolean bound = false;
 		for (BeanProperty beanProperty : bean.getProperties().values()) {
-			bound |= bind(beanSupplier, propertyBinder, beanProperty);
+			bound |= bind(beanSupplier, propertyBinder, beanProperty, context);
 		}
 		return bound;
 	}
 
 	private <T> boolean bind(BeanSupplier<T> beanSupplier, DataObjectPropertyBinder propertyBinder,
-			BeanProperty property) {
+			BeanProperty property, Context context) {
 		String propertyName = property.getName();
 		ResolvableType type = property.getType();
 		Supplier<Object> value = property.getValue(beanSupplier);
+		Method getter = property.getGetter();
+		if (getter != null) {
+			context.pushGetter(getter);
+		}
 		Annotation[] annotations = property.getAnnotations();
 		Object bound = propertyBinder.bindProperty(propertyName,
 				Bindable.of(type).withSuppliedValue(value).withAnnotations(annotations));
+		if (getter != null) {
+			context.clearGetter();
+		}
 		if (bound == null) {
 			return false;
 		}
@@ -291,6 +299,10 @@ class JavaBeanBinder implements DataObjectBinder {
 
 		private boolean isBetterSetter(Method setter) {
 			return this.getter != null && this.getter.getReturnType().equals(setter.getParameterTypes()[0]);
+		}
+
+		Method getGetter() {
+			return this.getter;
 		}
 
 		void addField(Field field) {
