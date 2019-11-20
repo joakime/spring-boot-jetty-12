@@ -17,8 +17,6 @@ It allows you to package executable jar or war archives, run Spring Boot applica
 
 include::getting-started.adoc[]
 
-[[goals]]
-== Goals
-include::{generated-resources-root}/goals.adoc[leveloffset=+1]
+include::goals.adoc[]
 
 include::examples.adoc[]

@@ -1,0 +1,9 @@
+[[goals]]
+== Goals
+include::{generated-resources-root}/goals/overview.adoc[leveloffset=+1]
+include::{generated-resources-root}/goals/build-info.adoc[leveloffset=+1]
+include::{generated-resources-root}/goals/help.adoc[leveloffset=+1]
+include::{generated-resources-root}/goals/repackage.adoc[leveloffset=+1]
+include::{generated-resources-root}/goals/run.adoc[leveloffset=+1]
+include::{generated-resources-root}/goals/start.adoc[leveloffset=+1]
+include::{generated-resources-root}/goals/stop.adoc[leveloffset=+1]
