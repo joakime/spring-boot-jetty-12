@@ -1,0 +1,9 @@
+[[getting-started]]
+== Getting started
+
+The Spring Boot Plugin has the following goals:
+
+* <<goals-run,spring-boot:run>> runs your Spring Boot application.
+* <<goals-repackage,spring-boot:repackage>> repackages your jar/war to be executable.
+* <<goals-start,spring-boot:start>> and <<goals.adoc#goals-stop,spring-boot:stop>> to manage the lifecycle of your Spring Boot application (i.e. for integration tests).
+* <<goals-build-info,spring-boot:build-info>> generates build information that can be used by the Actuator.
