@@ -1,0 +1,654 @@
+[[example]]
+== Examples
+To provide you with better understanding of some usages of Spring Boot, this section provides concrete usage examples.
+
+
+
+[[example-repackage-custom-classifier]]
+=== Custom Repackage Classifier
+By default, the `repackage` goal replaces the original artifact with the repackaged one.
+That is a sane behavior for modules that represent an application but if your module is used as a dependency of another module, you need to provide a classifier for the repackaged one.
+The reason for that is that application classes are packaged in `BOOT-INF/classes` so that the dependent module cannot load a repackaged jar's classes.
+
+If that is the case or if you prefer to keep the original artifact and attach the repackaged one with a different classifier, configure the plugin as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+							<configuration>
+								<classifier>exec</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+If you are using `spring-boot-starter-parent`, the `repackage` goal is executed automatically in an execution with id `repackage`.
+In that setup, only the configuration should be specified, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<configuration>
+								<classifier>exec</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration will generate two artifacts: the original one and the repackaged counter part produced by the repackage goal.
+Both will be installed/deployed transparently.
+
+You can also use the same configuration if you want to repackage a secondary artifact the same way the main artifact is replaced.
+The following configuration installs/deploys a single `task` classified artifact with the repackaged application:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>{maven-jar-plugin-version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+							<phase>package</phase>
+							<configuration>
+								<classifier>task</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+							<configuration>
+								<classifier>task</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+As both the `maven-jar-plugin` and the `spring-boot-maven-plugin` runs at the same phase, it is important that the jar plugin is defined first (so that it runs before the repackage goal).
+Again, if you are using `spring-boot-starter-parent`, this can be simplified as follows:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>default-jar</id>
+							<configuration>
+								<classifier>task</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<configuration>
+								<classifier>task</classifier>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+
+
+[[example-repackage-custom-name]]
+=== Custom Repackage Name
+If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, simply use the standard `finalName`, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<finalName>my-app</finalName>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration will generate the repackaged artifact in `target/my-app.jar`.
+
+
+
+[[example-repackage-local-artifact]]
+=== Local Repackaged Artifact
+By default, the `repackage` goal replaces the original artifact with the executable one.
+If you need to only deploy the original jar and yet be able to run your app with the regular file name, configure the plugin as follows:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+							<configuration>
+								<attach>false</attach>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration generates two artifacts: the original one and the executable counter part produced by the `repackage` goal.
+Only the original one will be installed/deployed.
+
+
+
+[[example-repackage-custom-layout]]
+=== Custom Repackage Layout
+Spring Boot repackages the jar file for this project using a custom layout factory defined in the additional jar file, provided as a dependency to the build plugin:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>repackage</id>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+							<configuration>
+								<layoutFactory implementation="com.example.CustomLayoutFactory">
+									<customProperty>value</customProperty>
+								</layoutFactory>
+							</configuration>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>com.example</groupId>
+							<artifactId>custom-layout</artifactId>
+							<version>0.0.1.BUILD-SNAPSHOT</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+The layout factory is provided as an implementation of `LayoutFactory` (from `spring-boot-loader-tools`) explicitly specified in the pom.
+If there is only one custom `LayoutFactory` on the plugin classpath and it is listed in `META-INF/spring.factories` then it is unnecessary to explicitly set it in the plugin configuration.
+
+Layout factories are always ignored if an explicit <<goals-repackage-optional-parameters-layout,layout>> is set.
+
+
+
+[[example-repackage-exclude-dependency]]
+=== Exclude a Dependency
+By default, both the `repackage` and the `run` goals will include any `provided` dependencies that are defined in the project.
+A Spring Boot project should consider `provided` dependencies as "container" dependencies that are required to run the application.
+
+Some of these dependencies may not be required at all and should be excluded from the executable jar.
+For consistency, they should not be present either when running the application.
+
+There are two ways one can exclude a dependency from being packaged/used at runtime:
+
+* Exclude a specific artifact identified by `groupId` and `artifactId`, optionally with a `classifier` if needed.
+* Exclude any artifact belonging to a given `groupId`.
+
+The following example excludes `com.foo:bar`, and only that artifact:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<configuration>
+						<excludes>
+							<exclude>
+								<groupId>com.foo</groupId>
+								<artifactId>bar</artifactId>
+							</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This example excludes any artifact belonging to the `com.foo` group:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<configuration>
+						<excludeGroupIds>com.foo</excludeGroupIds>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+
+
+[[example-run-debug]]
+=== Debug the Application
+By default, the `run` goal runs your application in a forked process.
+If you need to debug it, you should add the necessary JVM arguments to enable remote debugging.
+The following configuration suspend the process until a debugger has joined on port 5005:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<configuration>
+						<jvmArguments>
+							-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
+						</jvmArguments>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+These arguments can be specified on the command line as well, make sure to wrap that properly, that is:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
+----
+
+
+
+[[example-run-system-properties]]
+=== Using System Properties
+System properties can be specified using the `systemPropertyVariables` attribute.
+The following example sets `property1` to `test` and `property2` to 42:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<properties>
+				<my.value>42</my.value>
+			</properties>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<configuration>
+						<systemPropertyVariables>
+							<property1>test</property1>
+							<property2>${my.value}</property2>
+						</systemPropertyVariables>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+If the value is empty or not defined (i.e. `<my-property/`>), the system property is set with an empty String as the value.
+Maven trims values specified in the pom so it is not possible to specify a System property which needs to start or end with a space via this mechanism: consider using `jvmArguments` instead.
+
+Any String typed Maven variable can be passed as system properties.
+Any attempt to pass any other Maven variable type (e.g. a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
+
+The `jvmArguments` parameter takes precedence over system properties defined with the mechanism above.
+In the following example, the value for `property1` is `overridden`:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dproperty1=overridden"
+----
+
+
+
+[[example-run-environment-variables]]
+=== Using Environment Variables
+Environment variables can be specified using the `environmentVariables` attribute.
+The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>{version}</version>
+				<configuration>
+					<environmentVariables>
+						<ENV1>5000</ENV1>
+						<ENV2>Some Text</ENV2>
+						<ENV3/>
+						<ENV4></ENV4>
+					</environmentVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+If the value is empty or not defined (i.e. `<MY_ENV/`>), the env variable is set with an empty String as the value.
+Maven trims values specified in the pom so it is not possible to specify an env variable which needs to start or end with a space.
+
+Any String typed Maven variable can be passed as system properties.
+Any attempt to pass any other Maven variable type (e.g. a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
+
+Environment variables defined this way take precedence over existing values.
+
+
+
+[[example-run-active-profiles]]
+=== Specify Active Profiles
+The active profiles to use for a particular application can be specified using the `profiles` argument.
+
+The following configuration enables the `foo` and `bar` profiles:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>{version}</version>
+				<configuration>
+					<profiles>
+						<profile>foo</profile>
+						<profile>bar</profile>
+					</profiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+The profiles to enable can be specified on the command line as well, make sure to separate them with a comma, as shown in the following example:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.profiles=foo,bar
+----
+
+
+
+[[example-integration-tests-random-port]]
+=== Random Port for Integration Tests
+One nice feature of the Spring Boot test integration is that it can allocate a free port for the web application.
+When the `start` goal of the plugin is used, the Spring Boot application is started separately, making it difficult to pass the actual port to the integration test itself.
+
+The example below showcases how you could achieve the same feature using the https://www.mojohaus.org/build-helper-maven-plugin[Build Helper Maven Plugin]:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>{build-helper-maven-plugin-version}</version>
+					<executions>
+						<execution>
+							<id>reserve-tomcat-port</id>
+							<goals>
+								<goal>reserve-network-port</goal>
+							</goals>
+							<phase>process-resources</phase>
+							<configuration>
+								<portNames>
+									<portName>tomcat.http.port</portName>
+								</portNames>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>pre-integration-test</id>
+							<goals>
+								<goal>start</goal>
+							</goals>
+							<configuration>
+								<arguments>
+									<argument>--server.port=${tomcat.http.port}</argument>
+								</arguments>
+							</configuration>
+						</execution>
+						<execution>
+							<id>post-integration-test</id>
+							<goals>
+								<goal>stop</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>{maven-failsafe-plugin-version}</version>
+					<configuration>
+						<systemPropertyVariables>
+							<test.server.port>${tomcat.http.port}</test.server.port>
+						</systemPropertyVariables>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+You can now retrieve the `test.server.port` system property in any of your integration test to create a proper `URL` to the server.
+
+
+
+[[example-integration-tests-skip]]
+=== Skip Integration Tests
+The `skip` property allows to skip the execution of the Spring Boot maven plugin altogether.
+
+This example shows how you can skip integration tests with a command-line property and still make sure that the `repackage` goal runs:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<properties>
+			<skip.it>false</skip.it>
+		</properties>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<id>pre-integration-test</id>
+							<goals>
+								<goal>start</goal>
+							</goals>
+							<configuration>
+								<skip>${skip.it}</skip>
+							</configuration>
+						</execution>
+						<execution>
+							<id>post-integration-test</id>
+							<goals>
+								<goal>stop</goal>
+							</goals>
+							<configuration>
+								<skip>${skip.it}</skip>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>{maven-failsafe-plugin-version}</version>
+					<configuration>
+						<skip>${skip.it}</skip>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+By default, the integration tests will run but this setup allows you to easily disable them on the command-line as follows:
+
+[indent=0]
+----
+	$ mvn verify -Dskip.it=true
+----
+
+
+
+[[example-build-info-generate]]
+=== Generate Build Information
+Spring Boot Actuator displays build-related information if a `META-INF/build-info.properties` file is present.
+The `build-info` goal generates such file with the coordinates of the project and the build time.
+It also allows you to add an arbitrary number of additional properties:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>build-info</goal>
+							</goals>
+							<configuration>
+								<additionalProperties>
+									<encoding.source>UTF-8</encoding.source>
+									<encoding.reporting>UTF-8</encoding.reporting>
+									<java.source>${maven.compiler.source}</java.source>
+									<java.target>${maven.compiler.target}</java.target>
+								</additionalProperties>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration will generate a `build-info.properties` at the expected location with four additional keys.
+Note that `maven.compiler.source` and `maven.compiler.target` are expected to be regular properties available in the project.
+They will be interpolated as you would expect.
