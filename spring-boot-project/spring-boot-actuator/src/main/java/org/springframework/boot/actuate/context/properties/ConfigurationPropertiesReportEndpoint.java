@@ -16,9 +16,7 @@
 
 package org.springframework.boot.actuate.context.properties;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,15 +24,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -46,9 +41,7 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
-import com.fasterxml.jackson.databind.ser.ResolvableSerializer;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -66,6 +59,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.BoundPropertiesHolder;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.origin.Origin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.KotlinDetector;
@@ -131,7 +126,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		beans.forEach((beanName, bean) -> {
 			String prefix = bean.getAnnotation().prefix();
 			descriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(prefix,
-					sanitize(prefix, safeSerialize(mapper, bean.getInstance(), prefix))));
+					addOrigins(prefix, sanitize(prefix, safeSerialize(mapper, bean.getInstance(), prefix)))));
 		});
 		return new ContextConfigurationProperties(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
@@ -186,7 +181,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	private void applySerializationModifier(ObjectMapper mapper) {
 		SerializerFactory factory = BeanSerializerFactory.instance
-				.withSerializerModifier(new GenericSerializerModifier(this.context));
+				.withSerializerModifier(new GenericSerializerModifier());
 		mapper.setSerializerFactory(factory);
 	}
 
@@ -237,6 +232,59 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			}
 		}
 		return sanitized;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> addOrigins(String prefix, Map<String, Object> map) {
+		map.forEach((key, value) -> {
+			String qualifiedKey = (prefix.isEmpty() ? prefix : prefix + ".") + key;
+			if (value instanceof Map) {
+				map.put(key, addOrigins(qualifiedKey, (Map<String, Object>) value));
+			}
+			else if (value instanceof List) {
+				map.put(key, addOrigins(qualifiedKey, (List<Object>) value));
+			}
+			else {
+				map.put(key, applyOrigin(value, qualifiedKey));
+			}
+		});
+		return map;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Object> addOrigins(String prefix, List<Object> list) {
+		List<Object> augmented = new ArrayList<>();
+		int index = 0;
+		for (Object item : list) {
+			String name = prefix + "[" + index++ + "]";
+			if (item instanceof Map) {
+				augmented.add(addOrigins(name, (Map<String, Object>) item));
+			}
+			else if (item instanceof List) {
+				augmented.add(addOrigins(name, (List<Object>) item));
+			}
+			else {
+				augmented.add(applyOrigin(item, name));
+			}
+		}
+		return augmented;
+	}
+
+	private Map<String, Object> applyOrigin(Object value, String qualifiedKey) {
+		Origin originForProperty = originForProperty(qualifiedKey);
+		Map<String, Object> withOrigin = new HashMap<>();
+		withOrigin.put("value", value);
+		withOrigin.put("origin", originForProperty != null ? originForProperty.toString() : "none");
+		return withOrigin;
+	}
+
+	private Origin originForProperty(String property) {
+		ConfigurationPropertyName currentName = ConfigurationPropertyName.adapt(property, '.');
+		BoundPropertiesHolder boundProperties = this.context.getBean(BoundPropertiesHolder.class);
+		return boundProperties.getProperties().values().stream().flatMap(List::stream)
+				.filter((candidate) -> candidate.getName().equals(currentName)
+						|| (currentName.isLastElementIndexed() && candidate.getName().isParentOf(currentName)))
+				.map(ConfigurationProperty::getOrigin).filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	/**
@@ -311,87 +359,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	}
 
-	static class CustomSerializer extends JsonSerializer {
-
-		private final BoundPropertiesHolder bean;
-
-		private final Method member;
-
-		public CustomSerializer(BoundPropertiesHolder bean, Method member) {
-			this.bean = bean;
-			this.member = member;
-		}
-
-		@Override
-		public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-			List<ConfigurationProperty> configurationProperties = this.bean.getProperties().get(this.member);
-			if (configurationProperties != null) {
-				gen.writeStartObject();
-				gen.writeObjectField("value", value);
-				List<ConfigurationProperty> filteredProperties = getFilteredProperties(gen, configurationProperties);
-				if (!filteredProperties.isEmpty()) {
-					writeValues(value, gen, filteredProperties);
-				}
-			}
-			gen.writeEndObject();
-		}
-
-		private void writeValues(Object value, JsonGenerator gen, List<ConfigurationProperty> properties)
-				throws IOException {
-			if (value instanceof Collection) {
-				List<String> origins = properties.stream().filter(c -> c.getOrigin() != null)
-						.map(c -> c.getOrigin().toString()).collect(Collectors.toList());
-				gen.writeObjectField("origins", origins);
-			}
-			else {
-				if (properties.get(0).getOrigin() != null) {
-					gen.writeStringField("origin", properties.get(0).getOrigin().toString());
-				}
-			}
-		}
-
-		private List<ConfigurationProperty> getFilteredProperties(JsonGenerator gen,
-				List<ConfigurationProperty> configurationProperties) {
-			JsonStreamContext mapParent = getMapParent(gen);
-			if (mapParent != null) {
-				String currentName = mapParent.getCurrentName();
-				// FIXME we can't just check for .contains to map it to the right key.
-				return configurationProperties.stream().filter(c -> c.getName().toString().contains(currentName))
-						.collect(Collectors.toList());
-			}
-			return configurationProperties;
-		}
-
-		JsonStreamContext getMapParent(JsonGenerator gen) {
-			JsonStreamContext outputContext = gen.getOutputContext();
-			while (outputContext.getParent() != null) {
-				outputContext = outputContext.getParent();
-				if (outputContext.getCurrentValue() instanceof Map) {
-					return outputContext;
-				}
-			}
-			return null;
-		}
-
-	}
-
 	/**
 	 * {@link BeanSerializerModifier} to return only relevant configuration properties.
 	 */
 	protected static class GenericSerializerModifier extends BeanSerializerModifier {
-
-		private final ApplicationContext applicationContext;
-
-		public GenericSerializerModifier(ApplicationContext context) {
-			this.applicationContext = context;
-		}
-
-		// @Override
-		// public JsonSerializer<?> modifyMapSerializer(SerializationConfig config,
-		// MapType valueType,
-		// BeanDescription beanDesc, JsonSerializer<?> serializer) {
-		// return new CustomMapSerializer(serializer);
-		// }
 
 		@Override
 		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
@@ -400,11 +371,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			Constructor<?> bindConstructor = findBindConstructor(beanDesc.getType().getRawClass());
 			for (BeanPropertyWriter writer : beanProperties) {
 				if (isCandidate(beanDesc, writer, bindConstructor)) {
-					BoundPropertiesHolder bean = applicationContext.getBean(BoundPropertiesHolder.class);
-					Method member = (Method) writer.getMember().getMember();
-					if (bean.getProperties().get(member) != null) {
-						writer.assignSerializer(new CustomSerializer(bean, member));
-					}
 					result.add(writer);
 				}
 			}
@@ -488,38 +454,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				return candidateConstructors.get(0);
 			}
 			return null;
-		}
-
-	}
-
-	static class CustomMapSerializer extends JsonSerializer implements ResolvableSerializer, ContextualSerializer {
-
-		private final JsonSerializer<?> serializer;
-
-		public CustomMapSerializer(JsonSerializer<?> serializer) {
-			this.serializer = serializer;
-		}
-
-		@Override
-		public void resolve(SerializerProvider provider) throws JsonMappingException {
-			if (serializer instanceof ResolvableSerializer) {
-				((ResolvableSerializer) serializer).resolve(provider);
-			}
-		}
-
-		@Override
-		public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-			// FIXME maybe we can do something here
-		}
-
-		@Override
-		public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property)
-				throws JsonMappingException {
-			if (serializer instanceof ContextualSerializer) {
-				JsonSerializer<?> contextual = ((ContextualSerializer) serializer).createContextual(prov, property);
-				return new CustomMapSerializer(contextual);
-			}
-			return serializer;
 		}
 
 	}
