@@ -11,14 +11,14 @@ bom {
 	property 'appengine-sdk.version', '1.9.76'
 	property 'artemis.version', '2.10.1'
 	property 'aspectj.version', '1.9.4'
-	property 'assertj.version', '3.13.2'
+	property 'assertj.version', '3.14.0'
 	property 'atomikos.version', '4.0.6'
 	property 'awaitility.version', '4.0.1'
 	property 'bitronix.version', '2.1.4'
-	property 'byte-buddy.version', '1.10.1'
+	property 'byte-buddy.version', '1.10.2'
 	property 'caffeine.version', '2.8.0'
 	property 'cassandra-driver.version', '3.7.2'
-	property 'classmate.version', '1.5.0'
+	property 'classmate.version', '1.5.1'
 	property 'commons-codec.version', '1.13'
 	property 'commons-dbcp2.version', '2.7.0'
 	property 'commons-lang3.version', '3.9'
@@ -29,23 +29,23 @@ bom {
 	property 'dependency-management-plugin.version', '1.0.8.RELEASE'
 	property 'db2-jdbc.version', '11.5.0.0'
 	property 'derby.version', '10.14.2.0'
-	property 'dropwizard-metrics.version', '4.1.0'
+	property 'dropwizard-metrics.version', '4.1.1'
 	property 'ehcache.version', '2.10.6'
 	property 'ehcache3.version', '3.8.1'
 	property 'embedded-mongo.version', '2.2.0'
 	property 'flyway.version', '6.0.6'
 	property 'freemarker.version', '2.3.29'
-	property 'elasticsearch.version', '6.8.3'
+	property 'elasticsearch.version', '6.8.4'
 	property 'glassfish-el.version', '3.0.3'
 	property 'glassfish-jaxb.version', '2.3.2'
 	property 'groovy.version', '2.5.8'
 	property 'gson.version', '2.8.6'
 	property 'h2.version', '1.4.200'
-	property 'hamcrest.version', '2.1'
-	property 'hazelcast.version', '3.12.3'
+	property 'hamcrest.version', '2.2'
+	property 'hazelcast.version', '3.12.4'
 	property 'hazelcast-hibernate5.version', '1.3.2'
-	property 'hibernate.version', '5.4.6.Final'
-	property 'hibernate-validator.version', '6.0.17.Final'
+	property 'hibernate.version', '5.4.8.Final'
+	property 'hibernate-validator.version', '6.1.0.Final'
 	property 'hikaricp.version', '3.4.1'
 	property 'hsqldb.version', '2.5.0'
 	property 'htmlunit.version', '2.36.0'
@@ -53,7 +53,7 @@ bom {
 	property 'httpclient.version', '4.5.10'
 	property 'httpcore.version', '4.4.12'
 	property 'infinispan.version', '9.4.16.Final'
-	property 'influxdb-java.version', '2.15'
+	property 'influxdb-java.version', '2.16'
 	property 'jackson.version', '2.10.0'
 	property 'jackson-bom.version', '${jackson.version}'
 	property 'jakarta-activation.version', '1.2.1'
@@ -95,47 +95,47 @@ bom {
 	property 'jedis.version', '3.1.0'
 	property 'jersey.version', '2.29.1'
 	property 'jest.version', '6.3.1'
-	property 'jetty.version', '9.4.21.v20190926'
+	property 'jetty.version', '9.4.22.v20191022'
 	property 'jetty-jsp.version', '2.2.0.v201112011158'
 	property 'jetty-el.version', '8.5.40'
 	property 'jetty-reactive-httpclient.version', '1.0.3'
 	property 'jmustache.version', '1.15'
 	property 'jna.version', '4.5.2'
-	property 'joda-time.version', '2.10.4'
+	property 'joda-time.version', '2.10.5'
 	property 'jolokia.version', '1.6.2'
 	property 'johnzon-jsonb.version', '1.2.1'
 	property 'johnzon.version', '${johnzon-jsonb.version}'
-	property 'jooq.version', '3.12.1'
+	property 'jooq.version', '3.12.3'
 	property 'jsonassert.version', '1.5.0'
 	property 'json-path.version', '2.4.0'
 	property 'jstl.version', '1.2'
 	property 'jtds.version', '1.3.1'
 	property 'junit.version', '4.12'
 	property 'junit-jupiter.version', '5.5.2'
-	property 'kafka.version', '2.3.0'
-	property 'kotlin.version', '1.3.50'
+	property 'kafka.version', '2.3.1'
+	property 'kotlin.version', '1.3.60'
 	property 'kotlin-coroutines.version', '1.3.2'
-	property 'lettuce.version', '5.2.0.RELEASE'
+	property 'lettuce.version', '5.2.1.RELEASE'
 	property 'liquibase.version', '3.8.0'
 	property 'log4j2.version', '2.12.1'
 	property 'logback.version', '1.2.3'
 	property 'lombok.version', '1.18.10'
-	property 'mariadb.version', '2.4.4'
-	property 'micrometer.version', '1.3.0'
+	property 'mariadb.version', '2.5.1'
+	property 'micrometer.version', '1.3.1'
 	property 'mimepull.version', '1.9.12'
 	property 'mockito.version', '3.1.0'
 	property 'mongo-driver-reactivestreams.version', '1.12.0'
-	property 'mongodb.version', '3.11.1'
+	property 'mongodb.version', '3.11.2'
 	property 'mssql-jdbc.version', '7.4.1.jre8'
 	property 'mysql.version', '8.0.18'
 	property 'nekohtml.version', '1.9.22'
-	property 'neo4j-ogm.version', '3.2.1'
+	property 'neo4j-ogm.version', '3.2.2'
 	property 'netty.version', '4.1.43.Final'
 	property 'netty-tcnative.version', '2.0.26.Final'
 	property 'nio-multipart-parser.version', '1.1.0'
 	property 'ojdbc.version', '19.3.0.0'
 	property 'okhttp3.version', '3.14.4'
-	property 'pooled-jms.version', '1.0.6'
+	property 'pooled-jms.version', '1.1.0'
 	property 'postgresql.version', '42.2.8'
 	property 'prometheus-pushgateway.version', '0.7.0'
 	property 'quartz.version', '2.3.2'
@@ -147,28 +147,28 @@ bom {
 	property 'rsocket.version', '1.0.0-RC5'
 	property 'rxjava.version', '1.3.8'
 	property 'rxjava-adapter.version', '1.2.1'
-	property 'rxjava2.version', '2.2.13'
+	property 'rxjava2.version', '2.2.14'
 	property 'selenium.version', '3.141.59'
 	property 'selenium-htmlunit.version', '2.36.0'
 	property 'sendgrid.version', '4.4.1'
 	property 'servlet-api.version', '4.0.1'
-	property 'slf4j.version', '1.7.28'
+	property 'slf4j.version', '1.7.29'
 	property 'snakeyaml.version', '1.25'
 	property 'solr.version', '8.2.0'
-	property 'spring-amqp.version', '2.2.0.RELEASE'
+	property 'spring-amqp.version', '2.2.1.RELEASE'
 	property 'spring-batch.version', '4.2.0.RELEASE'
 	property 'spring-cloud-connectors.version', '2.0.6.RELEASE'
-	property 'spring-data-releasetrain.version', 'Moore-RELEASE'
-	property 'spring-framework.version', '5.2.1.BUILD-SNAPSHOT'
-	property 'spring-hateoas.version', '1.0.0.RELEASE'
-	property 'spring-integration.version', '5.2.0.RELEASE'
-	property 'spring-kafka.version', '2.3.1.RELEASE'
+	property 'spring-data-releasetrain.version', 'Moore-BUILD-SNAPSHOT'
+	property 'spring-framework.version', '5.2.2.BUILD-SNAPSHOT'
+	property 'spring-hateoas.version', '1.0.1.RELEASE'
+	property 'spring-integration.version', '5.2.1.RELEASE'
+	property 'spring-kafka.version', '2.3.3.RELEASE'
 	property 'spring-ldap.version', '2.3.2.RELEASE'
 	property 'spring-restdocs.version', '2.0.4.RELEASE'
 	property 'spring-retry.version', '1.2.4.RELEASE'
-	property 'spring-security.version', '5.2.0.RELEASE'
+	property 'spring-security.version', '5.2.1.RELEASE'
 	property 'spring-session-bom.version', 'Corn-RELEASE'
-	property 'spring-ws.version', '3.0.7.RELEASE'
+	property 'spring-ws.version', '3.0.8.RELEASE'
 	property 'sqlite-jdbc.version', '3.28.0'
 	property 'sun-mail.version', '${jakarta-mail.version}'
 	property 'saaj-impl.version', '1.5.1'
@@ -181,14 +181,14 @@ bom {
 	property 'unboundid-ldapsdk.version', '4.0.12'
 	property 'undertow.version', '2.0.27.Final'
 	property 'webjars-hal-browser.version', '3325375'
-	property 'webjars-locator-core.version', '0.41'
+	property 'webjars-locator-core.version', '0.42'
 	property 'wsdl4j.version', '1.6.3'
 	property 'xmlunit2.version', '2.6.3'
 	property 'build-helper-maven-plugin.version', '3.0.0'
 	property 'exec-maven-plugin.version', '1.6.0'
 	property 'git-commit-id-plugin.version', '3.0.1'
 	property 'maven-antrun-plugin.version', '1.8'
-	property 'maven-assembly-plugin.version', '3.1.1'
+	property 'maven-assembly-plugin.version', '3.2.0'
 	property 'maven-clean-plugin.version', '3.1.0'
 	property 'maven-compiler-plugin.version', '3.8.1'
 	property 'maven-dependency-plugin.version', '3.1.1'
@@ -198,84 +198,84 @@ bom {
 	property 'maven-install-plugin.version', '2.5.2'
 	property 'maven-invoker-plugin.version', '3.2.1'
 	property 'maven-help-plugin.version', '3.2.0'
-	property 'maven-jar-plugin.version', '3.1.2'
+	property 'maven-jar-plugin.version', '3.2.0'
 	property 'maven-javadoc-plugin.version', '3.1.1'
 	property 'maven-resources-plugin.version', '3.1.0'
 	property 'maven-shade-plugin.version', '3.2.1'
 	property 'maven-site-plugin.version', '3.8.2'
-	property 'maven-source-plugin.version', '3.1.0'
+	property 'maven-source-plugin.version', '3.2.0'
 	property 'maven-surefire-plugin.version', '2.22.2'
 	property 'maven-war-plugin.version', '3.2.3'
 	property 'versions-maven-plugin.version', '2.7'
 	property 'xml-maven-plugin.version', '1.0.2'
 	property 'flatten-maven-plugin.version', '1.1.0'
-	dependency 'org.springframework.boot', 'spring-boot', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-test', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-test-autoconfigure', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-actuator', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-actuator-autoconfigure', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-autoconfigure', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-autoconfigure-processor', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-configuration-metadata', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-configuration-processor', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-devtools', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-loader', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-loader-tools', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-properties-migrator', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-activemq', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-actuator', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-amqp', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-aop', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-artemis', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-batch', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-cache', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-cloud-connectors', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-cassandra', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-cassandra-reactive', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-couchbase', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-couchbase-reactive', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-elasticsearch', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-jdbc', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-jpa', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-ldap', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-mongodb', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-mongodb-reactive', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-redis', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-redis-reactive', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-neo4j', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-rest', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-solr', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-freemarker', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-groovy-templates', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-hateoas', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-integration', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-jdbc', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-jersey', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-jetty', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-jooq', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-json', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-jta-atomikos', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-jta-bitronix', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-log4j2', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-logging', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-mail', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-mustache', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-oauth2-client', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-oauth2-resource-server', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-quartz', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-reactor-netty', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-rsocket', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-security', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-test', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-thymeleaf', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-tomcat', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-undertow', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-validation', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-web', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-webflux', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-websocket', '2.2.0.GRADLE-SNAPSHOT'
-	dependency 'org.springframework.boot', 'spring-boot-starter-web-services', '2.2.0.GRADLE-SNAPSHOT'
+	dependency 'org.springframework.boot', 'spring-boot', project.version
+	dependency 'org.springframework.boot', 'spring-boot-test', project.version
+	dependency 'org.springframework.boot', 'spring-boot-test-autoconfigure', project.version
+	dependency 'org.springframework.boot', 'spring-boot-actuator', project.version
+	dependency 'org.springframework.boot', 'spring-boot-actuator-autoconfigure', project.version
+	dependency 'org.springframework.boot', 'spring-boot-autoconfigure', project.version
+	dependency 'org.springframework.boot', 'spring-boot-autoconfigure-processor', project.version
+	dependency 'org.springframework.boot', 'spring-boot-configuration-metadata', project.version
+	dependency 'org.springframework.boot', 'spring-boot-configuration-processor', project.version
+	dependency 'org.springframework.boot', 'spring-boot-devtools', project.version
+	dependency 'org.springframework.boot', 'spring-boot-loader', project.version
+	dependency 'org.springframework.boot', 'spring-boot-loader-tools', project.version
+	dependency 'org.springframework.boot', 'spring-boot-properties-migrator', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-activemq', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-actuator', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-amqp', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-aop', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-artemis', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-batch', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-cache', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-cloud-connectors', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-cassandra', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-cassandra-reactive', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-couchbase', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-couchbase-reactive', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-elasticsearch', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-jdbc', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-jpa', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-ldap', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-mongodb', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-mongodb-reactive', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-redis', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-redis-reactive', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-neo4j', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-rest', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-data-solr', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-freemarker', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-groovy-templates', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-hateoas', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-integration', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-jdbc', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-jersey', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-jetty', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-jooq', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-json', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-jta-atomikos', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-jta-bitronix', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-log4j2', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-logging', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-mail', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-mustache', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-oauth2-client', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-oauth2-resource-server', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-quartz', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-reactor-netty', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-rsocket', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-security', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-test', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-thymeleaf', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-tomcat', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-undertow', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-validation', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-web', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-webflux', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-websocket', project.version
+	dependency 'org.springframework.boot', 'spring-boot-starter-web-services', project.version
 	dependency 'antlr', 'antlr', '${antlr2.version}'
 	dependency 'ch.qos.logback', 'logback-access', '${logback.version}'
 	dependency 'ch.qos.logback', 'logback-classic', '${logback.version}'

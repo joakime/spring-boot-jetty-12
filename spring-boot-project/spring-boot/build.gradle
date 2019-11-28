@@ -105,6 +105,10 @@ dependencies {
 	testImplementation 'org.xerial:sqlite-jdbc'
 
 	testRuntime 'org.junit.platform:junit-platform-launcher'
+	testRuntime('org.testcontainers:jdbc') {
+		exclude group: 'javax.annotation', module: 'javax.annotation-api'
+		exclude group: 'javax.xml.bind', module: 'jaxb-api'
+	}
 }
 
 compileKotlin {

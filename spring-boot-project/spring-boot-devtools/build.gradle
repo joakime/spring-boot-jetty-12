@@ -52,4 +52,5 @@ dependencies {
 	testImplementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
 	testRuntime 'org.junit.platform:junit-platform-launcher'
+	testRuntime 'org.yaml:snakeyaml'
 }
