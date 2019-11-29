@@ -23,6 +23,7 @@ import org.gradle.api.attributes.Usage;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.plugins.ide.eclipse.EclipsePlugin;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 
@@ -53,6 +54,8 @@ public class OptionalDependenciesPlugin implements Plugin<Project> {
 				sourceSet.setCompileClasspath(sourceSet.getCompileClasspath().plus(optional));
 				sourceSet.setRuntimeClasspath(sourceSet.getRuntimeClasspath().plus(optional));
 			});
+			project.getTasks().withType(Javadoc.class)
+					.all((javadoc) -> javadoc.setClasspath(javadoc.getClasspath().plus(optional)));
 		});
 		project.getPlugins().withType(EclipsePlugin.class,
 				(eclipePlugin) -> project.getExtensions().getByType(EclipseModel.class)

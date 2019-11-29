@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.transaction;
 
 import java.util.UUID;
+
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
@@ -82,8 +83,7 @@ class TransactionAutoConfigurationTests {
 						DataSourceTransactionManagerAutoConfiguration.class))
 				.withUserConfiguration(SinglePlatformTransactionManagerConfiguration.class,
 						SingleReactiveTransactionManagerConfiguration.class)
-				.withPropertyValues("spring.datasource.url:jdbc:h2:mem:" + UUID.randomUUID())
-				.run((context) -> {
+				.withPropertyValues("spring.datasource.url:jdbc:h2:mem:" + UUID.randomUUID()).run((context) -> {
 					PlatformTransactionManager platformTransactionManager = context
 							.getBean(PlatformTransactionManager.class);
 					TransactionTemplate transactionTemplate = context.getBean(TransactionTemplate.class);

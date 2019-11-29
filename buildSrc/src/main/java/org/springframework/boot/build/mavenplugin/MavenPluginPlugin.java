@@ -17,11 +17,18 @@
 package org.springframework.boot.build.mavenplugin;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.spring.javaformat.formatter.FileFormatter;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.component.SoftwareComponent;
@@ -33,9 +40,14 @@ import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.api.tasks.javadoc.Javadoc;
+import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 
 import org.springframework.boot.build.maven.InternalPublishPlugin;
 
@@ -126,28 +138,30 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		File pluginDescriptorDir = new File(project.getBuildDir(), "plugin-descriptor");
 		SourceSetContainer sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
 		SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-		SourceSet helpMojoSourceSet = sourceSets.create("helpMojo");
-		helpMojoSourceSet.getJava()
-				.srcDir(new File(generateHelpMojo.getProjectDir(), "target/generated-sources/plugin"));
-		project.getTasks().getByName(helpMojoSourceSet.getCompileJavaTaskName()).dependsOn(generateHelpMojo);
-		Copy pluginDescriptorInputs = createCopyPluginDescriptorInputs(project, pluginDescriptorDir, mainSourceSet,
-				helpMojoSourceSet);
+		File generatedHelpMojoDir = new File(project.getBuildDir(), "generated/sources/helpMojo");
+		project.getTasks().withType(Javadoc.class,
+				(javadoc) -> ((StandardJavadocDocletOptions) javadoc.getOptions()).addMultilineStringsOption("tag")
+						.setValue(Arrays.asList("goal:X", "requiresProject:X", "threadSafe:X")));
+		FormatHelpMojoSource copyFormattedHelpMojoSource = project.getTasks().create("copyFormattedHelpMojoSource",
+				FormatHelpMojoSource.class);
+		copyFormattedHelpMojoSource.setGenerator(generateHelpMojo);
+		copyFormattedHelpMojoSource.setOutputDir(generatedHelpMojoDir);
+		mainSourceSet.getAllJava().srcDir(generatedHelpMojoDir);
+		project.getTasks().getByName(mainSourceSet.getCompileJavaTaskName()).dependsOn(copyFormattedHelpMojoSource);
+		Copy pluginDescriptorInputs = createCopyPluginDescriptorInputs(project, pluginDescriptorDir, mainSourceSet);
 		pluginDescriptorInputs.dependsOn(mainSourceSet.getClassesTaskName());
-		pluginDescriptorInputs.dependsOn(helpMojoSourceSet.getClassesTaskName());
 		MavenExec generatePluginDescriptor = createGeneratePluginDescriptor(project, pluginDescriptorDir);
 		generatePluginDescriptor.dependsOn(pluginDescriptorInputs);
 		return generatePluginDescriptor;
 	}
 
-	private Copy createCopyPluginDescriptorInputs(Project project, File destination, SourceSet... sourceSets) {
+	private Copy createCopyPluginDescriptorInputs(Project project, File destination, SourceSet sourceSet) {
 		Copy pluginDescriptorInputs = project.getTasks().create("copyPluginDescriptorInputs", Copy.class);
 		pluginDescriptorInputs.setDestinationDir(destination);
 		pluginDescriptorInputs.from(new File(project.getProjectDir(), "src/maven/resources/pom.xml"),
 				(sync) -> sync.filter((input) -> input.replace("{{version}}", project.getVersion().toString())));
-		for (SourceSet sourceSet : sourceSets) {
-			pluginDescriptorInputs.from(sourceSet.getOutput().getClassesDirs(), (sync) -> sync.into("target/classes"));
-			pluginDescriptorInputs.from(sourceSet.getAllJava().getSrcDirs(), (sync) -> sync.into("src/main/java"));
-		}
+		pluginDescriptorInputs.from(sourceSet.getOutput().getClassesDirs(), (sync) -> sync.into("target/classes"));
+		pluginDescriptorInputs.from(sourceSet.getAllJava().getSrcDirs(), (sync) -> sync.into("src/main/java"));
 		pluginDescriptorInputs.from(new File(project.getProjectDir(), "src/maven/resources/pom.xml"),
 				(sync) -> sync.filter((input) -> input.replace("{{version}}", project.getVersion().toString())));
 		return pluginDescriptorInputs;
@@ -170,6 +184,46 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	private void includeHelpMojoInJar(Jar jar, JavaExec generateHelpMojo) {
 		jar.from(generateHelpMojo);
 		jar.dependsOn(generateHelpMojo);
+	}
+
+	public static class FormatHelpMojoSource extends DefaultTask {
+
+		private Task generator;
+
+		private File outputDir;
+
+		void setGenerator(Task generator) {
+			this.generator = generator;
+			getInputs().files(this.generator);
+		}
+
+		@OutputDirectory
+		public File getOutputDir() {
+			return this.outputDir;
+		}
+
+		void setOutputDir(File outputDir) {
+			this.outputDir = outputDir;
+		}
+
+		@TaskAction
+		void syncAndFormat() {
+			FileFormatter fileFormatter = new FileFormatter();
+			for (File output : this.generator.getOutputs().getFiles()) {
+				fileFormatter.formatFiles(getProject().fileTree(output), StandardCharsets.UTF_8).forEach((fileEdit) -> {
+					Path relativePath = output.toPath().relativize(fileEdit.getFile().toPath());
+					Path outputLocation = this.outputDir.toPath().resolve(relativePath);
+					try {
+						Files.createDirectories(outputLocation.getParent());
+						Files.write(outputLocation, fileEdit.getFormattedContent().getBytes(StandardCharsets.UTF_8));
+					}
+					catch (Exception ex) {
+						throw new TaskExecutionException(this, ex);
+					}
+				});
+			}
+		}
+
 	}
 
 }

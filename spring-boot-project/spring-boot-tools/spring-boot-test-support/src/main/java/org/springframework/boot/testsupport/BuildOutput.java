@@ -39,9 +39,9 @@ public class BuildOutput {
 	 */
 	public File getTestClassesLocation() {
 		try {
-			File location = new File(this.testClass.getProtectionDomain().getCodeSource()
-					.getLocation().toURI());
-			if (location.getPath().endsWith(path("bin", "test")) || location.getPath().endsWith(path("build", "classes", "java", "test"))) {
+			File location = new File(this.testClass.getProtectionDomain().getCodeSource().getLocation().toURI());
+			if (location.getPath().endsWith(path("bin", "test"))
+					|| location.getPath().endsWith(path("build", "classes", "java", "test"))) {
 				return location;
 			}
 			throw new IllegalStateException("Unexpected test classes location '" + location + "'");

@@ -93,7 +93,7 @@ class LaunchScriptConfigurationTests {
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"The\n#  project\n#  description");
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private Property<String> stringProperty(String value) {
 		Property<String> property = mock(Property.class);

@@ -113,8 +113,8 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		getTask().classpath(jarFile("library.jar"));
 		getTask().providedClasspath(jarFile("provided-library.jar"));
 		executeTask();
-		assertThat(getEntryNames(getTask().getArchiveFile().get().getAsFile())).containsSubsequence("WEB-INF/lib/library.jar",
-				"WEB-INF/lib-provided/provided-library.jar");
+		assertThat(getEntryNames(getTask().getArchiveFile().get().getAsFile()))
+				.containsSubsequence("WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
 	}
 
 	@Override

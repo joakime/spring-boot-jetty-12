@@ -16,11 +16,15 @@
 
 package org.springframework.boot.build;
 
+import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.plugins.quality.CheckstyleExtension;
+import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.publish.PublicationContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
@@ -52,7 +56,24 @@ public class ConventionsPlugin implements Plugin<Project> {
 	}
 
 	private void applyJavaConventions(Project project) {
-		project.getPlugins().withType(JavaPlugin.class, (java) -> project.setProperty("sourceCompatibility", "1.8"));
+		project.getPlugins().withType(JavaPlugin.class, (java) -> {
+			configureSpringJavaFormat(project);
+			project.setProperty("sourceCompatibility", "1.8");
+		});
+	}
+
+	private void configureSpringJavaFormat(Project project) {
+		project.getPlugins().apply(SpringJavaFormatPlugin.class);
+		project.getPlugins().apply(CheckstylePlugin.class);
+		CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
+		checkstyle.setToolVersion("8.22");
+		checkstyle.setConfigDir(project.getRootProject().file("src/checkstyle"));
+		String version = SpringJavaFormatPlugin.class.getPackage().getImplementationVersion();
+		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
+		checkstyleDependencies
+				.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
+		checkstyleDependencies
+				.add(project.getDependencies().create("io.spring.nohttp:nohttp-checkstyle:0.0.3.RELEASE"));
 	}
 
 	private void applyTestConventions(Project project) {

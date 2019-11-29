@@ -197,7 +197,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
 		}
 		// gh-16698
-		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(this.task.getArchiveFile().get().getAsFile()))) {
+		try (ZipInputStream zipInputStream = new ZipInputStream(
+				new FileInputStream(this.task.getArchiveFile().get().getAsFile()))) {
 			assertThat(zipInputStream.getNextEntry().getName()).isEqualTo("META-INF/");
 			assertThat(zipInputStream.getNextEntry().getName()).isEqualTo("META-INF/MANIFEST.MF");
 		}
@@ -250,7 +251,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		assertThat(Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath()))
 				.startsWith(new DefaultLaunchScript(null, properties).toByteArray());
 		try {
-			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(this.task.getArchiveFile().get().getAsFile().toPath());
+			Set<PosixFilePermission> permissions = Files
+					.getPosixFilePermissions(this.task.getArchiveFile().get().getAsFile().toPath());
 			assertThat(permissions).contains(PosixFilePermission.OWNER_EXECUTE);
 		}
 		catch (UnsupportedOperationException ex) {
@@ -265,7 +267,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		Files.write(customScript.toPath(), Arrays.asList("custom script"), StandardOpenOption.CREATE);
 		this.task.launchScript((configuration) -> configuration.setScript(customScript));
 		executeTask();
-		assertThat(Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath())).startsWith("custom script".getBytes());
+		assertThat(Files.readAllBytes(this.task.getArchiveFile().get().getAsFile().toPath()))
+				.startsWith("custom script".getBytes());
 	}
 
 	@Test
@@ -400,9 +403,10 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				jarFile("third-library.jar"));
 		this.task.requiresUnpack("second-library.jar");
 		executeTask();
-		assertThat(getEntryNames(this.task.getArchiveFile().get().getAsFile())).containsSubsequence("org/springframework/boot/loader/",
-				this.classesPath + "com/example/Application.class", this.libPath + "first-library.jar",
-				this.libPath + "second-library.jar", this.libPath + "third-library.jar");
+		assertThat(getEntryNames(this.task.getArchiveFile().get().getAsFile())).containsSubsequence(
+				"org/springframework/boot/loader/", this.classesPath + "com/example/Application.class",
+				this.libPath + "first-library.jar", this.libPath + "second-library.jar",
+				this.libPath + "third-library.jar");
 	}
 
 	protected File jarFile(String name) throws IOException {

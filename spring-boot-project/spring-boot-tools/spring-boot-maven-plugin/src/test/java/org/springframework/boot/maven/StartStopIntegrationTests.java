@@ -16,39 +16,38 @@
 
 package org.springframework.boot.maven;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.contentOf;
-
 import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
+
 /**
  * Integration tests for the Maven plugin's war support.
- * 
+ *
  * @author Andy Wilkinson
  */
 class StartStopIntegrationTests {
-	
+
 	@Test
 	void startStopWithForkDisabledWaitsForApplicationToBeReadyAndThenRequestsShutdown() {
-		new MavenBuild("start-stop-fork-disabled").goals("verify").execute((project) -> 
-			assertThat(buildLog(project)).contains("isReady: true").contains("Shutdown requested"));
+		new MavenBuild("start-stop-fork-disabled").goals("verify").execute(
+				(project) -> assertThat(buildLog(project)).contains("isReady: true").contains("Shutdown requested"));
 	}
-	
+
 	@Test
 	void startStopWaitsForApplicationToBeReadyAndThenRequestsShutdown() {
-		new MavenBuild("start-stop").goals("verify").execute((project) -> 
-			assertThat(buildLog(project)).contains("isReady: true").contains("Shutdown requested"));
+		new MavenBuild("start-stop").goals("verify").execute(
+				(project) -> assertThat(buildLog(project)).contains("isReady: true").contains("Shutdown requested"));
 	}
-	
+
 	@Test
 	void whenSkipIsTrueStartAndStopAreSkipped() {
-		new MavenBuild("start-stop-skip").goals("verify").execute((project) -> 
-			assertThat(buildLog(project)).doesNotContain("Ooops, I haz been run")
-					.doesNotContain("Stopping application"));		
+		new MavenBuild("start-stop-skip").goals("verify").execute((project) -> assertThat(buildLog(project))
+				.doesNotContain("Ooops, I haz been run").doesNotContain("Stopping application"));
 	}
-	
+
 	private String buildLog(File project) {
 		return contentOf(new File(project, "target/build.log"));
 	}

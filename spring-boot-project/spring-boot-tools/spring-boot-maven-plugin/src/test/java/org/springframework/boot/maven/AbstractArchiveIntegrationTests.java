@@ -15,9 +15,6 @@
  */
 package org.springframework.boot.maven;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.contentOf;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -31,22 +28,25 @@ import java.util.stream.Stream;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
+
 /**
  * Base class for archive (jar or war) related Maven plugin integration tests
- * 
+ *
  * @author Andy Wilkinson
  */
 abstract class AbstractArchiveIntegrationTests {
-	
+
 	protected String buildLog(File project) {
 		return contentOf(new File(project, "target/build.log"));
 	}
-	
+
 	protected String launchScript(File jar) {
 		String content = contentOf(jar);
 		return content.substring(0, content.indexOf(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
 	}
-	
+
 	protected AssertProvider<JarAssert> jar(File file) {
 		return new AssertProvider<JarAssert>() {
 
@@ -55,17 +55,17 @@ abstract class AbstractArchiveIntegrationTests {
 			public JarAssert assertThat() {
 				return new JarAssert(file);
 			}
-			
+
 		};
 	}
-	
+
 	static final class JarAssert extends AbstractAssert<JarAssert, File> {
-		
+
 		private JarAssert(File actual) {
 			super(actual, JarAssert.class);
 			assertThat(actual.exists());
 		}
-		
+
 		JarAssert doesNotHaveEntryWithName(String name) {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
@@ -89,30 +89,34 @@ abstract class AbstractArchiveIntegrationTests {
 		JarAssert hasEntryWithNameStartingWith(String prefix) {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
-					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix)).findFirst();
+					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
+							.findFirst();
 					assertThat(match).hasValueSatisfying((entry) -> assertThat(entry.getComment()).isNull());
 				});
 			});
 			return this;
 		}
-		
+
 		JarAssert hasUnpackEntryWithNameStartingWith(String prefix) {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
-					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix)).findFirst();
-					assertThat(match).as("Name starting with %s", prefix).hasValueSatisfying((entry) -> assertThat(entry.getComment()).startsWith("UNPACK:"));
+					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
+							.findFirst();
+					assertThat(match).as("Name starting with %s", prefix)
+							.hasValueSatisfying((entry) -> assertThat(entry.getComment()).startsWith("UNPACK:"));
 				});
 			});
 			return this;
 		}
-		
+
 		JarAssert doesNotHaveEntryWithNameStartingWith(String prefix) {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
-					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix)).findFirst();
+					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
+							.findFirst();
 					assertThat(match).isNotPresent();
 				});
-			});			
+			});
 			return this;
 		}
 
@@ -120,49 +124,50 @@ abstract class AbstractArchiveIntegrationTests {
 			withJarFile((jarFile) -> {
 				try {
 					consumer.accept(new ManifestAssert(jarFile.getManifest()));
-				} catch (IOException ex) {
+				}
+				catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
 			});
 			return this;
 		}
-		
+
 		void withJarFile(Consumer<JarFile> consumer) {
-			try (JarFile jarFile = new JarFile(actual)) {
+			try (JarFile jarFile = new JarFile(this.actual)) {
 				consumer.accept(jarFile);
 			}
 			catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
 		}
-		
+
 		void withEntries(JarFile jarFile, Consumer<Stream<JarEntry>> entries) {
 			entries.accept(Collections.list(jarFile.entries()).stream());
 		}
-		
+
 		static final class ManifestAssert extends AbstractAssert<ManifestAssert, Manifest> {
 
 			private ManifestAssert(Manifest actual) {
 				super(actual, ManifestAssert.class);
 			}
-			
+
 			ManifestAssert hasStartClass(String expected) {
-				assertThat(actual.getMainAttributes().getValue("Start-Class")).isEqualTo(expected);
+				assertThat(this.actual.getMainAttributes().getValue("Start-Class")).isEqualTo(expected);
 				return this;
 			}
 
 			ManifestAssert hasMainClass(String expected) {
-				assertThat(actual.getMainAttributes().getValue("Main-Class")).isEqualTo(expected);
+				assertThat(this.actual.getMainAttributes().getValue("Main-Class")).isEqualTo(expected);
 				return this;
 			}
-			
+
 			ManifestAssert hasAttribute(String name, String value) {
-				assertThat(actual.getMainAttributes().getValue(name)).isEqualTo(value);
+				assertThat(this.actual.getMainAttributes().getValue(name)).isEqualTo(value);
 				return this;
 			}
-			
+
 		}
-	
+
 	}
-	
+
 }
