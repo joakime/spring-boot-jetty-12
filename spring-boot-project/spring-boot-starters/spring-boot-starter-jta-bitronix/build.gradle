@@ -7,7 +7,9 @@ description = "Starter for JTA transactions using Bitronix"
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	api project(':spring-boot-project:spring-boot-starters:spring-boot-starter')
-	api 'javax.jms:javax.jms-api'
-	api 'javax.transaction:javax.transaction-api'
-	api 'org.codehaus.btm:btm'
+	api 'jakarta.jms:jakarta.jms-api'
+	api 'jakarta.transaction:jakarta.transaction-api'
+	api ('org.codehaus.btm:btm') {
+		exclude group: 'javax.transaction', module: 'jta'
+	}
 }

@@ -20,13 +20,18 @@ import java.io.File;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 
 import org.springframework.boot.build.ConventionsPlugin;
+import org.springframework.boot.build.classpath.CheckClasspathForConflicts;
+import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link Plugin} for a starter project.
@@ -43,12 +48,31 @@ public class StarterPlugin implements Plugin<Project> {
 		plugins.apply(ConventionsPlugin.class);
 		StarterMetadata starterMetadata = project.getTasks().create("starterMetadata", StarterMetadata.class);
 		ConfigurationContainer configurations = project.getConfigurations();
-		starterMetadata.setDependencies(configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
+		Configuration runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		starterMetadata.setDependencies(runtimeClasspath);
 		File destination = new File(project.getBuildDir(), "starter-metadata.properties");
 		starterMetadata.setDestination(destination);
 		configurations.create("starterMetadata");
 		project.getArtifacts().add("starterMetadata", project.provider(starterMetadata::getDestination),
 				(artifact) -> artifact.builtBy(starterMetadata));
+		createClasspathConflictsCheck(runtimeClasspath, project);
+		createProhibitedDependenciesCheck(runtimeClasspath, project);
+	}
+
+	private void createClasspathConflictsCheck(Configuration classpath, Project project) {
+		CheckClasspathForConflicts checkClasspathForConflicts = project.getTasks().create(
+				"check" + StringUtils.capitalize(classpath.getName() + "ForConflicts"),
+				CheckClasspathForConflicts.class);
+		checkClasspathForConflicts.setClasspath(classpath);
+		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForConflicts);
+	}
+
+	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
+		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks().create(
+				"check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
+				CheckClasspathForProhibitedDependencies.class);
+		checkClasspathForProhibitedDependencies.setClasspath(classpath);
+		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
 	}
 
 }

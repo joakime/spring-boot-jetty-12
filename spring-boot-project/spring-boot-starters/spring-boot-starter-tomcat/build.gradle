@@ -6,8 +6,12 @@ description = "Starter for using Tomcat as the embedded servlet container. Defau
 
 dependencies {
 	api enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
-	api 'javax.annotation:javax.annotation-api'
-	api 'org.apache.tomcat.embed:tomcat-embed-core'
+    api 'jakarta.annotation:jakarta.annotation-api'
+	api ('org.apache.tomcat.embed:tomcat-embed-core') {
+		exclude group: 'org.apache.tomcat', module: 'tomcat-annotations-api'
+	}
 	api 'org.apache.tomcat.embed:tomcat-embed-el'
-	api 'org.apache.tomcat.embed:tomcat-embed-websocket'
+	api ('org.apache.tomcat.embed:tomcat-embed-websocket') {
+		exclude group: 'org.apache.tomcat', module: 'tomcat-annotations-api'
+	}
 }

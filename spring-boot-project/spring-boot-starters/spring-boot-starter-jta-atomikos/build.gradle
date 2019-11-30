@@ -10,5 +10,5 @@ dependencies {
 	api 'com.atomikos:transactions-jms'
 	api 'com.atomikos:transactions-jta'
 	api 'com.atomikos:transactions-jdbc'
-	api 'javax.transaction:javax.transaction-api'
+	api 'jakarta.transaction:jakarta.transaction-api'
 }
