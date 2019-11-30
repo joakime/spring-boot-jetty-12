@@ -33,9 +33,8 @@ dependencies {
 task javadoc(type: Javadoc) {
 	project.rootProject.gradle.projectsEvaluated {
 		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project}
-			.findAll { it.plugins.hasPlugin(JavaPlugin) && subproject.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { subproject.name != 'spring-boot-maven-plugin' && subproject.name != 'spring-boot-gradle-plugin' }
-		}
+			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
+			.findAll { it.name != 'spring-boot-maven-plugin' && it.name != 'spring-boot-gradle-plugin' }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
