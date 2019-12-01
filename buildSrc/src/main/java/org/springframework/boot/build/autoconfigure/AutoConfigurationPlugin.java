@@ -18,6 +18,7 @@ package org.springframework.boot.build.autoconfigure;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.concurrent.Callable;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -26,11 +27,13 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.context.properties.ConfigurationPropertiesPlugin;
 
 /**
  * {@link Plugin} for projects that define auto-configuration. When applied, the plugin
- * reacts to the presence of the {@link JavaPlugin} by:
+ * applies the {@link DeployedPlugin}. Additionally, it reacts to the presence of the
+ * {@link JavaPlugin} by:
  *
  * <ul>
  * <li>Applying the {@link ConfigurationPropertiesPlugin}.
@@ -51,6 +54,7 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
+		project.getPlugins().apply(DeployedPlugin.class);
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			project.getPlugins().apply(ConfigurationPropertiesPlugin.class);
 			Configuration annotationProcessors = project.getConfigurations()
@@ -65,6 +69,8 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 				task.setSourceSet(project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
 						.getByName(SourceSet.MAIN_SOURCE_SET_NAME));
 				task.setOutputFile(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
+				project.getArtifacts().add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
+						project.provider((Callable<File>) task::getOutputFile), (artifact) -> artifact.builtBy(task));
 			});
 		});
 	}

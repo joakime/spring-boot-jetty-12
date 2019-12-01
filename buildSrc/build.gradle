@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
 	checkstyle 'io.spring.javaformat:spring-javaformat-checkstyle:0.0.15'
+	implementation 'commons-codec:commons-codec:1.13'
 	implementation 'org.apache.maven:maven-embedder:3.6.2'
 	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:2.3.0'
 	implementation 'org.springframework:spring-core:5.2.0.RELEASE'
@@ -45,9 +46,25 @@ gradlePlugin {
 			id = "org.springframework.boot.conventions"
 			implementationClass = "org.springframework.boot.build.ConventionsPlugin"
 		}
+		deployedPlugin {
+			id = "org.springframework.boot.deployed"
+			implementationClass = "org.springframework.boot.build.DeployedPlugin"
+		}
+		integrationTestPlugin {
+			id = "org.springframework.boot.integration-test"
+			implementationClass = "org.springframework.boot.build.test.IntegrationTestPlugin"
+		}
+		internalPublishPlugin {
+			id = "org.springframework.boot.internal-publish"
+			implementationClass = "org.springframework.boot.build.maven.InternalPublishPlugin"
+		}
 		mavenPluginPlugin {
 			id = "org.springframework.boot.maven-plugin"
 			implementationClass = "org.springframework.boot.build.mavenplugin.MavenPluginPlugin"
+		}
+		mavenRepositoryPlugin {
+			id = "org.springframework.boot.maven-repository"
+			implementationClass = "org.springframework.boot.build.MavenRepositoryPlugin"
 		}
 		optionalDependenciesPlugin {
 			id = "org.springframework.boot.optional-dependencies"
@@ -56,10 +73,6 @@ gradlePlugin {
 		starterPlugin {
 			id = "org.springframework.boot.starter"
 			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
-		}
-		internalPublishPlugin {
-			id = "org.springframework.boot.internal-publish"
-			implementationClass = "org.springframework.boot.build.maven.InternalPublishPlugin"
 		}
 	}
 }

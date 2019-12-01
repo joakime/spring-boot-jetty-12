@@ -44,6 +44,8 @@ class GroovyGrabDependencyResolverTests {
 
 	@BeforeEach
 	void setupResolver() {
+		System.out.println(System.getProperty("maven.home"));
+		System.out.println(System.getProperty("user.home"));
 		GroovyCompilerConfiguration configuration = new GroovyCompilerConfiguration() {
 
 			@Override

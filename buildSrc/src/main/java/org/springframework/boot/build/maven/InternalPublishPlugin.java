@@ -18,8 +18,10 @@ package org.springframework.boot.build.maven;
 
 import java.io.File;
 
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.publish.PublishingExtension;
 
@@ -40,8 +42,19 @@ public class InternalPublishPlugin implements Plugin<Project> {
 			mavenRepository.setUrl(repositoryLocation.toURI());
 		});
 		Configuration mavenRepository = project.getConfigurations().create("mavenRepository");
-		project.getArtifacts().add(mavenRepository.getName(), repositoryLocation,
-				(artifact) -> artifact.builtBy("publishMavenPublicationToInternalRepository"));
+		project.getArtifacts().add(mavenRepository.getName(), repositoryLocation, (artifact) -> {
+			String publishTaskName = "publishMavenPublicationToInternalRepository";
+			artifact.builtBy(publishTaskName);
+		});
+		project.getTasks().matching((task) -> task.getName().equals("publishMavenPublicationToInternalRepository"))
+				.all((task) -> task.doFirst(new Action<Task>() {
+
+					@Override
+					public void execute(Task task) {
+						task.getProject().delete(repositoryLocation);
+					}
+
+				}));
 	}
 
 }

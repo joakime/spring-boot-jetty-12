@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build.bom;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ import groovy.util.Node;
 import groovy.xml.QName;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.plugins.JavaPlatformExtension;
 import org.gradle.api.plugins.JavaPlatformPlugin;
@@ -30,7 +32,12 @@ import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPublication;
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
+import org.gradle.api.tasks.Sync;
+
+import org.springframework.boot.build.DeployedPlugin;
+import org.springframework.boot.build.MavenRepositoryPlugin;
+import org.springframework.boot.build.mavenplugin.MavenExec;
 
 /**
  * {@link Plugin} for defining a bom. Dependencies are added as constraints in the
@@ -44,7 +51,8 @@ public class BomPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
-		plugins.apply(MavenPublishPlugin.class);
+		plugins.apply(DeployedPlugin.class);
+		plugins.apply(MavenRepositoryPlugin.class);
 		plugins.apply(JavaPlatformPlugin.class);
 		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
 		javaPlatform.allowDependencies();
@@ -52,6 +60,26 @@ public class BomPlugin implements Plugin<Project> {
 		BomExtension bom = new BomExtension(project.getDependencies());
 		project.getExtensions().add("bom", bom);
 		new PublishingCustomizer(project, bom).customize();
+		Configuration effectiveBomConfiguration = project.getConfigurations().create("effectiveBom");
+		project.getTasks().matching((task) -> task.getName().equals("generatePomFileForDeploymentPublication"))
+				.all((task) -> {
+					Sync syncBom = project.getTasks().create("syncBom", Sync.class);
+					syncBom.dependsOn(task);
+					File generatedBomDir = new File(project.getBuildDir(), "generated/bom");
+					syncBom.setDestinationDir(generatedBomDir);
+					syncBom.from(((GenerateMavenPom) task).getDestination());
+					syncBom.rename((name) -> "pom.xml");
+					MavenExec generateEffectiveBom = project.getTasks().create("generateEffectiveBom", MavenExec.class);
+					generateEffectiveBom.setProjectDir(generatedBomDir);
+					File effectiveBom = new File(project.getBuildDir(),
+							"generated/effective-bom/" + project.getName() + "-effective-bom.xml");
+					generateEffectiveBom.args("help:effective-pom", "-Doutput=" + effectiveBom);
+					generateEffectiveBom.dependsOn(syncBom);
+					generateEffectiveBom.getOutputs().file(effectiveBom);
+					project.getArtifacts().add(effectiveBomConfiguration.getName(), effectiveBom,
+							(artifact) -> artifact.builtBy(generateEffectiveBom));
+				});
+
 	}
 
 	private static final class PublishingCustomizer {
@@ -67,7 +95,7 @@ public class BomPlugin implements Plugin<Project> {
 
 		private void customize() {
 			PublishingExtension publishing = this.project.getExtensions().getByType(PublishingExtension.class);
-			publishing.getPublications().create("bom", MavenPublication.class, this::configurePublication);
+			publishing.getPublications().withType(MavenPublication.class).all(this::configurePublication);
 		}
 
 		private void configurePublication(MavenPublication publication) {

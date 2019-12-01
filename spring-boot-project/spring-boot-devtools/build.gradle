@@ -9,11 +9,11 @@ plugins {
 description = 'Spring Boot Developer Tools'
 
 dependencies {
-	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation project(':spring-boot-project:spring-boot')
 	implementation project(':spring-boot-project:spring-boot-autoconfigure')
 
-	optional enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'javax.servlet:javax.servlet-api'
 	optional 'org.apache.derby:derby'
 	optional 'org.hibernate:hibernate-core'

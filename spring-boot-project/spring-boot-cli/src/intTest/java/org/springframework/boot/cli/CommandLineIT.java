@@ -43,39 +43,40 @@ class CommandLineIT {
 		this.cli = new CommandLineInvoker(tempDir);
 	}
 
-	@Test void hintProducesListOfValidCommands()
-			throws IOException, InterruptedException {
+	@Test
+	void hintProducesListOfValidCommands() throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("hint");
 		assertThat(cli.await()).isEqualTo(0);
 		assertThat(cli.getErrorOutput()).isEmpty();
 		assertThat(cli.getStandardOutputLines()).hasSize(11);
 	}
 
-	@Test void invokingWithNoArgumentsDisplaysHelp()
-			throws IOException, InterruptedException {
+	@Test
+	void invokingWithNoArgumentsDisplaysHelp() throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke();
 		assertThat(cli.await()).isEqualTo(1);
 		assertThat(cli.getErrorOutput()).isEmpty();
 		assertThat(cli.getStandardOutput()).startsWith("usage:");
 	}
 
-	@Test void unrecognizedCommandsAreHandledGracefully()
-			throws IOException, InterruptedException {
+	@Test
+	void unrecognizedCommandsAreHandledGracefully() throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("not-a-real-command");
 		assertThat(cli.await()).isEqualTo(1);
-		assertThat(cli.getErrorOutput())
-				.contains("'not-a-real-command' is not a valid command");
+		assertThat(cli.getErrorOutput()).contains("'not-a-real-command' is not a valid command");
 		assertThat(cli.getStandardOutput()).isEmpty();
 	}
 
-	@Test void version() throws IOException, InterruptedException {
+	@Test
+	void version() throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("version");
 		assertThat(cli.await()).isEqualTo(0);
 		assertThat(cli.getErrorOutput()).isEmpty();
 		assertThat(cli.getStandardOutput()).startsWith("Spring CLI v");
 	}
 
-	@Test void help() throws IOException, InterruptedException {
+	@Test
+	void help() throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("help");
 		assertThat(cli.await()).isEqualTo(1);
 		assertThat(cli.getErrorOutput()).isEmpty();

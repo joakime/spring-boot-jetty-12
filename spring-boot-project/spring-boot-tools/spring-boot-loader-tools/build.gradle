@@ -14,11 +14,12 @@ configurations {
 }
 
 dependencies {
+	api "org.apache.commons:commons-compress:1.19"
+
 	compileOnly "ch.qos.logback:logback-classic"
 
-	implementation enforcedPlatform(project(":spring-boot-project:spring-boot-parent"))
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation "org.springframework:spring-core"
-	implementation "org.apache.commons:commons-compress"
 
 	loader project(":spring-boot-project:spring-boot-tools:spring-boot-loader")
 

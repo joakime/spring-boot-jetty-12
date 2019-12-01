@@ -7,7 +7,7 @@ plugins {
 description = 'Spring Boot Properties Migrator'
 
 dependencies {
-	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation project(':spring-boot-project:spring-boot')
 	implementation project(':spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata')
 

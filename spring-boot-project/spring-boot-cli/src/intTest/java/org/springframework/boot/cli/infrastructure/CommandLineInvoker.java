@@ -66,8 +66,7 @@ public final class CommandLineInvoker {
 		List<String> command = new ArrayList<>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
-		ProcessBuilder processBuilder = new ProcessBuilder(command)
-				.directory(this.workingDirectory);
+		ProcessBuilder processBuilder = new ProcessBuilder(command).directory(this.workingDirectory);
 		processBuilder.environment().remove("JAVA_OPTS");
 		return processBuilder.start();
 	}
@@ -75,7 +74,7 @@ public final class CommandLineInvoker {
 	private File findLaunchScript() throws IOException {
 		File unpacked = new File(this.temp, "unpacked-cli");
 		if (!unpacked.isDirectory()) {
-			File zip = new BuildOutput(getClass()).getRootLocation()
+			File zip = new File(new BuildOutput(getClass()).getRootLocation(), "distributions")
 					.listFiles((pathname) -> pathname.getName().endsWith("-bin.zip"))[0];
 			try (ZipInputStream input = new ZipInputStream(new FileInputStream(zip))) {
 				ZipEntry entry;
@@ -99,8 +98,7 @@ public final class CommandLineInvoker {
 		File bin = new File(unpacked.listFiles()[0], "bin");
 		File launchScript = new File(bin, isWindows() ? "spring.bat" : "spring");
 		Assert.state(launchScript.exists() && launchScript.isFile(),
-				() -> "Could not find CLI launch script "
-						+ launchScript.getAbsolutePath());
+				() -> "Could not find CLI launch script " + launchScript.getAbsolutePath());
 		return launchScript;
 	}
 
@@ -125,10 +123,10 @@ public final class CommandLineInvoker {
 
 		public Invocation(Process process) {
 			this.process = process;
-			this.streamReaders.add(new Thread(new StreamReadingRunnable(
-					this.process.getErrorStream(), this.err, this.combined)));
-			this.streamReaders.add(new Thread(new StreamReadingRunnable(
-					this.process.getInputStream(), this.out, this.combined)));
+			this.streamReaders
+					.add(new Thread(new StreamReadingRunnable(this.process.getErrorStream(), this.err, this.combined)));
+			this.streamReaders
+					.add(new Thread(new StreamReadingRunnable(this.process.getInputStream(), this.out, this.combined)));
 			for (Thread streamReader : this.streamReaders) {
 				streamReader.start();
 			}
@@ -162,10 +160,8 @@ public final class CommandLineInvoker {
 		}
 
 		private List<String> getLines(StringBuffer buffer) {
-			BufferedReader reader = new BufferedReader(
-					new StringReader(buffer.toString()));
-			return reader.lines().filter((line) -> !line.startsWith("Picked up "))
-					.collect(Collectors.toList());
+			BufferedReader reader = new BufferedReader(new StringReader(buffer.toString()));
+			return reader.lines().filter((line) -> !line.startsWith("Picked up ")).collect(Collectors.toList());
 		}
 
 		public int await() throws InterruptedException {

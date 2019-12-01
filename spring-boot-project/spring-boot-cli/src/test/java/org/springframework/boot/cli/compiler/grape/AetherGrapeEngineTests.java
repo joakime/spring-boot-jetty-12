@@ -30,6 +30,7 @@ import groovy.lang.GroovyClassLoader;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
@@ -59,6 +60,12 @@ class AetherGrapeEngineTests {
 		dependencyResolutionContext.addDependencyManagement(new SpringBootDependenciesDependencyManagement());
 		return AetherGrapeEngineFactory.create(this.groovyClassLoader, repositoryConfigurations,
 				dependencyResolutionContext, false);
+	}
+
+	@BeforeEach
+	void dump() {
+		System.out.println(System.getProperty("user.home"));
+		System.out.println(System.getProperty("maven.home"));
 	}
 
 	@Test

@@ -8,12 +8,12 @@ plugins {
 description = 'Spring Boot Test AutoConfigure'
 
 dependencies {
-	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation project(':spring-boot-project:spring-boot')
 	implementation project(':spring-boot-project:spring-boot-test')
 	implementation project(':spring-boot-project:spring-boot-autoconfigure')
 
-	optional enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'javax.json.bind:javax.json.bind-api'
 	optional 'javax.servlet:javax.servlet-api'
 	optional 'javax.transaction:javax.transaction-api'

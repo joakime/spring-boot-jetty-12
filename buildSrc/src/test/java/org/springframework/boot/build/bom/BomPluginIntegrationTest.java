@@ -143,8 +143,9 @@ public class BomPluginIntegrationTest {
 	}
 
 	private void generatePom(Consumer<NodeAssert> consumer) {
-		runGradle(this.temporaryFolder.getRoot(), "generatePomFileForBomPublication", "-s");
-		File generatedPomXml = new File(this.temporaryFolder.getRoot(), "build/publications/bom/pom-default.xml");
+		runGradle(this.temporaryFolder.getRoot(), "generatePomFileForDeploymentPublication", "-s");
+		File generatedPomXml = new File(this.temporaryFolder.getRoot(),
+				"build/publications/deployment/pom-default.xml");
 		assertThat(generatedPomXml).isFile();
 		consumer.accept(new NodeAssert(generatedPomXml));
 	}
