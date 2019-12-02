@@ -63,9 +63,6 @@ public class TestSliceMetadata extends AbstractTask {
 	public TestSliceMetadata() {
 		getInputs().dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir());
 		getInputs().files((Callable<FileCollection>) () -> this.sourceSet.getOutput().getClassesDirs());
-		Configuration testSliceMetadata = getProject().getConfigurations().maybeCreate("testSliceMetadata");
-		getProject().getArtifacts().add(testSliceMetadata.getName(),
-				getProject().provider((Callable<File>) this::getOutputFile), (artifact) -> artifact.builtBy(this));
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
@@ -79,6 +76,9 @@ public class TestSliceMetadata extends AbstractTask {
 
 	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
+		Configuration testSliceMetadata = getProject().getConfigurations().maybeCreate("testSliceMetadata");
+		getProject().getArtifacts().add(testSliceMetadata.getName(),
+				getProject().provider((Callable<File>) this::getOutputFile), (artifact) -> artifact.builtBy(this));
 	}
 
 	@TaskAction

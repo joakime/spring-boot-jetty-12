@@ -1,8 +1,8 @@
 plugins {
 	id 'java-library'
-	id 'org.springframework.boot.optional-dependencies'
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.configuration-properties'
+	id 'org.springframework.boot.optional-dependencies'
 	id 'org.springframework.boot.deployed'
 }
 

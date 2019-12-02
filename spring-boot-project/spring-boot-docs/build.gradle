@@ -1,9 +1,9 @@
 plugins {
+	id 'java-base'
 	id 'org.asciidoctor.jvm.convert'
 	id 'org.asciidoctor.jvm.pdf'
-	id 'java-base'
-	id 'maven-publish'
 	id 'org.springframework.boot.conventions'
+	id 'org.springframework.boot.deployed'
 }
 
 configurations {
@@ -178,7 +178,7 @@ artifacts {
 
 publishing {
 	publications {
-		mavenJava(MavenPublication) {
+		deployment(MavenPublication) {
 			artifact zip
 		}
 	}
