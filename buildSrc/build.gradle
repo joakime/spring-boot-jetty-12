@@ -54,10 +54,6 @@ gradlePlugin {
 			id = "org.springframework.boot.integration-test"
 			implementationClass = "org.springframework.boot.build.test.IntegrationTestPlugin"
 		}
-		internalPublishPlugin {
-			id = "org.springframework.boot.internal-publish"
-			implementationClass = "org.springframework.boot.build.maven.InternalPublishPlugin"
-		}
 		mavenPluginPlugin {
 			id = "org.springframework.boot.maven-plugin"
 			implementationClass = "org.springframework.boot.build.mavenplugin.MavenPluginPlugin"

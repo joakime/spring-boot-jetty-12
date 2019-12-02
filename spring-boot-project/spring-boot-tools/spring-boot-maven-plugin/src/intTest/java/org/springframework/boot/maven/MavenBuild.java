@@ -69,7 +69,7 @@ class MavenBuild {
 	private final List<String> goals = new ArrayList<>();
 
 	MavenBuild(String project) {
-		this.projectDir = new File("src/it/" + project);
+		this.projectDir = new File("src/intTest/projects/" + project);
 		try {
 			this.temp = Files.createTempDirectory("maven-build").toFile().getCanonicalFile();
 		}
@@ -127,9 +127,9 @@ class MavenBuild {
 				}
 
 			});
-			String settingsXml = new String(Files.readAllBytes(Paths.get("src", "it", "settings.xml")),
+			String settingsXml = new String(Files.readAllBytes(Paths.get("src", "intTest", "projects", "settings.xml")),
 					StandardCharsets.UTF_8).replace("@localRepositoryUrl@",
-							new File("build/local-maven-repository").toURI().toURL().toString());
+							new File("build/int-test-maven-repository").toURI().toURL().toString());
 			Files.write(destination.resolve("settings.xml"), settingsXml.getBytes(StandardCharsets.UTF_8),
 					StandardOpenOption.CREATE_NEW);
 			request.setBaseDirectory(this.temp);

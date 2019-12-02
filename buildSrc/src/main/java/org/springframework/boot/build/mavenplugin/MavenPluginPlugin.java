@@ -21,17 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import io.spring.javaformat.formatter.FileFormatter;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ProjectDependency;
-import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -49,7 +44,9 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 
-import org.springframework.boot.build.maven.InternalPublishPlugin;
+import org.springframework.boot.build.DeployedPlugin;
+import org.springframework.boot.build.MavenRepositoryPlugin;
+import org.springframework.boot.build.test.IntegrationTestPlugin;
 
 /**
  * Plugin for building Spring Boot's Maven Plugin.
@@ -62,32 +59,17 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getPlugins().apply(JavaLibraryPlugin.class);
 		project.getPlugins().apply(MavenPublishPlugin.class);
-		project.getPlugins().apply(InternalPublishPlugin.class);
-		Configuration mavenRepository = project.getConfigurations().maybeCreate("mavenRepository");
-		project.getConfigurations().getByName(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME).getDependencies()
-				.all((dependency) -> {
-					if (dependency instanceof ProjectDependency) {
-						ProjectDependency projectDependency = (ProjectDependency) dependency;
-						Map<String, String> dependencyDescriptor = new HashMap<>();
-						dependencyDescriptor.put("path", projectDependency.getDependencyProject().getPath());
-						dependencyDescriptor.put("configuration", "mavenRepository");
-						mavenRepository.getDependencies().add(project.getDependencies().project(dependencyDescriptor));
-					}
-				});
-		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-		publishing.getPublications().create("maven", MavenPublication.class, (publication) -> {
-			SoftwareComponent javaComponent = project.getComponents().findByName("java");
-			if (javaComponent != null) {
-				publication.from(javaComponent);
-			}
+		project.getPlugins().apply(DeployedPlugin.class);
+		project.getPlugins().apply(MavenRepositoryPlugin.class);
+		project.getPlugins().apply(IntegrationTestPlugin.class);
+		Copy populateIntTestMavenRepository = project.getTasks().create("populateIntTestMavenRepository", Copy.class);
+		populateIntTestMavenRepository.setDestinationDir(project.getBuildDir());
+		populateIntTestMavenRepository.into("int-test-maven-repository", (copy) -> {
+			copy.from(project.getConfigurations().getByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME));
+			copy.from(new File(project.getBuildDir(), "maven-repository"));
 		});
-		Copy populateLocalMavenRepository = project.getTasks().create("populateLocalMavenRepository", Copy.class);
-		populateLocalMavenRepository.setDestinationDir(project.getBuildDir());
-		populateLocalMavenRepository.into("local-maven-repository", (copy) -> copy.from(mavenRepository)
-				.from(new File(project.getBuildDir(), "internal-maven-repository")));
-		populateLocalMavenRepository
-				.dependsOn(project.getTasks().getByName("publishMavenPublicationToInternalRepository"));
-		project.getTasks().getByName("test").dependsOn(populateLocalMavenRepository);
+		populateIntTestMavenRepository
+				.dependsOn(project.getTasks().getByName("publishDeploymentPublicationToProjectRepository"));
 		configurePomPackaging(project);
 		MavenExec generateHelpMojo = configureMojoGenerationTasks(project);
 		MavenExec generatePluginDescriptor = configurePluginDescriptorGenerationTasks(project, generateHelpMojo);
@@ -102,6 +84,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		PrepareMavenBinaries prepareMavenBinaries = project.getTasks().create("prepareMavenBinaries",
 				PrepareMavenBinaries.class);
 		prepareMavenBinaries.setOutputDir(new File(project.getBuildDir(), "maven-binaries"));
+		project.getTasks().getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME).dependsOn(populateIntTestMavenRepository,
+				prepareMavenBinaries);
 	}
 
 	private void configurePomPackaging(Project project) {
