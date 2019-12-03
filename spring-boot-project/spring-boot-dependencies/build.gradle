@@ -768,3 +768,202 @@ bom {
 	dependency 'redis.clients', 'jedis', '${jedis.version}'
 	dependency 'wsdl4j', 'wsdl4j', '${wsdl4j.version}'
 }
+
+publishing.publications.withType(MavenPublication) {
+	pom.withXml { xml ->
+		def root = xml.asNode()
+		root.properties.'*'.last().plus {
+			delegate.'build-helper-maven-plugin.version'('3.0.0')
+			delegate.'exec-maven-plugin.version'('1.6.0')
+			delegate.'git-commit-id-plugin.version'('3.0.1')
+			delegate.'maven-antrun-plugin.version'('1.8')
+			delegate.'maven-assembly-plugin.version'('3.2.0')
+			delegate.'maven-clean-plugin.version'('3.1.0')
+			delegate.'maven-compiler-plugin.version'('3.8.1')
+			delegate.'maven-dependency-plugin.version'('3.1.1')
+			delegate.'maven-deploy-plugin.version'('2.8.2')
+			delegate.'maven-enforcer-plugin.version'('3.0.0-M2')
+			delegate.'maven-failsafe-plugin.version'('2.22.2')
+			delegate.'maven-install-plugin.version'('2.5.2')
+			delegate.'maven-invoker-plugin.version'('3.2.1')
+			delegate.'maven-help-plugin.version'('3.2.0')
+			delegate.'maven-jar-plugin.version'('3.2.0')
+			delegate.'maven-javadoc-plugin.version'('3.1.1')
+			delegate.'maven-resources-plugin.version'('3.1.0')
+			delegate.'maven-shade-plugin.version'('3.2.1')
+			delegate.'maven-site-plugin.version'('3.8.2')
+			delegate.'maven-source-plugin.version'('3.2.0')
+			delegate.'maven-surefire-plugin.version'('2.22.2')
+			delegate.'maven-war-plugin.version'('3.2.3')
+			delegate.'versions-maven-plugin.version'('2.7')
+			delegate.'xml-maven-plugin.version'('1.0.2')
+			delegate.'flatten-maven-plugin.version'('1.1.0')
+		}
+		root.dependencyManagement.plus {
+			delegate.build {
+				pluginManagement {
+					plugins {
+						plugin {
+							delegate.groupId('org.apache.johnzon')
+							delegate.artifactId('johnzon-maven-plugin')
+							delegate.version('${johnzon.version}')
+						}
+						plugin {
+							delegate.groupId('org.jetbrains.kotlin')
+							delegate.artifactId('kotlin-maven-plugin')
+							delegate.version('${kotlin.version}')
+						}
+						plugin {
+							delegate.groupId('org.jooq')
+							delegate.artifactId('jooq-codegen-maven')
+							delegate.version('${jooq.version}')
+						}
+						plugin {
+							delegate.groupId('org.springframework.boot')
+							delegate.artifactId('spring-boot-maven-plugin')
+							delegate.version(project.version)
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-antrun-plugin')
+							delegate.version('${maven-antrun-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-assembly-plugin')
+							delegate.version('${maven-assembly-plugin.version}')
+							configuration {
+								delegate.recompressZippedFiles('false')
+							}
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-clean-plugin')
+							delegate.version('${maven-clean-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-compiler-plugin')
+							delegate.version('${maven-compiler-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-deploy-plugin')
+							delegate.version('${maven-deploy-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-dependency-plugin')
+							delegate.version('${maven-dependency-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-enforcer-plugin')
+							delegate.version('${maven-enforcer-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-failsafe-plugin')
+							delegate.version('${maven-failsafe-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-install-plugin')
+							delegate.version('${maven-install-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-invoker-plugin')
+							delegate.version('${maven-invoker-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-help-plugin')
+							delegate.version('${maven-help-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-jar-plugin')
+							delegate.version('${maven-jar-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-javadoc-plugin')
+							delegate.version('${maven-javadoc-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-resources-plugin')
+							delegate.version('${maven-resources-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-shade-plugin')
+							delegate.version('${maven-shade-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-site-plugin')
+							delegate.version('${maven-site-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-source-plugin')
+							delegate.version('${maven-source-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-surefire-plugin')
+							delegate.version('${maven-surefire-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-war-plugin')
+							delegate.version('${maven-war-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.codehaus.mojo')
+							delegate.artifactId('build-helper-maven-plugin')
+							delegate.version('${build-helper-maven-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.codehaus.mojo')
+							delegate.artifactId('exec-maven-plugin')
+							delegate.version('${exec-maven-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.codehaus.mojo')
+							delegate.artifactId('versions-maven-plugin')
+							delegate.version('${versions-maven-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.codehaus.mojo')
+							delegate.artifactId('xml-maven-plugin')
+							delegate.version('${xml-maven-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.codehaus.mojo')
+							delegate.artifactId('flatten-maven-plugin')
+							delegate.version('${flatten-maven-plugin.version}')
+						}
+						plugin {
+							delegate.groupId('org.flywaydb')
+							delegate.artifactId('flyway-maven-plugin')
+							delegate.version('${flyway.version}')
+						}
+						plugin {
+							delegate.groupId('org.infinispan')
+							delegate.artifactId('infinispan-protocol-parser-generator-maven-plugin')
+							delegate.version('${infinispan.version}')
+						}
+						plugin {
+							delegate.groupId('pl.project13.maven')
+							delegate.artifactId('git-commit-id-plugin')
+							delegate.version('${git-commit-id-plugin.version}')
+						}
+					}
+				}
+			}
+		}
+	}
+}
