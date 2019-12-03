@@ -42,5 +42,5 @@
 	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="SpringJavadoc" message="\@since" />
-	<suppress files="[\\/]spring-boot-cli[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
 </suppressions>

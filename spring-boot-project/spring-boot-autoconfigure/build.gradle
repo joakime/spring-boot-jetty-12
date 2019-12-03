@@ -9,8 +9,9 @@ plugins {
 description = 'Spring Boot AutoConfigure'
 
 dependencies {
+	api project(':spring-boot-project:spring-boot')
+
 	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
-	implementation project(':spring-boot-project:spring-boot')
 
 	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'com.atomikos:transactions-jdbc'

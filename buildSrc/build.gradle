@@ -10,6 +10,9 @@ repositories {
 	maven { url 'https://repo.spring.io/release' }
 }
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 dependencies {
 	checkstyle 'io.spring.javaformat:spring-javaformat-checkstyle:0.0.15'
 	implementation 'commons-codec:commons-codec:1.13'

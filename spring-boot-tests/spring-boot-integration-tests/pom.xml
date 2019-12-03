@@ -17,7 +17,6 @@
 	</properties>
 	<modules>
 		<module>spring-boot-configuration-processor-tests</module>
-		<module>spring-boot-devtools-tests</module>
 		<module>spring-boot-server-tests</module>
 		<module>spring-boot-launch-script-tests</module>
 	</modules>

@@ -70,7 +70,6 @@ abstract class AbstractDevToolsIntegrationTests {
 						ApplicationState::hasServerPort)
 				.getServerPort();
 		this.serverPortFile.delete();
-		System.out.println("Got port " + port);
 		this.launchedApplication.restartRemote(port);
 		Thread.sleep(1000);
 		return port;
