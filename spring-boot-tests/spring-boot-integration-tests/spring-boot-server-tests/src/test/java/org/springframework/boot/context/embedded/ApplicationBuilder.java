@@ -36,7 +36,6 @@ import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -121,12 +120,8 @@ class ApplicationBuilder {
 	}
 
 	private File writeSettingsXml(File appFolder) throws IOException {
-		String repository = System.getProperty("repository");
-		if (!StringUtils.hasText(repository)) {
-			return null;
-		}
 		Map<String, Object> context = new HashMap<>();
-		context.put("repository", repository);
+		context.put("repository", new File("build/test-repository").toURI().toURL());
 		File settingsXml = new File(appFolder, "settings.xml");
 		try (FileWriter out = new FileWriter(settingsXml);
 				FileReader templateReader = new FileReader("src/test/resources/settings-template.xml")) {
@@ -160,7 +155,9 @@ class ApplicationBuilder {
 		if (settingsXml != null) {
 			invocation.setUserSettingsFile(settingsXml);
 		}
-		InvocationResult execute = new DefaultInvoker().execute(invocation);
+		DefaultInvoker invoker = new DefaultInvoker();
+		invoker.setMavenHome(new File("build/maven-binaries/apache-maven-3.6.2"));
+		InvocationResult execute = invoker.execute(invocation);
 		assertThat(execute.getExitCode()).isEqualTo(0);
 	}
 
