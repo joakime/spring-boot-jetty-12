@@ -7,963 +7,1887 @@ plugins {
 description = 'Spring Boot Dependencies'
 
 bom {
-	property 'activemq.version', '5.15.10'
-	property 'antlr2.version', '2.7.7'
-	property 'appengine-sdk.version', '1.9.76'
-	property 'artemis.version', '2.10.1'
-	property 'aspectj.version', '1.9.4'
-	property 'assertj.version', '3.14.0'
-	property 'atomikos.version', '4.0.6'
-	property 'awaitility.version', '4.0.1'
-	property 'bitronix.version', '2.1.4'
-	property 'byte-buddy.version', '1.10.2'
-	property 'caffeine.version', '2.8.0'
-	property 'cassandra-driver.version', '3.7.2'
-	property 'classmate.version', '1.5.1'
-	property 'commons-codec.version', '1.13'
-	property 'commons-dbcp2.version', '2.7.0'
-	property 'commons-lang3.version', '3.9'
-	property 'commons-pool.version', '1.6'
-	property 'commons-pool2.version', '2.7.0'
-	property 'couchbase-client.version', '2.7.9'
-	property 'couchbase-cache-client.version', '2.1.0'
-	property 'dependency-management-plugin.version', '1.0.8.RELEASE'
-	property 'db2-jdbc.version', '11.5.0.0'
-	property 'derby.version', '10.14.2.0'
-	property 'dropwizard-metrics.version', '4.1.1'
-	property 'ehcache.version', '2.10.6'
-	property 'ehcache3.version', '3.8.1'
-	property 'embedded-mongo.version', '2.2.0'
-	property 'flyway.version', '6.0.6'
-	property 'freemarker.version', '2.3.29'
-	property 'elasticsearch.version', '6.8.4'
-	property 'glassfish-el.version', '3.0.3'
-	property 'glassfish-jaxb.version', '2.3.2'
-	property 'groovy.version', '2.5.8'
-	property 'gson.version', '2.8.6'
-	property 'h2.version', '1.4.200'
-	property 'hamcrest.version', '2.2'
-	property 'hazelcast.version', '3.12.4'
-	property 'hazelcast-hibernate5.version', '1.3.2'
-	property 'hibernate.version', '5.4.8.Final'
-	property 'hibernate-validator.version', '6.1.0.Final'
-	property 'hikaricp.version', '3.4.1'
-	property 'hsqldb.version', '2.5.0'
-	property 'htmlunit.version', '2.36.0'
-	property 'httpasyncclient.version', '4.1.4'
-	property 'httpclient.version', '4.5.10'
-	property 'httpcore.version', '4.4.12'
-	property 'infinispan.version', '9.4.16.Final'
-	property 'influxdb-java.version', '2.16'
-	property 'jackson.version', '2.10.0'
-	property 'jackson-bom.version', '${jackson.version}'
-	property 'jakarta-activation.version', '1.2.1'
-	property 'jakarta-annotation.version', '1.3.5'
-	property 'jakarta-jms.version', '2.0.3'
-	property 'jakarta-json.version', '1.1.6'
-	property 'jakarta-json-bind.version', '1.0.2'
-	property 'jakarta-mail.version', '1.6.4'
-	property 'jakarta-persistence.version', '2.2.3'
-	property 'jakarta-servlet.version', '4.0.3'
-	property 'jakarta-servlet-jsp.version', '2.3.5'
-	property 'jakarta-servlet-jsp-jstl.version', '1.2.7'
-	property 'jakarta-transaction.version', '1.3.3'
-	property 'jakarta-validation.version', '2.0.1'
-	property 'jakarta-websocket.version', '1.1.2'
-	property 'jakarta-ws-rs.version', '2.1.6'
-	property 'jakarta-xml-bind.version', '2.3.2'
-	property 'jakarta-xml-ws.version', '2.3.2'
-	property 'janino.version', '3.1.0'
-	property 'javax-activation.version', '1.2.0'
-	property 'javax-annotation.version', '1.3.2'
-	property 'javax-cache.version', '1.1.1'
-	property 'javax-jaxws.version', '2.3.1'
-	property 'javax-jaxb.version', '2.3.1'
-	property 'javax-jms.version', '2.0.1'
-	property 'javax-json.version', '1.1.4'
-	property 'javax-jsonb.version', '1.0'
-	property 'javax-mail.version', '1.6.2'
-	property 'javax-money.version', '1.0.3'
-	property 'javax-persistence.version', '2.2'
-	property 'javax-transaction.version', '1.3'
-	property 'javax-validation.version', '2.0.1.Final'
-	property 'javax-websocket.version', '1.1'
-	property 'jaxen.version', '1.2.0'
-	property 'jaybird.version', '3.0.6'
-	property 'jboss-logging.version', '3.4.1.Final'
-	property 'jboss-transaction-spi.version', '7.6.0.Final'
-	property 'jdom2.version', '2.0.6'
-	property 'jedis.version', '3.1.0'
-	property 'jersey.version', '2.29.1'
-	property 'jest.version', '6.3.1'
-	property 'jetty.version', '9.4.22.v20191022'
-	property 'jetty-jsp.version', '2.2.0.v201112011158'
-	property 'jetty-el.version', '8.5.40'
-	property 'jetty-reactive-httpclient.version', '1.0.3'
-	property 'jmustache.version', '1.15'
-	property 'jna.version', '4.5.2'
-	property 'joda-time.version', '2.10.5'
-	property 'jolokia.version', '1.6.2'
-	property 'johnzon-jsonb.version', '1.2.1'
-	property 'johnzon.version', '${johnzon-jsonb.version}'
-	property 'jooq.version', '3.12.3'
-	property 'jsonassert.version', '1.5.0'
-	property 'json-path.version', '2.4.0'
-	property 'jstl.version', '1.2'
-	property 'jtds.version', '1.3.1'
-	property 'junit.version', '4.12'
-	property 'junit-jupiter.version', '5.5.2'
-	property 'kafka.version', '2.3.1'
-	property 'kotlin.version', '1.3.60'
-	property 'kotlin-coroutines.version', '1.3.2'
-	property 'lettuce.version', '5.2.1.RELEASE'
-	property 'liquibase.version', '3.8.0'
-	property 'log4j2.version', '2.12.1'
-	property 'logback.version', '1.2.3'
-	property 'lombok.version', '1.18.10'
-	property 'mariadb.version', '2.5.1'
-	property 'micrometer.version', '1.3.1'
-	property 'mimepull.version', '1.9.12'
-	property 'mockito.version', '3.1.0'
-	property 'mongo-driver-reactivestreams.version', '1.12.0'
-	property 'mongodb.version', '3.11.2'
-	property 'mssql-jdbc.version', '7.4.1.jre8'
-	property 'mysql.version', '8.0.18'
-	property 'nekohtml.version', '1.9.22'
-	property 'neo4j-ogm.version', '3.2.2'
-	property 'netty.version', '4.1.43.Final'
-	property 'netty-tcnative.version', '2.0.26.Final'
-	property 'nio-multipart-parser.version', '1.1.0'
-	property 'ojdbc.version', '19.3.0.0'
-	property 'okhttp3.version', '3.14.4'
-	property 'pooled-jms.version', '1.1.0'
-	property 'postgresql.version', '42.2.8'
-	property 'prometheus-pushgateway.version', '0.7.0'
-	property 'quartz.version', '2.3.2'
-	property 'querydsl.version', '4.2.1'
-	property 'rabbit-amqp-client.version', '5.7.3'
-	property 'reactor-bom.version', 'Dysprosium-BUILD-SNAPSHOT'
-	property 'rest-assured.version', '3.3.0'
-	property 'reactive-streams.version', '1.0.3'
-	property 'rsocket.version', '1.0.0-RC5'
-	property 'rxjava.version', '1.3.8'
-	property 'rxjava-adapter.version', '1.2.1'
-	property 'rxjava2.version', '2.2.14'
-	property 'selenium.version', '3.141.59'
-	property 'selenium-htmlunit.version', '2.36.0'
-	property 'sendgrid.version', '4.4.1'
-	property 'servlet-api.version', '4.0.1'
-	property 'slf4j.version', '1.7.29'
-	property 'snakeyaml.version', '1.25'
-	property 'solr.version', '8.2.0'
-	property 'spring-amqp.version', '2.2.1.RELEASE'
-	property 'spring-batch.version', '4.2.0.RELEASE'
-	property 'spring-cloud-connectors.version', '2.0.6.RELEASE'
-	property 'spring-data-releasetrain.version', 'Moore-BUILD-SNAPSHOT'
-	property 'spring-framework.version', '5.2.2.BUILD-SNAPSHOT'
-	property 'spring-hateoas.version', '1.0.1.RELEASE'
-	property 'spring-integration.version', '5.2.1.RELEASE'
-	property 'spring-kafka.version', '2.3.3.RELEASE'
-	property 'spring-ldap.version', '2.3.2.RELEASE'
-	property 'spring-restdocs.version', '2.0.4.RELEASE'
-	property 'spring-retry.version', '1.2.4.RELEASE'
-	property 'spring-security.version', '5.2.1.RELEASE'
-	property 'spring-session-bom.version', 'Corn-RELEASE'
-	property 'spring-ws.version', '3.0.8.RELEASE'
-	property 'sqlite-jdbc.version', '3.28.0'
-	property 'sun-mail.version', '${jakarta-mail.version}'
-	property 'saaj-impl.version', '1.5.1'
-	property 'thymeleaf.version', '3.0.11.RELEASE'
-	property 'thymeleaf-extras-springsecurity.version', '3.0.4.RELEASE'
-	property 'thymeleaf-layout-dialect.version', '2.4.1'
-	property 'thymeleaf-extras-data-attribute.version', '2.0.1'
-	property 'thymeleaf-extras-java8time.version', '3.0.4.RELEASE'
-	property 'tomcat.version', '9.0.27'
-	property 'unboundid-ldapsdk.version', '4.0.12'
-	property 'undertow.version', '2.0.27.Final'
-	property 'webjars-hal-browser.version', '3325375'
-	property 'webjars-locator-core.version', '0.42'
-	property 'wsdl4j.version', '1.6.3'
-	property 'xmlunit2.version', '2.6.3'
-	property 'build-helper-maven-plugin.version', '3.0.0'
-	property 'exec-maven-plugin.version', '1.6.0'
-	property 'git-commit-id-plugin.version', '3.0.1'
-	property 'maven-antrun-plugin.version', '1.8'
-	property 'maven-assembly-plugin.version', '3.2.0'
-	property 'maven-clean-plugin.version', '3.1.0'
-	property 'maven-compiler-plugin.version', '3.8.1'
-	property 'maven-dependency-plugin.version', '3.1.1'
-	property 'maven-deploy-plugin.version', '2.8.2'
-	property 'maven-enforcer-plugin.version', '3.0.0-M2'
-	property 'maven-failsafe-plugin.version', '2.22.2'
-	property 'maven-install-plugin.version', '2.5.2'
-	property 'maven-invoker-plugin.version', '3.2.1'
-	property 'maven-help-plugin.version', '3.2.0'
-	property 'maven-jar-plugin.version', '3.2.0'
-	property 'maven-javadoc-plugin.version', '3.1.1'
-	property 'maven-resources-plugin.version', '3.1.0'
-	property 'maven-shade-plugin.version', '3.2.1'
-	property 'maven-site-plugin.version', '3.8.2'
-	property 'maven-source-plugin.version', '3.2.0'
-	property 'maven-surefire-plugin.version', '2.22.2'
-	property 'maven-war-plugin.version', '3.2.3'
-	property 'versions-maven-plugin.version', '2.7'
-	property 'xml-maven-plugin.version', '1.0.2'
-	property 'flatten-maven-plugin.version', '1.1.0'
-	dependency 'org.springframework.boot', 'spring-boot', project.version
-	dependency 'org.springframework.boot', 'spring-boot-test', project.version
-	dependency 'org.springframework.boot', 'spring-boot-test-autoconfigure', project.version
-	dependency 'org.springframework.boot', 'spring-boot-actuator', project.version
-	dependency 'org.springframework.boot', 'spring-boot-actuator-autoconfigure', project.version
-	dependency 'org.springframework.boot', 'spring-boot-autoconfigure', project.version
-	dependency 'org.springframework.boot', 'spring-boot-autoconfigure-processor', project.version
-	dependency 'org.springframework.boot', 'spring-boot-configuration-metadata', project.version
-	dependency 'org.springframework.boot', 'spring-boot-configuration-processor', project.version
-	dependency 'org.springframework.boot', 'spring-boot-devtools', project.version
-	dependency 'org.springframework.boot', 'spring-boot-loader', project.version
-	dependency 'org.springframework.boot', 'spring-boot-loader-tools', project.version
-	dependency 'org.springframework.boot', 'spring-boot-properties-migrator', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-activemq', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-actuator', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-amqp', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-aop', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-artemis', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-batch', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-cache', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-cloud-connectors', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-cassandra', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-cassandra-reactive', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-couchbase', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-couchbase-reactive', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-elasticsearch', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-jdbc', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-jpa', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-ldap', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-mongodb', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-mongodb-reactive', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-redis', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-redis-reactive', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-neo4j', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-rest', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-data-solr', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-freemarker', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-groovy-templates', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-hateoas', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-integration', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-jdbc', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-jersey', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-jetty', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-jooq', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-json', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-jta-atomikos', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-jta-bitronix', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-log4j2', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-logging', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-mail', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-mustache', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-oauth2-client', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-oauth2-resource-server', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-quartz', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-reactor-netty', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-rsocket', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-security', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-test', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-thymeleaf', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-tomcat', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-undertow', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-validation', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-web', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-webflux', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-websocket', project.version
-	dependency 'org.springframework.boot', 'spring-boot-starter-web-services', project.version
-	dependency 'antlr', 'antlr', '${antlr2.version}'
-	dependency 'ch.qos.logback', 'logback-access', '${logback.version}'
-	dependency 'ch.qos.logback', 'logback-classic', '${logback.version}'
-	dependency 'ch.qos.logback', 'logback-core', '${logback.version}'
-	dependency 'com.atomikos', 'transactions-jdbc', '${atomikos.version}'
-	dependency 'com.atomikos', 'transactions-jms', '${atomikos.version}'
-	dependency 'com.atomikos', 'transactions-jta', '${atomikos.version}'
-	dependency 'com.couchbase.client', 'java-client', '${couchbase-client.version}'
-	dependency 'com.couchbase.client', 'couchbase-spring-cache', '${couchbase-cache-client.version}'
-	dependency 'com.datastax.cassandra', 'cassandra-driver-core', '${cassandra-driver.version}'
-	dependency 'com.datastax.cassandra', 'cassandra-driver-mapping', '${cassandra-driver.version}'
-	dependency 'com.fasterxml', 'classmate', '${classmate.version}'
-	bomImport 'com.fasterxml.jackson', 'jackson-bom', '${jackson-bom.version}'
-	dependency 'com.github.ben-manes.caffeine', 'caffeine', '${caffeine.version}'
-	dependency 'com.github.ben-manes.caffeine', 'guava', '${caffeine.version}'
-	dependency 'com.github.ben-manes.caffeine', 'jcache', '${caffeine.version}'
-	dependency 'com.github.ben-manes.caffeine', 'simulator', '${caffeine.version}'
-	dependency 'com.github.mxab.thymeleaf.extras', 'thymeleaf-extras-data-attribute', '${thymeleaf-extras-data-attribute.version}'
-	dependency 'com.google.appengine', 'appengine-api-1.0-sdk', '${appengine-sdk.version}'
-	dependency 'com.google.code.gson', 'gson', '${gson.version}'
-	dependency 'com.h2database', 'h2', '${h2.version}'
-	dependency 'com.hazelcast', 'hazelcast', '${hazelcast.version}'
-	dependency 'com.hazelcast', 'hazelcast-client', '${hazelcast.version}'
-	dependency 'com.hazelcast', 'hazelcast-hibernate52', '${hazelcast-hibernate5.version}'
-	dependency 'com.hazelcast', 'hazelcast-hibernate53', '${hazelcast-hibernate5.version}'
-	dependency 'com.hazelcast', 'hazelcast-spring', '${hazelcast.version}'
-	dependency 'com.ibm.db2', 'jcc', '${db2-jdbc.version}'
-	dependency 'com.jayway.jsonpath', 'json-path', '${json-path.version}'
-	dependency 'com.jayway.jsonpath', 'json-path-assert', '${json-path.version}'
-	dependency 'com.microsoft.sqlserver', 'mssql-jdbc', '${mssql-jdbc.version}'
-	dependency 'com.oracle.ojdbc', 'dms', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ojdbc10', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ojdbc10_g', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ojdbc10dms', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ojdbc10dms_g', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ojdbc8', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ojdbc8_g', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ojdbc8dms', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ojdbc8dms_g', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ons', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'oraclepki', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'orai18n', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'osdt_cert', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'osdt_core', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'simplefan', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'ucp', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'xdb', '${ojdbc.version}'
-	dependency 'com.oracle.ojdbc', 'xmlparserv2', '${ojdbc.version}'
-	dependency 'com.querydsl', 'querydsl-apt', '${querydsl.version}'
-	dependency 'com.querydsl', 'querydsl-collections', '${querydsl.version}'
-	dependency 'com.querydsl', 'querydsl-core', '${querydsl.version}'
-	dependency 'com.querydsl', 'querydsl-jpa', '${querydsl.version}'
-	dependency 'com.querydsl', 'querydsl-mongodb', '${querydsl.version}'
-	dependency 'com.rabbitmq', 'amqp-client', '${rabbit-amqp-client.version}'
-	dependency 'com.samskivert', 'jmustache', '${jmustache.version}'
-	dependency 'com.sendgrid', 'sendgrid-java', '${sendgrid.version}'
-	dependency 'com.squareup.okhttp3', 'logging-interceptor', '${okhttp3.version}'
-	dependency 'com.squareup.okhttp3', 'mockwebserver', '${okhttp3.version}'
-	dependency 'com.squareup.okhttp3', 'okcurl', '${okhttp3.version}'
-	dependency 'com.squareup.okhttp3', 'okhttp', '${okhttp3.version}'
-	dependency 'com.squareup.okhttp3', 'okhttp-dnsoverhttps', '${okhttp3.version}'
-	dependency 'com.squareup.okhttp3', 'okhttp-sse', '${okhttp3.version}'
-	dependency 'com.squareup.okhttp3', 'okhttp-testing-support', '${okhttp3.version}'
-	dependency 'com.squareup.okhttp3', 'okhttp-tls', '${okhttp3.version}'
-	dependency 'com.squareup.okhttp3', 'okhttp-urlconnection', '${okhttp3.version}'
-	dependency 'com.sun.activation', 'jakarta.activation', '${jakarta-activation.version}'
-	dependency 'com.sun.mail', 'jakarta.mail', '${sun-mail.version}'
-	dependency 'com.sun.xml.messaging.saaj', 'saaj-impl', '${saaj-impl.version}'
-	dependency 'com.unboundid', 'unboundid-ldapsdk', '${unboundid-ldapsdk.version}'
-	dependency 'com.zaxxer', 'HikariCP', '${hikaricp.version}'
-	dependency 'commons-codec', 'commons-codec', '${commons-codec.version}'
-	dependency 'commons-pool', 'commons-pool', '${commons-pool.version}'
-	dependency 'de.flapdoodle.embed', 'de.flapdoodle.embed.mongo', '${embedded-mongo.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-annotation', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-core', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-ehcache', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-graphite', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-healthchecks', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-httpasyncclient', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-jdbi', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-jersey2', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-jetty9', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-jmx', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-json', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-jvm', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-log4j2', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-logback', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-servlet', '${dropwizard-metrics.version}'
-	dependency 'io.dropwizard.metrics', 'metrics-servlets', '${dropwizard-metrics.version}'
-	dependency 'io.lettuce', 'lettuce-core', '${lettuce.version}'
-	bomImport 'io.micrometer', 'micrometer-bom', '${micrometer.version}'
-	bomImport 'io.netty', 'netty-bom', '${netty.version}'
-	dependency 'io.netty', 'netty-tcnative-boringssl-static', '${netty-tcnative.version}'
-	bomImport 'io.projectreactor', 'reactor-bom', '${reactor-bom.version}'
-	dependency 'io.prometheus', 'simpleclient_pushgateway', '${prometheus-pushgateway.version}'
-	dependency 'io.reactivex', 'rxjava', '${rxjava.version}'
-	dependency 'io.reactivex', 'rxjava-reactive-streams', '${rxjava-adapter.version}'
-	dependency 'io.reactivex.rxjava2', 'rxjava', '${rxjava2.version}'
-	dependency 'io.rest-assured', 'json-path', '${rest-assured.version}'
-	dependency 'io.rest-assured', 'json-schema-validator', '${rest-assured.version}'
-	dependency 'io.rest-assured', 'rest-assured', '${rest-assured.version}'
-	dependency 'io.rest-assured', 'scala-support', '${rest-assured.version}'
-	dependency 'io.rest-assured', 'spring-mock-mvc', '${rest-assured.version}'
-	dependency 'io.rest-assured', 'spring-web-test-client', '${rest-assured.version}'
-	dependency 'io.rest-assured', 'xml-path', '${rest-assured.version}'
-	bomImport 'io.rsocket', 'rsocket-bom', '${rsocket.version}'
-	dependency 'io.searchbox', 'jest', '${jest.version}'
-	dependency 'io.spring.gradle', 'dependency-management-plugin', '${dependency-management-plugin.version}'
-	dependency 'io.undertow', 'undertow-core', '${undertow.version}'
-	dependency 'io.undertow', 'undertow-servlet', '${undertow.version}'
-	dependency 'io.undertow', 'undertow-websockets-jsr', '${undertow.version}'
-	dependency 'jakarta.activation', 'jakarta.activation-api', '${jakarta-activation.version}'
-	dependency 'jakarta.annotation', 'jakarta.annotation-api', '${jakarta-annotation.version}'
-	dependency 'jakarta.jms', 'jakarta.jms-api', '${jakarta-jms.version}'
-	dependency 'jakarta.json', 'jakarta.json-api', '${jakarta-json.version}'
-	dependency 'jakarta.json.bind', 'jakarta.json.bind-api', '${jakarta-json-bind.version}'
-	dependency 'jakarta.mail', 'jakarta.mail-api', '${jakarta-mail.version}'
-	dependency 'jakarta.persistence', 'jakarta.persistence-api', '${jakarta-persistence.version}'
-	dependency 'jakarta.servlet', 'jakarta.servlet-api', '${jakarta-servlet.version}'
-	dependency 'jakarta.servlet.jsp.jstl', 'jakarta.servlet.jsp.jstl-api', '${jakarta-servlet-jsp-jstl.version}'
-	dependency 'jakarta.transaction', 'jakarta.transaction-api', '${jakarta-transaction.version}'
-	dependency 'jakarta.validation', 'jakarta.validation-api', '${jakarta-validation.version}'
-	dependency 'jakarta.websocket', 'jakarta.websocket-api', '${jakarta-websocket.version}'
-	dependency 'jakarta.ws.rs', 'jakarta.ws.rs-api', '${jakarta-ws-rs.version}'
-	dependency 'jakarta.xml.bind', 'jakarta.xml.bind-api', '${jakarta-xml-bind.version}'
-	dependency 'jakarta.xml.ws', 'jakarta.xml.ws-api', '${jakarta-xml-ws.version}'
-	dependency 'javax.activation', 'javax.activation-api', '${javax-activation.version}'
-	dependency 'javax.annotation', 'javax.annotation-api', '${javax-annotation.version}'
-	dependency 'javax.cache', 'cache-api', '${javax-cache.version}'
-	dependency 'javax.jms', 'javax.jms-api', '${javax-jms.version}'
-	dependency 'javax.json', 'javax.json-api', '${javax-json.version}'
-	dependency 'javax.json.bind', 'javax.json.bind-api', '${javax-jsonb.version}'
-	dependency 'javax.mail', 'javax.mail-api', '${javax-mail.version}'
-	dependency 'javax.money', 'money-api', '${javax-money.version}'
-	dependency 'javax.persistence', 'javax.persistence-api', '${javax-persistence.version}'
-	dependency 'javax.servlet', 'javax.servlet-api', '${servlet-api.version}'
-	dependency 'javax.servlet', 'jstl', '${jstl.version}'
-	dependency 'javax.transaction', 'javax.transaction-api', '${javax-transaction.version}'
-	dependency 'javax.validation', 'validation-api', '${javax-validation.version}'
-	dependency 'javax.websocket', 'javax.websocket-api', '${javax-websocket.version}'
-	dependency 'javax.xml.bind', 'jaxb-api', '${javax-jaxb.version}'
-	dependency 'javax.xml.ws', 'jaxws-api', '${javax-jaxws.version}'
-	dependency 'jaxen', 'jaxen', '${jaxen.version}'
-	dependency 'joda-time', 'joda-time', '${joda-time.version}'
-	dependency 'junit', 'junit', '${junit.version}'
-	dependency 'mysql', 'mysql-connector-java', '${mysql.version}'
-	dependency 'net.bytebuddy', 'byte-buddy', '${byte-buddy.version}'
-	dependency 'net.bytebuddy', 'byte-buddy-agent', '${byte-buddy.version}'
-	dependency 'net.java.dev.jna', 'jna', '${jna.version}'
-	dependency 'net.java.dev.jna', 'jna-platform', '${jna.version}'
-	dependency 'net.sf.ehcache', 'ehcache', '${ehcache.version}'
-	dependency 'net.sourceforge.htmlunit', 'htmlunit', '${htmlunit.version}'
-	dependency 'net.sourceforge.jtds', 'jtds', '${jtds.version}'
-	dependency 'net.sourceforge.nekohtml', 'nekohtml', '${nekohtml.version}'
-	dependency 'nz.net.ultraq.thymeleaf', 'thymeleaf-layout-dialect', '${thymeleaf-layout-dialect.version}'
-	dependency 'org.apache.activemq', 'activemq-amqp', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-blueprint', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-broker', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-camel', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-client', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-console', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-http', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-jaas', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-jdbc-store', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-jms-pool', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-kahadb-store', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-karaf', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-leveldb-store', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-log4j-appender', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-mqtt', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-openwire-generator', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-openwire-legacy', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-osgi', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-partition', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-pool', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-ra', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-run', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-runtime-config', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-shiro', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-spring', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-stomp', '${activemq.version}'
-	dependency 'org.apache.activemq', 'activemq-web', '${activemq.version}'
-	dependency 'org.apache.activemq', 'artemis-amqp-protocol', '${artemis.version}'
-	dependency 'org.apache.activemq', 'artemis-commons', '${artemis.version}'
-	dependency 'org.apache.activemq', 'artemis-core-client', '${artemis.version}'
-	dependency 'org.apache.activemq', 'artemis-jms-client', '${artemis.version}'
-	dependency 'org.apache.activemq', 'artemis-jms-server', '${artemis.version}'
-	dependency 'org.apache.activemq', 'artemis-journal', '${artemis.version}'
-	dependency 'org.apache.activemq', 'artemis-selector', '${artemis.version}'
-	dependency 'org.apache.activemq', 'artemis-server', '${artemis.version}'
-	dependency 'org.apache.activemq', 'artemis-service-extensions', '${artemis.version}'
-	dependency 'org.apache.commons', 'commons-dbcp2', '${commons-dbcp2.version}'
-	dependency 'org.apache.commons', 'commons-lang3', '${commons-lang3.version}'
-	dependency 'org.apache.commons', 'commons-pool2', '${commons-pool2.version}'
-	dependency 'org.apache.derby', 'derby', '${derby.version}'
-	dependency 'org.apache.derby', 'derbyclient', '${derby.version}'
-	dependency 'org.apache.httpcomponents', 'httpasyncclient', '${httpasyncclient.version}'
-	dependency 'org.apache.httpcomponents', 'fluent-hc', '${httpclient.version}'
-	dependency 'org.apache.httpcomponents', 'httpclient', '${httpclient.version}'
-	dependency 'org.apache.httpcomponents', 'httpclient-cache', '${httpclient.version}'
-	dependency 'org.apache.httpcomponents', 'httpclient-osgi', '${httpclient.version}'
-	dependency 'org.apache.httpcomponents', 'httpclient-win', '${httpclient.version}'
-	dependency 'org.apache.httpcomponents', 'httpcore', '${httpcore.version}'
-	dependency 'org.apache.httpcomponents', 'httpcore-nio', '${httpcore.version}'
-	dependency 'org.apache.httpcomponents', 'httpmime', '${httpclient.version}'
-	dependency 'org.apache.johnzon', 'johnzon-core', '${johnzon.version}'
-	dependency 'org.apache.johnzon', 'johnzon-jaxrs', '${johnzon.version}'
-	dependency 'org.apache.johnzon', 'johnzon-jsonb', '${johnzon.version}'
-	dependency 'org.apache.johnzon', 'johnzon-jsonb-extras', '${johnzon.version}'
-	dependency 'org.apache.johnzon', 'johnzon-jsonschema', '${johnzon.version}'
-	dependency 'org.apache.johnzon', 'johnzon-mapper', '${johnzon.version}'
-	dependency 'org.apache.johnzon', 'johnzon-websocket', '${johnzon.version}'
-	dependency 'org.apache.kafka', 'connect-api', '${kafka.version}'
-	dependency 'org.apache.kafka', 'connect-basic-auth-extension', '${kafka.version}'
-	dependency 'org.apache.kafka', 'connect-file', '${kafka.version}'
-	dependency 'org.apache.kafka', 'connect-json', '${kafka.version}'
-	dependency 'org.apache.kafka', 'connect-runtime', '${kafka.version}'
-	dependency 'org.apache.kafka', 'connect-transforms', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka-clients', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka-log4j-appender', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka-streams', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka-streams-scala_2.11', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka-streams-scala_2.12', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka-streams-test-utils', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka-tools', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka_2.11', '${kafka.version}'
-	dependency 'org.apache.kafka', 'kafka_2.12', '${kafka.version}'
-	bomImport 'org.apache.logging.log4j', 'log4j-bom', '${log4j2.version}'
-	dependency 'org.apache.logging.log4j', 'log4j-to-slf4j', '${log4j2.version}'
-	dependency 'org.apache.solr', 'solr-analysis-extras', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-analytics', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-cell', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-clustering', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-core', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-dataimporthandler', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-dataimporthandler-extras', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-langid', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-ltr', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-solrj', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-test-framework', '${solr.version}'
-	dependency 'org.apache.solr', 'solr-velocity', '${solr.version}'
-	dependency 'org.apache.tomcat', 'tomcat-annotations-api', '${tomcat.version}'
-	dependency 'org.apache.tomcat', 'tomcat-jdbc', '${tomcat.version}'
-	dependency 'org.apache.tomcat', 'tomcat-jsp-api', '${tomcat.version}'
-	dependency 'org.apache.tomcat.embed', 'tomcat-embed-core', '${tomcat.version}'
-	dependency 'org.apache.tomcat.embed', 'tomcat-embed-el', '${tomcat.version}'
-	dependency 'org.apache.tomcat.embed', 'tomcat-embed-jasper', '${tomcat.version}'
-	dependency 'org.apache.tomcat.embed', 'tomcat-embed-websocket', '${tomcat.version}'
-	dependency 'org.aspectj', 'aspectjrt', '${aspectj.version}'
-	dependency 'org.aspectj', 'aspectjtools', '${aspectj.version}'
-	dependency 'org.aspectj', 'aspectjweaver', '${aspectj.version}'
-	dependency 'org.assertj', 'assertj-core', '${assertj.version}'
-	dependency 'org.awaitility', 'awaitility', '${awaitility.version}'
-	dependency 'org.awaitility', 'awaitility-groovy', '${awaitility.version}'
-	dependency 'org.awaitility', 'awaitility-kotlin', '${awaitility.version}'
-	dependency 'org.awaitility', 'awaitility-scala', '${awaitility.version}'
-	dependency 'org.codehaus.btm', 'btm', '${bitronix.version}'
-	dependency 'org.codehaus.groovy', 'groovy', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-ant', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-backports-compat23', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-bsf', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-cli-commons', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-cli-picocli', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-console', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-datetime', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-dateutil', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-docgenerator', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-groovydoc', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-groovysh', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-jaxb', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-jmx', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-json', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-json-direct', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-jsr223', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-macro', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-nio', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-servlet', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-sql', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-swing', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-templates', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-test', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-test-junit5', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-testng', '${groovy.version}'
-	dependency 'org.codehaus.groovy', 'groovy-xml', '${groovy.version}'
-	dependency 'org.codehaus.janino', 'commons-compiler', '${janino.version}'
-	dependency 'org.codehaus.janino', 'commons-compiler-jdk', '${janino.version}'
-	dependency 'org.codehaus.janino', 'janino', '${janino.version}'
-	bomImport 'org.eclipse.jetty', 'jetty-bom', '${jetty.version}'
-	dependency 'org.eclipse.jetty', 'jetty-reactive-httpclient', '${jetty-reactive-httpclient.version}'
-	dependency 'org.eclipse.jetty.orbit', 'javax.servlet.jsp', '${jetty-jsp.version}'
-	dependency 'org.ehcache', 'ehcache', '${ehcache3.version}'
-	dependency 'org.ehcache', 'ehcache-clustered', '${ehcache3.version}'
-	dependency 'org.ehcache', 'ehcache-transactions', '${ehcache3.version}'
-	dependency 'org.elasticsearch', 'elasticsearch', '${elasticsearch.version}'
-	dependency 'org.elasticsearch.client', 'transport', '${elasticsearch.version}'
-	dependency 'org.elasticsearch.distribution.integ-test-zip', 'elasticsearch', '${elasticsearch.version}'
-	dependency 'org.elasticsearch.plugin', 'transport-netty4-client', '${elasticsearch.version}'
-	dependency 'org.elasticsearch.client', 'elasticsearch-rest-client', '${elasticsearch.version}'
-	dependency 'org.elasticsearch.client', 'elasticsearch-rest-high-level-client', '${elasticsearch.version}'
-	dependency 'org.firebirdsql.jdbc', 'jaybird-jdk17', '${jaybird.version}'
-	dependency 'org.firebirdsql.jdbc', 'jaybird-jdk18', '${jaybird.version}'
-	dependency 'org.flywaydb', 'flyway-core', '${flyway.version}'
-	dependency 'org.freemarker', 'freemarker', '${freemarker.version}'
-	dependency 'org.glassfish', 'jakarta.el', '${glassfish-el.version}'
-	dependency 'org.glassfish.jaxb', 'codemodel', '${glassfish-jaxb.version}'
-	dependency 'org.glassfish.jaxb', 'codemodel-annotation-compiler', '${glassfish-jaxb.version}'
-	dependency 'org.glassfish.jaxb', 'jaxb-jxc', '${glassfish-jaxb.version}'
-	dependency 'org.glassfish.jaxb', 'jaxb-runtime', '${glassfish-jaxb.version}'
-	dependency 'org.glassfish.jaxb', 'jaxb-xjc', '${glassfish-jaxb.version}'
-	dependency 'org.glassfish.jaxb', 'txw2', '${glassfish-jaxb.version}'
-	dependency 'org.glassfish.jaxb', 'txwc2', '${glassfish-jaxb.version}'
-	dependency 'org.glassfish.jaxb', 'xsom', '${glassfish-jaxb.version}'
-	bomImport 'org.glassfish.jersey', 'jersey-bom', '${jersey.version}'
-	dependency 'org.hamcrest', 'hamcrest', '${hamcrest.version}'
-	dependency 'org.hamcrest', 'hamcrest-core', '${hamcrest.version}'
-	dependency 'org.hamcrest', 'hamcrest-library', '${hamcrest.version}'
-	dependency 'org.hibernate', 'hibernate-c3p0', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-core', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-ehcache', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-entitymanager', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-envers', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-hikaricp', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-java8', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-jcache', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-jpamodelgen', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-proxool', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-spatial', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-testing', '${hibernate.version}'
-	dependency 'org.hibernate', 'hibernate-vibur', '${hibernate.version}'
-	dependency 'org.hibernate.validator', 'hibernate-validator', '${hibernate-validator.version}'
-	dependency 'org.hibernate.validator', 'hibernate-validator-annotation-processor', '${hibernate-validator.version}'
-	dependency 'org.hsqldb', 'hsqldb', '${hsqldb.version}'
-	dependency 'org.infinispan', 'infinispan-cachestore-jdbc', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cachestore-jpa', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cachestore-leveldb', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cachestore-remote', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cachestore-rest', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cachestore-rocksdb', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cdi-common', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cdi-embedded', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cdi-remote', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-client-hotrod', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-cloud', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-clustered-counter', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-clustered-lock', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-commons', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-core', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-directory-provider', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-hibernate-cache-v53', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-jcache', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-jcache-commons', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-jcache-remote', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-lucene-directory', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-objectfilter', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-osgi', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-persistence-cli', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-persistence-soft-index', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-query', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-query-dsl', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-remote-query-client', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-remote-query-server', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-scripting', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-server-core', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-server-hotrod', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-server-memcached', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-server-router', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-spring4-common', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-spring4-embedded', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-spring4-remote', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-spring5-common', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-spring5-embedded', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-spring5-remote', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-tasks', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-tasks-api', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-tools', '${infinispan.version}'
-	dependency 'org.infinispan', 'infinispan-tree', '${infinispan.version}'
-	dependency 'org.influxdb', 'influxdb-java', '${influxdb-java.version}'
-	dependency 'org.jboss', 'jboss-transaction-spi', '${jboss-transaction-spi.version}'
-	dependency 'org.jboss.logging', 'jboss-logging', '${jboss-logging.version}'
-	dependency 'org.jdom', 'jdom2', '${jdom2.version}'
-	bomImport 'org.jetbrains.kotlin', 'kotlin-bom', '${kotlin.version}'
-	bomImport 'org.jetbrains.kotlinx', 'kotlinx-coroutines-bom', '${kotlin-coroutines.version}'
-	dependency 'org.jolokia', 'jolokia-core', '${jolokia.version}'
-	dependency 'org.jooq', 'jooq', '${jooq.version}'
-	dependency 'org.jooq', 'jooq-meta', '${jooq.version}'
-	dependency 'org.jooq', 'jooq-codegen', '${jooq.version}'
-	bomImport 'org.junit', 'junit-bom', '${junit-jupiter.version}'
-	dependency 'org.jvnet.mimepull', 'mimepull', '${mimepull.version}'
-	dependency 'org.liquibase', 'liquibase-core', '${liquibase.version}'
-	dependency 'org.mariadb.jdbc', 'mariadb-java-client', '${mariadb.version}'
-	dependency 'org.messaginghub', 'pooled-jms', '${pooled-jms.version}'
-	dependency 'org.mockito', 'mockito-core', '${mockito.version}'
-	dependency 'org.mockito', 'mockito-inline', '${mockito.version}'
-	dependency 'org.mockito', 'mockito-junit-jupiter', '${mockito.version}'
-	dependency 'org.mongodb', 'bson', '${mongodb.version}'
-	dependency 'org.mongodb', 'mongodb-driver', '${mongodb.version}'
-	dependency 'org.mongodb', 'mongodb-driver-async', '${mongodb.version}'
-	dependency 'org.mongodb', 'mongodb-driver-core', '${mongodb.version}'
-	dependency 'org.mongodb', 'mongodb-driver-reactivestreams', '${mongo-driver-reactivestreams.version}'
-	dependency 'org.mongodb', 'mongo-java-driver', '${mongodb.version}'
-	dependency 'org.mortbay.jasper', 'apache-el', '${jetty-el.version}'
-	dependency 'org.neo4j', 'neo4j-ogm-api', '${neo4j-ogm.version}'
-	dependency 'org.neo4j', 'neo4j-ogm-bolt-driver', '${neo4j-ogm.version}'
-	dependency 'org.neo4j', 'neo4j-ogm-bolt-native-types', '${neo4j-ogm.version}'
-	dependency 'org.neo4j', 'neo4j-ogm-core', '${neo4j-ogm.version}'
-	dependency 'org.neo4j', 'neo4j-ogm-embedded-driver', '${neo4j-ogm.version}'
-	dependency 'org.neo4j', 'neo4j-ogm-embedded-native-types', '${neo4j-ogm.version}'
-	dependency 'org.neo4j', 'neo4j-ogm-http-driver', '${neo4j-ogm.version}'
-	dependency 'org.postgresql', 'postgresql', '${postgresql.version}'
-	dependency 'org.projectlombok', 'lombok', '${lombok.version}'
-	dependency 'org.quartz-scheduler', 'quartz', '${quartz.version}'
-	dependency 'org.quartz-scheduler', 'quartz-jobs', '${quartz.version}'
-	dependency 'org.reactivestreams', 'reactive-streams', '${reactive-streams.version}'
-	dependency 'org.seleniumhq.selenium', 'htmlunit-driver', '${selenium-htmlunit.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-api', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-chrome-driver', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-edge-driver', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-firefox-driver', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-ie-driver', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-java', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-opera-driver', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-remote-driver', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-safari-driver', '${selenium.version}'
-	dependency 'org.seleniumhq.selenium', 'selenium-support', '${selenium.version}'
-	dependency 'org.skyscreamer', 'jsonassert', '${jsonassert.version}'
-	dependency 'org.slf4j', 'jcl-over-slf4j', '${slf4j.version}'
-	dependency 'org.slf4j', 'jul-to-slf4j', '${slf4j.version}'
-	dependency 'org.slf4j', 'log4j-over-slf4j', '${slf4j.version}'
-	dependency 'org.slf4j', 'slf4j-api', '${slf4j.version}'
-	dependency 'org.slf4j', 'slf4j-ext', '${slf4j.version}'
-	dependency 'org.slf4j', 'slf4j-jcl', '${slf4j.version}'
-	dependency 'org.slf4j', 'slf4j-jdk14', '${slf4j.version}'
-	dependency 'org.slf4j', 'slf4j-log4j12', '${slf4j.version}'
-	dependency 'org.slf4j', 'slf4j-nop', '${slf4j.version}'
-	dependency 'org.slf4j', 'slf4j-simple', '${slf4j.version}'
-	bomImport 'org.springframework', 'spring-framework-bom', '${spring-framework.version}'
-	dependency 'org.springframework.amqp', 'spring-amqp', '${spring-amqp.version}'
-	dependency 'org.springframework.amqp', 'spring-rabbit', '${spring-amqp.version}'
-	dependency 'org.springframework.amqp', 'spring-rabbit-junit', '${spring-amqp.version}'
-	dependency 'org.springframework.amqp', 'spring-rabbit-test', '${spring-amqp.version}'
-	dependency 'org.springframework.batch', 'spring-batch-core', '${spring-batch.version}'
-	dependency 'org.springframework.batch', 'spring-batch-infrastructure', '${spring-batch.version}'
-	dependency 'org.springframework.batch', 'spring-batch-integration', '${spring-batch.version}'
-	dependency 'org.springframework.batch', 'spring-batch-test', '${spring-batch.version}'
-	dependency 'org.springframework.cloud', 'spring-cloud-cloudfoundry-connector', '${spring-cloud-connectors.version}'
-	dependency 'org.springframework.cloud', 'spring-cloud-connectors-core', '${spring-cloud-connectors.version}'
-	dependency 'org.springframework.cloud', 'spring-cloud-heroku-connector', '${spring-cloud-connectors.version}'
-	dependency 'org.springframework.cloud', 'spring-cloud-localconfig-connector', '${spring-cloud-connectors.version}'
-	dependency 'org.springframework.cloud', 'spring-cloud-spring-service-connector', '${spring-cloud-connectors.version}'
-	bomImport 'org.springframework.data', 'spring-data-releasetrain', '${spring-data-releasetrain.version}'
-	dependency 'org.springframework.hateoas', 'spring-hateoas', '${spring-hateoas.version}'
-	bomImport 'org.springframework.integration', 'spring-integration-bom', '${spring-integration.version}'
-	dependency 'org.springframework.integration', 'spring-integration-http', '${spring-integration.version}'
-	dependency 'org.springframework.kafka', 'spring-kafka', '${spring-kafka.version}'
-	dependency 'org.springframework.kafka', 'spring-kafka-test', '${spring-kafka.version}'
-	dependency 'org.springframework.ldap', 'spring-ldap-core', '${spring-ldap.version}'
-	dependency 'org.springframework.ldap', 'spring-ldap-core-tiger', '${spring-ldap.version}'
-	dependency 'org.springframework.ldap', 'spring-ldap-ldif-batch', '${spring-ldap.version}'
-	dependency 'org.springframework.ldap', 'spring-ldap-ldif-core', '${spring-ldap.version}'
-	dependency 'org.springframework.ldap', 'spring-ldap-odm', '${spring-ldap.version}'
-	dependency 'org.springframework.ldap', 'spring-ldap-test', '${spring-ldap.version}'
-	dependency 'org.springframework.restdocs', 'spring-restdocs-asciidoctor', '${spring-restdocs.version}'
-	dependency 'org.springframework.restdocs', 'spring-restdocs-core', '${spring-restdocs.version}'
-	dependency 'org.springframework.restdocs', 'spring-restdocs-mockmvc', '${spring-restdocs.version}'
-	dependency 'org.springframework.restdocs', 'spring-restdocs-restassured', '${spring-restdocs.version}'
-	dependency 'org.springframework.restdocs', 'spring-restdocs-webtestclient', '${spring-restdocs.version}'
-	dependency 'org.springframework.retry', 'spring-retry', '${spring-retry.version}'
-	bomImport 'org.springframework.security', 'spring-security-bom', '${spring-security.version}'
-	bomImport 'org.springframework.session', 'spring-session-bom', '${spring-session-bom.version}'
-	dependency 'org.springframework.ws', 'spring-ws-core', '${spring-ws.version}'
-	dependency 'org.springframework.ws', 'spring-ws-security', '${spring-ws.version}'
-	dependency 'org.springframework.ws', 'spring-ws-support', '${spring-ws.version}'
-	dependency 'org.springframework.ws', 'spring-ws-test', '${spring-ws.version}'
-	dependency 'org.springframework.ws', 'spring-xml', '${spring-ws.version}'
-	dependency 'org.synchronoss.cloud', 'nio-multipart-parser', '${nio-multipart-parser.version}'
-	dependency 'org.thymeleaf', 'thymeleaf', '${thymeleaf.version}'
-	dependency 'org.thymeleaf', 'thymeleaf-spring5', '${thymeleaf.version}'
-	dependency 'org.thymeleaf.extras', 'thymeleaf-extras-java8time', '${thymeleaf-extras-java8time.version}'
-	dependency 'org.thymeleaf.extras', 'thymeleaf-extras-springsecurity5', '${thymeleaf-extras-springsecurity.version}'
-	dependency 'org.webjars', 'hal-browser', '${webjars-hal-browser.version}'
-	dependency 'org.webjars', 'webjars-locator-core', '${webjars-locator-core.version}'
-	dependency 'org.xerial', 'sqlite-jdbc', '${sqlite-jdbc.version}'
-	dependency 'org.xmlunit', 'xmlunit-assertj', '${xmlunit2.version}'
-	dependency 'org.xmlunit', 'xmlunit-core', '${xmlunit2.version}'
-	dependency 'org.xmlunit', 'xmlunit-legacy', '${xmlunit2.version}'
-	dependency 'org.xmlunit', 'xmlunit-matchers', '${xmlunit2.version}'
-	dependency 'org.xmlunit', 'xmlunit-placeholders', '${xmlunit2.version}'
-	dependency 'org.yaml', 'snakeyaml', '${snakeyaml.version}'
-	dependency 'redis.clients', 'jedis', '${jedis.version}'
-	dependency 'wsdl4j', 'wsdl4j', '${wsdl4j.version}'
-}
-
-publishing.publications.withType(MavenPublication) {
-	pom.withXml { xml ->
-		def root = xml.asNode()
-		root.properties.'*'.last().plus {
-			delegate.'build-helper-maven-plugin.version'('3.0.0')
-			delegate.'exec-maven-plugin.version'('1.6.0')
-			delegate.'git-commit-id-plugin.version'('3.0.1')
-			delegate.'maven-antrun-plugin.version'('1.8')
-			delegate.'maven-assembly-plugin.version'('3.2.0')
-			delegate.'maven-clean-plugin.version'('3.1.0')
-			delegate.'maven-compiler-plugin.version'('3.8.1')
-			delegate.'maven-dependency-plugin.version'('3.1.1')
-			delegate.'maven-deploy-plugin.version'('2.8.2')
-			delegate.'maven-enforcer-plugin.version'('3.0.0-M2')
-			delegate.'maven-failsafe-plugin.version'('2.22.2')
-			delegate.'maven-install-plugin.version'('2.5.2')
-			delegate.'maven-invoker-plugin.version'('3.2.1')
-			delegate.'maven-help-plugin.version'('3.2.0')
-			delegate.'maven-jar-plugin.version'('3.2.0')
-			delegate.'maven-javadoc-plugin.version'('3.1.1')
-			delegate.'maven-resources-plugin.version'('3.1.0')
-			delegate.'maven-shade-plugin.version'('3.2.1')
-			delegate.'maven-site-plugin.version'('3.8.2')
-			delegate.'maven-source-plugin.version'('3.2.0')
-			delegate.'maven-surefire-plugin.version'('2.22.2')
-			delegate.'maven-war-plugin.version'('3.2.3')
-			delegate.'versions-maven-plugin.version'('2.7')
-			delegate.'xml-maven-plugin.version'('1.0.2')
-			delegate.'flatten-maven-plugin.version'('1.1.0')
+	library('activemq', '5.15.10') {
+		group('org.apache.activemq') {
+			modules = [
+				'activemq-amqp',
+				'activemq-blueprint',
+				'activemq-broker',
+				'activemq-camel',
+				'activemq-client',
+				'activemq-console' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'activemq-http',
+				'activemq-jaas',
+				'activemq-jdbc-store',
+				'activemq-jms-pool',
+				'activemq-kahadb-store',
+				'activemq-karaf',
+				'activemq-leveldb-store' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'activemq-log4j-appender',
+				'activemq-mqtt',
+				'activemq-openwire-generator',
+				'activemq-openwire-legacy',
+				'activemq-osgi',
+				'activemq-partition',
+				'activemq-pool',
+				'activemq-ra',
+				'activemq-run',
+				'activemq-runtime-config',
+				'activemq-shiro',
+				'activemq-spring' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'activemq-stomp',
+				'activemq-web'
+			]
 		}
-		root.dependencyManagement.plus {
-			delegate.build {
-				pluginManagement {
-					plugins {
-						plugin {
-							delegate.groupId('org.apache.johnzon')
-							delegate.artifactId('johnzon-maven-plugin')
-							delegate.version('${johnzon.version}')
-						}
-						plugin {
-							delegate.groupId('org.jetbrains.kotlin')
-							delegate.artifactId('kotlin-maven-plugin')
-							delegate.version('${kotlin.version}')
-						}
-						plugin {
-							delegate.groupId('org.jooq')
-							delegate.artifactId('jooq-codegen-maven')
-							delegate.version('${jooq.version}')
-						}
-						plugin {
-							delegate.groupId('org.springframework.boot')
-							delegate.artifactId('spring-boot-maven-plugin')
-							delegate.version(project.version)
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-antrun-plugin')
-							delegate.version('${maven-antrun-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-assembly-plugin')
-							delegate.version('${maven-assembly-plugin.version}')
-							configuration {
-								delegate.recompressZippedFiles('false')
-							}
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-clean-plugin')
-							delegate.version('${maven-clean-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-compiler-plugin')
-							delegate.version('${maven-compiler-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-deploy-plugin')
-							delegate.version('${maven-deploy-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-dependency-plugin')
-							delegate.version('${maven-dependency-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-enforcer-plugin')
-							delegate.version('${maven-enforcer-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-failsafe-plugin')
-							delegate.version('${maven-failsafe-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-install-plugin')
-							delegate.version('${maven-install-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-invoker-plugin')
-							delegate.version('${maven-invoker-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-help-plugin')
-							delegate.version('${maven-help-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-jar-plugin')
-							delegate.version('${maven-jar-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-javadoc-plugin')
-							delegate.version('${maven-javadoc-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-resources-plugin')
-							delegate.version('${maven-resources-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-shade-plugin')
-							delegate.version('${maven-shade-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-site-plugin')
-							delegate.version('${maven-site-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-source-plugin')
-							delegate.version('${maven-source-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-surefire-plugin')
-							delegate.version('${maven-surefire-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.apache.maven.plugins')
-							delegate.artifactId('maven-war-plugin')
-							delegate.version('${maven-war-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.codehaus.mojo')
-							delegate.artifactId('build-helper-maven-plugin')
-							delegate.version('${build-helper-maven-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.codehaus.mojo')
-							delegate.artifactId('exec-maven-plugin')
-							delegate.version('${exec-maven-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.codehaus.mojo')
-							delegate.artifactId('versions-maven-plugin')
-							delegate.version('${versions-maven-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.codehaus.mojo')
-							delegate.artifactId('xml-maven-plugin')
-							delegate.version('${xml-maven-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.codehaus.mojo')
-							delegate.artifactId('flatten-maven-plugin')
-							delegate.version('${flatten-maven-plugin.version}')
-						}
-						plugin {
-							delegate.groupId('org.flywaydb')
-							delegate.artifactId('flyway-maven-plugin')
-							delegate.version('${flyway.version}')
-						}
-						plugin {
-							delegate.groupId('org.infinispan')
-							delegate.artifactId('infinispan-protocol-parser-generator-maven-plugin')
-							delegate.version('${infinispan.version}')
-						}
-						plugin {
-							delegate.groupId('pl.project13.maven')
-							delegate.artifactId('git-commit-id-plugin')
-							delegate.version('${git-commit-id-plugin.version}')
-						}
-					}
+	}
+	library('antlr2', '2.7.7') {
+		group('antlr') {
+			modules = [
+				'antlr'
+			]
+		}
+	}
+	library('appengine-sdk', '1.9.76') {
+		group('com.google.appengine') {
+			modules = [
+				'appengine-api-1.0-sdk'
+			]
+		}
+	}
+	library('artemis', '2.10.1') {
+		group('org.apache.activemq') {
+			modules = [
+				'artemis-amqp-protocol',
+				'artemis-commons' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'artemis-core-client' {
+					exclude group: 'org.apache.geronimo.specs', module: 'geronimo-json_1.0_spec'
+				},
+				'artemis-jms-client' {
+					exclude group: 'org.apache.geronimo.specs', module: 'geronimo-json_1.0_spec'
+				},
+				'artemis-jms-server' {
+					exclude group: 'org.apache.geronimo.specs', module: 'geronimo-json_1.0_spec'
+				},
+				'artemis-journal',
+				'artemis-selector',
+				'artemis-server' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+					exclude group: 'org.apache.geronimo.specs', module: 'geronimo-json_1.0_spec'
+				},
+				'artemis-service-extensions'
+			]
+		}
+	}
+	library('aspectj', '1.9.4') {
+		group('org.aspectj') {
+			modules = [
+				'aspectjrt',
+				'aspectjtools',
+				'aspectjweaver'
+			]
+		}
+	}
+	library('assertj', '3.14.0') {
+		group('org.assertj') {
+			modules = [
+				'assertj-core'
+			]
+		}
+	}
+	library('atomikos', '4.0.6') {
+		group('com.atomikos') {
+			modules = [
+				'transactions-jdbc',
+				'transactions-jms',
+				'transactions-jta'
+			]
+		}
+	}
+	library('awaitility', '4.0.1') {
+		group('org.awaitility') {
+			modules = [
+				'awaitility',
+				'awaitility-groovy',
+				'awaitility-kotlin',
+				'awaitility-scala'
+			]
+		}
+	}
+	library('bitronix', '2.1.4') {
+		group('org.codehaus.btm') {
+			modules = [
+				'btm'
+			]
+		}
+	}
+	library('build-helper-maven-plugin', '3.0.0') {
+		group('org.codehaus.mojo') {
+			plugins = [
+				'build-helper-maven-plugin'
+			]
+		}
+	}
+	library('byte-buddy', '1.10.2') {
+		group('net.bytebuddy') {
+			modules = [
+				'byte-buddy',
+				'byte-buddy-agent'
+			]
+		}
+	}
+	library('caffeine', '2.8.0') {
+		group('com.github.ben-manes.caffeine') {
+			modules = [
+				'caffeine',
+				'guava',
+				'jcache',
+				'simulator'
+			]
+		}
+	}
+	library('cassandra-driver', '3.7.2') {
+		group('com.datastax.cassandra') {
+			modules = [
+				'cassandra-driver-core',
+				'cassandra-driver-mapping'
+			]
+		}
+	}
+	library('classmate', '1.5.1') {
+		group('com.fasterxml') {
+			modules = [
+				'classmate'
+			]
+		}
+	}
+	library('commons-codec', '1.13') {
+		group('commons-codec') {
+			modules = [
+				'commons-codec'
+			]
+		}
+	}
+	library('commons-dbcp2', '2.7.0') {
+		group('org.apache.commons') {
+			modules = [
+				'commons-dbcp2' {
+					exclude group: 'commons-logging', module: 'commons-logging'
 				}
-			}
+			]
+		}
+	}
+	library('commons-lang3', '3.9') {
+		group('org.apache.commons') {
+			modules = [
+				'commons-lang3'
+			]
+		}
+	}
+	library('commons-pool', '1.6') {
+		group('commons-pool') {
+			modules = [
+				'commons-pool'
+			]
+		}
+	}
+	library('commons-pool2', '2.7.0') {
+		group('org.apache.commons') {
+			modules = [
+				'commons-pool2'
+			]
+		}
+	}
+	library('couchbase-cache-client', '2.1.0') {
+		group('com.couchbase.client') {
+			modules = [
+				'couchbase-spring-cache'
+			]
+		}
+	}
+	library('couchbase-client', '2.7.9') {
+		group('com.couchbase.client') {
+			modules = [
+				'java-client'
+			]
+		}
+	}
+	library('db2-jdbc', '11.5.0.0') {
+		group('com.ibm.db2') {
+			modules = [
+				'jcc'
+			]
+		}
+	}
+	library('dependency-management-plugin', '1.0.8.RELEASE') {
+		group('io.spring.gradle') {
+			modules = [
+				'dependency-management-plugin'
+			]
+		}
+	}
+	library('derby', '10.14.2.0') {
+		group('org.apache.derby') {
+			modules = [
+				'derby',
+				'derbyclient'
+			]
+		}
+	}
+	library('dropwizard-metrics', '4.1.1') {
+		group('io.dropwizard.metrics') {
+			modules = [
+				'metrics-annotation',
+				'metrics-core',
+				'metrics-ehcache',
+				'metrics-graphite',
+				'metrics-healthchecks',
+				'metrics-httpasyncclient',
+				'metrics-jdbi',
+				'metrics-jersey2',
+				'metrics-jetty9',
+				'metrics-jmx',
+				'metrics-json',
+				'metrics-jvm',
+				'metrics-log4j2',
+				'metrics-logback',
+				'metrics-servlet',
+				'metrics-servlets'
+			]
+		}
+	}
+	library('ehcache', '2.10.6') {
+		group('net.sf.ehcache') {
+			modules = [
+				'ehcache'
+			]
+		}
+	}
+	library('ehcache3', '3.8.1') {
+		group('org.ehcache') {
+			modules = [
+				'ehcache',
+				'ehcache-clustered',
+				'ehcache-transactions'
+			]
+		}
+	}
+	library('elasticsearch', '6.8.4') {
+		group('org.elasticsearch') {
+			modules = [
+				'elasticsearch'
+			]
+		}
+		group('org.elasticsearch.client') {
+			modules = [
+				'transport',
+				'elasticsearch-rest-client' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'elasticsearch-rest-high-level-client'
+			]
+		}
+		group('org.elasticsearch.distribution.integ-test-zip') {
+			modules = [
+				'elasticsearch'
+			]
+		}
+		group('org.elasticsearch.plugin') {
+			modules = [
+				'transport-netty4-client'
+			]
+		}
+	}
+	library('embedded-mongo', '2.2.0') {
+		group('de.flapdoodle.embed') {
+			modules = [
+				'de.flapdoodle.embed.mongo'
+			]
+		}
+	}
+	library('exec-maven-plugin', '1.6.0') {
+		group('org.codehaus.mojo') {
+			plugins = [
+				'exec-maven-plugin'
+			]
+		}
+	}
+	library('flatten-maven-plugin', '1.1.0') {
+		group('org.codehaus.mojo') {
+			plugins = [
+				'flatten-maven-plugin'
+			]
+		}
+	}
+	library('flyway', '6.0.8') {
+		group('org.flywaydb') {
+			modules = [
+				'flyway-core'
+			]
+			plugins = [
+				'flyway-maven-plugin'
+			]
+		}
+	}
+	library('freemarker', '2.3.29') {
+		group('org.freemarker') {
+			modules = [
+				'freemarker'
+			]
+		}
+	}
+	library('git-commit-id-plugin', '3.0.1') {
+		group('pl.project13.maven') {
+			plugins = [
+				'git-commit-id-plugin'
+			]
+		}
+	}
+	library('glassfish-el', '3.0.3') {
+		group('org.glassfish') {
+			modules = [
+				'jakarta.el'
+			]
+		}
+	}
+	library('Glassfish JAXB', '2.3.2') {
+		group('org.glassfish.jaxb') {
+			modules = [
+				'codemodel',
+				'codemodel-annotation-compiler',
+				'jaxb-jxc',
+				'jaxb-runtime',
+				'jaxb-xjc',
+				'txw2',
+				'txwc2',
+				'xsom'
+			]
+		}
+	}
+	library('groovy', '2.5.8') {
+		group('org.codehaus.groovy') {
+			modules = [
+				'groovy',
+				'groovy-ant',
+				'groovy-backports-compat23',
+				'groovy-bsf',
+				'groovy-cli-commons',
+				'groovy-cli-picocli',
+				'groovy-console',
+				'groovy-datetime',
+				'groovy-dateutil',
+				'groovy-docgenerator',
+				'groovy-groovydoc',
+				'groovy-groovysh',
+				'groovy-jaxb',
+				'groovy-jmx',
+				'groovy-json',
+				'groovy-json-direct',
+				'groovy-jsr223',
+				'groovy-macro',
+				'groovy-nio',
+				'groovy-servlet',
+				'groovy-sql',
+				'groovy-swing',
+				'groovy-templates',
+				'groovy-test',
+				'groovy-test-junit5',
+				'groovy-testng',
+				'groovy-xml'
+			]
+		}
+	}
+	library('gson', '2.8.6') {
+		group('com.google.code.gson') {
+			modules = [
+				'gson'
+			]
+		}
+	}
+	library('h2', '1.4.200') {
+		group('com.h2database') {
+			modules = [
+				'h2'
+			]
+		}
+	}
+	library('hamcrest', '2.2') {
+		group('org.hamcrest') {
+			modules = [
+				'hamcrest',
+				'hamcrest-core',
+				'hamcrest-library'
+			]
+		}
+	}
+	library('hazelcast-hibernate5', '1.3.2') {
+		group('com.hazelcast') {
+			modules = [
+				'hazelcast-hibernate52',
+				'hazelcast-hibernate53'
+			]
+		}
+	}
+	library('hazelcast', '3.12.4') {
+		group('com.hazelcast') {
+			modules = [
+				'hazelcast',
+				'hazelcast-client',
+				'hazelcast-spring'
+			]
+		}
+	}
+	library('hibernate-validator', '6.1.0.Final') {
+		group('org.hibernate.validator') {
+			modules = [
+				'hibernate-validator',
+				'hibernate-validator-annotation-processor'
+			]
+		}
+	}
+	library('hibernate', '5.4.8.Final') {
+		group('org.hibernate') {
+			modules = [
+				'hibernate-c3p0',
+				'hibernate-core',
+				'hibernate-ehcache',
+				'hibernate-entitymanager',
+				'hibernate-envers',
+				'hibernate-hikaricp',
+				'hibernate-java8',
+				'hibernate-jcache',
+				'hibernate-jpamodelgen',
+				'hibernate-proxool',
+				'hibernate-spatial',
+				'hibernate-testing',
+				'hibernate-vibur'
+			]
+		}
+	}
+	library('hikaricp', '3.4.1') {
+		group('com.zaxxer') {
+			modules = [
+				'HikariCP'
+			]
+		}
+	}
+	library('hsqldb', '2.5.0') {
+		group('org.hsqldb') {
+			modules = [
+				'hsqldb'
+			]
+		}
+	}
+	library('htmlunit', '2.36.0') {
+		group('net.sourceforge.htmlunit') {
+			modules = [
+				'htmlunit' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				}
+			]
+		}
+	}
+	library('httpasyncclient', '4.1.4') {
+		group('org.apache.httpcomponents') {
+			modules = [
+				'httpasyncclient' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				}
+			]
+		}
+	}
+	library('httpclient', '4.5.10') {
+		group('org.apache.httpcomponents') {
+			modules = [
+				'fluent-hc',
+				'httpclient' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'httpclient-cache',
+				'httpclient-osgi',
+				'httpclient-win',
+				'httpmime'
+			]
+		}
+	}
+	library('httpcore', '4.4.12') {
+		group('org.apache.httpcomponents') {
+			modules = [
+				'httpcore',
+				'httpcore-nio'
+			]
+		}
+	}
+	library('infinispan', '9.4.16.Final') {
+		group('org.infinispan') {
+			modules = [
+				'infinispan-cachestore-jdbc',
+				'infinispan-cachestore-jpa',
+				'infinispan-cachestore-leveldb',
+				'infinispan-cachestore-remote',
+				'infinispan-cachestore-rest',
+				'infinispan-cachestore-rocksdb',
+				'infinispan-cdi-common',
+				'infinispan-cdi-embedded',
+				'infinispan-cdi-remote',
+				'infinispan-client-hotrod',
+				'infinispan-cloud',
+				'infinispan-clustered-counter',
+				'infinispan-clustered-lock',
+				'infinispan-commons',
+				'infinispan-core',
+				'infinispan-directory-provider',
+				'infinispan-hibernate-cache-v53',
+				'infinispan-jcache',
+				'infinispan-jcache-commons',
+				'infinispan-jcache-remote',
+				'infinispan-lucene-directory',
+				'infinispan-objectfilter',
+				'infinispan-osgi',
+				'infinispan-persistence-cli',
+				'infinispan-persistence-soft-index',
+				'infinispan-query',
+				'infinispan-query-dsl',
+				'infinispan-remote-query-client',
+				'infinispan-remote-query-server',
+				'infinispan-scripting',
+				'infinispan-server-core',
+				'infinispan-server-hotrod',
+				'infinispan-server-memcached',
+				'infinispan-server-router',
+				'infinispan-spring4-common',
+				'infinispan-spring4-embedded',
+				'infinispan-spring4-remote',
+				'infinispan-spring5-common',
+				'infinispan-spring5-embedded',
+				'infinispan-spring5-remote',
+				'infinispan-tasks',
+				'infinispan-tasks-api',
+				'infinispan-tools',
+				'infinispan-tree'
+			]
+			plugins = [
+				'infinispan-protocol-parser-generator-maven-plugin'
+			]
+		}
+	}
+	library('influxdb-java', '2.16') {
+		group('org.influxdb') {
+			modules = [
+				'influxdb-java'
+			]
+		}
+	}
+	library('jackson-bom', '2.10.0') {
+		group('com.fasterxml.jackson') {
+			imports = [
+				'jackson-bom'
+			]
+		}
+	}
+	library('jakarta-activation', '1.2.1') {
+		group('com.sun.activation') {
+			modules = [
+				'jakarta.activation'
+			]
+		}
+		group('jakarta.activation') {
+			modules = [
+				'jakarta.activation-api'
+			]
+		}
+	}
+	library('jakarta-annotation', '1.3.5') {
+		group('jakarta.annotation') {
+			modules = [
+				'jakarta.annotation-api'
+			]
+		}
+	}
+	library('jakarta-jms', '2.0.3') {
+		group('jakarta.jms') {
+			modules = [
+				'jakarta.jms-api'
+			]
+		}
+	}
+	library('jakarta-json-bind', '1.0.2') {
+		group('jakarta.json.bind') {
+			modules = [
+				'jakarta.json.bind-api'
+			]
+		}
+	}
+	library('jakarta-json', '1.1.6') {
+		group('jakarta.json') {
+			modules = [
+				'jakarta.json-api'
+			]
+		}
+	}
+	library('jakarta-mail', '1.6.4') {
+		group('jakarta.mail') {
+			modules = [
+				'jakarta.mail-api'
+			]
+		}
+	}
+	library('jakarta-persistence', '2.2.3') {
+		group('jakarta.persistence') {
+			modules = [
+				'jakarta.persistence-api'
+			]
+		}
+	}
+	library('jakarta-servlet-jsp-jstl', '1.2.7') {
+		group('jakarta.servlet.jsp.jstl') {
+			modules = [
+				'jakarta.servlet.jsp.jstl-api'
+			]
+		}
+	}
+	library('jakarta-servlet', '4.0.3') {
+		group('jakarta.servlet') {
+			modules = [
+				'jakarta.servlet-api'
+			]
+		}
+	}
+	library('jakarta-transaction', '1.3.3') {
+		group('jakarta.transaction') {
+			modules = [
+				'jakarta.transaction-api'
+			]
+		}
+	}
+	library('jakarta-validation', '2.0.1') {
+		group('jakarta.validation') {
+			modules = [
+				'jakarta.validation-api'
+			]
+		}
+	}
+	library('jakarta-websocket', '1.1.2') {
+		group('jakarta.websocket') {
+			modules = [
+				'jakarta.websocket-api'
+			]
+		}
+	}
+	library('jakarta-ws-rs', '2.1.6') {
+		group('jakarta.ws.rs') {
+			modules = [
+				'jakarta.ws.rs-api'
+			]
+		}
+	}
+	library('jakarta-xml-bind', '2.3.2') {
+		group('jakarta.xml.bind') {
+			modules = [
+				'jakarta.xml.bind-api'
+			]
+		}
+	}
+	library('jakarta-xml-ws', '2.3.2') {
+		group('jakarta.xml.ws') {
+			modules = [
+				'jakarta.xml.ws-api'
+			]
+		}
+	}
+	library('janino', '3.1.0') {
+		group('org.codehaus.janino') {
+			modules = [
+				'commons-compiler',
+				'commons-compiler-jdk',
+				'janino'
+			]
+		}
+	}
+	library('javax-activation', '1.2.0') {
+		group('javax.activation') {
+			modules = [
+				'javax.activation-api'
+			]
+		}
+	}
+	library('javax-annotation', '1.3.2') {
+		group('javax.annotation') {
+			modules = [
+				'javax.annotation-api'
+			]
+		}
+	}
+	library('javax-cache', '1.1.1') {
+		group('javax.cache') {
+			modules = [
+				'cache-api'
+			]
+		}
+	}
+	library('javax-jaxb', '2.3.1') {
+		group('javax.xml.bind') {
+			modules = [
+				'jaxb-api'
+			]
+		}
+	}
+	library('javax-jaxws', '2.3.1') {
+		group('javax.xml.ws') {
+			modules = [
+				'jaxws-api'
+			]
+		}
+	}
+	library('javax-jms', '2.0.1') {
+		group('javax.jms') {
+			modules = [
+				'javax.jms-api'
+			]
+		}
+	}
+	library('javax-json', '1.1.4') {
+		group('javax.json') {
+			modules = [
+				'javax.json-api'
+			]
+		}
+	}
+	library('javax-jsonb', '1.0') {
+		group('javax.json.bind') {
+			modules = [
+				'javax.json.bind-api'
+			]
+		}
+	}
+	library('javax-mail', '1.6.2') {
+		group('javax.mail') {
+			modules = [
+				'javax.mail-api'
+			]
+		}
+	}
+	library('javax-money', '1.0.3') {
+		group('javax.money') {
+			modules = [
+				'money-api'
+			]
+		}
+	}
+	library('javax-persistence', '2.2') {
+		group('javax.persistence') {
+			modules = [
+				'javax.persistence-api'
+			]
+		}
+	}
+	library('javax-transaction', '1.3') {
+		group('javax.transaction') {
+			modules = [
+				'javax.transaction-api'
+			]
+		}
+	}
+	library('javax-validation', '2.0.1.Final') {
+		group('javax.validation') {
+			modules = [
+				'validation-api'
+			]
+		}
+	}
+	library('javax-websocket', '1.1') {
+		group('javax.websocket') {
+			modules = [
+				'javax.websocket-api'
+			]
+		}
+	}
+	library('jaxen', '1.2.0') {
+		group('jaxen') {
+			modules = [
+				'jaxen'
+			]
+		}
+	}
+	library('jaybird', '3.0.6') {
+		group('org.firebirdsql.jdbc') {
+			modules = [
+				'jaybird-jdk17',
+				'jaybird-jdk18'
+			]
+		}
+	}
+	library('jboss-logging', '3.4.1.Final') {
+		group('org.jboss.logging') {
+			modules = [
+				'jboss-logging'
+			]
+		}
+	}
+	library('jboss-transaction-spi', '7.6.0.Final') {
+		group('org.jboss') {
+			modules = [
+				'jboss-transaction-spi'
+			]
+		}
+	}
+	library('jdom2', '2.0.6') {
+		group('org.jdom') {
+			modules = [
+				'jdom2'
+			]
+		}
+	}
+	library('jedis', '3.1.0') {
+		group('redis.clients') {
+			modules = [
+				'jedis'
+			]
+		}
+	}
+	library('jersey', '2.29.1') {
+		group('org.glassfish.jersey') {
+			imports = [
+				'jersey-bom'
+			]
+		}
+	}
+	library('jest', '6.3.1') {
+		group('io.searchbox') {
+			modules = [
+				'jest'
+			]
+		}
+	}
+	library('jetty-el', '8.5.40') {
+		group('org.mortbay.jasper') {
+			modules = [
+				'apache-el'
+			]
+		}
+	}
+	library('jetty-jsp', '2.2.0.v201112011158') {
+		group('org.eclipse.jetty.orbit') {
+			modules = [
+				'javax.servlet.jsp'
+			]
+		}
+	}
+	library('jetty-reactive-httpclient', '1.0.3') {
+		group('org.eclipse.jetty') {
+			modules = [
+				'jetty-reactive-httpclient'
+			]
+		}
+	}
+	library('jetty', '9.4.22.v20191022') {
+		group('org.eclipse.jetty') {
+			imports = [
+				'jetty-bom'
+			]
+		}
+	}
+	library('jmustache', '1.15') {
+		group('com.samskivert') {
+			modules = [
+				'jmustache'
+			]
+		}
+	}
+	library('jna', '4.5.2') {
+		group('net.java.dev.jna') {
+			modules = [
+				'jna',
+				'jna-platform'
+			]
+		}
+	}
+	library('joda-time', '2.10.5') {
+		group('joda-time') {
+			modules = [
+				'joda-time'
+			]
+		}
+	}
+	library('johnzon', '1.2.1') {
+		group('org.apache.johnzon') {
+			modules = [
+				'johnzon-core',
+				'johnzon-jaxrs',
+				'johnzon-jsonb',
+				'johnzon-jsonb-extras',
+				'johnzon-jsonschema',
+				'johnzon-mapper',
+				'johnzon-websocket'
+			]
+			plugins = [
+				'johnzon-maven-plugin'
+			]
+		}
+	}
+	library('jolokia', '1.6.2') {
+		group('org.jolokia') {
+			modules = [
+				'jolokia-core'
+			]
+		}
+	}
+	library('jooq', '3.12.3') {
+		group('org.jooq') {
+			modules = [
+				'jooq',
+				'jooq-meta',
+				'jooq-codegen'
+			]
+			plugins = [
+				'jooq-codegen-maven'
+			]
+		}
+	}
+	library('json-path', '2.4.0') {
+		group('com.jayway.jsonpath') {
+			modules = [
+				'json-path',
+				'json-path-assert'
+			]
+		}
+	}
+	library('jsonassert', '1.5.0') {
+		group('org.skyscreamer') {
+			modules = [
+				'jsonassert'
+			]
+		}
+	}
+	library('jstl', '1.2') {
+		group('javax.servlet') {
+			modules = [
+				'jstl'
+			]
+		}
+	}
+	library('jtds', '1.3.1') {
+		group('net.sourceforge.jtds') {
+			modules = [
+				'jtds'
+			]
+		}
+	}
+	library('junit-jupiter', '5.5.2') {
+		group('org.junit') {
+			imports = [
+				'junit-bom'
+			]
+		}
+	}
+	library('junit', '4.12') {
+		group('junit') {
+			modules = [
+				'junit'
+			]
+		}
+	}
+	library('kafka', '2.3.1') {
+		group('org.apache.kafka') {
+			modules = [
+				'connect-api',
+				'connect-basic-auth-extension',
+				'connect-file',
+				'connect-json',
+				'connect-runtime',
+				'connect-transforms',
+				'kafka-clients',
+				'kafka-log4j-appender',
+				'kafka-streams',
+				'kafka-streams-scala_2.11',
+				'kafka-streams-scala_2.12',
+				'kafka-streams-test-utils',
+				'kafka-tools',
+				'kafka_2.11',
+				'kafka_2.12'
+			]
+		}
+	}
+	library('kotlin-coroutines', '1.3.2') {
+		group('org.jetbrains.kotlinx') {
+			imports = [
+				'kotlinx-coroutines-bom'
+			]
+		}
+	}
+	library('kotlin', '1.3.60') {
+		group('org.jetbrains.kotlin') {
+			imports = [
+				'kotlin-bom'
+			]
+			plugins = [
+				'kotlin-maven-plugin'
+			]
+		}
+	}
+	library('lettuce', '5.2.1.RELEASE') {
+		group('io.lettuce') {
+			modules = [
+				'lettuce-core'
+			]
+		}
+	}
+	library('liquibase', '3.8.0') {
+		group('org.liquibase') {
+			modules = [
+				'liquibase-core' {
+					exclude group: 'ch.qos.logback', module: 'logback-classic'
+				}
+			]
+		}
+	}
+	library('log4j2', '2.12.1') {
+		group('org.apache.logging.log4j') {
+			modules = [
+				'log4j-to-slf4j'
+			]
+			imports = [
+				'log4j-bom'
+			]
+		}
+	}
+	library('logback', '1.2.3') {
+		group('ch.qos.logback') {
+			modules = [
+				'logback-access',
+				'logback-classic',
+				'logback-core'
+			]
+		}
+	}
+	library('lombok', '1.18.10') {
+		group('org.projectlombok') {
+			modules = [
+				'lombok'
+			]
+		}
+	}
+	library('mariadb', '2.5.1') {
+		group('org.mariadb.jdbc') {
+			modules = [
+				'mariadb-java-client'
+			]
+		}
+	}
+	library('maven-antrun-plugin', '1.8') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-antrun-plugin'
+			]
+		}
+	}
+	library('maven-assembly-plugin', '3.2.0') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-assembly-plugin'
+			]
+		}
+	}
+	library('maven-clean-plugin', '3.1.0') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-clean-plugin'
+			]
+		}
+	}
+	library('maven-compiler-plugin', '3.8.1') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-compiler-plugin'
+			]
+		}
+	}
+	library('maven-dependency-plugin', '3.1.1') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-dependency-plugin'
+			]
+		}
+	}
+	library('maven-deploy-plugin', '2.8.2') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-deploy-plugin'
+			]
+		}
+	}
+	library('maven-enforcer-plugin', '3.0.0-M2') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-enforcer-plugin'
+			]
+		}
+	}
+	library('maven-failsafe-plugin', '2.22.2') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-failsafe-plugin'
+			]
+		}
+	}
+	library('maven-help-plugin', '3.2.0') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-help-plugin'
+			]
+		}
+	}
+	library('maven-install-plugin', '2.5.2') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-install-plugin'
+			]
+		}
+	}
+	library('maven-invoker-plugin', '3.2.1') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-invoker-plugin'
+			]
+		}
+	}
+	library('maven-jar-plugin', '3.2.0') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-jar-plugin'
+			]
+		}
+	}
+	library('maven-javadoc-plugin', '3.1.1') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-javadoc-plugin'
+			]
+		}
+	}
+	library('maven-resources-plugin', '3.1.0') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-resources-plugin'
+			]
+		}
+	}
+	library('maven-shade-plugin', '3.2.1') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-shade-plugin'
+			]
+		}
+	}
+	library('maven-site-plugin', '3.8.2') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-site-plugin'
+			]
+		}
+	}
+	library('maven-source-plugin', '3.2.0') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-source-plugin'
+			]
+		}
+	}
+	library('maven-surefire-plugin', '2.22.2') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-surefire-plugin'
+			]
+		}
+	}
+	library('maven-war-plugin', '3.2.3') {
+		group('org.apache.maven.plugins') {
+			plugins = [
+				'maven-war-plugin'
+			]
+		}
+	}
+	library('micrometer', '1.3.1') {
+		group('io.micrometer') {
+			imports = [
+				'micrometer-bom'
+			]
+		}
+	}
+	library('mimepull', '1.9.12') {
+		group('org.jvnet.mimepull') {
+			modules = [
+				'mimepull'
+			]
+		}
+	}
+	library('mockito', '3.1.0') {
+		group('org.mockito') {
+			modules = [
+				'mockito-core',
+				'mockito-inline',
+				'mockito-junit-jupiter'
+			]
+		}
+	}
+	library('mongo-driver-reactivestreams', '1.12.0') {
+		group('org.mongodb') {
+			modules = [
+				'mongodb-driver-reactivestreams'
+			]
+		}
+	}
+	library('mongodb', '3.11.2') {
+		group('org.mongodb') {
+			modules = [
+				'bson',
+				'mongodb-driver',
+				'mongodb-driver-async',
+				'mongodb-driver-core',
+				'mongo-java-driver'
+			]
+		}
+	}
+	library('mssql-jdbc', '7.4.1.jre8') {
+		group('com.microsoft.sqlserver') {
+			modules = [
+				'mssql-jdbc'
+			]
+		}
+	}
+	library('mysql', '8.0.18') {
+		group('mysql') {
+			modules = [
+				'mysql-connector-java' {
+					exclude group: 'com.google.protobuf', module: 'protobuf-java'
+				}
+			]
+		}
+	}
+	library('nekohtml', '1.9.22') {
+		group('net.sourceforge.nekohtml') {
+			modules = [
+				'nekohtml'
+			]
+		}
+	}
+	library('neo4j-ogm', '3.2.2') {
+		group('org.neo4j') {
+			modules = [
+				'neo4j-ogm-api',
+				'neo4j-ogm-bolt-driver',
+				'neo4j-ogm-bolt-native-types',
+				'neo4j-ogm-core',
+				'neo4j-ogm-embedded-driver',
+				'neo4j-ogm-embedded-native-types',
+				'neo4j-ogm-http-driver'
+			]
+		}
+	}
+	library('netty-tcnative', '2.0.26.Final') {
+		group('io.netty') {
+			modules = [
+				'netty-tcnative-boringssl-static'
+			]
+		}
+	}
+	library('netty', '4.1.43.Final') {
+		group('io.netty') {
+			imports = [
+				'netty-bom'
+			]
+		}
+	}
+	library('nio-multipart-parser', '1.1.0') {
+		group('org.synchronoss.cloud') {
+			modules = [
+				'nio-multipart-parser'
+			]
+		}
+	}
+	library('ojdbc', '19.3.0.0') {
+		group('com.oracle.ojdbc') {
+			modules = [
+				'dms',
+				'ojdbc10',
+				'ojdbc10_g',
+				'ojdbc10dms',
+				'ojdbc10dms_g',
+				'ojdbc8',
+				'ojdbc8_g',
+				'ojdbc8dms',
+				'ojdbc8dms_g',
+				'ons',
+				'oraclepki',
+				'orai18n',
+				'osdt_cert',
+				'osdt_core',
+				'simplefan',
+				'ucp',
+				'xdb',
+				'xmlparserv2'
+			]
+		}
+	}
+	library('okhttp3', '3.14.4') {
+		group('com.squareup.okhttp3') {
+			modules = [
+				'logging-interceptor',
+				'mockwebserver',
+				'okcurl',
+				'okhttp',
+				'okhttp-dnsoverhttps',
+				'okhttp-sse',
+				'okhttp-testing-support',
+				'okhttp-tls',
+				'okhttp-urlconnection'
+			]
+		}
+	}
+	library('pooled-jms', '1.1.0') {
+		group('org.messaginghub') {
+			modules = [
+				'pooled-jms'
+			]
+		}
+	}
+	library('postgresql', '42.2.8') {
+		group('org.postgresql') {
+			modules = [
+				'postgresql'
+			]
+		}
+	}
+	library('prometheus-pushgateway', '0.7.0') {
+		group('io.prometheus') {
+			modules = [
+				'simpleclient_pushgateway'
+			]
+		}
+	}
+	library('quartz', '2.3.2') {
+		group('org.quartz-scheduler') {
+			modules = [
+				'quartz' {
+					exclude group: 'com.mchange', module: 'c3p0'
+					exclude group: 'com.zaxxer', module: '*'
+				},
+				'quartz-jobs'
+			]
+		}
+	}
+	library('querydsl', '4.2.1') {
+		group('com.querydsl') {
+			modules = [
+				'querydsl-apt',
+				'querydsl-collections',
+				'querydsl-core',
+				'querydsl-jpa',
+				'querydsl-mongodb' {
+					exclude group: 'org.mongodb', module: 'mongo-java-driver'
+				}
+			]
+		}
+	}
+	library('rabbit-amqp-client', '5.7.3') {
+		group('com.rabbitmq') {
+			modules = [
+				'amqp-client'
+			]
+		}
+	}
+	library('reactive-streams', '1.0.3') {
+		group('org.reactivestreams') {
+			modules = [
+				'reactive-streams'
+			]
+		}
+	}
+	library('reactor-bom', 'Dysprosium-BUILD-SNAPSHOT') {
+		group('io.projectreactor') {
+			imports = [
+				'reactor-bom'
+			]
+		}
+	}
+	library('rest-assured', '3.3.0') {
+		group('io.rest-assured') {
+			modules = [
+				'json-path',
+				'json-schema-validator',
+				'rest-assured',
+				'scala-support',
+				'spring-mock-mvc',
+				'spring-web-test-client',
+				'xml-path'
+			]
+		}
+	}
+	library('Spring Boot', '2.3.0.GRADLE-SNAPSHOT') {
+		group('org.springframework.boot') {
+			modules = [
+				'spring-boot',
+				'spring-boot-test',
+				'spring-boot-test-autoconfigure',
+				'spring-boot-actuator',
+				'spring-boot-actuator-autoconfigure',
+				'spring-boot-autoconfigure',
+				'spring-boot-autoconfigure-processor',
+				'spring-boot-configuration-metadata',
+				'spring-boot-configuration-processor',
+				'spring-boot-devtools',
+				'spring-boot-loader',
+				'spring-boot-loader-tools',
+				'spring-boot-properties-migrator',
+				'spring-boot-starter',
+				'spring-boot-starter-activemq',
+				'spring-boot-starter-actuator',
+				'spring-boot-starter-amqp',
+				'spring-boot-starter-aop',
+				'spring-boot-starter-artemis',
+				'spring-boot-starter-batch',
+				'spring-boot-starter-cache',
+				'spring-boot-starter-cloud-connectors',
+				'spring-boot-starter-data-cassandra',
+				'spring-boot-starter-data-cassandra-reactive',
+				'spring-boot-starter-data-couchbase',
+				'spring-boot-starter-data-couchbase-reactive',
+				'spring-boot-starter-data-elasticsearch',
+				'spring-boot-starter-data-jdbc',
+				'spring-boot-starter-data-jpa',
+				'spring-boot-starter-data-ldap',
+				'spring-boot-starter-data-mongodb',
+				'spring-boot-starter-data-mongodb-reactive',
+				'spring-boot-starter-data-redis',
+				'spring-boot-starter-data-redis-reactive',
+				'spring-boot-starter-data-neo4j',
+				'spring-boot-starter-data-rest',
+				'spring-boot-starter-data-solr',
+				'spring-boot-starter-freemarker',
+				'spring-boot-starter-groovy-templates',
+				'spring-boot-starter-hateoas',
+				'spring-boot-starter-integration',
+				'spring-boot-starter-jdbc',
+				'spring-boot-starter-jersey',
+				'spring-boot-starter-jetty',
+				'spring-boot-starter-jooq',
+				'spring-boot-starter-json',
+				'spring-boot-starter-jta-atomikos',
+				'spring-boot-starter-jta-bitronix',
+				'spring-boot-starter-log4j2',
+				'spring-boot-starter-logging',
+				'spring-boot-starter-mail',
+				'spring-boot-starter-mustache',
+				'spring-boot-starter-oauth2-client',
+				'spring-boot-starter-oauth2-resource-server',
+				'spring-boot-starter-quartz',
+				'spring-boot-starter-reactor-netty',
+				'spring-boot-starter-rsocket',
+				'spring-boot-starter-security',
+				'spring-boot-starter-test',
+				'spring-boot-starter-thymeleaf',
+				'spring-boot-starter-tomcat',
+				'spring-boot-starter-undertow',
+				'spring-boot-starter-validation',
+				'spring-boot-starter-web',
+				'spring-boot-starter-webflux',
+				'spring-boot-starter-websocket',
+				'spring-boot-starter-web-services'
+			]
+			plugins = [
+				'spring-boot-maven-plugin'
+			]
+		}
+	}
+	library('rsocket', '1.0.0-RC5') {
+		group('io.rsocket') {
+			imports = [
+				'rsocket-bom'
+			]
+		}
+	}
+	library('rxjava-adapter', '1.2.1') {
+		group('io.reactivex') {
+			modules = [
+				'rxjava-reactive-streams'
+			]
+		}
+	}
+	library('rxjava', '1.3.8') {
+		group('io.reactivex') {
+			modules = [
+				'rxjava'
+			]
+		}
+	}
+	library('rxjava2', '2.2.14') {
+		group('io.reactivex.rxjava2') {
+			modules = [
+				'rxjava'
+			]
+		}
+	}
+	library('saaj-impl', '1.5.1') {
+		group('com.sun.xml.messaging.saaj') {
+			modules = [
+				'saaj-impl'
+			]
+		}
+	}
+	library('selenium-htmlunit', '2.36.0') {
+		group('org.seleniumhq.selenium') {
+			modules = [
+				'htmlunit-driver'
+			]
+		}
+	}
+	library('selenium', '3.141.59') {
+		group('org.seleniumhq.selenium') {
+			modules = [
+				'selenium-api',
+				'selenium-chrome-driver',
+				'selenium-edge-driver',
+				'selenium-firefox-driver',
+				'selenium-ie-driver',
+				'selenium-java',
+				'selenium-opera-driver',
+				'selenium-remote-driver' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'selenium-safari-driver',
+				'selenium-support' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				}
+			]
+		}
+	}
+	library('sendgrid', '4.4.1') {
+		group('com.sendgrid') {
+			modules = [
+				'sendgrid-java'
+			]
+		}
+	}
+	library('servlet-api', '4.0.1') {
+		group('javax.servlet') {
+			modules = [
+				'javax.servlet-api'
+			]
+		}
+	}
+	library('slf4j', '1.7.29') {
+		group('org.slf4j') {
+			modules = [
+				'jcl-over-slf4j',
+				'jul-to-slf4j',
+				'log4j-over-slf4j',
+				'slf4j-api',
+				'slf4j-ext',
+				'slf4j-jcl',
+				'slf4j-jdk14',
+				'slf4j-log4j12',
+				'slf4j-nop',
+				'slf4j-simple'
+			]
+		}
+	}
+	library('snakeyaml', '1.25') {
+		group('org.yaml') {
+			modules = [
+				'snakeyaml'
+			]
+		}
+	}
+	library('solr', '8.2.0') {
+		group('org.apache.solr') {
+			modules = [
+				'solr-analysis-extras',
+				'solr-analytics',
+				'solr-cell',
+				'solr-clustering',
+				'solr-core',
+				'solr-dataimporthandler',
+				'solr-dataimporthandler-extras',
+				'solr-langid',
+				'solr-ltr',
+				'solr-solrj' {
+					exclude group: 'org.slf4j', module: 'jcl-over-slf4j'
+				},
+				'solr-test-framework',
+				'solr-velocity'
+			]
+		}
+	}
+	library('spring-amqp', '2.2.1.RELEASE') {
+		group('org.springframework.amqp') {
+			modules = [
+				'spring-amqp',
+				'spring-rabbit',
+				'spring-rabbit-junit',
+				'spring-rabbit-test'
+			]
+		}
+	}
+	library('spring-batch', '4.2.0.RELEASE') {
+		group('org.springframework.batch') {
+			modules = [
+				'spring-batch-core',
+				'spring-batch-infrastructure',
+				'spring-batch-integration',
+				'spring-batch-test'
+			]
+		}
+	}
+	library('spring-cloud-connectors', '2.0.6.RELEASE') {
+		group('org.springframework.cloud') {
+			modules = [
+				'spring-cloud-cloudfoundry-connector',
+				'spring-cloud-connectors-core',
+				'spring-cloud-heroku-connector',
+				'spring-cloud-localconfig-connector',
+				'spring-cloud-spring-service-connector'
+			]
+		}
+	}
+	library('spring-data-releasetrain', 'Moore-BUILD-SNAPSHOT') {
+		group('org.springframework.data') {
+			imports = [
+				'spring-data-releasetrain'
+			]
+		}
+	}
+	library('spring-framework', '5.2.2.BUILD-SNAPSHOT') {
+		group('org.springframework') {
+			imports = [
+				'spring-framework-bom'
+			]
+		}
+	}
+	library('spring-hateoas', '1.0.1.RELEASE') {
+		group('org.springframework.hateoas') {
+			modules = [
+				'spring-hateoas'
+			]
+		}
+	}
+	library('spring-integration', '5.2.1.RELEASE') {
+		group('org.springframework.integration') {
+			modules = [
+				'spring-integration-http' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+					exclude group: 'commons-logging', module: 'commons-logging-api'
+				}
+			]
+			imports = [
+				'spring-integration-bom'
+			]
+		}
+	}
+	library('spring-kafka', '2.3.3.RELEASE') {
+		group('org.springframework.kafka') {
+			modules = [
+				'spring-kafka',
+				'spring-kafka-test'
+			]
+		}
+	}
+	library('spring-ldap', '2.3.2.RELEASE') {
+		group('org.springframework.ldap') {
+			modules = [
+				'spring-ldap-core',
+				'spring-ldap-core-tiger',
+				'spring-ldap-ldif-batch',
+				'spring-ldap-ldif-core',
+				'spring-ldap-odm',
+				'spring-ldap-test'
+			]
+		}
+	}
+	library('spring-restdocs', '2.0.4.RELEASE') {
+		group('org.springframework.restdocs') {
+			modules = [
+				'spring-restdocs-asciidoctor',
+				'spring-restdocs-core',
+				'spring-restdocs-mockmvc',
+				'spring-restdocs-restassured',
+				'spring-restdocs-webtestclient'
+			]
+		}
+	}
+	library('spring-retry', '1.2.4.RELEASE') {
+		group('org.springframework.retry') {
+			modules = [
+				'spring-retry'
+			]
+		}
+	}
+	library('spring-security', '5.2.1.RELEASE') {
+		group('org.springframework.security') {
+			imports = [
+				'spring-security-bom'
+			]
+		}
+	}
+	library('spring-session-bom', 'Corn-RELEASE') {
+		group('org.springframework.session') {
+			imports = [
+				'spring-session-bom'
+			]
+		}
+	}
+	library('spring-ws', '3.0.8.RELEASE') {
+		group('org.springframework.ws') {
+			modules = [
+				'spring-ws-core' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'spring-ws-security' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'spring-ws-support' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'spring-ws-test' {
+					exclude group: 'commons-logging', module: 'commons-logging'
+				},
+				'spring-xml'
+			]
+		}
+	}
+	library('sqlite-jdbc', '3.28.0') {
+		group('org.xerial') {
+			modules = [
+				'sqlite-jdbc'
+			]
+		}
+	}
+	library('sun-mail', '1.6.4') {
+		group('com.sun.mail') {
+			modules = [
+				'jakarta.mail'
+			]
+		}
+	}
+	library('thymeleaf-extras-data-attribute', '2.0.1') {
+		group('com.github.mxab.thymeleaf.extras') {
+			modules = [
+				'thymeleaf-extras-data-attribute'
+			]
+		}
+	}
+	library('thymeleaf-extras-java8time', '3.0.4.RELEASE') {
+		group('org.thymeleaf.extras') {
+			modules = [
+				'thymeleaf-extras-java8time'
+			]
+		}
+	}
+	library('thymeleaf-extras-springsecurity', '3.0.4.RELEASE') {
+		group('org.thymeleaf.extras') {
+			modules = [
+				'thymeleaf-extras-springsecurity5'
+			]
+		}
+	}
+	library('thymeleaf-layout-dialect', '2.4.1') {
+		group('nz.net.ultraq.thymeleaf') {
+			modules = [
+				'thymeleaf-layout-dialect'
+			]
+		}
+	}
+	library('thymeleaf', '3.0.11.RELEASE') {
+		group('org.thymeleaf') {
+			modules = [
+				'thymeleaf',
+				'thymeleaf-spring5'
+			]
+		}
+	}
+	library('tomcat', '9.0.27') {
+		group('org.apache.tomcat') {
+			modules = [
+				'tomcat-annotations-api',
+				'tomcat-jdbc',
+				'tomcat-jsp-api'
+			]
+		}
+		group('org.apache.tomcat.embed') {
+			modules = [
+				'tomcat-embed-core',
+				'tomcat-embed-el',
+				'tomcat-embed-jasper',
+				'tomcat-embed-websocket'
+			]
+		}
+	}
+	library('unboundid-ldapsdk', '4.0.12') {
+		group('com.unboundid') {
+			modules = [
+				'unboundid-ldapsdk'
+			]
+		}
+	}
+	library('undertow', '2.0.27.Final') {
+		group('io.undertow') {
+			modules = [
+				'undertow-core',
+				'undertow-servlet',
+				'undertow-websockets-jsr'
+			]
+		}
+	}
+	library('versions-maven-plugin', '2.7') {
+		group('org.codehaus.mojo') {
+			plugins = [
+				'versions-maven-plugin'
+			]
+		}
+	}
+	library('webjars-hal-browser', '3325375') {
+		group('org.webjars') {
+			modules = [
+				'hal-browser'
+			]
+		}
+	}
+	library('webjars-locator-core', '0.42') {
+		group('org.webjars') {
+			modules = [
+				'webjars-locator-core'
+			]
+		}
+	}
+	library('wsdl4j', '1.6.3') {
+		group('wsdl4j') {
+			modules = [
+				'wsdl4j'
+			]
+		}
+	}
+	library('xml-maven-plugin', '1.0.2') {
+		group('org.codehaus.mojo') {
+			plugins = [
+				'xml-maven-plugin'
+			]
+		}
+	}
+	library('xmlunit2', '2.6.3') {
+		group('org.xmlunit') {
+			modules = [
+				'xmlunit-assertj',
+				'xmlunit-core',
+				'xmlunit-legacy',
+				'xmlunit-matchers',
+				'xmlunit-placeholders'
+			]
 		}
 	}
 }

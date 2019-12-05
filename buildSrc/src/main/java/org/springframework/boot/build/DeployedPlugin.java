@@ -18,6 +18,7 @@ package org.springframework.boot.build;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
@@ -52,6 +53,10 @@ public class DeployedPlugin implements Plugin<Project> {
 		deploymentPublication.pom((pom) -> customizePom(pom, project));
 		project.getPlugins().withType(JavaPlugin.class)
 				.all((javaPlugin) -> project.getComponents().matching((component) -> component.getName().equals("java"))
+						.all((javaComponent) -> deploymentPublication.from(javaComponent)));
+		project.getPlugins().withType(JavaPlatformPlugin.class)
+				.all((javaPlugin) -> project.getComponents()
+						.matching((component) -> component.getName().equals("javaPlatform"))
 						.all((javaComponent) -> deploymentPublication.from(javaComponent)));
 	}
 

@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
 
 /**
- * Base class for archive (jar or war) related Maven plugin integration tests
+ * Base class for archive (jar or war) related Maven plugin integration tests.
  *
  * @author Andy Wilkinson
  */

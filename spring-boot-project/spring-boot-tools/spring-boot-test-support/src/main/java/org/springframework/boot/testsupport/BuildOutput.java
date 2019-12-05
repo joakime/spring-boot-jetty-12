@@ -62,10 +62,10 @@ public class BuildOutput {
 				|| testClassesLocation.getPath().endsWith(path("bin", "intTest"))) {
 			return testClassesLocation;
 		}
-		if (testClassesLocation.getPath().endsWith(path("build", "classes", "intTest", "java", "test"))) {
+		if (testClassesLocation.getPath().endsWith(path("build", "classes", "java", "test"))) {
 			return new File(testClassesLocation.getParentFile().getParentFile().getParentFile(), "resources/test");
 		}
-		if (testClassesLocation.getPath().endsWith(path("build", "classes", "intTest", "java", "intTest"))) {
+		if (testClassesLocation.getPath().endsWith(path("build", "classes", "java", "intTest"))) {
 			return new File(testClassesLocation.getParentFile().getParentFile().getParentFile(), "resources/intTest");
 		}
 		throw new IllegalStateException(

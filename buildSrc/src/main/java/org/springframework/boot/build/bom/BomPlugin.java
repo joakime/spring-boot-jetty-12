@@ -25,7 +25,6 @@ import groovy.xml.QName;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.plugins.JavaPlatformExtension;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.PluginContainer;
@@ -37,6 +36,7 @@ import org.gradle.api.tasks.Sync;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
+import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.mavenplugin.MavenExec;
 
 /**
@@ -57,8 +57,8 @@ public class BomPlugin implements Plugin<Project> {
 		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
 		javaPlatform.allowDependencies();
 		project.getTasks().create("processBom", ProcessBom.class);
-		BomExtension bom = new BomExtension(project.getDependencies());
-		project.getExtensions().add("bom", bom);
+		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project.getDependencies());
+		project.getTasks().create("checkBom", CheckBom.class, bom);
 		new PublishingCustomizer(project, bom).customize();
 		Configuration effectiveBomConfiguration = project.getConfigurations().create("effectiveBom");
 		project.getTasks().matching((task) -> task.getName().equals("generatePomFileForDeploymentPublication"))
@@ -99,8 +99,6 @@ public class BomPlugin implements Plugin<Project> {
 		}
 
 		private void configurePublication(MavenPublication publication) {
-			SoftwareComponent javaLibrary = this.project.getComponents().getByName("javaPlatform");
-			publication.from(javaLibrary);
 			publication.pom(this::customizePom);
 		}
 
@@ -112,25 +110,83 @@ public class BomPlugin implements Plugin<Project> {
 				this.bom.getProperties().forEach(properties::appendNode);
 				Node dependencyManagement = findChild(projectNode, "dependencyManagement");
 				if (dependencyManagement != null) {
-					for (int i = 0; i < projectNode.children().size(); i++) {
-						if (isNodeWithName(projectNode.children().get(i), "dependencyManagement")) {
-							projectNode.children().add(i, properties);
-							break;
-						}
-					}
-					Node dependencies = findChild(dependencyManagement, "dependencies");
-					if (dependencies != null) {
-						for (Node dependency : findChildren(dependencies, "dependency")) {
-							String groupId = findChild(dependency, "groupId").text();
-							String artifactId = findChild(dependency, "artifactId").text();
-							findChild(dependency, "version").setValue(this.bom.getVersion(groupId, artifactId));
-						}
-					}
+					addPropertiesBeforeDependencyManagement(projectNode, properties);
+					replaceVersionsWithVersionPropertyReferences(dependencyManagement);
+					addExclusionsToManagedDependencies(dependencyManagement);
 				}
 				else {
 					projectNode.children().add(properties);
 				}
+				addPluginManagement(projectNode);
 			});
+		}
+
+		@SuppressWarnings("unchecked")
+		private void addPropertiesBeforeDependencyManagement(Node projectNode, Node properties) {
+			for (int i = 0; i < projectNode.children().size(); i++) {
+				if (isNodeWithName(projectNode.children().get(i), "dependencyManagement")) {
+					projectNode.children().add(i, properties);
+					break;
+				}
+			}
+		}
+
+		private void replaceVersionsWithVersionPropertyReferences(Node dependencyManagement) {
+			Node dependencies = findChild(dependencyManagement, "dependencies");
+			if (dependencies != null) {
+				for (Node dependency : findChildren(dependencies, "dependency")) {
+					String groupId = findChild(dependency, "groupId").text();
+					String artifactId = findChild(dependency, "artifactId").text();
+					findChild(dependency, "version")
+							.setValue("${" + this.bom.getArtifactVersionProperty(groupId, artifactId) + "}");
+				}
+			}
+		}
+
+		private void addExclusionsToManagedDependencies(Node dependencyManagement) {
+			Node dependencies = findChild(dependencyManagement, "dependencies");
+			if (dependencies != null) {
+				for (Node dependency : findChildren(dependencies, "dependency")) {
+					String groupId = findChild(dependency, "groupId").text();
+					String artifactId = findChild(dependency, "artifactId").text();
+					this.bom.getLibraries().stream().flatMap((library) -> library.getGroups().stream())
+							.filter((group) -> group.getId().equals(groupId))
+							.flatMap((group) -> group.getModules().stream())
+							.filter((module) -> module.getName().equals(artifactId))
+							.flatMap((module) -> module.getExclusions().stream()).forEach((exclusion) -> {
+								Node exclusions = findOrCreateNode(dependency, "exclusions");
+								Node node = new Node(exclusions, "exclusion");
+								node.appendNode("groupId", exclusion.getGroupId());
+								node.appendNode("artifactId", exclusion.getArtifactId());
+							});
+				}
+			}
+		}
+
+		private void addPluginManagement(Node projectNode) {
+			for (Library library : this.bom.getLibraries()) {
+				for (Group group : library.getGroups()) {
+					Node plugins = findOrCreateNode(projectNode, "build", "pluginManagement", "plugins");
+					for (String pluginName : group.getPlugins()) {
+						Node plugin = new Node(plugins, "plugin");
+						plugin.appendNode("groupId", group.getId());
+						plugin.appendNode("artifactId", pluginName);
+						plugin.appendNode("version", "${" + library.getVersionProperty() + "}");
+					}
+				}
+			}
+		}
+
+		private Node findOrCreateNode(Node parent, String... path) {
+			Node current = parent;
+			for (String nodeName : path) {
+				Node child = findChild(current, nodeName);
+				if (child == null) {
+					child = new Node(current, nodeName);
+				}
+				current = child;
+			}
+			return current;
 		}
 
 		private Node findChild(Node parent, String name) {

@@ -36,6 +36,7 @@ dependencies {
 	optional 'org.springframework:spring-webflux'
 	optional 'net.sourceforge.htmlunit:htmlunit'
 
+	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	testImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
 	testImplementation 'io.mockk:mockk'
 	testImplementation 'javax.json:javax.json-api'

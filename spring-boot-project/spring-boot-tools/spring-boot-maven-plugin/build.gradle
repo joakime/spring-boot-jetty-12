@@ -11,24 +11,26 @@ configurations {
 }
 
 dependencies {
-	compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.6.0'
-	compileOnly 'org.sonatype.plexus:plexus-build-api:0.0.7'
-	
+	compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations'
+	compileOnly 'org.sonatype.plexus:plexus-build-api'
+
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	implementation project(':spring-boot-project:spring-boot-tools:spring-boot-loader-tools')
-	implementation 'org.apache.maven.shared:maven-common-artifact-filters:3.1.0'
-	implementation 'org.apache.maven:maven-plugin-api:3.6.2'
-	
-	intTestImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
-	intTestImplementation 'org.apache.maven.shared:maven-invoker:3.0.1'
+	implementation 'org.apache.maven.shared:maven-common-artifact-filters'
+	implementation 'org.apache.maven:maven-plugin-api'
+
+	intTestImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	intTestImplementation 'org.apache.maven.shared:maven-invoker'
 	intTestImplementation 'org.assertj:assertj-core'
 	intTestImplementation 'org.junit.jupiter:junit-jupiter'
 
-	optional 'org.apache.maven.plugins:maven-shade-plugin:3.2.1'
-	
-	runtime 'org.sonatype.plexus:plexus-build-api:0.0.7'
+	optional enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	optional 'org.apache.maven.plugins:maven-shade-plugin'
 
-	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
-	testImplementation 'org.apache.maven.shared:maven-invoker:3.0.1'
+	runtime 'org.sonatype.plexus:plexus-build-api'
+
+	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	testImplementation 'org.apache.maven.shared:maven-invoker'
 	testImplementation 'org.assertj:assertj-core'
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 	testImplementation 'org.mockito:mockito-core'

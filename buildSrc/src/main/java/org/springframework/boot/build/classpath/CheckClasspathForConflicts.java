@@ -99,7 +99,7 @@ public class CheckClasspathForConflicts extends DefaultTask {
 	private static final class ClasspathContents {
 
 		private static final Set<String> IGNORED_NAMES = new HashSet<>(Arrays.asList("about.html", "changelog.txt",
-				"license.txt", "module-info.class", "notice.txt", "readme.txt"));
+				"LICENSE", "license.txt", "module-info.class", "notice.txt", "readme.txt"));
 
 		private final Map<String, List<String>> classpathContents = new HashMap<>();
 

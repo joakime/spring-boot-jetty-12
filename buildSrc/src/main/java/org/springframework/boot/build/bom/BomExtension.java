@@ -16,10 +16,22 @@
 
 package org.springframework.boot.build.bom;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import groovy.lang.Closure;
+import groovy.lang.GroovyObjectSupport;
+import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.util.ConfigureUtil;
+
+import org.springframework.boot.build.bom.Library.Exclusion;
+import org.springframework.boot.build.bom.Library.Group;
+import org.springframework.boot.build.bom.Library.Module;
 
 /**
  * DSL extensions for {@link BomPlugin}.
@@ -30,9 +42,9 @@ public class BomExtension {
 
 	private final Map<String, String> properties = new LinkedHashMap<>();
 
-	private final Map<String, String> dependencies = new LinkedHashMap<>();
+	private final Map<String, String> artifactVersionProperties = new HashMap<>();
 
-	private final Map<String, String> bomImports = new LinkedHashMap<>();
+	private final List<Library> libraries = new ArrayList<Library>();
 
 	private final DependencyHandler dependencyHandler;
 
@@ -40,19 +52,14 @@ public class BomExtension {
 		this.dependencyHandler = dependencyHandler;
 	}
 
-	public void property(String name, String value) {
-		this.properties.put(name, value);
+	public List<Library> getLibraries() {
+		return this.libraries;
 	}
 
-	public void bomImport(String groupId, String artifactId, String version) {
-		this.bomImports.put(groupId + ":" + artifactId, version);
-		this.dependencyHandler.add("api",
-				this.dependencyHandler.enforcedPlatform(createDependencyNotation(groupId, artifactId, version)));
-	}
-
-	public void dependency(String groupId, String artifactId, String version) {
-		this.dependencies.put(groupId + ":" + artifactId, version);
-		this.dependencyHandler.getConstraints().add("api", createDependencyNotation(groupId, artifactId, version));
+	public void library(String name, String version, Closure<?> closure) {
+		LibraryHandler libraryHandler = new LibraryHandler();
+		ConfigureUtil.configure(closure, libraryHandler);
+		addLibrary(new Library(name, version, libraryHandler.groups));
 	}
 
 	private String createDependencyNotation(String groupId, String artifactId, String version) {
@@ -76,18 +83,100 @@ public class BomExtension {
 		return this.properties;
 	}
 
-	Map<String, String> getDependencies() {
-		return this.dependencies;
-	}
-
-	Map<String, String> getImports() {
-		return this.bomImports;
-	}
-
-	String getVersion(String groupId, String artifactId) {
+	String getArtifactVersionProperty(String groupId, String artifactId) {
 		String coordinates = groupId + ":" + artifactId;
-		String dependencyVersion = this.dependencies.get(coordinates);
-		return (dependencyVersion != null) ? dependencyVersion : this.bomImports.get(coordinates);
+		return this.artifactVersionProperties.get(coordinates);
+	}
+
+	private void putArtifactVersionProperty(String groupId, String artifactId, String versionProperty) {
+		String coordinates = groupId + ":" + artifactId;
+		String existing = this.artifactVersionProperties.putIfAbsent(coordinates, versionProperty);
+		if (existing != null) {
+			throw new InvalidUserDataException("Cannot put version property for '" + coordinates
+					+ "'. Version property '" + existing + "' has already been stored.");
+		}
+	}
+
+	private void addLibrary(Library library) {
+		this.libraries.add(library);
+		this.properties.put(library.getVersionProperty(), library.getVersion());
+		for (Group group : library.getGroups()) {
+			for (Module module : group.getModules()) {
+				this.putArtifactVersionProperty(group.getId(), module.getName(), library.getVersionProperty());
+				this.dependencyHandler.getConstraints().add("api",
+						createDependencyNotation(group.getId(), module.getName(), library.getVersion()));
+			}
+			for (String bomImport : group.getBoms()) {
+				this.putArtifactVersionProperty(group.getId(), bomImport, library.getVersionProperty());
+				this.dependencyHandler.add("api", this.dependencyHandler
+						.enforcedPlatform(createDependencyNotation(group.getId(), bomImport, library.getVersion())));
+			}
+		}
+	}
+
+	public static class LibraryHandler {
+
+		private final List<Group> groups = new ArrayList<>();
+
+		public void group(String id, Closure<?> closure) {
+			GroupHandler groupHandler = new GroupHandler(id);
+			ConfigureUtil.configure(closure, groupHandler);
+			this.groups
+					.add(new Group(groupHandler.id, groupHandler.modules, groupHandler.plugins, groupHandler.imports));
+		}
+
+		public class GroupHandler extends GroovyObjectSupport {
+
+			private final String id;
+
+			private List<Module> modules = new ArrayList<>();
+
+			private List<String> imports = new ArrayList<>();
+
+			private List<String> plugins = new ArrayList<>();
+
+			public GroupHandler(String id) {
+				this.id = id;
+			}
+
+			public void setModules(List<Object> modules) {
+				this.modules = modules.stream()
+						.map((input) -> (input instanceof Module) ? (Module) input : new Module((String) input))
+						.collect(Collectors.toList());
+			}
+
+			public void setImports(List<String> imports) {
+				this.imports = imports;
+			}
+
+			public void setPlugins(List<String> plugins) {
+				this.plugins = plugins;
+			}
+
+			public Object methodMissing(String name, Object args) {
+				if (args instanceof Object[] && ((Object[]) args).length == 1) {
+					Object arg = ((Object[]) args)[0];
+					if (arg instanceof Closure) {
+						ExclusionHandler exclusionHandler = new ExclusionHandler();
+						ConfigureUtil.configure((Closure<?>) arg, exclusionHandler);
+						return new Module(name, exclusionHandler.exclusions);
+					}
+				}
+				throw new InvalidUserDataException("Invalid exclusion configuration for module '" + name + "'");
+			}
+
+			public class ExclusionHandler {
+
+				private final List<Exclusion> exclusions = new ArrayList<>();
+
+				public void exclude(Map<String, String> exclusion) {
+					this.exclusions.add(new Exclusion(exclusion.get("group"), exclusion.get("module")));
+				}
+
+			}
+
+		}
+
 	}
 
 }

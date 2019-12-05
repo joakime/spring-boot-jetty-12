@@ -40,6 +40,7 @@ dependencies {
 	}
 	implementation 'org.apache.maven:maven-settings-builder'
 	implementation 'org.codehaus.groovy:groovy'
+	implementation 'org.slf4j:slf4j-simple'
 	implementation 'org.sonatype.plexus:plexus-sec-dispatcher'
 	implementation('org.sonatype.sisu:sisu-inject-plexus') {
 		exclude group: 'javax.enterprise', module: 'cdi-api'
@@ -48,7 +49,7 @@ dependencies {
 	implementation 'org.springframework:spring-core'
 	implementation 'org.springframework.security:spring-security-crypto'
 
-	intTestImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
+	intTestImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	intTestImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-loader-tools')
 	intTestImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-test-support')
 	intTestImplementation 'org.assertj:assertj-core'

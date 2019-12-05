@@ -25,6 +25,10 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,11 +67,15 @@ public final class CommandLineInvoker {
 	}
 
 	private Process runCliProcess(String... args) throws IOException {
+		Path m2 = this.temp.toPath().resolve(".m2");
+		Files.createDirectories(m2);
+		Files.copy(Paths.get("src", "intTest", "resources", "settings.xml"), m2.resolve("settings.xml"),
+				StandardCopyOption.REPLACE_EXISTING);
 		List<String> command = new ArrayList<>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
 		ProcessBuilder processBuilder = new ProcessBuilder(command).directory(this.workingDirectory);
-		processBuilder.environment().remove("JAVA_OPTS");
+		processBuilder.environment().put("JAVA_OPTS", "-Duser.home=" + this.temp);
 		return processBuilder.start();
 	}
 
