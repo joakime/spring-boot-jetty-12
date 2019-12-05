@@ -103,8 +103,8 @@ dependencies {
 	testImplementation 'org.springframework.data:spring-data-redis'
 	testImplementation 'org.xerial:sqlite-jdbc'
 
-	testRuntime 'org.junit.platform:junit-platform-launcher'
-	testRuntime('org.testcontainers:jdbc') {
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly('org.testcontainers:jdbc') {
 		exclude group: 'javax.annotation', module: 'javax.annotation-api'
 		exclude group: 'javax.xml.bind', module: 'jaxb-api'
 	}

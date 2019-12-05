@@ -50,7 +50,7 @@ gradlePlugin {
 
 jar {
 	manifest {
-		attributes 'Implementation-Version': (version ? version : 'unknown')
+		attributes 'Implementation-Version': project.version
 	}
 }
 

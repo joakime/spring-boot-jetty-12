@@ -27,7 +27,7 @@ dependencies {
 	optional enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	optional 'org.apache.maven.plugins:maven-shade-plugin'
 
-	runtime 'org.sonatype.plexus:plexus-build-api'
+	runtimeOnly 'org.sonatype.plexus:plexus-build-api'
 
 	testImplementation enforcedPlatform(project(':spring-boot-project:spring-boot-parent'))
 	testImplementation 'org.apache.maven.shared:maven-invoker'

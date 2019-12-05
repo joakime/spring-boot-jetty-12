@@ -51,5 +51,5 @@ dependencies {
 	testImplementation 'org.springframework:spring-webmvc'
 	testImplementation 'org.testng:testng'
 
-	testRuntime 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

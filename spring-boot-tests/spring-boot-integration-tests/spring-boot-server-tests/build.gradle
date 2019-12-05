@@ -28,7 +28,7 @@ dependencies {
 	testRepository project(path: ':spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat', configuration: 'mavenRepository')
 	testRepository project(path: ':spring-boot-project:spring-boot-starters:spring-boot-starter-undertow', configuration: 'mavenRepository')
 
-	testRuntime project(':spring-boot-project:spring-boot-starters:spring-boot-starter-logging')
+	testRuntimeOnly project(':spring-boot-project:spring-boot-starters:spring-boot-starter-logging')
 }
 
 task prepareMavenBinaries(type: org.springframework.boot.build.mavenplugin.PrepareMavenBinaries) {

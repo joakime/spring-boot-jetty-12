@@ -80,10 +80,10 @@ dependencies {
 	testImplementation 'org.skyscreamer:jsonassert'
 	testImplementation 'org.springframework:spring-test'
 
-	testRuntime 'io.projectreactor.netty:reactor-netty'
-	testRuntime 'javax.xml.bind:jaxb-api'
-	testRuntime 'org.glassfish.jersey.ext:jersey-spring4'
-	testRuntime 'org.hsqldb:hsqldb'
+	testRuntimeOnly 'io.projectreactor.netty:reactor-netty'
+	testRuntimeOnly 'javax.xml.bind:jaxb-api'
+	testRuntimeOnly 'org.glassfish.jersey.ext:jersey-spring4'
+	testRuntimeOnly 'org.hsqldb:hsqldb'
 }
 
 compileJava {

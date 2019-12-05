@@ -32,6 +32,6 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter"
 	testImplementation "org.springframework:spring-context"
 
-	testRuntime 'org.hibernate.validator:hibernate-validator'
-	testRuntime 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'org.hibernate.validator:hibernate-validator'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

@@ -17,7 +17,7 @@ dependencies {
 	checkstyle 'io.spring.javaformat:spring-javaformat-checkstyle:0.0.15'
 	implementation 'commons-codec:commons-codec:1.13'
 	implementation 'org.apache.maven:maven-embedder:3.6.2'
-	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:2.3.0'
+	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:2.4.0'
 	implementation 'org.springframework:spring-core:5.2.0.RELEASE'
 	implementation 'com.google.code.gson:gson:2.8.5'
 	implementation 'io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.15'

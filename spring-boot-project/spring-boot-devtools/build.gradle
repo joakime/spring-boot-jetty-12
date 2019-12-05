@@ -28,7 +28,7 @@ dependencies {
 	intTestImplementation 'org.awaitility:awaitility'
 	intTestImplementation 'org.junit.jupiter:junit-jupiter'
 	intTestImplementation 'net.bytebuddy:byte-buddy'
-	intTestRuntime 'org.springframework:spring-web'
+	intTestRuntimeOnly 'org.springframework:spring-web'
 
 	optional enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	optional 'javax.servlet:javax.servlet-api'
@@ -68,8 +68,8 @@ dependencies {
 	testImplementation 'org.thymeleaf:thymeleaf-spring5'
 	testImplementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
-	testRuntime 'org.junit.platform:junit-platform-launcher'
-	testRuntime 'org.yaml:snakeyaml'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'org.yaml:snakeyaml'
 }
 
 task copyIntTestDependencies(type: Copy) {
