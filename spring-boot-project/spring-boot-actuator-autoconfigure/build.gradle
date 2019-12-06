@@ -19,9 +19,10 @@ dependencies {
 	asciidoctorExtensions enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
+	api project(':spring-boot-project:spring-boot-actuator')
+
 	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
 	implementation project(':spring-boot-project:spring-boot')
-	implementation project(':spring-boot-project:spring-boot-actuator')
 	implementation project(':spring-boot-project:spring-boot-autoconfigure')
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'

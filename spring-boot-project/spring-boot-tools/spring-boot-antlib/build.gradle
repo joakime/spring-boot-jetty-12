@@ -32,6 +32,12 @@ task copyIntegrationTestSources(type: Copy) {
 	into "${buildDir}/it"
 }
 
+processResources {
+	eachFile {
+		filter { it.replace('${spring-boot.version}', project.version) }
+	}
+}
+
 task integrationTest {
 	dependsOn copyIntegrationTestSources, jar
 	def resultsDir = file("${buildDir}/test-results/integrationTest")
