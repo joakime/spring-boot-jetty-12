@@ -144,7 +144,7 @@ task zip(type: Zip) {
 }
 
 intTest {
-	dependsOn zip
+	dependsOn syncTestRepository, zip
 }
 
 task tar(type: Tar) {
