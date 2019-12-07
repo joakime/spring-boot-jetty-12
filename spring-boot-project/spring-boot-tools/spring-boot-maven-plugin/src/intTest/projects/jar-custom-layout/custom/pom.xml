@@ -30,9 +30,9 @@
 				</executions>
 				<dependencies>
 					<dependency>
-						<groupId>@project.groupId@</groupId>
-						<artifactId>@project.artifactId@</artifactId>
-						<version>@project.version@</version>
+						<groupId>org.springframework.boot.maven.it</groupId>
+						<artifactId>layout</artifactId>
+						<version>0.0.1.BUILD-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 			</plugin>
