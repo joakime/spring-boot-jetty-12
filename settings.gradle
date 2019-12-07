@@ -38,10 +38,10 @@ include 'spring-boot-project:spring-boot-test'
 include 'spring-boot-project:spring-boot-test-autoconfigure'
 include 'spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests'
 
-new File('spring-boot-project/spring-boot-starters').eachFileMatch(groovy.io.FileType.DIRECTORIES, ~/spring-boot-starter.*/) {
+new File("$rootDir/spring-boot-project/spring-boot-starters").eachFileMatch(groovy.io.FileType.DIRECTORIES, ~/spring-boot-starter.*/) {
 	include "spring-boot-project:spring-boot-starters:$it.name"
 }
 
-new File('spring-boot-tests/spring-boot-smoke-tests').eachFileMatch(groovy.io.FileType.DIRECTORIES, ~/spring-boot-smoke-test.*/) {
+new File("$rootDir/spring-boot-tests/spring-boot-smoke-tests").eachFileMatch(groovy.io.FileType.DIRECTORIES, ~/spring-boot-smoke-test.*/) {
 	include "spring-boot-tests:spring-boot-smoke-tests:$it.name"
 }
