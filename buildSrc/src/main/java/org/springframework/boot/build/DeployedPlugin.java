@@ -20,6 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPomDeveloperSpec;
@@ -58,6 +59,11 @@ public class DeployedPlugin implements Plugin<Project> {
 				.all((javaPlugin) -> project.getComponents()
 						.matching((component) -> component.getName().equals("javaPlatform"))
 						.all((javaComponent) -> deploymentPublication.from(javaComponent)));
+		project.getPlugins().withType(JavaPlugin.class, (java) -> {
+			JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
+			extension.withJavadocJar();
+			extension.withSourcesJar();
+		});
 	}
 
 	private void customizePom(MavenPom pom, Project project) {
@@ -68,16 +74,6 @@ public class DeployedPlugin implements Plugin<Project> {
 		pom.developers(this::customizeDevelopers);
 		pom.scm(this::customizeScm);
 		pom.issueManagement(this::customizeIssueManagement);
-		// pom.withXml((xmlProvider) -> {
-		// Element pomElement = xmlProvider.asElement();
-		// NodeList children = pomElement.getChildNodes();
-		// // for (int i = 0; i < children.getLength(); i++) {
-		// // Node child = children.item(i);
-		// // if ("dependencyManagement".equals(child.getNodeName())) {
-		// // pomElement.removeChild(child);
-		// // }
-		// // }
-		// });
 	}
 
 	private void customizeOrganization(MavenPomOrganization organization) {

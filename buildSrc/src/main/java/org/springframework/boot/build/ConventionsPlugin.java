@@ -21,7 +21,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.testing.Test;
@@ -42,9 +41,6 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	private void applyJavaConventions(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (java) -> {
-			JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
-			extension.withJavadocJar();
-			extension.withSourcesJar();
 			configureSpringJavaFormat(project);
 			project.setProperty("sourceCompatibility", "1.8");
 
