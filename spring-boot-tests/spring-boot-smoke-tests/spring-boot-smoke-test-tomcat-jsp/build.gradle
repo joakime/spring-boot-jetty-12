@@ -1,0 +1,15 @@
+plugins {
+	id 'war'
+	id 'org.springframework.boot.conventions'
+}
+
+description = 'Spring Boot Tomcat JSP smoke test'
+
+dependencies {
+	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
+
+	runtimeOnly 'javax.servlet:jstl'	
+	runtimeOnly 'org.apache.tomcat.embed:tomcat-embed-jasper'
+	
+	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+}
