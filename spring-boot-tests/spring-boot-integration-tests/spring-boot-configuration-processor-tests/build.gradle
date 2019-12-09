@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot.conventions'
+}
+
+dependencies {
+	annotationProcessor project(':spring-boot-project:spring-boot-tools:spring-boot-configuration-processor')
+
+	implementation enforcedPlatform(project(':spring-boot-project:spring-boot-dependencies'))
+	implementation project(':spring-boot-project:spring-boot')
+	implementation 'jakarta.validation:jakarta.validation-api'
+
+	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	testImplementation project(':spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata')
+}
