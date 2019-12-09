@@ -3,7 +3,7 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
-description = 'Spring Boot Tomcat JSP smoke test'
+description = 'Spring Boot web JSP smoke test'
 
 dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')
