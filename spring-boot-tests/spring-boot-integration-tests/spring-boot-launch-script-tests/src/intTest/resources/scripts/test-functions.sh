@@ -41,7 +41,7 @@ await_app() {
     url=$1
   fi
   end=$(date +%s)
-  let "end+=30"
+  let "end+=600"
   until curl -s $url > /dev/null
   do
     now=$(date +%s)

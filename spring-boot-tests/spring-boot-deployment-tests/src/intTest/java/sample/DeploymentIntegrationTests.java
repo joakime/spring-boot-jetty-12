@@ -91,7 +91,7 @@ class DeploymentIntegrationTests {
 						new RestTemplateBuilder().rootUri("http://" + container.getContainerIpAddress() + ":"
 								+ container.getMappedPort(this.port) + "/spring-boot"));
 				try {
-					Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> {
+					Awaitility.await().atMost(Duration.ofMinutes(10)).until(() -> {
 						try {
 							consumer.accept(rest);
 							return true;
@@ -120,7 +120,7 @@ class DeploymentIntegrationTests {
 			super(new ImageFromDockerfile().withFileFromFile("spring-boot.war", findWarToDeploy())
 					.withDockerfileFromBuilder((builder) -> builder.from(baseImage)
 							.add("spring-boot.war", deploymentLocation + "/spring-boot.war").build()));
-			withExposedPorts(port);
+			withExposedPorts(port).withStartupTimeout(Duration.ofMinutes(10));
 		}
 
 		private static File findWarToDeploy() {

@@ -24,6 +24,14 @@ dependencies {
 		exclude group: 'javax.annotation', module: 'javax.annotation-api'
 	}
 	intTestImplementation 'jakarta.ws.rs:jakarta.ws.rs-api'
+	
+	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	testImplementation('com.github.docker-java:docker-java:3.1.2') {
+		exclude group: 'org.slf4j', module: 'jcl-over-slf4j'
+		exclude group: 'javax.ws.rs', module: 'javax.ws.rs-api'
+		exclude group: 'javax.annotation', module: 'javax.annotation-api'
+	}
+	testImplementation 'jakarta.ws.rs:jakarta.ws.rs-api'
 }
 
 task syncMavenRepository(type: Sync) {
