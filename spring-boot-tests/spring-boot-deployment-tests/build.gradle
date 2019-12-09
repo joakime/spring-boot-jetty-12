@@ -1,0 +1,30 @@
+plugins {
+	id 'war'
+	id 'org.springframework.boot.conventions'
+	id 'org.springframework.boot.integration-test'
+}
+
+dependencies {
+	implementation(project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')) {
+		exclude group: 'org.hibernate.validator'
+	}
+
+	intTestImplementation enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent"))
+	intTestImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	intTestImplementation 'org.awaitility:awaitility'
+	intTestImplementation 'org.testcontainers:testcontainers'
+	intTestImplementation 'org.springframework:spring-web'
+
+	providedRuntime project(':spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat')
+
+	runtimeOnly project(':spring-boot-project:spring-boot-starters:spring-boot-starter-actuator')
+
+	testImplementation enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent"))
+	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	testImplementation 'org.awaitility:awaitility'
+	testImplementation 'org.testcontainers:testcontainers'
+}
+
+intTest {
+	dependsOn war
+}
