@@ -1,0 +1,50 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot.conventions'
+	id 'org.springframework.boot.integration-test'
+}
+
+configurations {
+	app
+}
+
+dependencies {
+	app project(path: ':spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin', configuration: 'mavenRepository')
+	app project(path: ':spring-boot-project:spring-boot-starters:spring-boot-starter-web', configuration: 'mavenRepository')
+
+	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-undertow')
+	implementation(project(':spring-boot-project:spring-boot-starters:spring-boot-starter-web')) {
+		exclude module: 'spring-boot-starter-tomcat'
+	}
+
+	intTestImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	intTestImplementation('com.github.docker-java:docker-java:3.1.2') {
+		exclude group: 'org.slf4j', module: 'jcl-over-slf4j'
+		exclude group: 'javax.ws.rs', module: 'javax.ws.rs-api'
+		exclude group: 'javax.annotation', module: 'javax.annotation-api'
+	}
+	intTestImplementation 'jakarta.ws.rs:jakarta.ws.rs-api'
+}
+
+task syncMavenRepository(type: Sync) {
+	from configurations.app
+	into "$buildDir/int-test-maven-repository"
+}
+
+task syncAppSource(type: Sync) {
+	from 'app'
+	into "$buildDir/app"
+	filter { line ->
+		line.replace("id 'org.springframework.boot'", "id 'org.springframework.boot' version '${project.version}'")
+	}
+}
+
+task buildApp(type: GradleBuild) {
+	dependsOn syncAppSource, syncMavenRepository
+	dir = "$buildDir/app"
+	tasks  = ['build']
+}
+
+intTest {
+	dependsOn jar
+}

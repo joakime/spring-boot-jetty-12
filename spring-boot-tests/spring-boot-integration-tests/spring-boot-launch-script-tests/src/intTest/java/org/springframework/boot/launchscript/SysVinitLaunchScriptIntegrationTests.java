@@ -42,7 +42,7 @@ import static org.hamcrest.Matchers.containsString;
  * @author Andy Wilkinson
  * @author Ali Shahbour
  */
-class SysVinitLaunchScriptIT {
+class SysVinitLaunchScriptIntegrationTests {
 
 	private static final char ESC = 27;
 
@@ -279,7 +279,7 @@ class SysVinitLaunchScriptIT {
 
 	static List<Object[]> parameters() {
 		List<Object[]> parameters = new ArrayList<>();
-		for (File os : new File("src/test/resources/conf").listFiles()) {
+		for (File os : new File("src/intTest/resources/conf").listFiles()) {
 			for (File version : os.listFiles()) {
 				parameters.add(new Object[] { os.getName(), version.getName() });
 			}
@@ -333,26 +333,23 @@ class SysVinitLaunchScriptIT {
 		private LaunchScriptTestContainer(String os, String version, String testScript) {
 			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
 					.withFileFromFile("Dockerfile",
-							new File("src/test/resources/conf/" + os + "/" + version + "/Dockerfile"))
+							new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile"))
 					.withFileFromFile("spring-boot-launch-script-tests.jar", findApplication())
-					.withFileFromFile("test-functions.sh", new File("src/test/resources/scripts/test-functions.sh")));
-			withCopyFileToContainer(MountableFile.forHostPath("src/test/resources/scripts/" + testScript),
+					.withFileFromFile("test-functions.sh", new File("src/intTest/resources/scripts/test-functions.sh")));
+			withCopyFileToContainer(MountableFile.forHostPath("src/intTest/resources/scripts/" + testScript),
 					"/" + testScript);
 			withCommand("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript);
 			withStartupTimeout(Duration.ofMinutes(5));
 		}
 
 		private static File findApplication() {
-			File targetDir = new File("target");
-			for (File file : targetDir.listFiles()) {
-				if (file.getName().startsWith("spring-boot-launch-script-tests") && file.getName().endsWith(".jar")
-						&& !file.getName().endsWith("-sources.jar")) {
-					return file;
-				}
+			File appJar = new File("build/app/build/libs/app.jar");
+			if (appJar.isFile()) {
+				return appJar;
 			}
 			throw new IllegalStateException(
-					"Could not find test application in target directory. Have you built it (mvn package)?");
-		}
+					"Could not find test application in build/app/build/libs directory. Have you built it?");
+			}
 
 	}
 
