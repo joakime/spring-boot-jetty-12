@@ -265,7 +265,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@Test
-	public void whenJarIsRepackagedWithACustomLayoutTheJarUsesTheLayout() {
+	void whenJarIsRepackagedWithACustomLayoutTheJarUsesTheLayout() {
 		new MavenBuild("jar-custom-layout").execute((project) -> {
 			assertThat(jar(new File(project, "custom/target/custom-0.0.1.BUILD-SNAPSHOT.jar")))
 					.hasEntryWithName("custom");
