@@ -6,10 +6,11 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<localRepository>@localRepositoryPath@</localRepository>
 			<repositories>
 				<repository>
 					<id>local.central</id>
-					<url>@localRepositoryUrl@</url>
+					<url>@localCentralUrl@</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
@@ -41,7 +42,7 @@
 			<pluginRepositories>
 				<pluginRepository>
 					<id>local.central</id>
-					<url>@localRepositoryUrl@</url>
+					<url>@localCentralUrl@</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>

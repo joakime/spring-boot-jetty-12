@@ -128,8 +128,11 @@ class MavenBuild {
 
 			});
 			String settingsXml = new String(Files.readAllBytes(Paths.get("src", "intTest", "projects", "settings.xml")),
-					StandardCharsets.UTF_8).replace("@localRepositoryUrl@",
-							new File("build/int-test-maven-repository").toURI().toURL().toString());
+					StandardCharsets.UTF_8)
+							.replace("@localCentralUrl@",
+									new File("build/int-test-maven-repository").toURI().toURL().toString())
+							.replace("@localRepositoryPath@",
+									new File("build/local-maven-repository").getAbsolutePath());
 			Files.write(destination.resolve("settings.xml"), settingsXml.getBytes(StandardCharsets.UTF_8),
 					StandardOpenOption.CREATE_NEW);
 			request.setBaseDirectory(this.temp);
