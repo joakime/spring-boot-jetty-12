@@ -887,7 +887,7 @@ bom {
 			]
 		}
 	}
-	library('jetty', '9.4.22.v20191022') {
+	library('jetty', '9.4.24.v20191120') {
 		group('org.eclipse.jetty') {
 			imports = [
 				'jetty-bom'
@@ -1291,7 +1291,7 @@ bom {
 			]
 		}
 	}
-	library('netty-tcnative', '2.0.26.Final') {
+	library('netty-tcnative', '2.0.28.Final') {
 		group('io.netty') {
 			modules = [
 				'netty-tcnative-boringssl-static'
@@ -1410,7 +1410,7 @@ bom {
 			]
 		}
 	}
-	library('reactor-bom', 'Dysprosium-BUILD-SNAPSHOT') {
+	library('reactor-bom', 'Dysprosium-SR2') {
 		group('io.projectreactor') {
 			imports = [
 				'reactor-bom'
@@ -1811,7 +1811,7 @@ bom {
 			]
 		}
 	}
-	library('tomcat', '9.0.27') {
+	library('tomcat', '9.0.29') {
 		group('org.apache.tomcat') {
 			modules = [
 				'tomcat-annotations-api',
@@ -1835,7 +1835,7 @@ bom {
 			]
 		}
 	}
-	library('undertow', '2.0.27.Final') {
+	library('undertow', '2.0.28.Final') {
 		group('io.undertow') {
 			modules = [
 				'undertow-core',
