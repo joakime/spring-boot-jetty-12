@@ -30,7 +30,6 @@ import groovy.lang.GroovyClassLoader;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.compiler.dependencies.SpringBootDependenciesDependencyManagement;
@@ -48,8 +47,11 @@ class AetherGrapeEngineTests {
 
 	private final GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
-	private final RepositoryConfiguration springMilestones = new RepositoryConfiguration("spring-milestones",
+	private final RepositoryConfiguration springMilestone = new RepositoryConfiguration("spring-milestone",
 			URI.create("https://repo.spring.io/milestone"), false);
+
+	private final RepositoryConfiguration springSnaphot = new RepositoryConfiguration("spring-snapshot",
+			URI.create("https://repo.spring.io/snapshot"), false);
 
 	private AetherGrapeEngine createGrapeEngine(RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
@@ -62,16 +64,10 @@ class AetherGrapeEngineTests {
 				dependencyResolutionContext, false);
 	}
 
-	@BeforeEach
-	void dump() {
-		System.out.println(System.getProperty("user.home"));
-		System.out.println(System.getProperty("maven.home"));
-	}
-
 	@Test
 	void dependencyResolution() {
 		Map<String, Object> args = new HashMap<>();
-		createGrapeEngine(this.springMilestones).grab(args,
+		createGrapeEngine(this.springMilestone, this.springSnaphot).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
 		assertThat(this.groovyClassLoader.getURLs()).hasSize(5);
 	}
@@ -111,7 +107,7 @@ class AetherGrapeEngineTests {
 		Map<String, Object> args = new HashMap<>();
 		args.put("excludes", Arrays.asList(createExclusion("org.springframework", "spring-core")));
 
-		createGrapeEngine(this.springMilestones).grab(args,
+		createGrapeEngine(this.springMilestone, this.springSnaphot).grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"),
 				createDependency("org.springframework", "spring-beans", "3.2.4.RELEASE"));
 
@@ -133,7 +129,7 @@ class AetherGrapeEngineTests {
 		GroovyClassLoader customClassLoader = new GroovyClassLoader();
 		args.put("classLoader", customClassLoader);
 
-		createGrapeEngine(this.springMilestones).grab(args,
+		createGrapeEngine(this.springMilestone, this.springSnaphot).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
 
 		assertThat(this.groovyClassLoader.getURLs()).isEmpty();
