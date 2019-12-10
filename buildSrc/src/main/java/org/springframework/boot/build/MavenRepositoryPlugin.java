@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -59,10 +60,11 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 				.all((task) -> setUpProjectRepository(project, task, repositoryLocation));
 	}
 
-	private void setUpProjectRepository(Project project, Task publishDistribution, File repositoryLocation) {
+	private void setUpProjectRepository(Project project, Task publishTask, File repositoryLocation) {
+		publishTask.doFirst(new CleanAction(repositoryLocation));
 		Configuration projectRepository = project.getConfigurations().create(MAVEN_REPOSITORY_CONFIGURATION_NAME);
 		project.getArtifacts().add(projectRepository.getName(), repositoryLocation,
-				(artifact) -> artifact.builtBy(publishDistribution));
+				(artifact) -> artifact.builtBy(publishTask));
 		DependencySet target = projectRepository.getDependencies();
 		project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> addMavenRepositoryDependencies(project,
 				JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, target));
@@ -82,6 +84,21 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 					dependencyDescriptor.put("configuration", MAVEN_REPOSITORY_CONFIGURATION_NAME);
 					target.add(project.getDependencies().project(dependencyDescriptor));
 				});
+	}
+
+	private static final class CleanAction implements Action<Task> {
+
+		private final File location;
+
+		private CleanAction(File location) {
+			this.location = location;
+		}
+
+		@Override
+		public void execute(Task task) {
+			task.getProject().delete(this.location);
+		}
+
 	}
 
 }

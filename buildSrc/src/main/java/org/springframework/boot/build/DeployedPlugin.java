@@ -20,14 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
-import org.gradle.api.publish.maven.MavenPom;
-import org.gradle.api.publish.maven.MavenPomDeveloperSpec;
-import org.gradle.api.publish.maven.MavenPomIssueManagement;
-import org.gradle.api.publish.maven.MavenPomLicenseSpec;
-import org.gradle.api.publish.maven.MavenPomOrganization;
-import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 
@@ -43,15 +36,8 @@ public class DeployedPlugin implements Plugin<Project> {
 		project.getPlugins().apply(MavenPublishPlugin.class);
 		project.getPlugins().apply(MavenRepositoryPlugin.class);
 		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-		if (project.hasProperty("deploymentRepository")) {
-			publishing.getRepositories().maven((mavenRepository) -> {
-				mavenRepository.setUrl(project.property("deploymentRepository"));
-				mavenRepository.setName("deployment");
-			});
-		}
 		MavenPublication deploymentPublication = publishing.getPublications().create("deployment",
 				MavenPublication.class);
-		deploymentPublication.pom((pom) -> customizePom(pom, project));
 		project.getPlugins().withType(JavaPlugin.class)
 				.all((javaPlugin) -> project.getComponents().matching((component) -> component.getName().equals("java"))
 						.all((javaComponent) -> deploymentPublication.from(javaComponent)));
@@ -59,54 +45,6 @@ public class DeployedPlugin implements Plugin<Project> {
 				.all((javaPlugin) -> project.getComponents()
 						.matching((component) -> component.getName().equals("javaPlatform"))
 						.all((javaComponent) -> deploymentPublication.from(javaComponent)));
-		project.getPlugins().withType(JavaPlugin.class, (java) -> {
-			JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
-			extension.withJavadocJar();
-			extension.withSourcesJar();
-		});
-	}
-
-	private void customizePom(MavenPom pom, Project project) {
-		pom.getUrl().set("https://projects.spring.io/spring-boot/#");
-		pom.getDescription().set(project.provider(project::getDescription));
-		pom.organization(this::customizeOrganization);
-		pom.licenses(this::customizeLicences);
-		pom.developers(this::customizeDevelopers);
-		pom.scm(this::customizeScm);
-		pom.issueManagement(this::customizeIssueManagement);
-	}
-
-	private void customizeOrganization(MavenPomOrganization organization) {
-		organization.getName().set("Pivotal Software, Inc.");
-		organization.getUrl().set("https://spring.io");
-	}
-
-	private void customizeLicences(MavenPomLicenseSpec licences) {
-		licences.license((licence) -> {
-			licence.getName().set("Apache License, Version 2.0");
-			licence.getUrl().set("http://www.apache.org/licenses/LICENSE-2.0");
-		});
-	}
-
-	private void customizeDevelopers(MavenPomDeveloperSpec developers) {
-		developers.developer((developer) -> {
-			developer.getName().set("Pivotal");
-			developer.getEmail().set("info@pivotal.io");
-			developer.getOrganization().set("Pivotal Software, Inc.");
-			developer.getOrganizationUrl().set("https://www.spring.io");
-		});
-	}
-
-	private void customizeScm(MavenPomScm scm) {
-		scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
-		scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
-		scm.getUrl().set("https://github.com/spring-projects/spring-boot");
-
-	}
-
-	private void customizeIssueManagement(MavenPomIssueManagement issueManagement) {
-		issueManagement.getSystem().set("GitHub");
-		issueManagement.getUrl().set("https://github.com/spring-projects/spring-boot/issues");
 	}
 
 }
