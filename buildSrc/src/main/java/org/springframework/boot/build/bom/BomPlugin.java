@@ -17,11 +17,15 @@
 package org.springframework.boot.build.bom;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import groovy.util.Node;
 import groovy.xml.QName;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -38,6 +42,7 @@ import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.mavenplugin.MavenExec;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * {@link Plugin} for defining a bom. Dependencies are added as constraints in the
@@ -67,13 +72,26 @@ public class BomPlugin implements Plugin<Project> {
 					syncBom.dependsOn(task);
 					File generatedBomDir = new File(project.getBuildDir(), "generated/bom");
 					syncBom.setDestinationDir(generatedBomDir);
-					syncBom.from(((GenerateMavenPom) task).getDestination());
-					syncBom.rename((name) -> "pom.xml");
+					syncBom.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
+					try {
+						String settingsXmlContent = FileCopyUtils
+								.copyToString(new InputStreamReader(
+										getClass().getClassLoader().getResourceAsStream("effective-bom-settings.xml"),
+										StandardCharsets.UTF_8))
+								.replace("localRepositoryPath",
+										new File(project.getBuildDir(), "local-m2-repository").getAbsolutePath());
+						syncBom.from(project.getResources().getText().fromString(settingsXmlContent),
+								(settingsXml) -> settingsXml.rename((name) -> "settings.xml"));
+					}
+					catch (IOException ex) {
+						throw new GradleException("Failed to prepare settings.xml", ex);
+					}
 					MavenExec generateEffectiveBom = project.getTasks().create("generateEffectiveBom", MavenExec.class);
 					generateEffectiveBom.setProjectDir(generatedBomDir);
 					File effectiveBom = new File(project.getBuildDir(),
 							"generated/effective-bom/" + project.getName() + "-effective-bom.xml");
-					generateEffectiveBom.args("help:effective-pom", "-Doutput=" + effectiveBom);
+					generateEffectiveBom.args("--settings", "settings.xml", "help:effective-pom",
+							"-Doutput=" + effectiveBom);
 					generateEffectiveBom.dependsOn(syncBom);
 					generateEffectiveBom.getOutputs().file(effectiveBom);
 					project.getArtifacts().add(effectiveBomConfiguration.getName(), effectiveBom,
