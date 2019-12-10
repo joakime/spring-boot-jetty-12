@@ -2,6 +2,7 @@ plugins {
     id 'com.gradle.enterprise' version '3.1'
 }
 
+apply from: "$rootDir/gradle/build-scan-user-data.gradle"
 gradleEnterprise {
 	buildScan {
 		captureTaskInputFiles = true
