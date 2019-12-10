@@ -87,9 +87,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		project.getPlugins().withType(JavaPlugin.class, (java) -> {
 			configureSpringJavaFormat(project);
 			project.setProperty("sourceCompatibility", "1.8");
-			project.getTasks().withType(JavaCompile.class, (compile) -> {
-				compile.getOptions().setEncoding("UTF-8");
-			});
+			project.getTasks().withType(JavaCompile.class, (compile) -> compile.getOptions().setEncoding("UTF-8"));
 			project.getTasks().withType(Test.class, (test) -> {
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
