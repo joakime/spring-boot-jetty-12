@@ -7,12 +7,12 @@ plugins {
 }
 
 configurations {
+	actuatorApiDocumentation
 	autoConfiguration
 	configurationProperties
-	testSlices
 	gradlePluginDocumentation
-	actuatorApiDocumentation
 	mavenPluginDocumentation
+	testSlices
 }
 
 dependencies {
