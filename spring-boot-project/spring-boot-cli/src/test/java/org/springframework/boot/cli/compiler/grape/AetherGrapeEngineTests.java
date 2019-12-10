@@ -51,7 +51,7 @@ class AetherGrapeEngineTests {
 			URI.create("https://repo.spring.io/milestone"), false);
 
 	private final RepositoryConfiguration springSnaphot = new RepositoryConfiguration("spring-snapshot",
-			URI.create("https://repo.spring.io/snapshot"), false);
+			URI.create("https://repo.spring.io/snapshot"), true);
 
 	private AetherGrapeEngine createGrapeEngine(RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
