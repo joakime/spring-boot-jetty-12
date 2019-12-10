@@ -35,6 +35,7 @@ import org.gradle.api.publish.maven.MavenPomOrganization;
 import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
 
 /**
@@ -49,6 +50,7 @@ import org.gradle.api.tasks.testing.Test;
  * <li>{@code sourceCompatibility} is set to {@code 1.8}
  * <li>Spring Java Format and Checkstyle plugins are applied
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
+ * <li>{@link JavaCompile} tasks are configured to use UTF-8 encoding
  * </ul>
  *
  * <p/>
@@ -85,6 +87,9 @@ public class ConventionsPlugin implements Plugin<Project> {
 		project.getPlugins().withType(JavaPlugin.class, (java) -> {
 			configureSpringJavaFormat(project);
 			project.setProperty("sourceCompatibility", "1.8");
+			project.getTasks().withType(JavaCompile.class, (compile) -> {
+				compile.getOptions().setEncoding("UTF-8");
+			});
 			project.getTasks().withType(Test.class, (test) -> {
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
