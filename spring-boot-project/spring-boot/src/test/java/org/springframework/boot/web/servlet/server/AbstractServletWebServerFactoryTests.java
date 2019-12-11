@@ -153,7 +153,23 @@ public abstract class AbstractServletWebServerFactoryTests {
 	private final HttpClientContext httpClientContext = HttpClientContext.create();
 
 	private final Supplier<HttpClientBuilder> httpClientBuilder = () -> HttpClients.custom()
-			.setRetryHandler(new StandardHttpRequestRetryHandler(10, false));
+			.setRetryHandler(new StandardHttpRequestRetryHandler(10, false) {
+
+				@Override
+				public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
+					boolean retry = super.retryRequest(exception, executionCount, context);
+					if (retry) {
+						try {
+							Thread.sleep(200);
+						}
+						catch (InterruptedException ex) {
+							Thread.currentThread().interrupt();
+						}
+					}
+					return retry;
+				}
+
+			});
 
 	@AfterEach
 	void tearDown() {
