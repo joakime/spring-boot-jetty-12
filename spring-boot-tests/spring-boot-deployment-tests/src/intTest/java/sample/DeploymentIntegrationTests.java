@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,6 +35,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,9 +90,11 @@ class DeploymentIntegrationTests {
 			try (WarDeploymentContainer container = new WarDeploymentContainer(this.baseImage, this.deploymentLocation,
 					this.port)) {
 				container.start();
-				TestRestTemplate rest = new TestRestTemplate(
-						new RestTemplateBuilder().rootUri("http://" + container.getContainerIpAddress() + ":"
-								+ container.getMappedPort(this.port) + "/spring-boot"));
+				TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
+						.rootUri("http://" + container.getContainerIpAddress() + ":"
+								+ container.getMappedPort(this.port) + "/spring-boot")
+						.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+								.setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build())));
 				try {
 					Awaitility.await().atMost(Duration.ofMinutes(10)).until(() -> {
 						try {

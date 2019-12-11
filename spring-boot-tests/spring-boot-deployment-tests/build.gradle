@@ -11,6 +11,7 @@ dependencies {
 
 	intTestImplementation enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent"))
 	intTestImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	intTestImplementation 'org.apache.httpcomponents:httpasyncclient'
 	intTestImplementation 'org.awaitility:awaitility'
 	intTestImplementation 'org.testcontainers:testcontainers'
 	intTestImplementation 'org.springframework:spring-web'
@@ -21,8 +22,10 @@ dependencies {
 
 	testImplementation enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent"))
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
+	testImplementation 'org.apache.httpcomponents:httpasyncclient'
 	testImplementation 'org.awaitility:awaitility'
 	testImplementation 'org.testcontainers:testcontainers'
+	testImplementation 'org.springframework:spring-web'
 }
 
 intTest {
