@@ -40,8 +40,7 @@ import org.springframework.util.FileCopyUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Builds a Spring Boot application using Maven. To use this class, the {@code maven.home}
- * system property must be set.
+ * Builds a Spring Boot application using Maven.
  *
  * @author Andy Wilkinson
  */
@@ -122,6 +121,7 @@ class ApplicationBuilder {
 	private File writeSettingsXml(File appFolder) throws IOException {
 		Map<String, Object> context = new HashMap<>();
 		context.put("repository", new File("build/test-repository").toURI().toURL());
+		context.put("localRepository", new File("build/local-m2-repository").getAbsolutePath());
 		File settingsXml = new File(appFolder, "settings.xml");
 		try (FileWriter out = new FileWriter(settingsXml);
 				FileReader templateReader = new FileReader("src/test/resources/settings-template.xml")) {
