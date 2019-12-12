@@ -26,6 +26,7 @@ import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask;
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
 import org.asciidoctor.gradle.jvm.AsciidoctorTask;
+import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -73,9 +74,22 @@ class AsciidoctorConventions {
 			makeAllWarningsFatal(project);
 			UnzipDocumentationResources unzipResources = createUnzipDocumentationResourcesTask(project);
 			project.getTasks().withType(AsciidoctorTask.class, (asciidoctorTask) -> {
-				createSyncDocumentationResourcesTask(project, unzipResources, asciidoctorTask);
+				asciidoctorTask.dependsOn(unzipResources);
+				createSyncDocumentationSourceTask(project, unzipResources, asciidoctorTask);
 				configureOptions(asciidoctorTask);
 				configureHtmlOnlyAttributes(project, unzipResources, asciidoctorTask);
+				asciidoctorTask.doFirst(new Action<Task>() {
+
+					@Override
+					public void execute(Task task) {
+						project.copy((spec) -> {
+							spec.from(asciidoctorTask.getSourceDir());
+							spec.into(asciidoctorTask.getOutputDir());
+							spec.include("css/**", "js/**");
+						});
+					}
+
+				});
 			});
 			project.getTasks().withType(AbstractAsciidoctorTask.class, (asciidoctorTask) -> {
 				configureCommonAttributes(project, asciidoctorTask);
@@ -107,17 +121,21 @@ class AsciidoctorConventions {
 		return unzipResources;
 	}
 
-	private void createSyncDocumentationResourcesTask(Project project, UnzipDocumentationResources unzipResources,
+	private void createSyncDocumentationSourceTask(Project project, UnzipDocumentationResources unzipResources,
 			AsciidoctorTask asciidoctorTask) {
-		Sync syncDocumentationResources = project.getTasks().create(
-				"syncDocumentationResourcesFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
-		syncDocumentationResources.dependsOn(unzipResources);
-		syncDocumentationResources.setDestinationDir(asciidoctorTask.getOutputDir());
-		syncDocumentationResources.from(unzipResources.getOutputDir(), (copySpec) -> {
+		Sync syncDocumentationSource = project.getTasks()
+				.create("syncDocumentationSourceFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
+		syncDocumentationSource.dependsOn(unzipResources);
+		File syncedSource = new File(project.getBuildDir(), "docs/src/" + asciidoctorTask.getName());
+		syncDocumentationSource.setDestinationDir(syncedSource);
+		syncDocumentationSource.from(unzipResources.getOutputDir(), (copySpec) -> {
 			copySpec.include("js/**");
 			copySpec.include("css/**");
+			copySpec.into("asciidoc");
 		});
-		asciidoctorTask.dependsOn(syncDocumentationResources);
+		syncDocumentationSource.from("src/docs/");
+		asciidoctorTask.dependsOn(syncDocumentationSource);
+		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
 	}
 
 	private void configureOptions(AsciidoctorTask asciidoctorTask) {
@@ -131,9 +149,8 @@ class AsciidoctorConventions {
 		attributes.put("highlightjs-theme", "github");
 		attributes.put("linkcss", true);
 		attributes.put("icons", "font");
-		attributes.put("stylesdir", "css/");
 		attributes.put("docinfodir", unzipResources.getOutputDir());
-		attributes.put("stylesheet", "spring.css");
+		attributes.put("stylesheet", "css/spring.css");
 		asciidoctorTask.attributes(attributes);
 	}
 
@@ -165,8 +182,6 @@ class AsciidoctorConventions {
 
 	/**
 	 * {@link Task} for unzipping the documentation resources.
-	 *
-	 * @author Andy Wilkinson
 	 */
 	public static class UnzipDocumentationResources extends DefaultTask {
 

@@ -65,19 +65,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	}
 }
 
-syncDocumentationResourcesForAsciidoctor {
-	from('src/docs/asciidoc/css') {
-		include '*.css'
-		into 'css'
-	}
-}
-
 asciidoctor {
 	configurations 'asciidoctorExtensions'
 	sources {
 		include 'index.adoc'
 	}
-	attributes 'stylesheet': 'style.css'
+	attributes 'stylesheet': 'css/style.css'
 }
 
 asciidoctorPdf {

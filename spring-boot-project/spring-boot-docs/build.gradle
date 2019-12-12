@@ -128,7 +128,6 @@ asciidoctorPdf {
 }
 
 task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sourceDir file('src/docs/asciidoc')
 	sources {
 		include '*.htmladoc'
 		include '*.adoc'
