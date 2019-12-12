@@ -11,3 +11,5 @@ pluginManagement {
 		}
 	}
 }
+
+apply from: new File(settingsDir, '../gradle/build-cache-settings.gradle')
