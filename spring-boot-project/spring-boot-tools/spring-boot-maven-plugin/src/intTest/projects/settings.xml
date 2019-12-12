@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
+	<localRepository>@localRepositoryPath@</localRepository>
 	<profiles>
 		<profile>
 			<id>it-repo</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<localRepository>@localRepositoryPath@</localRepository>
 			<repositories>
 				<repository>
 					<id>local.central</id>
