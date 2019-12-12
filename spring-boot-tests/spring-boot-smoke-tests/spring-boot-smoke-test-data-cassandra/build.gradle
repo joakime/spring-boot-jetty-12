@@ -13,17 +13,22 @@ description = 'Spring Boot Data Cassandra smoke test'
 
 dependencies {
 	implementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-data-cassandra')
-	
+
 	testImplementation project(':spring-boot-project:spring-boot-starters:spring-boot-starter-test')
 	testImplementation('org.cassandraunit:cassandra-unit-spring:3.5.0.1') {
 		exclude group: 'org.slf4j', module: 'jcl-over-slf4j'
-	}	
+	}
 }
 
 test {
-	def ports = org.springframework.util.SocketUtils.findAvailableTcpPorts(2)
-	systemProperty 'spring.data.cassandra.port', ports[0]
-	systemProperty 'cassandra.native_transport_port', ports[0]
-	systemProperty 'cassandra.port.storage', ports[1]
+	CommandLineArgumentProvider provider = {
+		def ports = org.springframework.util.SocketUtils.findAvailableTcpPorts(2)
+		[
+			"-Dspring.data.cassandra.port=${ports[0]}",
+			"-Dcassandra.native_transport_port=${ports[0]}",
+			"-Dcassandra.port.storage=${ports[1]}"
+		]
+	}
+	jvmArgumentProviders.add provider
 	enabled = !JavaVersion.current().java9Compatible
 }
