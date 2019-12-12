@@ -20,14 +20,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import groovy.util.Node;
 import groovy.xml.QName;
+import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlatformExtension;
 import org.gradle.api.plugins.JavaPlatformPlugin;
@@ -37,6 +40,7 @@ import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
 import org.gradle.api.tasks.Sync;
+import org.gradle.api.tasks.TaskExecutionException;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
@@ -94,10 +98,10 @@ public class BomPlugin implements Plugin<Project> {
 							"-Doutput=" + effectiveBom);
 					generateEffectiveBom.dependsOn(syncBom);
 					generateEffectiveBom.getOutputs().file(effectiveBom);
+					generateEffectiveBom.doLast(new StripCommentHeaderAction(effectiveBom));
 					project.getArtifacts().add(effectiveBomConfiguration.getName(), effectiveBom,
 							(artifact) -> artifact.builtBy(generateEffectiveBom));
 				});
-
 	}
 
 	private static final class PublishingCustomizer {
@@ -240,6 +244,27 @@ public class BomPlugin implements Plugin<Project> {
 				}
 			}
 			return false;
+		}
+
+	}
+
+	private static final class StripCommentHeaderAction implements Action<Task> {
+
+		private final File effectiveBom;
+
+		private StripCommentHeaderAction(File xmlFile) {
+			this.effectiveBom = xmlFile;
+		}
+
+		@Override
+		public void execute(Task task) {
+			try {
+				Files.write(this.effectiveBom.toPath(), Files.readAllLines(this.effectiveBom.toPath()).stream()
+						.filter((line) -> !line.trim().startsWith("<!-- ")).collect(Collectors.toList()));
+			}
+			catch (IOException ex) {
+				throw new TaskExecutionException(task, ex);
+			}
 		}
 
 	}
