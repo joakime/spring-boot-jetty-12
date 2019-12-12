@@ -41,7 +41,7 @@ task reproducibleLoaderJar(type: Jar) {
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
-	archiveName = 'spring-boot-loader.jar'
+	archiveFileName = 'spring-boot-loader.jar'
 	destinationDirectory = file("${generatedResources}/META-INF/loader")
 }
 
