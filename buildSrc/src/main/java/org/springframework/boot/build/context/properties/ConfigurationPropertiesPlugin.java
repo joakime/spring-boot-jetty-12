@@ -19,6 +19,7 @@ package org.springframework.boot.build.context.properties;
 import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -85,10 +86,9 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 		SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		compileJava.getOptions().getCompilerArgs()
-				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
-						+ StringUtils.collectionToCommaDelimitedString(
-								mainSourceSet.getResources().getSourceDirectories().getFiles()));
-
+				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=" + StringUtils
+						.collectionToCommaDelimitedString(mainSourceSet.getResources().getSourceDirectories().getFiles()
+								.stream().map(project.getRootProject()::relativePath).collect(Collectors.toSet())));
 	}
 
 }
