@@ -30,18 +30,21 @@ dependencies {
 
 sourceSets {
 	main {
-		output.dir(generatedResources, builtBy: 'copyLoaderJar')
+		output.dir(generatedResources, builtBy: 'reproducibleLoaderJar')
 	}
 }
 
-task copyLoaderJar(type: Copy) {
-	inputs.files configurations.loader
-	from(configurations.loader.incoming.files.filter {it.name.startsWith "spring-boot-loader" }.singleFile) {
-		rename 'spring-boot-loader-.*.jar', 'spring-boot-loader.jar'
+task reproducibleLoaderJar(type: Jar) {
+	dependsOn configurations.loader
+	from {
+		zipTree(configurations.loader.incoming.files.filter {it.name.startsWith "spring-boot-loader" }.singleFile)
 	}
-	into "${generatedResources}/META-INF/loader"
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveName = 'spring-boot-loader.jar'
+	destinationDirectory = file("${generatedResources}/META-INF/loader")
 }
 
 jar {
-	dependsOn copyLoaderJar
+	dependsOn reproducibleLoaderJar
 }
