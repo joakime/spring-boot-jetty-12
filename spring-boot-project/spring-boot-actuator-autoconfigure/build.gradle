@@ -156,6 +156,10 @@ asciidoctor {
 	}
 }
 
+test {
+	outputs.dir("$buildDir/generated-snippets")
+}
+
 asciidoctorPdf {
 	configurations 'asciidoctorExtensions'
 	dependsOn test
