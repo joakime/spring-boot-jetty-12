@@ -73,28 +73,27 @@ class AsciidoctorConventions {
 			configureDocResourcesRepository(project);
 			makeAllWarningsFatal(project);
 			UnzipDocumentationResources unzipResources = createUnzipDocumentationResourcesTask(project);
-			project.getTasks().withType(AsciidoctorTask.class, (asciidoctorTask) -> {
-				asciidoctorTask.dependsOn(unzipResources);
-				createSyncDocumentationSourceTask(project, unzipResources, asciidoctorTask);
-				configureOptions(asciidoctorTask);
-				configureHtmlOnlyAttributes(project, unzipResources, asciidoctorTask);
-				asciidoctorTask.doFirst(new Action<Task>() {
-
-					@Override
-					public void execute(Task task) {
-						project.copy((spec) -> {
-							spec.from(asciidoctorTask.getSourceDir());
-							spec.into(asciidoctorTask.getOutputDir());
-							spec.include("css/**", "js/**");
-						});
-					}
-
-				});
-			});
 			project.getTasks().withType(AbstractAsciidoctorTask.class, (asciidoctorTask) -> {
 				configureCommonAttributes(project, asciidoctorTask);
-				asciidoctorTask.attributes(Collections.singletonMap("attribute-missing", "warn"));
+				configureOptions(asciidoctorTask);
 				asciidoctorTask.baseDirFollowsSourceDir();
+				Sync syncSource = createSyncDocumentationSourceTask(project, asciidoctorTask);
+				if (asciidoctorTask instanceof AsciidoctorTask) {
+					configureHtmlOnlyAttributes(project, asciidoctorTask);
+					syncSource.from(unzipResources, (resources) -> resources.into("asciidoc"));
+					asciidoctorTask.doFirst(new Action<Task>() {
+
+						@Override
+						public void execute(Task task) {
+							project.copy((spec) -> {
+								spec.from(asciidoctorTask.getSourceDir());
+								spec.into(asciidoctorTask.getOutputDir());
+								spec.include("css/**", "js/**");
+							});
+						}
+
+					});
+				}
 			});
 		});
 	}
@@ -121,25 +120,22 @@ class AsciidoctorConventions {
 		return unzipResources;
 	}
 
-	private void createSyncDocumentationSourceTask(Project project, UnzipDocumentationResources unzipResources,
-			AsciidoctorTask asciidoctorTask) {
+	private Sync createSyncDocumentationSourceTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
 		Sync syncDocumentationSource = project.getTasks()
 				.create("syncDocumentationSourceFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
-		syncDocumentationSource.dependsOn(unzipResources);
 		File syncedSource = new File(project.getBuildDir(), "docs/src/" + asciidoctorTask.getName());
 		syncDocumentationSource.setDestinationDir(syncedSource);
-		syncDocumentationSource.from(unzipResources.getOutputDir(), (resources) -> resources.into("asciidoc"));
 		syncDocumentationSource.from("src/docs/");
 		asciidoctorTask.dependsOn(syncDocumentationSource);
 		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
+		return syncDocumentationSource;
 	}
 
-	private void configureOptions(AsciidoctorTask asciidoctorTask) {
+	private void configureOptions(AbstractAsciidoctorTask asciidoctorTask) {
 		asciidoctorTask.options(Collections.singletonMap("doctype", "book"));
 	}
 
-	private void configureHtmlOnlyAttributes(Project project, UnzipDocumentationResources unzipResources,
-			AsciidoctorTask asciidoctorTask) {
+	private void configureHtmlOnlyAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("highlightjsdir", "js/highlight");
 		attributes.put("highlightjs-theme", "github");

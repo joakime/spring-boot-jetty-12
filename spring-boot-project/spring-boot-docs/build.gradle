@@ -84,11 +84,6 @@ task documentConfigurationProperties(type: org.springframework.boot.build.contex
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	dependsOn documentTestSlices
-	dependsOn documentStarters
-	dependsOn documentAutoConfigurationClasses
-	dependsOn documentDependencyVersions
-	dependsOn documentConfigurationProperties
 	baseDirFollowsSourceDir()
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
@@ -109,10 +104,6 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					'spring-security-version': versionConstraints['org.springframework.security:spring-security-core'],
 					'spring-webservices-version': versionConstraints['org.springframework.ws:spring-ws-core']
 	}
-	attributes	'asciidoc-sources-root': file('src/docs/asciidoc'),
-				'attribute-missing': 'warn',
-				'generated-resources-root': "$buildDir/docs/generated",
-				'sources-root': file('src')
 }
 
 asciidoctor {
@@ -131,6 +122,57 @@ task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include '*.htmladoc'
 		include '*.adoc'
+	}
+}
+
+syncDocumentationSourceForAsciidoctor {
+	dependsOn documentTestSlices
+	dependsOn documentStarters
+	dependsOn documentAutoConfigurationClasses
+	dependsOn documentDependencyVersions
+	dependsOn documentConfigurationProperties
+	from("$buildDir/docs/generated") {
+		into 'asciidoc'
+	}
+	from ("src/main/java") {
+		into 'main/java'
+	}
+	from ("src/test/java") {
+		into 'test/java'
+	}
+}
+
+syncDocumentationSourceForAsciidoctorMultipage {
+	dependsOn documentTestSlices
+	dependsOn documentStarters
+	dependsOn documentAutoConfigurationClasses
+	dependsOn documentDependencyVersions
+	dependsOn documentConfigurationProperties
+	from("$buildDir/docs/generated") {
+		into 'asciidoc'
+	}
+	from ("src/main/java") {
+		into 'main/java'
+	}
+	from ("src/test/java") {
+		into 'test/java'
+	}
+}
+
+syncDocumentationSourceForAsciidoctorPdf {
+	dependsOn documentTestSlices
+	dependsOn documentStarters
+	dependsOn documentAutoConfigurationClasses
+	dependsOn documentDependencyVersions
+	dependsOn documentConfigurationProperties
+	from("$buildDir/docs/generated") {
+		into 'asciidoc'
+	}
+	from ("src/main/java") {
+		into 'main/java'
+	}
+	from ("src/test/java") {
+		into 'test/java'
 	}
 }
 

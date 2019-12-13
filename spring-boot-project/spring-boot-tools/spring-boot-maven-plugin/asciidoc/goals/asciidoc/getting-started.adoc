@@ -3,5 +3,5 @@
 
 The Spring Boot Plugin has the following goals:
 
-include::goals/overview.adoc[]
+include::{generated-resources-root}/goals/overview.adoc[]
 

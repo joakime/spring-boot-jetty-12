@@ -71,7 +71,7 @@ The `layout` property defaults to a guess based on the archive type (`jar` or `w
 * `ZIP` (alias to `DIR`): similar to the `JAR` layout using `PropertiesLauncher`.
 * `NONE`: Bundle all dependencies and project resources. Does not bundle a bootstrap loader.
 
-include::goals/repackage.adoc[leveloffset=+1]
+include::{generated-resources-root}/goals/repackage.adoc[leveloffset=+1]
 
 [[repackage-examples]]
 === Examples

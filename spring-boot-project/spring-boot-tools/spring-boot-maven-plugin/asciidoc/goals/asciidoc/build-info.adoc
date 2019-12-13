@@ -38,4 +38,4 @@ This configuration will generate a `build-info.properties` at the expected locat
 Note that `maven.compiler.source` and `maven.compiler.target` are expected to be regular properties available in the project.
 They will be interpolated as you would expect.
 
-include::goals/build-info.adoc[leveloffset=+1]
+include::{generated-resources-root}/goals/build-info.adoc[leveloffset=+1]

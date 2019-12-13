@@ -20,8 +20,8 @@
 :github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
 
-:code-examples: {sources-root}/main/java/org/springframework/boot/docs
-:test-examples: {sources-root}/test/java/org/springframework/boot/docs
+:code-examples: ../main/java/org/springframework/boot/docs
+:test-examples: ../test/java/org/springframework/boot/docs
 
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api/

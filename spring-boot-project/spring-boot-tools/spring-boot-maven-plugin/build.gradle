@@ -1,9 +1,9 @@
 plugins {
+	id 'org.asciidoctor.jvm.convert'
+	id 'org.asciidoctor.jvm.pdf'
 	id 'org.springframework.boot.conventions'
 	id 'org.springframework.boot.maven-plugin'
 	id 'org.springframework.boot.optional-dependencies'
-	id 'org.asciidoctor.jvm.convert'
-	id 'org.asciidoctor.jvm.pdf'
 }
 
 configurations {
@@ -37,16 +37,34 @@ dependencies {
 	testImplementation 'org.springframework:spring-core'
 }
 
+syncDocumentationSourceForAsciidoctor {
+	from(documentPluginGoals) {
+		into 'asciidoc/goals'
+	}
+}
+
+asciidoctor {
+	sources {
+		include 'index.adoc'
+	}
+}
+
+syncDocumentationSourceForAsciidoctorPdf {
+	from(documentPluginGoals) {
+		into 'asciidoc/goals'
+	}
+}
+
+asciidoctorPdf {
+	sources {
+		include 'index.adoc'
+	}
+}
+
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	baseDirFollowsSourceDir()
-	dependsOn documentPluginGoals
-	attributes	'asciidoc-sources-root': file('src/docs/asciidoc'),
-				'attribute-missing': 'warn',
-				'generated-resources-root': "$buildDir/docs/generated",
-				'maven-jar-plugin-version': '1.2.3',
+	attributes	'maven-jar-plugin-version': '1.2.3',
 				'maven-failsafe-plugin-version': '1.2.3',
-				'build-helper-maven-plugin-version': '1.2.3',
-				'sources-root': file('src')
+				'build-helper-maven-plugin-version': '1.2.3'
 }
 
 task zip(type: Zip) {
