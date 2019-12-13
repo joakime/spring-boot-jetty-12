@@ -128,11 +128,7 @@ class AsciidoctorConventions {
 		syncDocumentationSource.dependsOn(unzipResources);
 		File syncedSource = new File(project.getBuildDir(), "docs/src/" + asciidoctorTask.getName());
 		syncDocumentationSource.setDestinationDir(syncedSource);
-		syncDocumentationSource.from(unzipResources.getOutputDir(), (copySpec) -> {
-			copySpec.include("js/**");
-			copySpec.include("css/**");
-			copySpec.into("asciidoc");
-		});
+		syncDocumentationSource.from(unzipResources.getOutputDir(), (resources) -> resources.into("asciidoc"));
 		syncDocumentationSource.from("src/docs/");
 		asciidoctorTask.dependsOn(syncDocumentationSource);
 		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
@@ -149,7 +145,6 @@ class AsciidoctorConventions {
 		attributes.put("highlightjs-theme", "github");
 		attributes.put("linkcss", true);
 		attributes.put("icons", "font");
-		attributes.put("docinfodir", unzipResources.getOutputDir());
 		attributes.put("stylesheet", "css/spring.css");
 		asciidoctorTask.attributes(attributes);
 	}
