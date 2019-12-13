@@ -20,9 +20,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import groovy.util.Node;
 import groovy.xml.QName;
@@ -41,6 +48,8 @@ import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskExecutionException;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
@@ -98,7 +107,7 @@ public class BomPlugin implements Plugin<Project> {
 							"-Doutput=" + effectiveBom);
 					generateEffectiveBom.dependsOn(syncBom);
 					generateEffectiveBom.getOutputs().file(effectiveBom);
-					generateEffectiveBom.doLast(new StripCommentHeaderAction(effectiveBom));
+					generateEffectiveBom.doLast(new StripUnrepeatableOutputAction(effectiveBom));
 					project.getArtifacts().add(effectiveBomConfiguration.getName(), effectiveBom,
 							(artifact) -> artifact.builtBy(generateEffectiveBom));
 				});
@@ -248,21 +257,34 @@ public class BomPlugin implements Plugin<Project> {
 
 	}
 
-	private static final class StripCommentHeaderAction implements Action<Task> {
+	private static final class StripUnrepeatableOutputAction implements Action<Task> {
 
 		private final File effectiveBom;
 
-		private StripCommentHeaderAction(File xmlFile) {
+		private StripUnrepeatableOutputAction(File xmlFile) {
 			this.effectiveBom = xmlFile;
 		}
 
 		@Override
 		public void execute(Task task) {
 			try {
-				Files.write(this.effectiveBom.toPath(), Files.readAllLines(this.effectiveBom.toPath()).stream()
-						.filter((line) -> !line.trim().startsWith("<!-- ")).collect(Collectors.toList()));
+				Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.effectiveBom);
+				XPath xpath = XPathFactory.newInstance().newXPath();
+				NodeList comments = (NodeList) xpath.evaluate("//comment()", document, XPathConstants.NODESET);
+				for (int i = 0; i < comments.getLength(); i++) {
+					org.w3c.dom.Node comment = comments.item(i);
+					comment.getParentNode().removeChild(comment);
+				}
+				org.w3c.dom.Node build = (org.w3c.dom.Node) xpath.evaluate("/project/build", document,
+						XPathConstants.NODE);
+				build.getParentNode().removeChild(build);
+				org.w3c.dom.Node reporting = (org.w3c.dom.Node) xpath.evaluate("/project/reporting", document,
+						XPathConstants.NODE);
+				reporting.getParentNode().removeChild(reporting);
+				TransformerFactory.newInstance().newTransformer().transform(new DOMSource(document),
+						new StreamResult(this.effectiveBom));
 			}
-			catch (IOException ex) {
+			catch (Exception ex) {
 				throw new TaskExecutionException(task, ex);
 			}
 		}
