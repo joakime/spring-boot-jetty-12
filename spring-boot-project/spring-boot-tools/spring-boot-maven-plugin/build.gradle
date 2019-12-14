@@ -6,6 +6,8 @@ plugins {
 	id 'org.springframework.boot.optional-dependencies'
 }
 
+description = "Spring Boot Maven Plugin"
+
 configurations {
 	documentation
 }

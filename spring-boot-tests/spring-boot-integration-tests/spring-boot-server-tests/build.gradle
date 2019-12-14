@@ -3,6 +3,8 @@ plugins {
 	id 'org.springframework.boot.conventions'
 }
 
+description = "Spring Boot Server Tests"
+
 configurations {
 	testRepository
 }

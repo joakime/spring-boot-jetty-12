@@ -5,6 +5,8 @@ plugins {
 	id 'org.springframework.boot.integration-test'
 }
 
+description = "Spring Boot CLI"
+
 configurations {
 	dependenciesBom
 	loader

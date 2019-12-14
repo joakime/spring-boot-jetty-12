@@ -16,6 +16,9 @@
 
 package org.springframework.boot.build;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
@@ -35,6 +38,7 @@ import org.gradle.api.publish.maven.MavenPomOrganization;
 import org.gradle.api.publish.maven.MavenPomScm;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
@@ -53,6 +57,14 @@ import org.gradle.api.tasks.testing.Test;
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
  * <li>{@link JavaCompile} tasks are configured to use UTF-8 encoding
  * <li>{@link Javadoc} tasks are configured to use UTF-8 encoding
+ * <li>{@link Jar} tasks are configured to have the following manifest entries:
+ * <ul>
+ * <li>{@code Automatic-Module-Name}
+ * <li>{@code Build-Jdk-Spec}
+ * <li>{@code Built-By}
+ * <li>{@code Implementation-Title}
+ * <li>{@code Implementation-Version}
+ * </ul>
  * </ul>
  *
  * <p/>
@@ -94,6 +106,19 @@ public class ConventionsPlugin implements Plugin<Project> {
 			project.getTasks().withType(Test.class, (test) -> {
 				test.useJUnitPlatform();
 				test.setMaxHeapSize("1024M");
+			});
+			project.getTasks().withType(Jar.class, (jar) -> {
+				project.afterEvaluate((evaluated) -> {
+					jar.manifest((manifest) -> {
+						Map<String, Object> attributes = new TreeMap<>();
+						attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
+						attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
+						attributes.put("Built-By", "Spring");
+						attributes.put("Implementation-Title", project.getDescription());
+						attributes.put("Implementation-Version", project.getVersion());
+						manifest.attributes(attributes);
+					});
+				});
 			});
 		});
 	}

@@ -4,6 +4,8 @@ plugins {
 	id 'org.springframework.boot.integration-test'
 }
 
+description = "Spring Boot Launch Script Integration Tests"
+
 configurations {
 	app
 }
