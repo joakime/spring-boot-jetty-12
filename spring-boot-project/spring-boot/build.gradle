@@ -121,3 +121,7 @@ compileTestKotlin {
 		jvmTarget = 1.8
 	}
 }
+
+compileJava {
+	doLast new org.springframework.boot.build.log4j2.ReproducibleLog4j2PluginsDatAction()
+}
