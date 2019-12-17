@@ -21,14 +21,20 @@ dependencies {
 }
 
 test {
-	CommandLineArgumentProvider provider = {
+	jvmArgumentProviders.add new CassandraPortsProvider()
+	enabled = !JavaVersion.current().java9Compatible
+}
+
+class CassandraPortsProvider implements CommandLineArgumentProvider {
+
+	@Override
+	Iterable<String> asArguments() {
 		def ports = org.springframework.util.SocketUtils.findAvailableTcpPorts(2)
-		[
-			"-Dspring.data.cassandra.port=${ports[0]}",
-			"-Dcassandra.native_transport_port=${ports[0]}",
-			"-Dcassandra.port.storage=${ports[1]}"
+		return [
+				"-Dspring.data.cassandra.port=${ports[0]}",
+				"-Dcassandra.native_transport_port=${ports[0]}",
+				"-Dcassandra.port.storage=${ports[1]}"
 		]
 	}
-	jvmArgumentProviders.add provider
-	enabled = !JavaVersion.current().java9Compatible
+
 }
