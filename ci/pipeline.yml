@@ -58,6 +58,9 @@ jobs:
       timeout: ((task-timeout))
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-project.yml
+      params:
+        GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle-enterprise-cache-username))
+        GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle-enterprise-cache-password))
     on_failure:
       do:
       - put: slack-alert
