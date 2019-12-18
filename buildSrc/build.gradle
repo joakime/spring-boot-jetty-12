@@ -15,10 +15,12 @@ targetCompatibility = 1.8
 
 dependencies {
 	checkstyle 'io.spring.javaformat:spring-javaformat-checkstyle:0.0.15'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
 	implementation 'commons-codec:commons-codec:1.13'
 	implementation 'org.apache.maven:maven-embedder:3.6.2'
 	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:2.4.0'
-	implementation 'org.springframework:spring-core:5.2.0.RELEASE'
+	implementation 'org.springframework:spring-core:5.2.2.RELEASE'
+	implementation 'org.springframework:spring-web:5.2.2.RELEASE'
 	implementation 'com.google.code.gson:gson:2.8.5'
 	implementation 'io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.15'
 	testImplementation 'junit:junit:4.12'

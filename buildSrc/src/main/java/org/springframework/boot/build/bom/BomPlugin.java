@@ -77,6 +77,7 @@ public class BomPlugin implements Plugin<Project> {
 		project.getTasks().create("processBom", ProcessBom.class);
 		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project.getDependencies());
 		project.getTasks().create("checkBom", CheckBom.class, bom);
+		project.getTasks().create("upgradeBom", UpgradeBom.class, bom);
 		new PublishingCustomizer(project, bom).customize();
 		Configuration effectiveBomConfiguration = project.getConfigurations().create("effectiveBom");
 		project.getTasks().matching((task) -> task.getName().equals("generatePomFileForDeploymentPublication"))

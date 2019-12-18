@@ -20,6 +20,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.maven.artifact.versioning.VersionRange;
+
+import org.springframework.boot.build.bom.version.DependencyVersion;
+
 /**
  * A collection of modules, Maven plugins, and Maven boms that are versioned and released
  * together.
@@ -30,30 +34,36 @@ public class Library {
 
 	private final String name;
 
-	private final String version;
+	private final DependencyVersion version;
 
 	private final List<Group> groups;
 
 	private final String versionProperty;
 
+	private final List<ProhibitedVersion> prohibitedVersions;
+
 	/**
-	 * Create a new {@code Library} with the given {@code name} and {@code version}.
+	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
+	 * {@code groups}.
 	 * @param name name of the library
 	 * @param version version of the library
 	 * @param groups groups in the library
+	 * @param prohibitedVersions version of the library that are prohibited
 	 */
-	public Library(String name, String version, List<Group> groups) {
+	public Library(String name, DependencyVersion version, List<Group> groups,
+			List<ProhibitedVersion> prohibitedVersions) {
 		this.name = name;
 		this.version = version;
 		this.groups = groups;
 		this.versionProperty = name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
+		this.prohibitedVersions = prohibitedVersions;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public String getVersion() {
+	public DependencyVersion getVersion() {
 		return this.version;
 	}
 
@@ -63,6 +73,31 @@ public class Library {
 
 	public String getVersionProperty() {
 		return this.versionProperty;
+	}
+
+	public List<ProhibitedVersion> getProhibitedVersions() {
+		return this.prohibitedVersions;
+	}
+
+	public static class ProhibitedVersion {
+
+		private final VersionRange range;
+
+		private final String reason;
+
+		public ProhibitedVersion(VersionRange range, String reason) {
+			this.range = range;
+			this.reason = reason;
+		}
+
+		public VersionRange getRange() {
+			return this.range;
+		}
+
+		public String getReason() {
+			return this.reason;
+		}
+
 	}
 
 	/**

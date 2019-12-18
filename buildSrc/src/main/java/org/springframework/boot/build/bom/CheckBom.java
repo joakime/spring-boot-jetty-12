@@ -28,6 +28,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Module;
+import org.springframework.boot.build.bom.version.DependencyVersion;
 
 /**
  * Checks the validity of a bom.
@@ -56,7 +57,7 @@ public class CheckBom extends DefaultTask {
 		}
 	}
 
-	private void checkExclusions(String groupId, Module module, String version) {
+	private void checkExclusions(String groupId, Module module, DependencyVersion version) {
 		Set<String> resolved = getProject().getConfigurations()
 				.detachedConfiguration(
 						getProject().getDependencies().create(groupId + ":" + module.getName() + ":" + version))

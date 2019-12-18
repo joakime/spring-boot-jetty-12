@@ -7,6 +7,12 @@ plugins {
 description = 'Spring Boot Dependencies'
 
 bom {
+	upgrade {
+		policy = 'same-major-version'
+		gitHub {
+			issueLabels = ['type: dependency-upgrade']
+		}
+	}
 	library('activemq', '5.15.10') {
 		group('org.apache.activemq') {
 			modules = [
@@ -234,6 +240,9 @@ bom {
 		}
 	}
 	library('derby', '10.14.2.0') {
+		prohibit('[10.15,)') {
+			because 'it requires Java 9'
+		}
 		group('org.apache.derby') {
 			modules = [
 				'derby',

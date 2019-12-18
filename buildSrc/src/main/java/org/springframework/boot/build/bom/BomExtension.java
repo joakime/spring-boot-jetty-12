@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 
 import groovy.lang.Closure;
 import groovy.lang.GroovyObjectSupport;
+import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
+import org.apache.maven.artifact.versioning.VersionRange;
+import org.gradle.api.InvalidUserCodeException;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.util.ConfigureUtil;
@@ -32,6 +35,8 @@ import org.gradle.util.ConfigureUtil;
 import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Module;
+import org.springframework.boot.build.bom.Library.ProhibitedVersion;
+import org.springframework.boot.build.bom.version.DependencyVersion;
 
 /**
  * DSL extensions for {@link BomPlugin}.
@@ -40,13 +45,15 @@ import org.springframework.boot.build.bom.Library.Module;
  */
 public class BomExtension {
 
-	private final Map<String, String> properties = new LinkedHashMap<>();
+	private final Map<String, DependencyVersion> properties = new LinkedHashMap<>();
 
 	private final Map<String, String> artifactVersionProperties = new HashMap<>();
 
 	private final List<Library> libraries = new ArrayList<Library>();
 
 	private final DependencyHandler dependencyHandler;
+
+	private final UpgradeHandler upgradeHandler = new UpgradeHandler();
 
 	public BomExtension(DependencyHandler dependencyHandler) {
 		this.dependencyHandler = dependencyHandler;
@@ -56,30 +63,27 @@ public class BomExtension {
 		return this.libraries;
 	}
 
+	public void upgrade(Closure<?> closure) {
+		ConfigureUtil.configure(closure, this.upgradeHandler);
+	}
+
+	public Upgrade getUpgrade() {
+		return new Upgrade(this.upgradeHandler.upgradePolicy, new GitHub(this.upgradeHandler.gitHub.organization,
+				this.upgradeHandler.gitHub.repository, this.upgradeHandler.gitHub.issueLabels));
+	}
+
 	public void library(String name, String version, Closure<?> closure) {
 		LibraryHandler libraryHandler = new LibraryHandler();
 		ConfigureUtil.configure(closure, libraryHandler);
-		addLibrary(new Library(name, version, libraryHandler.groups));
+		addLibrary(new Library(name, DependencyVersion.parse(version), libraryHandler.groups,
+				libraryHandler.prohibitedVersions));
 	}
 
-	private String createDependencyNotation(String groupId, String artifactId, String version) {
-		return groupId + ":" + artifactId + ":" + resolveVersion(version);
+	private String createDependencyNotation(String groupId, String artifactId, DependencyVersion version) {
+		return groupId + ":" + artifactId + ":" + version;
 	}
 
-	private String resolveVersion(String version) {
-		while (version.startsWith("${")) {
-			String resolved = this.properties.get(version.substring(2, version.length() - 1));
-			if (resolved != null) {
-				version = resolved;
-			}
-			else {
-				break;
-			}
-		}
-		return version;
-	}
-
-	Map<String, String> getProperties() {
+	Map<String, DependencyVersion> getProperties() {
 		return this.properties;
 	}
 
@@ -118,11 +122,35 @@ public class BomExtension {
 
 		private final List<Group> groups = new ArrayList<>();
 
+		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
+
 		public void group(String id, Closure<?> closure) {
 			GroupHandler groupHandler = new GroupHandler(id);
 			ConfigureUtil.configure(closure, groupHandler);
 			this.groups
 					.add(new Group(groupHandler.id, groupHandler.modules, groupHandler.plugins, groupHandler.imports));
+		}
+
+		public void prohibit(String range, Closure<?> closure) {
+			ProhibitedVersionHandler prohibitedVersionHandler = new ProhibitedVersionHandler();
+			ConfigureUtil.configure(closure, prohibitedVersionHandler);
+			try {
+				this.prohibitedVersions.add(new ProhibitedVersion(VersionRange.createFromVersionSpec(range),
+						prohibitedVersionHandler.reason));
+			}
+			catch (InvalidVersionSpecificationException ex) {
+				throw new InvalidUserCodeException("Invalid version range", ex);
+			}
+		}
+
+		public static class ProhibitedVersionHandler {
+
+			private String reason;
+
+			public void because(String because) {
+				this.reason = because;
+			}
+
 		}
 
 		public class GroupHandler extends GroovyObjectSupport {
@@ -175,6 +203,93 @@ public class BomExtension {
 
 			}
 
+		}
+
+	}
+
+	public static class UpgradeHandler {
+
+		private UpgradePolicy upgradePolicy;
+
+		private final GitHubHandler gitHub = new GitHubHandler();
+
+		public void setPolicy(UpgradePolicy upgradePolicy) {
+			this.upgradePolicy = upgradePolicy;
+		}
+
+		public void gitHub(Closure<?> closure) {
+			ConfigureUtil.configure(closure, this.gitHub);
+		}
+
+	}
+
+	static final class Upgrade {
+
+		private final UpgradePolicy upgradePolicy;
+
+		private final GitHub gitHub;
+
+		private Upgrade(UpgradePolicy upgradePolicy, GitHub gitHub) {
+			this.upgradePolicy = upgradePolicy;
+			this.gitHub = gitHub;
+		}
+
+		UpgradePolicy getPolicy() {
+			return this.upgradePolicy;
+		}
+
+		GitHub getGitHub() {
+			return this.gitHub;
+		}
+
+	}
+
+	public static class GitHubHandler {
+
+		private String organization;
+
+		private String repository;
+
+		private List<String> issueLabels;
+
+		public void setOrganization(String organization) {
+			this.organization = organization;
+		}
+
+		public void setRepository(String repository) {
+			this.repository = repository;
+		}
+
+		public void setIssueLabels(List<String> issueLabels) {
+			this.issueLabels = issueLabels;
+		}
+
+	}
+
+	static final class GitHub {
+
+		private String organization = "spring-projects";
+
+		private String repository = "spring-boot";
+
+		private List<String> issueLabels;
+
+		private GitHub(String organization, String repository, List<String> issueLabels) {
+			this.organization = organization;
+			this.repository = repository;
+			this.issueLabels = issueLabels;
+		}
+
+		String getOrganization() {
+			return this.organization;
+		}
+
+		String getRepository() {
+			return this.repository;
+		}
+
+		List<String> getIssueLabels() {
+			return this.issueLabels;
 		}
 
 	}
