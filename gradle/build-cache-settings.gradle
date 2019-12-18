@@ -1,22 +1,8 @@
 buildCache {
 	local {
-		enabled = false
+		enabled = true
 	}
 	remote(HttpBuildCache) {
-		enabled = true
-		url = 'https://ge.spring.io/cache/'
-		def cacheUsername = System.getenv('GRADLE_ENTERPRISE_CACHE_USERNAME')
-		def cachePassword = System.getenv('GRADLE_ENTERPRISE_CACHE_PASSWORD')
-		if (cacheUsername && cachePassword) {
-			println 'Read-write remote build cache'
-			push = true
-			credentials {
-				username = cacheUsername
-				password = cachePassword
-			}
-		}
-		else {
-			println 'Read-only remote build cache'
-		}
+		enabled = false
 	}
 }
