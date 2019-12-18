@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
  *
  * @author Andy Wilkinson
  */
-public class CombinedPatchAndQualifierDependencyVersion extends ArtifactVersionDependencyVersion {
+final class CombinedPatchAndQualifierDependencyVersion extends ArtifactVersionDependencyVersion {
 
 	private static final Pattern PATTERN = Pattern.compile("([0-9]+\\.[0-9]+\\.[0-9]+)([A-Za-z][A-Za-z0-9]+)");
 
 	private final String original;
 
-	public CombinedPatchAndQualifierDependencyVersion(ArtifactVersion artifactVersion, String original) {
+	private CombinedPatchAndQualifierDependencyVersion(ArtifactVersion artifactVersion, String original) {
 		super(artifactVersion);
 		this.original = original;
 	}
