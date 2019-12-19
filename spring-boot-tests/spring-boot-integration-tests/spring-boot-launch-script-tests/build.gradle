@@ -52,6 +52,7 @@ task syncAppSource(type: Sync) {
 task buildApp(type: GradleBuild) {
 	dependsOn syncAppSource, syncMavenRepository
 	dir = "$buildDir/app"
+	startParameter.buildCacheEnabled = false
 	tasks  = ['build']
 }
 

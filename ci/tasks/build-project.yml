@@ -9,8 +9,10 @@ caches:
 - path: gradle
 - path: embedmongo
 params:
-  GRADLE_ENTERPRISE_URL: https://ge.spring.io
   CI: true
+  GRADLE_ENTERPRISE_CACHE_USERNAME:
+  GRADLE_ENTERPRISE_CACHE_PASSWORD:
+  GRADLE_ENTERPRISE_URL: https://ge.spring.io
 run:
   path: bash
   args:
