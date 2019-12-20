@@ -335,7 +335,7 @@ bom {
 			]
 		}
 	}
-	library('flyway', '6.0.8') {
+	library('flyway', '6.1.3') {
 		group('org.flywaydb') {
 			modules = [
 				'flyway-core'
@@ -1672,7 +1672,7 @@ bom {
 			]
 		}
 	}
-	library('spring-framework', '5.2.2.BUILD-SNAPSHOT') {
+	library('spring-framework', '5.2.3.BUILD-SNAPSHOT') {
 		group('org.springframework') {
 			imports = [
 				'spring-framework-bom'
@@ -1820,7 +1820,7 @@ bom {
 			]
 		}
 	}
-	library('tomcat', '9.0.29') {
+	library('tomcat', '9.0.30') {
 		group('org.apache.tomcat') {
 			modules = [
 				'tomcat-annotations-api',

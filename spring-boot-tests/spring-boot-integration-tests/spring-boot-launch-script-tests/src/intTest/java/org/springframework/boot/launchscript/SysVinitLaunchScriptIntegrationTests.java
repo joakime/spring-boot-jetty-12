@@ -334,8 +334,8 @@ class SysVinitLaunchScriptIntegrationTests {
 			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
 					.withFileFromFile("Dockerfile",
 							new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile"))
-					.withFileFromFile("spring-boot-launch-script-tests.jar", findApplication())
-					.withFileFromFile("test-functions.sh", new File("src/intTest/resources/scripts/test-functions.sh")));
+					.withFileFromFile("app.jar", findApplication()).withFileFromFile("test-functions.sh",
+							new File("src/intTest/resources/scripts/test-functions.sh")));
 			withCopyFileToContainer(MountableFile.forHostPath("src/intTest/resources/scripts/" + testScript),
 					"/" + testScript);
 			withCommand("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript);
@@ -349,7 +349,7 @@ class SysVinitLaunchScriptIntegrationTests {
 			}
 			throw new IllegalStateException(
 					"Could not find test application in build/app/build/libs directory. Have you built it?");
-			}
+		}
 
 	}
 
