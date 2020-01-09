@@ -40,31 +40,32 @@ class RunningDocumentationTests {
 
 	@TestTemplate
 	void bootRunMain() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-main").build("configuredMainClass")
-				.getOutput()).contains("com.example.ExampleApplication");
+		// TODO Testing of convention mappings is flakey in 5.2+
+		assertThat(this.gradleBuild.gradleVersion("5.1.1").script("src/docs/gradle/running/boot-run-main")
+				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
 	void applicationPluginMainClassName() {
-		assertThat(this.gradleBuild.script("src/main/gradle/running/application-plugin-main-class-name")
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/application-plugin-main-class-name")
 				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
 	void springBootDslMainClassName() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/running/spring-boot-dsl-main-class-name")
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/spring-boot-dsl-main-class-name")
 				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
 	void bootRunSourceResources() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-source-resources")
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-source-resources")
 				.build("configuredClasspath").getOutput()).contains(new File("src/main/resources").getPath());
 	}
 
 	@TestTemplate
 	void bootRunDisableOptimizedLaunch() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-disable-optimized-launch")
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-disable-optimized-launch")
 				.build("optimizedLaunch").getOutput()).contains("false");
 	}
 

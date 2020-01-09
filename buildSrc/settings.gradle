@@ -1,0 +1,15 @@
+pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+	}
+	resolutionStrategy {
+		eachPlugin {
+			if (requested.id.id == 'io.spring.javaformat') {
+				useModule "io.spring.javaformat:spring-javaformat-gradle-plugin:${requested.version}"
+			}
+		}
+	}
+}
+
+apply from: new File(settingsDir, '../gradle/build-cache-settings.gradle')
