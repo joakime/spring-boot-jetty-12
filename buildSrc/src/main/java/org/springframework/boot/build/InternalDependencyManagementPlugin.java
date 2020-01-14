@@ -52,7 +52,10 @@ public class InternalDependencyManagementPlugin implements Plugin<Project> {
 				.all((configuration) -> configuration.extendsFrom(dependencyManagement));
 		Dependency springBootParent = project.getDependencies().enforcedPlatform(project.getDependencies()
 				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-parent")));
+		Dependency springBootDependencies = project.getDependencies().enforcedPlatform(project.getDependencies()
+				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-dependencies")));
 		dependencyManagement.getDependencies().add(springBootParent);
+		dependencyManagement.getDependencies().add(springBootDependencies);
 		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
 				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
 	}
