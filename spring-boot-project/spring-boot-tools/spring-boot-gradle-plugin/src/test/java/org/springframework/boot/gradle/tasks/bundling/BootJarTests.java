@@ -57,6 +57,34 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		}
 	}
 
+	@Test
+	void layers() throws IOException {
+		BootJar bootJar = getTask();
+		bootJar.setMainClassName("com.example.Main");
+		bootJar.layered();
+		File classpathFolder = new File(this.temp, "classes");
+		File applicationClass = new File(classpathFolder, "com/example/Application.class");
+		applicationClass.getParentFile().mkdirs();
+		applicationClass.createNewFile();
+		bootJar.classpath(classpathFolder, jarFile("first-library.jar"), jarFile("second-library.jar"),
+				jarFile("third-library-SNAPSHOT.jar"));
+		bootJar.requiresUnpack("second-library.jar");
+		executeTask();
+		assertThat(getEntryNames(bootJar.getArchiveFile().get().getAsFile())).containsSubsequence(
+				"org/springframework/boot/loader/", "BOOT-INF/layers/application/classes/com/example/Application.class",
+				"BOOT-INF/layers/dependencies/lib/first-library.jar",
+				"BOOT-INF/layers/dependencies/lib/second-library.jar",
+				"BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar");
+		assertThat(getEntryNames(bootJar.getArchiveFile().get().getAsFile())).doesNotContain("BOOT-INF/classes");
+		assertThat(getEntryNames(bootJar.getArchiveFile().get().getAsFile())).doesNotContain("BOOT-INF/lib");
+		try (JarFile jarFile = new JarFile(bootJar.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes")).isEqualTo(null);
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(null);
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Layers-Index"))
+					.isEqualTo("BOOT-INF/layers.idx");
+		}
+	}
+
 	@Override
 	protected void executeTask() {
 		getTask().copy();

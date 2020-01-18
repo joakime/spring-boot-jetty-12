@@ -26,9 +26,14 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
+import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.bundling.Jar;
+
+import org.springframework.boot.loader.tools.Layer;
+import org.springframework.boot.loader.tools.Layers;
+import org.springframework.boot.loader.tools.Library;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
@@ -47,12 +52,15 @@ public class BootJar extends Jar implements BootArchive {
 
 	private FileCollection classpath;
 
+	private LayerConfiguration layerConfiguration;
+
 	/**
 	 * Creates a new {@code BootJar} task.
 	 */
 	public BootJar() {
 		this.bootInf = getProject().copySpec().into("BOOT-INF");
 		getMainSpec().with(this.bootInf);
+		this.bootInf.with(layers());
 		this.bootInf.into("classes", classpathFiles(File::isDirectory));
 		this.bootInf.into("lib", classpathFiles(File::isFile));
 		this.bootInf.filesMatching("module-info.class",
@@ -65,14 +73,55 @@ public class BootJar extends Jar implements BootArchive {
 		});
 	}
 
+	private CopySpec layers() {
+		CopySpec layers = getProject().copySpec();
+		layers.from((Callable<Iterable<File>>) () -> {
+			if (BootJar.this.layerConfiguration != null && BootJar.this.classpath != null) {
+				return BootJar.this.classpath;
+			}
+			return Collections.emptyList();
+		}).eachFile(applyLayer());
+		return layers;
+	}
+
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
-		return (copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> (this.classpath != null)
-				? this.classpath.filter(filter) : Collections.emptyList());
+		return (copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> {
+			if (BootJar.this.layerConfiguration != null) {
+				return Collections.emptyList();
+			}
+			return (BootJar.this.classpath != null) ? BootJar.this.classpath.filter(filter) : Collections.emptyList();
+		});
+	}
+
+	private Action<FileCopyDetails> applyLayer() {
+		return details -> {
+			LayerConfiguration layerConfiguration = BootJar.this.layerConfiguration;
+			Layers layers = layerConfiguration.getLayers();
+			if (isApplicationResource(details)) {
+				Layer layer = layers.getLayer(details.getPath());
+				details.setPath("BOOT-INF/layers/" + layer + "/classes/" + details.getSourcePath());
+			}
+			else {
+				Layer layer = layers.getLayer(new Library(details.getFile(), null));
+				details.setPath("BOOT-INF/layers/" + layer + "/lib/" + details.getSourcePath());
+			}
+		};
+	}
+
+	private boolean isApplicationResource(FileCopyDetails details) {
+		String root = details.getFile().getPath().split(details.getSourcePath())[0];
+		return root.endsWith("/classes/");
 	}
 
 	@Override
 	public void copy() {
 		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/", "BOOT-INF/lib/");
+		Attributes attributes = this.getManifest().getAttributes();
+		if (this.layerConfiguration != null) {
+			attributes.remove("Spring-Boot-Classes");
+			attributes.remove("Spring-Boot-Lib");
+			attributes.putIfAbsent("Spring-Boot-Layers-Index", "BOOT-INF/layers.idx");
+		}
 		super.copy();
 	}
 
@@ -120,6 +169,13 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void launchScript(Action<LaunchScriptConfiguration> action) {
 		action.execute(enableLaunchScriptIfNecessary());
+	}
+
+	/**
+	 * Configures the archive to have layers.
+	 */
+	public void layered() {
+		this.layerConfiguration = new LayerConfiguration();
 	}
 
 	@Override
