@@ -62,11 +62,15 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		BootJar bootJar = getTask();
 		bootJar.setMainClassName("com.example.Main");
 		bootJar.layered();
-		File classpathFolder = new File(this.temp, "classes");
-		File applicationClass = new File(classpathFolder, "com/example/Application.class");
+		File classesJavaMain = new File(this.temp, "classes/java/main");
+		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
 		applicationClass.getParentFile().mkdirs();
 		applicationClass.createNewFile();
-		bootJar.classpath(classpathFolder, jarFile("first-library.jar"), jarFile("second-library.jar"),
+		File resourcesMain = new File(this.temp, "resources/main");
+		File applicationProperties = new File(resourcesMain, "application.properties");
+		applicationProperties.getParentFile().mkdirs();
+		applicationProperties.createNewFile();
+		bootJar.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
 				jarFile("third-library-SNAPSHOT.jar"));
 		bootJar.requiresUnpack("second-library.jar");
 		executeTask();
