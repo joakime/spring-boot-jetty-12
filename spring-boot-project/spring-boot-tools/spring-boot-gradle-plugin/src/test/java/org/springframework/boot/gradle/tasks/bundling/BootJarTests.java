@@ -76,6 +76,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		executeTask();
 		assertThat(getEntryNames(bootJar.getArchiveFile().get().getAsFile())).containsSubsequence(
 				"org/springframework/boot/loader/", "BOOT-INF/layers/application/classes/com/example/Application.class",
+				"BOOT-INF/layers/application/classes/application.properties",
 				"BOOT-INF/layers/dependencies/lib/first-library.jar",
 				"BOOT-INF/layers/dependencies/lib/second-library.jar",
 				"BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar");

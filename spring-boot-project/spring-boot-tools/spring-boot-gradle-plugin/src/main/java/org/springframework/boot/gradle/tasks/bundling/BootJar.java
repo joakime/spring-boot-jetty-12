@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
+import java.util.function.BiConsumer;
 
 import org.gradle.api.Action;
 import org.gradle.api.file.CopySpec;
@@ -54,13 +55,16 @@ public class BootJar extends Jar implements BootArchive {
 
 	private LayerConfiguration layerConfiguration;
 
+	private static final String BOOT_INF_LAYERS = "BOOT-INF/layers/";
+
 	/**
 	 * Creates a new {@code BootJar} task.
 	 */
 	public BootJar() {
 		this.bootInf = getProject().copySpec().into("BOOT-INF");
 		getMainSpec().with(this.bootInf);
-		this.bootInf.with(layers());
+		this.bootInf.with(layers(File::isDirectory, this::applyApplicationLayer));
+		this.bootInf.with(layers(File::isFile, this::applyLibraryLayer));
 		this.bootInf.into("classes", classpathFiles(File::isDirectory));
 		this.bootInf.into("lib", classpathFiles(File::isFile));
 		this.bootInf.filesMatching("module-info.class",
@@ -73,15 +77,33 @@ public class BootJar extends Jar implements BootArchive {
 		});
 	}
 
-	private CopySpec layers() {
+	private CopySpec layers(Spec<File> filter, BiConsumer<FileCopyDetails, Layers> consumer) {
 		CopySpec layers = getProject().copySpec();
 		layers.from((Callable<Iterable<File>>) () -> {
 			if (BootJar.this.layerConfiguration != null && BootJar.this.classpath != null) {
-				return BootJar.this.classpath;
+				return this.classpath.filter(filter);
 			}
 			return Collections.emptyList();
-		}).eachFile(applyLayer());
+		}).eachFile(applyLayer(consumer));
 		return layers;
+	}
+
+	private Action<FileCopyDetails> applyLayer(BiConsumer<FileCopyDetails, Layers> consumer) {
+		return (details) -> {
+			LayerConfiguration layerConfiguration = BootJar.this.layerConfiguration;
+			Layers layers = layerConfiguration.getLayers();
+			consumer.accept(details, layers);
+		};
+	}
+
+	private void applyApplicationLayer(FileCopyDetails details, Layers layers) {
+		Layer layer = layers.getLayer(details.getPath());
+		details.setPath(BOOT_INF_LAYERS + layer + "/classes/" + details.getSourcePath());
+	}
+
+	private void applyLibraryLayer(FileCopyDetails details, Layers layers) {
+		Layer layer = layers.getLayer(new Library(details.getFile(), null));
+		details.setPath(BOOT_INF_LAYERS + layer + "/lib/" + details.getSourcePath());
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
@@ -91,26 +113,6 @@ public class BootJar extends Jar implements BootArchive {
 			}
 			return (BootJar.this.classpath != null) ? BootJar.this.classpath.filter(filter) : Collections.emptyList();
 		});
-	}
-
-	private Action<FileCopyDetails> applyLayer() {
-		return (details) -> {
-			LayerConfiguration layerConfiguration = BootJar.this.layerConfiguration;
-			Layers layers = layerConfiguration.getLayers();
-			if (isApplicationResource(details)) {
-				Layer layer = layers.getLayer(details.getPath());
-				details.setPath("BOOT-INF/layers/" + layer + "/classes/" + details.getSourcePath());
-			}
-			else {
-				Layer layer = layers.getLayer(new Library(details.getFile(), null));
-				details.setPath("BOOT-INF/layers/" + layer + "/lib/" + details.getSourcePath());
-			}
-		};
-	}
-
-	private boolean isApplicationResource(FileCopyDetails details) {
-		String root = details.getFile().getPath().split(details.getSourcePath())[0];
-		return root.endsWith("/classes/");
 	}
 
 	@Override
