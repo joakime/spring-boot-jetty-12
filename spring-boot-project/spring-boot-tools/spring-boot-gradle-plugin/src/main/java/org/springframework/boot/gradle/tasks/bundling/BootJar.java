@@ -29,7 +29,9 @@ import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.loader.tools.Layer;
@@ -178,6 +180,12 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	public void layered() {
 		this.layerConfiguration = new LayerConfiguration();
+	}
+
+	@Input
+	@Optional
+	LayerConfiguration getLayerConfiguration() {
+		return this.layerConfiguration;
 	}
 
 	@Override

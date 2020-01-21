@@ -16,6 +16,8 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.Serializable;
+
 import org.springframework.boot.loader.tools.Layers;
 
 /**
@@ -24,7 +26,7 @@ import org.springframework.boot.loader.tools.Layers;
  * @author Madhura Bhave
  * @since 2.3.0
  */
-public class LayerConfiguration {
+public class LayerConfiguration implements Serializable {
 
 	private Layers layers = Layers.IMPLICIT;
 
