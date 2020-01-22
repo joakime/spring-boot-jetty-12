@@ -16,15 +16,13 @@
 
 package org.springframework.boot.loader.tools;
 
-import java.io.Serializable;
-
 /**
  * Implementation of {@link Layers} that uses implicit rules.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class ImplicitLayerResolver extends StandardLayers implements Serializable {
+class ImplicitLayerResolver extends StandardLayers {
 
 	private static final String[] RESOURCE_LOCATIONS = { "META-INF/resources/", "resources/", "static/", "public/" };
 

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.loader.tools;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -35,7 +34,7 @@ import java.util.List;
  * @author Phillip Webb
  * @since 2.3.0
  */
-public abstract class StandardLayers implements Serializable, Layers {
+public abstract class StandardLayers implements Layers {
 
 	/**
 	 * The dependencies layer.

@@ -19,7 +19,6 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
-import java.util.function.BiConsumer;
 
 import org.gradle.api.Action;
 import org.gradle.api.file.CopySpec;
@@ -31,7 +30,6 @@ import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.loader.tools.Layer;
@@ -55,7 +53,7 @@ public class BootJar extends Jar implements BootArchive {
 
 	private FileCollection classpath;
 
-	private LayerConfiguration layerConfiguration;
+	private Layers layers;
 
 	private static final String BOOT_INF_LAYERS = "BOOT-INF/layers/";
 
@@ -65,8 +63,6 @@ public class BootJar extends Jar implements BootArchive {
 	public BootJar() {
 		this.bootInf = getProject().copySpec().into("BOOT-INF");
 		getMainSpec().with(this.bootInf);
-		this.bootInf.with(layers(File::isDirectory, this::applyApplicationLayer));
-		this.bootInf.with(layers(File::isFile, this::applyLibraryLayer));
 		this.bootInf.into("classes", classpathFiles(File::isDirectory));
 		this.bootInf.into("lib", classpathFiles(File::isFile));
 		this.bootInf.filesMatching("module-info.class",
@@ -79,49 +75,16 @@ public class BootJar extends Jar implements BootArchive {
 		});
 	}
 
-	private CopySpec layers(Spec<File> filter, BiConsumer<FileCopyDetails, Layers> consumer) {
-		CopySpec layers = getProject().copySpec();
-		layers.from((Callable<Iterable<File>>) () -> {
-			if (BootJar.this.layerConfiguration != null && BootJar.this.classpath != null) {
-				return this.classpath.filter(filter);
-			}
-			return Collections.emptyList();
-		}).eachFile(applyLayer(consumer)).setIncludeEmptyDirs(false);
-		return layers;
-	}
-
-	private Action<FileCopyDetails> applyLayer(BiConsumer<FileCopyDetails, Layers> consumer) {
-		return (details) -> {
-			LayerConfiguration layerConfiguration = BootJar.this.layerConfiguration;
-			Layers layers = layerConfiguration.getLayers();
-			consumer.accept(details, layers);
-		};
-	}
-
-	private void applyApplicationLayer(FileCopyDetails details, Layers layers) {
-		Layer layer = layers.getLayer(details.getSourcePath());
-		details.setPath(BOOT_INF_LAYERS + layer + "/classes/" + details.getSourcePath());
-	}
-
-	private void applyLibraryLayer(FileCopyDetails details, Layers layers) {
-		Layer layer = layers.getLayer(new Library(details.getFile(), null));
-		details.setPath(BOOT_INF_LAYERS + layer + "/lib/" + details.getSourcePath());
-	}
-
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
-		return (copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> {
-			if (BootJar.this.layerConfiguration != null) {
-				return Collections.emptyList();
-			}
-			return (BootJar.this.classpath != null) ? BootJar.this.classpath.filter(filter) : Collections.emptyList();
-		});
+		return (copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> (this.classpath != null)
+				? this.classpath.filter(filter) : Collections.emptyList());
 	}
 
 	@Override
 	public void copy() {
 		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/", "BOOT-INF/lib/");
 		Attributes attributes = this.getManifest().getAttributes();
-		if (this.layerConfiguration != null) {
+		if (this.layers != null) {
 			attributes.remove("Spring-Boot-Classes");
 			attributes.remove("Spring-Boot-Lib");
 			attributes.putIfAbsent("Spring-Boot-Layers-Index", "BOOT-INF/layers.idx");
@@ -179,13 +142,30 @@ public class BootJar extends Jar implements BootArchive {
 	 * Configures the archive to have layers.
 	 */
 	public void layered() {
-		this.layerConfiguration = new LayerConfiguration();
+		this.layers = Layers.IMPLICIT;
+		this.bootInf.eachFile((details) -> {
+			Layer layer = layerForFileDetails(details);
+			if (layer != null) {
+				details.setPath(
+						BOOT_INF_LAYERS + "/" + layer + "/" + details.getPath().substring("BOOT-INF/".length()));
+			}
+		}).setIncludeEmptyDirs(false);
+	}
+
+	private Layer layerForFileDetails(FileCopyDetails details) {
+		String path = details.getPath();
+		if (path.startsWith("BOOT-INF/lib/")) {
+			return this.layers.getLayer(new Library(details.getFile(), null));
+		}
+		if (path.startsWith("BOOT-INF/classes/")) {
+			return this.layers.getLayer(details.getSourcePath());
+		}
+		return null;
 	}
 
 	@Input
-	@Optional
-	LayerConfiguration getLayerConfiguration() {
-		return this.layerConfiguration;
+	boolean isLayered() {
+		return this.layers != null;
 	}
 
 	@Override
