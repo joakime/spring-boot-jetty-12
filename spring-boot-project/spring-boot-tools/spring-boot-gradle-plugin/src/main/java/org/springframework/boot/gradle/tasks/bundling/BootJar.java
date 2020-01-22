@@ -16,7 +16,10 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.concurrent.Callable;
 
@@ -27,6 +30,7 @@ import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.java.archives.Attributes;
+import org.gradle.api.resources.TextResource;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
@@ -150,6 +154,8 @@ public class BootJar extends Jar implements BootArchive {
 						BOOT_INF_LAYERS + "/" + layer + "/" + details.getPath().substring("BOOT-INF/".length()));
 			}
 		}).setIncludeEmptyDirs(false);
+		this.bootInf.into("", (spec) -> spec.from(createLayersIndex()))
+				.eachFile((details) -> details.setPath("BOOT-INF/layers.idx"));
 	}
 
 	private Layer layerForFileDetails(FileCopyDetails details) {
@@ -161,6 +167,22 @@ public class BootJar extends Jar implements BootArchive {
 			return this.layers.getLayer(details.getSourcePath());
 		}
 		return null;
+	}
+
+	private TextResource createLayersIndex() {
+		try {
+			StringWriter content = new StringWriter();
+			BufferedWriter writer = new BufferedWriter(content);
+			for (Layer layer : this.layers) {
+				writer.write(layer.toString());
+				writer.write("\n");
+			}
+			writer.flush();
+			return getProject().getResources().getText().fromString(content.toString());
+		}
+		catch (IOException ex) {
+			throw new RuntimeException("Failed to create layers.idx", ex);
+		}
 	}
 
 	@Input

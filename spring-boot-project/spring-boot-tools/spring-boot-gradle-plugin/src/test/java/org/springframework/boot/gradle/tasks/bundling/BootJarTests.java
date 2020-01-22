@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.jar.JarFile;
 
@@ -94,6 +95,9 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(null);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Layers-Index"))
 					.isEqualTo("BOOT-INF/layers.idx");
+			try (InputStream input = jarFile.getInputStream(jarFile.getEntry("BOOT-INF/layers.idx"))) {
+				assertThat(input).hasContent("dependencies\nsnapshot-dependencies\nresources\napplication\n");
+			}
 		}
 	}
 
