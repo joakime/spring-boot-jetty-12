@@ -86,7 +86,7 @@ public class BootJar extends Jar implements BootArchive {
 				return this.classpath.filter(filter);
 			}
 			return Collections.emptyList();
-		}).eachFile(applyLayer(consumer));
+		}).eachFile(applyLayer(consumer)).setIncludeEmptyDirs(false);
 		return layers;
 	}
 
@@ -99,7 +99,7 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	private void applyApplicationLayer(FileCopyDetails details, Layers layers) {
-		Layer layer = layers.getLayer(details.getPath());
+		Layer layer = layers.getLayer(details.getSourcePath());
 		details.setPath(BOOT_INF_LAYERS + layer + "/classes/" + details.getSourcePath());
 	}
 

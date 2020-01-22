@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.jar.JarFile;
 
 import org.junit.jupiter.api.Test;
@@ -70,18 +71,24 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		File applicationProperties = new File(resourcesMain, "application.properties");
 		applicationProperties.getParentFile().mkdirs();
 		applicationProperties.createNewFile();
+		File staticResources = new File(resourcesMain, "static");
+		staticResources.mkdir();
+		File css = new File(staticResources, "test.css");
+		css.createNewFile();
 		bootJar.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
 				jarFile("third-library-SNAPSHOT.jar"));
 		bootJar.requiresUnpack("second-library.jar");
 		executeTask();
-		assertThat(getEntryNames(bootJar.getArchiveFile().get().getAsFile())).containsSubsequence(
-				"org/springframework/boot/loader/", "BOOT-INF/layers/application/classes/com/example/Application.class",
+		List<String> entryNames = getEntryNames(bootJar.getArchiveFile().get().getAsFile());
+		assertThat(entryNames).containsSubsequence("org/springframework/boot/loader/",
+				"BOOT-INF/layers/application/classes/com/example/Application.class",
+				"BOOT-INF/layers/resources/classes/static/test.css",
 				"BOOT-INF/layers/application/classes/application.properties",
 				"BOOT-INF/layers/dependencies/lib/first-library.jar",
 				"BOOT-INF/layers/dependencies/lib/second-library.jar",
 				"BOOT-INF/layers/snapshot-dependencies/lib/third-library-SNAPSHOT.jar");
-		assertThat(getEntryNames(bootJar.getArchiveFile().get().getAsFile())).doesNotContain("BOOT-INF/classes");
-		assertThat(getEntryNames(bootJar.getArchiveFile().get().getAsFile())).doesNotContain("BOOT-INF/lib");
+		assertThat(entryNames).doesNotContain("BOOT-INF/classes").doesNotContain("BOOT-INF/lib")
+				.doesNotContain("BOOT-INF/com/");
 		try (JarFile jarFile = new JarFile(bootJar.getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes")).isEqualTo(null);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(null);
