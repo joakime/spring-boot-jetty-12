@@ -17,14 +17,18 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.net.InetAddress;
+import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -69,6 +73,16 @@ class ReactiveWebServerFactoryCustomizerTests {
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);
 		verify(factory).setSsl(ssl);
+	}
+
+	@Test
+	void whenGracePeriodPropertyIsSetThenGracePeriodIsCustomized() {
+		this.properties.getShutdown().setGracePeriod(Duration.ofSeconds(30));
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
+		verify(factory).setShutdown(shutdownCaptor.capture());
+		assertThat(shutdownCaptor.getValue().getGracePeriod()).isEqualTo(Duration.ofSeconds(30));
 	}
 
 }

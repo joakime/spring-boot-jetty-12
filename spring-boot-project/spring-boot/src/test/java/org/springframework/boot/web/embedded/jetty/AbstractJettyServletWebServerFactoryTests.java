@@ -21,7 +21,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.jasper.servlet.JspServlet;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.jupiter.api.Test;
@@ -57,7 +59,7 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 
 	@Override
 	protected JspServlet getJspServlet() throws Exception {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
+		WebAppContext context = getContext();
 		ServletHolder holder = context.getServletHandler().getServlet("jsp");
 		if (holder == null) {
 			return null;
@@ -67,15 +69,22 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 		return (JspServlet) holder.getServlet();
 	}
 
+	protected WebAppContext getContext() {
+		Handler handler = ((JettyWebServer) this.webServer).getServer().getHandler();
+		while (!(handler instanceof WebAppContext)) {
+			handler = ((HandlerWrapper) handler).getHandler();
+		}
+		return (WebAppContext) handler;
+	}
+
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
-		return context.getMimeTypes().getMimeMap();
+		return getContext().getMimeTypes().getMimeMap();
 	}
 
 	@Override
 	protected Charset getCharset(Locale locale) {
-		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer).getServer().getHandler();
+		WebAppContext context = getContext();
 		String charsetName = context.getLocaleEncoding(locale);
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
@@ -89,6 +98,11 @@ abstract class AbstractJettyServletWebServerFactoryTests extends AbstractServlet
 	@Override
 	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
 		this.handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
+	}
+
+	@Override
+	protected boolean inGracefulShutdown() {
+		return ((JettyWebServer) this.webServer).inGracefulShutdown();
 	}
 
 	@Test

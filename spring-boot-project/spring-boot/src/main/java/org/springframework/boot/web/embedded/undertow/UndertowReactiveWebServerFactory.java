@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import org.xnio.OptionMap;
@@ -38,6 +39,7 @@ import org.xnio.XnioWorker;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.GracefulShutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
 import org.springframework.util.Assert;
@@ -93,8 +95,25 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	@Override
 	public WebServer getWebServer(org.springframework.http.server.reactive.HttpHandler httpHandler) {
 		Undertow.Builder builder = createBuilder(getPort());
-		Closeable closeable = configureHandler(builder, httpHandler);
-		return new UndertowWebServer(builder, getPort() >= 0, closeable);
+		HttpHandler handler = new UndertowHttpHandlerAdapter(httpHandler);
+		if (this.useForwardHeaders) {
+			handler = Handlers.proxyPeerAddress(handler);
+		}
+		handler = UndertowCompressionConfigurer.configureCompression(getCompression(), handler);
+		Closeable closeable = null;
+		GracefulShutdown gracefulShutdown = null;
+		if (isAccessLogEnabled()) {
+			AccessLogHandlerConfiguration accessLogHandlerConfiguration = configureAccessLogHandler(builder, handler);
+			closeable = accessLogHandlerConfiguration.closeable;
+			handler = accessLogHandlerConfiguration.accessLogHandler;
+		}
+		if (getShutdown().getGracePeriod() != null) {
+			GracefulShutdownHandler gracefulShutdownHandler = Handlers.gracefulShutdown(handler);
+			gracefulShutdown = new UndertowGracefulShutdown(gracefulShutdownHandler, getShutdown().getGracePeriod());
+			handler = gracefulShutdownHandler;
+		}
+		builder.setHandler(handler);
+		return new UndertowWebServer(builder, getPort() >= 0, closeable, gracefulShutdown);
 	}
 
 	private Undertow.Builder createBuilder(int port) {
@@ -123,24 +142,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		return builder;
 	}
 
-	private Closeable configureHandler(Undertow.Builder builder,
-			org.springframework.http.server.reactive.HttpHandler httpHandler) {
-		HttpHandler handler = new UndertowHttpHandlerAdapter(httpHandler);
-		if (this.useForwardHeaders) {
-			handler = Handlers.proxyPeerAddress(handler);
-		}
-		handler = UndertowCompressionConfigurer.configureCompression(getCompression(), handler);
-		Closeable closeable = null;
-		if (isAccessLogEnabled()) {
-			closeable = configureAccessLogHandler(builder, handler);
-		}
-		else {
-			builder.setHandler(handler);
-		}
-		return closeable;
-	}
-
-	private Closeable configureAccessLogHandler(Undertow.Builder builder, HttpHandler handler) {
+	private AccessLogHandlerConfiguration configureAccessLogHandler(Undertow.Builder builder, HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
 			XnioWorker worker = createWorker();
@@ -148,9 +150,9 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(worker, this.accessLogDirectory,
 					prefix, this.accessLogSuffix, this.accessLogRotate);
 			String formatString = ((this.accessLogPattern != null) ? this.accessLogPattern : "common");
-			builder.setHandler(
-					new AccessLogHandler(handler, accessLogReceiver, formatString, Undertow.class.getClassLoader()));
-			return () -> {
+			AccessLogHandler accessLogHandler = new AccessLogHandler(handler, accessLogReceiver, formatString,
+					Undertow.class.getClassLoader());
+			return new AccessLogHandlerConfiguration(accessLogHandler, () -> {
 				try {
 					accessLogReceiver.close();
 					worker.shutdown();
@@ -162,7 +164,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
 				}
-			};
+			});
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Failed to create AccessLogHandler", ex);
@@ -287,6 +289,19 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.builderCustomizers.addAll(Arrays.asList(customizers));
+	}
+
+	private static final class AccessLogHandlerConfiguration {
+
+		private final AccessLogHandler accessLogHandler;
+
+		private final Closeable closeable;
+
+		private AccessLogHandlerConfiguration(AccessLogHandler accessLogHandler, Closeable closeable) {
+			this.accessLogHandler = accessLogHandler;
+			this.closeable = closeable;
+		}
+
 	}
 
 }

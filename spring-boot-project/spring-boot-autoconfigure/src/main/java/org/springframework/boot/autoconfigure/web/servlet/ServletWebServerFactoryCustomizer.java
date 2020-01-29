@@ -60,6 +60,7 @@ public class ServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
 		map.from(this.serverProperties.getServlet()::getContextParameters).to(factory::setInitParameters);
+		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
 	}
 
 }
