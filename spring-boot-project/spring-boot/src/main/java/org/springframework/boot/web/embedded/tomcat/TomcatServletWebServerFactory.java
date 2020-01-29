@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,7 @@ import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.QuiesceHandler;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -435,7 +436,10 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @return a new {@link TomcatWebServer} instance
 	 */
 	protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
-		return new TomcatWebServer(tomcat, getPort() >= 0);
+		Duration quiescePeriod = getQuiesce().getPeriod();
+		QuiesceHandler quiesceHandler = (quiescePeriod != null)
+				? new TomcatQuiesceHandler(tomcat, quiescePeriod.toMillis()) : null;
+		return new TomcatWebServer(tomcat, getPort() >= 0, quiesceHandler);
 	}
 
 	@Override

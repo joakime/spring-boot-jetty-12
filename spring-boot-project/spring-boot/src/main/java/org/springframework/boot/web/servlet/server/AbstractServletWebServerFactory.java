@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.Quiesce;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -72,6 +73,8 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	private List<ServletContextInitializer> initializers = new ArrayList<>();
 
 	private Jsp jsp = new Jsp();
+
+	private Quiesce quiesce = new Quiesce();
 
 	private Map<Locale, Charset> localeCharsetMappings = new HashMap<>();
 
@@ -203,6 +206,15 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	@Override
 	public void setJsp(Jsp jsp) {
 		this.jsp = jsp;
+	}
+
+	@Override
+	public void setQuiesce(Quiesce quiesce) {
+		this.quiesce = quiesce;
+	}
+
+	public Quiesce getQuiesce() {
+		return this.quiesce;
 	}
 
 	public Session getSession() {

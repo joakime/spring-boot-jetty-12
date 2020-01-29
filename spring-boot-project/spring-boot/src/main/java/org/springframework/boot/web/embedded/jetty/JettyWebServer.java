@@ -35,6 +35,7 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.QuiesceHandler;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.Assert;
@@ -63,6 +64,8 @@ public class JettyWebServer implements WebServer {
 
 	private final boolean autoStart;
 
+	private final QuiesceHandler quiesceHandler;
+
 	private Connector[] connectors;
 
 	private volatile boolean started;
@@ -81,9 +84,14 @@ public class JettyWebServer implements WebServer {
 	 * @param autoStart if auto-starting the server
 	 */
 	public JettyWebServer(Server server, boolean autoStart) {
+		this(server, autoStart, null);
+	}
+
+	public JettyWebServer(Server server, boolean autoStart, QuiesceHandler quiesceHandler) {
 		this.autoStart = autoStart;
 		Assert.notNull(server, "Jetty Server must not be null");
 		this.server = server;
+		this.quiesceHandler = quiesceHandler;
 		initialize();
 	}
 
@@ -259,6 +267,15 @@ public class JettyWebServer implements WebServer {
 			return getLocalPort(connector);
 		}
 		return 0;
+	}
+
+	@Override
+	public boolean quiesce() {
+		return (this.quiesceHandler != null) ? this.quiesceHandler.quiesce() : false;
+	}
+
+	boolean isQuiescing() {
+		return (this.quiesceHandler != null) ? this.quiesceHandler.isQuiescing() : false;
 	}
 
 	/**

@@ -41,6 +41,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.FileSessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
@@ -57,6 +58,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.QuiesceHandler;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -398,7 +400,15 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @return a new {@link JettyWebServer} instance
 	 */
 	protected JettyWebServer getJettyWebServer(Server server) {
-		return new JettyWebServer(server, getPort() >= 0);
+		Duration quiescePeriod = getQuiesce().getPeriod();
+		QuiesceHandler quiesceHandler = null;
+		if (quiescePeriod != null) {
+			StatisticsHandler handler = new StatisticsHandler();
+			handler.setHandler(server.getHandler());
+			server.setHandler(handler);
+			quiesceHandler = new JettyQuiesceHandler(server, handler, quiescePeriod.toMillis());
+		}
+		return new JettyWebServer(server, getPort() >= 0, quiesceHandler);
 	}
 
 	@Override

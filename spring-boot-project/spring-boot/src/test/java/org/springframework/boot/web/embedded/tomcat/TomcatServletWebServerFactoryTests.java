@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.naming.InitialContext;
@@ -55,6 +57,12 @@ import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
@@ -65,6 +73,7 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Quiesce;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -543,6 +552,91 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		this.webServer.start();
 	}
 
+	@Test
+	void whenAConnectionIsBeingKeptAliveQuiesceReturnsFalseAfterPeriodElapses() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Quiesce quiesce = new Quiesce();
+		quiesce.setPeriod(Duration.ofSeconds(5));
+		factory.setQuiesce(quiesce);
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		CountDownLatch latch = new CountDownLatch(1);
+		new Thread(() -> {
+			try {
+				HttpClient httpClient = HttpClients.createDefault();
+				HttpResponse response = httpClient.execute(new HttpGet("http://localhost:" + this.webServer.getPort()));
+				response.getEntity().getContent().close();
+				System.out.println(response.getFirstHeader("Connection"));
+				latch.countDown();
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}).start();
+		latch.await();
+		long start = System.currentTimeMillis();
+		assertThat(this.webServer.quiesce()).isFalse();
+		long end = System.currentTimeMillis();
+		assertThat(end - start).isGreaterThanOrEqualTo(5000);
+	}
+
+	@Test
+	void whenAKeptAliveConnectionMakesARequestDuringQuieceThenConnectionIsClosedAndQuiesceReturnsTrueBeforePeriodElapses()
+			throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Quiesce quiesce = new Quiesce();
+		quiesce.setPeriod(Duration.ofSeconds(30));
+		factory.setQuiesce(quiesce);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		HttpClient httpClient = HttpClients.custom().disableAutomaticRetries().build();
+		Future<Object> keptAlive = initiateGetRequest(httpClient, "/blocking");
+		blockingServlet.awaitQueue();
+		Future<Object> prolongQuiesce = initiateGetRequest("/blocking");
+		long start = System.currentTimeMillis();
+		blockingServlet.awaitQueue(2);
+		Future<Boolean> quiesceResult = initiateQuiesce();
+		awaitQuiescing();
+		blockingServlet.admitOne();
+		assertThat(((HttpResponse) keptAlive.get()).getFirstHeader("Connection").getValue()).isEqualTo("keep-alive");
+		Future<Object> closed = initiateGetRequest(httpClient, "/");
+		assertThat(closed.get()).isInstanceOf(NoHttpResponseException.class);
+		blockingServlet.admitOne();
+		assertThat(quiesceResult.get()).isTrue();
+		long end = System.currentTimeMillis();
+		assertThat(end - start).isLessThanOrEqualTo(30000);
+		assertThat(prolongQuiesce.get()).isInstanceOf(HttpResponse.class);
+	}
+
+	@Test
+	void whenServerIsQuiescingThenNewConnectionsCannotBeMade() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		Quiesce quiesce = new Quiesce();
+		quiesce.setPeriod(Duration.ofSeconds(5));
+		factory.setQuiesce(quiesce);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		this.webServer.start();
+		Future<Object> request = initiateGetRequest("/blocking");
+		blockingServlet.awaitQueue();
+		Future<Boolean> quiesceResult = initiateQuiesce();
+		Future<Object> unconnectableRequest = initiateGetRequest("/");
+		assertThat(quiesceResult.get()).isEqualTo(false);
+		blockingServlet.admitOne();
+		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+		this.webServer.stop();
+		assertThat(unconnectableRequest.get()).isInstanceOf(HttpHostConnectException.class);
+	}
+
 	@Override
 	protected JspServlet getJspServlet() throws ServletException {
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
@@ -594,6 +688,11 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
 		assertThat(ex).isInstanceOf(ConnectorStartFailedException.class);
 		assertThat(((ConnectorStartFailedException) ex).getPort()).isEqualTo(blockedPort);
+	}
+
+	@Override
+	protected boolean isQuiescing() {
+		return ((TomcatWebServer) this.webServer).isQuiescing();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.naming.ContextBindings;
 
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.QuiesceHandler;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.Assert;
@@ -66,6 +67,8 @@ public class TomcatWebServer implements WebServer {
 
 	private final boolean autoStart;
 
+	private final QuiesceHandler quiesceHandler;
+
 	private volatile boolean started;
 
 	/**
@@ -82,9 +85,21 @@ public class TomcatWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 */
 	public TomcatWebServer(Tomcat tomcat, boolean autoStart) {
+		this(tomcat, autoStart, null);
+	}
+
+	/**
+	 * Create a new {@link TomcatWebServer} instance.
+	 * @param tomcat the underlying Tomcat server
+	 * @param autoStart if the server should be started
+	 * @param quiesceHandler the handler for quiesce requests
+	 * @since 2.3.0
+	 */
+	public TomcatWebServer(Tomcat tomcat, boolean autoStart, QuiesceHandler quiesceHandler) {
 		Assert.notNull(tomcat, "Tomcat Server must not be null");
 		this.tomcat = tomcat;
 		this.autoStart = autoStart;
+		this.quiesceHandler = quiesceHandler;
 		initialize();
 	}
 
@@ -372,6 +387,15 @@ public class TomcatWebServer implements WebServer {
 	 */
 	public Tomcat getTomcat() {
 		return this.tomcat;
+	}
+
+	@Override
+	public boolean quiesce() {
+		return (this.quiesceHandler != null) ? this.quiesceHandler.quiesce() : false;
+	}
+
+	boolean isQuiescing() {
+		return (this.quiesceHandler != null) ? this.quiesceHandler.isQuiescing() : false;
 	}
 
 }

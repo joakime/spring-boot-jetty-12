@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.QuiesceHandler;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ReflectionUtils;
@@ -59,6 +60,8 @@ public class UndertowWebServer implements WebServer {
 
 	private final Closeable closeable;
 
+	private final QuiesceHandler quiesceHandler;
+
 	private Undertow undertow;
 
 	private volatile boolean started = false;
@@ -80,9 +83,23 @@ public class UndertowWebServer implements WebServer {
 	 * @since 2.0.4
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
+		this(builder, autoStart, closeable, null);
+	}
+
+	/**
+	 * Create a new {@link UndertowWebServer} instance.
+	 * @param builder the builder
+	 * @param autoStart if the server should be started
+	 * @param closeable called when the server is stopped
+	 * @param quiesceHandler handler called with the server is quiesced
+	 * @since 2.3.0
+	 */
+	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable,
+			QuiesceHandler quiesceHandler) {
 		this.builder = builder;
 		this.autoStart = autoStart;
 		this.closeable = closeable;
+		this.quiesceHandler = quiesceHandler;
 	}
 
 	@Override
@@ -243,6 +260,15 @@ public class UndertowWebServer implements WebServer {
 			return 0;
 		}
 		return ports.get(0).getNumber();
+	}
+
+	@Override
+	public boolean quiesce() {
+		return (this.quiesceHandler != null) ? this.quiesceHandler.quiesce() : false;
+	}
+
+	boolean isQuiescing() {
+		return (this.quiesceHandler != null) ? this.quiesceHandler.isQuiescing() : false;
 	}
 
 	/**

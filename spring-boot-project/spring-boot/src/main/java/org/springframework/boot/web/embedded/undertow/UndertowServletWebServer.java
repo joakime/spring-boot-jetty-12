@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 import io.undertow.servlet.api.DeploymentManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +38,7 @@ import org.xnio.channels.BoundChannel;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.QuiesceHandler;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ReflectionUtils;
@@ -74,9 +77,13 @@ public class UndertowServletWebServer implements WebServer {
 
 	private final String serverHeader;
 
+	private final Duration quiescePeriod;
+
 	private Undertow undertow;
 
 	private volatile boolean started = false;
+
+	private volatile QuiesceHandler quiesceHandler;
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
@@ -117,6 +124,25 @@ public class UndertowServletWebServer implements WebServer {
 	 */
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
 			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader) {
+		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, serverHeader, null);
+	}
+
+	/**
+	 * Create a new {@link UndertowServletWebServer} instance.
+	 * @param builder the builder
+	 * @param manager the deployment manager
+	 * @param contextPath the root context path
+	 * @param useForwardHeaders if x-forward headers should be used
+	 * @param autoStart if the server should be started
+	 * @param compression compression configuration
+	 * @param serverHeader string to be used in HTTP header
+	 * @param quiescePeriod the period to wait for activity to cease when quiescing the
+	 * server
+	 * @since 2.3.0
+	 */
+	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
+			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader,
+			Duration quiescePeriod) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
@@ -124,6 +150,7 @@ public class UndertowServletWebServer implements WebServer {
 		this.autoStart = autoStart;
 		this.compression = compression;
 		this.serverHeader = serverHeader;
+		this.quiescePeriod = quiescePeriod;
 	}
 
 	@Override
@@ -199,6 +226,11 @@ public class UndertowServletWebServer implements WebServer {
 		}
 		if (StringUtils.hasText(this.serverHeader)) {
 			httpHandler = Handlers.header(httpHandler, "Server", this.serverHeader);
+		}
+		if (this.quiescePeriod != null) {
+			GracefulShutdownHandler gracefulShutdown = Handlers.gracefulShutdown(httpHandler);
+			this.quiesceHandler = new UndertowQuiesceHandler(gracefulShutdown, this.quiescePeriod.toMillis());
+			httpHandler = gracefulShutdown;
 		}
 		this.builder.setHandler(httpHandler);
 		return this.builder.build();
@@ -312,6 +344,15 @@ public class UndertowServletWebServer implements WebServer {
 			return 0;
 		}
 		return ports.get(0).getNumber();
+	}
+
+	@Override
+	public boolean quiesce() {
+		return (this.quiesceHandler != null) ? this.quiesceHandler.quiesce() : false;
+	}
+
+	boolean isQuiescing() {
+		return (this.quiesceHandler != null) ? this.quiesceHandler.isQuiescing() : false;
 	}
 
 	/**
