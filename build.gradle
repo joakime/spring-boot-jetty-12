@@ -15,6 +15,9 @@ allprojects {
 		if (version.endsWith('BUILD-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
 		}
+		maven {
+			url 'https://dl.bintray.com/kotlin/kotlin-dev'
+		}
 	}
 
 	configurations.all {
