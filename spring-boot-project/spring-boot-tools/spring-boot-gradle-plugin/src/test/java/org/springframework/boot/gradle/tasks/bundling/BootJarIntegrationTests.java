@@ -16,15 +16,24 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
@@ -73,15 +82,23 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	void implicitLayers() throws IOException {
 		writeMainClass();
 		writeResource();
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildResult result = this.gradleBuild.build("bootJar");
+		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar"))
-					.isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/commons-lang3-3.9.jar")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/commons-io-2.7-SNAPSHOT.jar"))
-					.isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/application/classes/example/Main.class")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/application/classes/static/file.txt")).isNotNull();
+			Set<String> entryNames = Collections.list(jarFile.entries()).stream()
+					.filter((entry) -> !entry.isDirectory()).map(JarEntry::getName)
+					.filter((name) -> !"BOOT-INF/layers.idx".equals(name)).collect(Collectors.toSet());
+			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
+			Set<String> indexed = index.stream().map((entry) -> entry.substring(entry.indexOf(' ') + 1))
+					.collect(Collectors.toSet());
+			Set<String> unindexed = new HashSet<>(entryNames);
+			unindexed.removeAll(indexed);
+			assertThat(unindexed).isEmpty();
+			assertThat(index).containsSubsequence("dependencies BOOT-INF/lib/commons-lang3-3.9.jar",
+					"dependencies BOOT-INF/lib/spring-boot-jarmode-layertools.jar",
+					"snapshot-dependencies BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar",
+					"application org/springframework/boot/loader/JarLauncher.class",
+					"application BOOT-INF/classes/example/Main.class", "application BOOT-INF/classes/static/file.txt");
 		}
 	}
 
@@ -89,15 +106,24 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	void customLayers() throws IOException {
 		writeMainClass();
 		writeResource();
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildResult result = this.gradleBuild.build("bootJar");
+		System.out.println(result.getOutput());
+		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/spring-boot-jarmode-layertools.jar"))
-					.isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/commons-dependencies/lib/commons-lang3-3.9.jar")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/commons-io-2.7-SNAPSHOT.jar"))
-					.isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/app/classes/example/Main.class")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/static/classes/static/file.txt")).isNotNull();
+			Set<String> entryNames = Collections.list(jarFile.entries()).stream()
+					.filter((entry) -> !entry.isDirectory()).map(JarEntry::getName)
+					.filter((name) -> !"BOOT-INF/layers.idx".equals(name)).collect(Collectors.toSet());
+			List<String> index = entryLines(jarFile, "BOOT-INF/layers.idx");
+			Set<String> indexed = index.stream().map((entry) -> entry.substring(entry.indexOf(' ') + 1))
+					.collect(Collectors.toSet());
+			Set<String> unindexed = new HashSet<>(entryNames);
+			unindexed.removeAll(indexed);
+			assertThat(unindexed).isEmpty();
+			assertThat(index).containsSubsequence("dependencies BOOT-INF/lib/spring-boot-jarmode-layertools.jar",
+					"commons-dependencies BOOT-INF/lib/commons-lang3-3.9.jar",
+					"snapshot-dependencies BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar",
+					"static BOOT-INF/classes/static/file.txt", "app META-INF/MANIFEST.MF",
+					"app org/springframework/boot/loader/JarLauncher.class", "app BOOT-INF/classes/example/Main.class");
 		}
 	}
 
@@ -131,6 +157,13 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
+		}
+	}
+
+	private List<String> entryLines(JarFile jarFile, String entryName) throws IOException {
+		try (BufferedReader reader = new BufferedReader(
+				new InputStreamReader(jarFile.getInputStream(jarFile.getEntry(entryName))))) {
+			return reader.lines().collect(Collectors.toList());
 		}
 	}
 

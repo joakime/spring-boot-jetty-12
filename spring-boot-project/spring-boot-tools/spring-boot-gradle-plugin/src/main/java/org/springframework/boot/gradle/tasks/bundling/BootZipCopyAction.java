@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -68,10 +69,15 @@ class BootZipCopyAction implements CopyAction {
 
 	private final String encoding;
 
+	private final LayerConfiguration layerConfiguration;
+
+	private final Function<FileCopyDetails, String> coordinatesResolver;
+
 	BootZipCopyAction(File output, boolean preserveFileTimestamps, boolean includeDefaultLoader,
 			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 			LaunchScriptConfiguration launchScript, Function<FileCopyDetails, ZipCompression> compressionResolver,
-			String encoding) {
+			String encoding, LayerConfiguration layerConfiguration,
+			Function<FileCopyDetails, String> coordinatesResolver) {
 		this.output = output;
 		this.preserveFileTimestamps = preserveFileTimestamps;
 		this.includeDefaultLoader = includeDefaultLoader;
@@ -80,6 +86,8 @@ class BootZipCopyAction implements CopyAction {
 		this.launchScript = launchScript;
 		this.compressionResolver = compressionResolver;
 		this.encoding = encoding;
+		this.layerConfiguration = layerConfiguration;
+		this.coordinatesResolver = coordinatesResolver;
 	}
 
 	@Override
@@ -102,7 +110,8 @@ class BootZipCopyAction implements CopyAction {
 				if (this.encoding != null) {
 					zipOutputStream.setEncoding(this.encoding);
 				}
-				Processor processor = new Processor(zipOutputStream);
+				Processor processor = new Processor(zipOutputStream, (this.layerConfiguration != null)
+						? new LayerIndex(this.layerConfiguration, this.coordinatesResolver) : null);
 				stream.process(processor::process);
 				processor.finish();
 			}
@@ -144,12 +153,15 @@ class BootZipCopyAction implements CopyAction {
 	 */
 	private class Processor {
 
-		private ZipArchiveOutputStream outputStream;
+		private final ZipArchiveOutputStream outputStream;
+
+		private final LayerIndex layerIndex;
 
 		private Spec<FileTreeElement> writtenLoaderEntries;
 
-		Processor(ZipArchiveOutputStream outputStream) {
+		Processor(ZipArchiveOutputStream outputStream, LayerIndex layerIndex) {
 			this.outputStream = outputStream;
+			this.layerIndex = layerIndex;
 		}
 
 		void process(FileCopyDetails details) {
@@ -173,6 +185,12 @@ class BootZipCopyAction implements CopyAction {
 
 		void finish() throws IOException {
 			writeLoaderEntriesIfNecessary(null);
+			if (this.layerIndex != null) {
+				ZipArchiveEntry archiveEntry = new ZipArchiveEntry("BOOT-INF/layers.idx");
+				this.outputStream.putArchiveEntry(archiveEntry);
+				this.layerIndex.write(new OutputStreamWriter(this.outputStream, BootZipCopyAction.this.encoding));
+				this.outputStream.closeArchiveEntry();
+			}
 		}
 
 		private void writeLoaderEntriesIfNecessary(FileCopyDetails details) throws IOException {
@@ -184,7 +202,8 @@ class BootZipCopyAction implements CopyAction {
 				return;
 			}
 			LoaderZipEntries loaderEntries = new LoaderZipEntries(
-					BootZipCopyAction.this.preserveFileTimestamps ? null : CONSTANT_TIME_FOR_ZIP_ENTRIES);
+					BootZipCopyAction.this.preserveFileTimestamps ? null : CONSTANT_TIME_FOR_ZIP_ENTRIES,
+					this.layerIndex);
 			this.writtenLoaderEntries = loaderEntries.writeTo(this.outputStream);
 		}
 
@@ -216,6 +235,9 @@ class BootZipCopyAction implements CopyAction {
 			this.outputStream.putArchiveEntry(archiveEntry);
 			details.copyTo(this.outputStream);
 			this.outputStream.closeArchiveEntry();
+			if (this.layerIndex != null) {
+				this.layerIndex.addEntry(details);
+			}
 		}
 
 		private void prepareStoredEntry(FileCopyDetails details, ZipArchiveEntry archiveEntry) throws IOException {

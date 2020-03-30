@@ -16,25 +16,18 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.gradle.api.Action;
-import org.gradle.api.artifacts.ArtifactCollection;
-import org.gradle.api.artifacts.ResolvableDependencies;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
@@ -49,11 +42,6 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.Jar;
 
-import org.springframework.boot.loader.tools.Layer;
-import org.springframework.boot.loader.tools.Layers;
-import org.springframework.boot.loader.tools.Library;
-import org.springframework.boot.loader.tools.LibraryCoordinates;
-import org.springframework.boot.loader.tools.layer.CustomLayers;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -67,7 +55,7 @@ import org.springframework.util.FileCopyUtils;
 public class BootJar extends Jar implements BootArchive {
 
 	private final BootArchiveSupport support = new BootArchiveSupport("org.springframework.boot.loader.JarLauncher",
-			this::resolveZipCompression);
+			this::resolveZipCompression, this::getLayerConfiguration, this::resolveCoordinates);
 
 	private final CopySpec bootInf;
 
@@ -75,15 +63,9 @@ public class BootJar extends Jar implements BootArchive {
 
 	private FileCollection classpath;
 
-	private Layers layers;
-
 	private LayerConfiguration layerConfiguration;
 
-	private static final String BOOT_INF_LAYERS = "BOOT-INF/layers";
-
-	private final List<String> dependencies = new ArrayList<>();
-
-	private final Map<String, String> coordinatesByFileName = new HashMap<>();
+	private String classpathConfigurationName;
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -91,11 +73,10 @@ public class BootJar extends Jar implements BootArchive {
 	public BootJar() {
 		this.bootInf = getProject().copySpec().into("BOOT-INF");
 		getMainSpec().with(this.bootInf);
+		ClasspathIndex classpathIndex = new ClasspathIndex(getProject());
 		this.bootInf.into("classes", classpathFiles(File::isDirectory));
-		this.bootInf.into("lib", classpathFiles(File::isFile))
-				.eachFile((details) -> BootJar.this.dependencies.add(details.getPath()));
-		this.bootInf.into("",
-				(spec) -> spec.from((Callable<File>) () -> createClasspathIndex(BootJar.this.dependencies)));
+		this.bootInf.into("lib", classpathFiles(File::isFile)).eachFile(classpathIndex::addEntry);
+		this.bootInf.into("", (spec) -> spec.from(classpathIndex.deferredFile()));
 		this.bootInf.filesMatching("module-info.class",
 				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
 		getRootSpec().eachFile((details) -> {
@@ -104,6 +85,7 @@ public class BootJar extends Jar implements BootArchive {
 				details.exclude();
 			}
 		});
+		this.bootInf.into("lib", (spec) -> spec.from(deferredLayerTools()));
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
@@ -115,22 +97,11 @@ public class BootJar extends Jar implements BootArchive {
 	public void copy() {
 		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/", "BOOT-INF/lib/");
 		Attributes attributes = this.getManifest().getAttributes();
-		if (this.layers != null) {
-			attributes.remove("Spring-Boot-Classes");
-			attributes.remove("Spring-Boot-Lib");
+		if (this.layerConfiguration != null) {
 			attributes.putIfAbsent("Spring-Boot-Layers-Index", "BOOT-INF/layers.idx");
 		}
 		attributes.putIfAbsent("Spring-Boot-Classpath-Index", "BOOT-INF/classpath.idx");
 		super.copy();
-	}
-
-	private File createClasspathIndex(List<String> dependencies) {
-		String content = dependencies.stream().map((name) -> name.substring(name.lastIndexOf('/') + 1))
-				.collect(Collectors.joining("\n", "", "\n"));
-		File source = getProject().getResources().getText().fromString(content).asFile();
-		File indexFile = new File(source.getParentFile(), "classpath.idx");
-		source.renameTo(indexFile);
-		return indexFile;
 	}
 
 	@Override
@@ -179,6 +150,25 @@ public class BootJar extends Jar implements BootArchive {
 		action.execute(enableLaunchScriptIfNecessary());
 	}
 
+	/**
+	 * Returns the name of the {@link Configuration configuration} that is used to resolve
+	 * the task's classpath.
+	 * @return the name of the task's classpath configuration
+	 */
+	@Input
+	public String getClasspathConfigurationName() {
+		return this.classpathConfigurationName;
+	}
+
+	/**
+	 * Sets the name of the {@link Configuration configuration} that is used to resolve
+	 * the task's classpath.
+	 * @param name the name of the task's classpath configuration
+	 */
+	public void setClasspathConfigurationName(String name) {
+		this.classpathConfigurationName = name;
+	}
+
 	@Optional
 	@Nested
 	public LayerConfiguration getLayerConfiguration() {
@@ -189,95 +179,15 @@ public class BootJar extends Jar implements BootArchive {
 	 * Configures the archive to have layers.
 	 */
 	public void layers() {
-		enableLayers();
+		layers((layerConfiguration) -> {
+		});
 	}
 
 	public void layers(Action<LayerConfiguration> action) {
-		action.execute(enableLayers());
-	}
-
-	private LayerConfiguration enableLayers() {
 		if (this.layerConfiguration == null) {
 			this.layerConfiguration = new LayerConfiguration();
 		}
-
-		return this.layerConfiguration;
-	}
-
-	private void applyLayers() {
-		if (this.layerConfiguration == null) {
-			return;
-		}
-
-		if (this.layerConfiguration.getLayersOrder() == null || this.layerConfiguration.getLayersOrder().isEmpty()) {
-			this.layers = Layers.IMPLICIT;
-		}
-		else {
-			List<Layer> customLayers = this.layerConfiguration.getLayersOrder().stream().map(Layer::new)
-					.collect(Collectors.toList());
-			this.layers = new CustomLayers(customLayers, this.layerConfiguration.getApplication(),
-					this.layerConfiguration.getLibraries());
-		}
-
-		if (this.layerConfiguration.isIncludeLayerTools()) {
-			this.bootInf.into("lib", (spec) -> spec.from((Callable<File>) () -> {
-				String jarName = "spring-boot-jarmode-layertools.jar";
-				InputStream stream = getClass().getClassLoader().getResourceAsStream("META-INF/jarmode/" + jarName);
-				File taskTmp = new File(getProject().getBuildDir(), "tmp/" + getName());
-				taskTmp.mkdirs();
-				File layerToolsJar = new File(taskTmp, jarName);
-				FileCopyUtils.copy(stream, new FileOutputStream(layerToolsJar));
-				return layerToolsJar;
-			}));
-		}
-		this.bootInf.eachFile((details) -> {
-			Layer layer = layerForFileDetails(details);
-			if (layer != null) {
-				String relativePath = details.getPath().substring("BOOT-INF/".length());
-				details.setPath(BOOT_INF_LAYERS + "/" + layer + "/" + relativePath);
-			}
-		}).setIncludeEmptyDirs(false);
-		this.bootInf.into("", (spec) -> spec.from(createLayersIndex()));
-	}
-
-	private Layer layerForFileDetails(FileCopyDetails details) {
-		String path = details.getPath();
-		if (path.startsWith("BOOT-INF/lib/")) {
-			String coordinates = this.coordinatesByFileName.get(details.getName());
-			LibraryCoordinates libraryCoordinates = (coordinates != null) ? new LibraryCoordinates(coordinates)
-					: new LibraryCoordinates("?:?:?");
-			return this.layers.getLayer(new Library(null, details.getFile(), null, libraryCoordinates, false));
-		}
-		if (path.startsWith("BOOT-INF/classes/")) {
-			return this.layers.getLayer(details.getSourcePath());
-		}
-		return null;
-	}
-
-	private File createLayersIndex() {
-		try {
-			StringWriter content = new StringWriter();
-			BufferedWriter writer = new BufferedWriter(content);
-			for (Layer layer : this.layers) {
-				writer.write(layer.toString());
-				writer.write("\n");
-			}
-			writer.flush();
-			File source = getProject().getResources().getText().fromString(content.toString()).asFile();
-			File indexFile = new File(source.getParentFile(), "layers.idx");
-			source.renameTo(indexFile);
-			return indexFile;
-		}
-		catch (IOException ex) {
-			throw new RuntimeException("Failed to create layers.idx", ex);
-		}
-	}
-
-	private void resolveCoordinatesForFiles(ResolvableDependencies resolvableDependencies) {
-		ArtifactCollection resolvedArtifactResults = resolvableDependencies.getArtifacts();
-		Set<ResolvedArtifactResult> artifacts = resolvedArtifactResults.getArtifacts();
-		artifacts.forEach((artifact) -> this.coordinatesByFileName.put(artifact.getFile().getName(),
-				artifact.getId().getComponentIdentifier().getDisplayName()));
+		action.execute(this.layerConfiguration);
 	}
 
 	@Input
@@ -317,13 +227,6 @@ public class BootJar extends Jar implements BootArchive {
 		this.support.setExcludeDevtools(excludeDevtools);
 	}
 
-	public void resolvedDependencies(ResolvableDependencies resolvableDependencies) {
-		if (resolvableDependencies != null) {
-			resolveCoordinatesForFiles(resolvableDependencies);
-		}
-		applyLayers();
-	}
-
 	/**
 	 * Returns a {@code CopySpec} that can be used to add content to the {@code BOOT-INF}
 	 * directory of the jar.
@@ -355,27 +258,31 @@ public class BootJar extends Jar implements BootArchive {
 	 * Returns the {@link ZipCompression} that should be used when adding the file
 	 * represented by the given {@code details} to the jar.
 	 * <p>
-	 * By default, any file in {@code BOOT-INF/lib/} or
-	 * {@code BOOT-INF/layers/<layer>/lib} is stored and all other files are deflated.
+	 * By default, any file in {@code BOOT-INF/lib/} is stored and all other files are
+	 * deflated.
 	 * @param details the details
 	 * @return the compression to use
 	 */
 	protected ZipCompression resolveZipCompression(FileCopyDetails details) {
 		String path = details.getRelativePath().getPathString();
-		for (String prefix : getLibPathPrefixes()) {
-			if (path.startsWith(prefix)) {
-				return ZipCompression.STORED;
-			}
+		if (path.startsWith("BOOT-INF/lib/")) {
+			return ZipCompression.STORED;
 		}
 		return ZipCompression.DEFLATED;
 	}
 
-	private Set<String> getLibPathPrefixes() {
-		if (this.layers == null) {
-			return Collections.singleton("BOOT-INF/lib/");
+	private String resolveCoordinates(FileCopyDetails details) {
+		if (this.classpathConfigurationName != null) {
+			File file = details.getFile();
+			Configuration classpathConfiguration = getProject().getConfigurations()
+					.findByName(this.classpathConfigurationName);
+			for (ResolvedArtifactResult artifact : classpathConfiguration.getIncoming().getArtifacts()) {
+				if (artifact.getFile().equals(file)) {
+					return artifact.getId().getComponentIdentifier().getDisplayName();
+				}
+			}
 		}
-		return StreamSupport.stream(this.layers.spliterator(), false)
-				.map((layer) -> "BOOT-INF/layers/" + layer + "/lib/").collect(Collectors.toSet());
+		return null;
 	}
 
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
@@ -385,6 +292,48 @@ public class BootJar extends Jar implements BootArchive {
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;
+	}
+
+	private Callable<File> deferredLayerTools() {
+		return () -> {
+			if (this.layerConfiguration == null || !this.layerConfiguration.isIncludeLayerTools()) {
+				return null;
+			}
+			String jarName = "spring-boot-jarmode-layertools.jar";
+			InputStream stream = getClass().getClassLoader().getResourceAsStream("META-INF/jarmode/" + jarName);
+			File taskTmp = new File(getProject().getBuildDir(), "tmp/" + getName());
+			taskTmp.mkdirs();
+			File layerToolsJar = new File(taskTmp, jarName);
+			FileCopyUtils.copy(stream, new FileOutputStream(layerToolsJar));
+			return layerToolsJar;
+		};
+	}
+
+	private static final class ClasspathIndex {
+
+		private final Project project;
+
+		private final List<String> entries = new ArrayList<String>();
+
+		private ClasspathIndex(Project project) {
+			this.project = project;
+		}
+
+		void addEntry(FileCopyDetails entryDetails) {
+			this.entries.add(entryDetails.getName());
+		}
+
+		Callable<File> deferredFile() {
+			return () -> {
+				String content = this.entries.stream().map((name) -> name.substring(name.lastIndexOf('/') + 1))
+						.collect(Collectors.joining("\n", "", "\n"));
+				File source = this.project.getResources().getText().fromString(content).asFile();
+				File indexFile = new File(source.getParentFile(), "classpath.idx");
+				source.renameTo(indexFile);
+				return indexFile;
+			};
+		}
+
 	}
 
 }

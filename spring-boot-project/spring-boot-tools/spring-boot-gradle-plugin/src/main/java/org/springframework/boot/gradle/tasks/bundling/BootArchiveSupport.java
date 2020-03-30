@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
@@ -63,6 +64,10 @@ class BootArchiveSupport {
 
 	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
 
+	private final Supplier<LayerConfiguration> layerConfigurationSupplier;
+
+	private final Function<FileCopyDetails, String> coordinatesResolver;
+
 	private final PatternSet exclusions = new PatternSet();
 
 	private final String loaderMainClass;
@@ -72,8 +77,16 @@ class BootArchiveSupport {
 	private boolean excludeDevtools = true;
 
 	BootArchiveSupport(String loaderMainClass, Function<FileCopyDetails, ZipCompression> compressionResolver) {
+		this(loaderMainClass, compressionResolver, () -> null, (details) -> null);
+	}
+
+	BootArchiveSupport(String loaderMainClass, Function<FileCopyDetails, ZipCompression> compressionResolver,
+			Supplier<LayerConfiguration> layerConfigurationSupplier,
+			Function<FileCopyDetails, String> coordinatesResolver) {
 		this.loaderMainClass = loaderMainClass;
 		this.compressionResolver = compressionResolver;
+		this.coordinatesResolver = coordinatesResolver;
+		this.layerConfigurationSupplier = layerConfigurationSupplier;
 		this.requiresUnpack.include(Specs.satisfyNone());
 		configureExclusions();
 	}
@@ -96,7 +109,7 @@ class BootArchiveSupport {
 		CopyAction copyAction = new BootZipCopyAction(jar.getArchiveFile().get().getAsFile(),
 				jar.isPreserveFileTimestamps(), isUsingDefaultLoader(jar), this.requiresUnpack.getAsSpec(),
 				this.exclusions.getAsExcludeSpec(), this.launchScript, this.compressionResolver,
-				jar.getMetadataCharset());
+				jar.getMetadataCharset(), this.layerConfigurationSupplier.get(), this.coordinatesResolver);
 		if (!jar.isReproducibleFileOrder()) {
 			return copyAction;
 		}

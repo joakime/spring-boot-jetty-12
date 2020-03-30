@@ -38,10 +38,13 @@ import org.gradle.api.specs.Spec;
  */
 class LoaderZipEntries {
 
-	private Long entryTime;
+	private final Long entryTime;
 
-	LoaderZipEntries(Long entryTime) {
+	private final LayerIndex layerIndex;
+
+	LoaderZipEntries(Long entryTime, LayerIndex layerIndex) {
 		this.entryTime = entryTime;
+		this.layerIndex = layerIndex;
 	}
 
 	Spec<FileTreeElement> writeTo(ZipArchiveOutputStream zipOutputStream) throws IOException {
@@ -55,6 +58,9 @@ class LoaderZipEntries {
 					writtenDirectoriesSpec.add(entry);
 				}
 				else if (entry.getName().endsWith(".class")) {
+					if (this.layerIndex != null) {
+						this.layerIndex.addEntry(entry.getName());
+					}
 					writeClass(new ZipArchiveEntry(entry), loaderJar, zipOutputStream);
 				}
 				entry = loaderJar.getNextEntry();
