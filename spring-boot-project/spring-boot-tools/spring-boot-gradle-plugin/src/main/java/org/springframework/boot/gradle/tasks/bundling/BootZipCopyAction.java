@@ -338,7 +338,7 @@ class BootZipCopyAction implements CopyAction {
 		private void writeJarModeLibrary(String location, JarModeLibrary jarModeLibrary) throws IOException {
 			String name = location + jarModeLibrary.getName();
 
-			writeEntry(name, ZipEntryWriter.fromInputStream(jarModeLibrary.openStream()), true, (entry) -> {
+			writeEntry(name, ZipEntryWriter.fromInputStream(jarModeLibrary.openStream()), false, (entry) -> {
 				try {
 					prepareStoredEntry(jarModeLibrary.openStream(), entry);
 				}
@@ -346,6 +346,10 @@ class BootZipCopyAction implements CopyAction {
 					throw new RuntimeException("Failed to prepare jar mode library entry", ex);
 				}
 			});
+			if (BootZipCopyAction.this.layerResolver != null) {
+				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(jarModeLibrary);
+				this.layerIndex.add(layer, name);
+			}
 		}
 
 		private void writeClassPathIndexIfNecessary() throws IOException {
