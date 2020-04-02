@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.zip.CRC32;
 
@@ -50,6 +51,7 @@ import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -272,19 +274,24 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void prepareStoredEntry(FileCopyDetails details, ZipArchiveEntry archiveEntry) throws IOException {
-			archiveEntry.setMethod(java.util.zip.ZipEntry.STORED);
-			archiveEntry.setSize(details.getSize());
-			archiveEntry.setCompressedSize(details.getSize());
-			archiveEntry.setCrc(getCrc(details));
+			prepareStoredEntry(details.open(), archiveEntry);
 			if (BootZipCopyAction.this.requiresUnpack.isSatisfiedBy(details)) {
 				archiveEntry.setComment("UNPACK:" + FileUtils.sha1Hash(details.getFile()));
 			}
 		}
 
-		private long getCrc(FileCopyDetails details) {
+		private void prepareStoredEntry(InputStream input, ZipArchiveEntry archiveEntry) {
+			archiveEntry.setMethod(java.util.zip.ZipEntry.STORED);
 			Crc32OutputStream crcStream = new Crc32OutputStream();
-			details.copyTo(crcStream);
-			return crcStream.getCrc();
+			try {
+				int size = FileCopyUtils.copy(input, crcStream);
+				archiveEntry.setSize(size);
+				archiveEntry.setCompressedSize(size);
+				archiveEntry.setCrc(crcStream.getCrc());
+			}
+			catch (IOException ex) {
+				throw new RuntimeException("Failed to calculate CRC", ex);
+			}
 		}
 
 		void finish() throws IOException {
@@ -330,7 +337,15 @@ class BootZipCopyAction implements CopyAction {
 
 		private void writeJarModeLibrary(String location, JarModeLibrary jarModeLibrary) throws IOException {
 			String name = location + jarModeLibrary.getName();
-			writeEntry(name, ZipEntryWriter.fromInputStream(jarModeLibrary.openStream()), true);
+
+			writeEntry(name, ZipEntryWriter.fromInputStream(jarModeLibrary.openStream()), true, (entry) -> {
+				try {
+					prepareStoredEntry(jarModeLibrary.openStream(), entry);
+				}
+				catch (IOException ex) {
+					throw new RuntimeException("Failed to prepare jar mode library entry", ex);
+				}
+			});
 		}
 
 		private void writeClassPathIndexIfNecessary() throws IOException {
@@ -353,10 +368,17 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void writeEntry(String name, ZipEntryWriter entryWriter, boolean addToLayerIndex) throws IOException {
+			writeEntry(name, entryWriter, addToLayerIndex, (entry) -> {
+			});
+		}
+
+		private void writeEntry(String name, ZipEntryWriter entryWriter, boolean addToLayerIndex,
+				Consumer<ZipArchiveEntry> entryCustomizer) throws IOException {
 			writeParentDirectoriesIfNecessary(name, CONSTANT_TIME_FOR_ZIP_ENTRIES);
 			ZipArchiveEntry entry = new ZipArchiveEntry(name);
 			entry.setUnixMode(UnixStat.FILE_FLAG);
 			entry.setTime(CONSTANT_TIME_FOR_ZIP_ENTRIES);
+			entryCustomizer.accept(entry);
 			this.out.putArchiveEntry(entry);
 			entryWriter.writeTo(entry, this.out);
 			this.out.closeArchiveEntry();
