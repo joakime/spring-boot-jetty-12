@@ -16,8 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.format;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
@@ -44,34 +49,80 @@ class WebConversionServiceTests {
 
 	@Test
 	void customTimeFormatWithJavaTime() {
-		customTimeFormat(java.time.LocalTime.of(13, 37, 42));
+		customTimeFormat(LocalTime.of(13, 37, 42));
 	}
 
 	@Test
 	void customDateTimeFormatWithJavaTime() {
-		customDateTimeFormat(java.time.LocalDateTime.of(2019, 10, 28, 13, 37, 42));
-	}
-
-	private void customDateFormat(Object input) {
-		WebConversionService conversionService = new WebConversionService("dd*MM*yyyy");
-		assertThat(conversionService.convert(input, String.class)).isEqualTo("01*01*2018");
-	}
-
-	private void customTimeFormat(Object input) {
-		WebConversionService conversionService = new WebConversionService(null, "HH*mm*ss", null);
-		assertThat(conversionService.convert(input, String.class)).isEqualTo("13*37*42");
-	}
-
-	private void customDateTimeFormat(Object input) {
-		WebConversionService conversionService = new WebConversionService(null, null, "dd*MM*yyyy HH*mm*ss");
-		assertThat(conversionService.convert(input, String.class)).isEqualTo("28*10*2019 13*37*42");
+		customDateTimeFormat(LocalDateTime.of(2019, 10, 28, 13, 37, 42));
 	}
 
 	@Test
 	void convertFromStringToDate() {
-		WebConversionService conversionService = new WebConversionService("yyyy-MM-dd");
+		WebConversionService conversionService = new WebConversionService("yyyy-MM-dd", null, null, false);
 		java.time.LocalDate date = conversionService.convert("2018-01-01", java.time.LocalDate.class);
 		assertThat(date).isEqualTo(java.time.LocalDate.of(2018, 1, 1));
+	}
+
+	@Test
+	void defaultDateFormat() {
+		WebConversionService conversionService = new WebConversionService(null, null, null, false);
+		LocalDate date = LocalDate.of(2020, 4, 26);
+		assertThat(conversionService.convert(date, String.class))
+				.isEqualTo(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(date));
+	}
+
+	@Test
+	void defaultIsoDateFormat() {
+		WebConversionService conversionService = new WebConversionService(null, null, null, true);
+		LocalDate date = LocalDate.of(2020, 4, 26);
+		assertThat(conversionService.convert(date, String.class)).isEqualTo(DateTimeFormatter.ISO_DATE.format(date));
+	}
+
+	@Test
+	void defaultTimeFormat() {
+		WebConversionService conversionService = new WebConversionService(null, null, null, false);
+		LocalTime time = LocalTime.of(12, 45, 23);
+		assertThat(conversionService.convert(time, String.class))
+				.isEqualTo(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(time));
+	}
+
+	@Test
+	void defaultIsoTimeFormat() {
+		WebConversionService conversionService = new WebConversionService(null, null, null, true);
+		LocalTime time = LocalTime.of(12, 45, 23);
+		assertThat(conversionService.convert(time, String.class)).isEqualTo(DateTimeFormatter.ISO_TIME.format(time));
+	}
+
+	@Test
+	void defaultDateTimeFormat() {
+		WebConversionService conversionService = new WebConversionService(null, null, null, false);
+		LocalDateTime dateTime = LocalDateTime.of(2020, 4, 26, 12, 45, 23);
+		assertThat(conversionService.convert(dateTime, String.class))
+				.isEqualTo(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(dateTime));
+	}
+
+	@Test
+	void defaultIsoDateTimeFormat() {
+		WebConversionService conversionService = new WebConversionService(null, null, null, true);
+		LocalDateTime dateTime = LocalDateTime.of(2020, 4, 26, 12, 45, 23);
+		assertThat(conversionService.convert(dateTime, String.class))
+				.isEqualTo(DateTimeFormatter.ISO_DATE_TIME.format(dateTime));
+	}
+
+	private void customDateFormat(Object input) {
+		WebConversionService conversionService = new WebConversionService("dd*MM*yyyy", null, null, false);
+		assertThat(conversionService.convert(input, String.class)).isEqualTo("01*01*2018");
+	}
+
+	private void customTimeFormat(Object input) {
+		WebConversionService conversionService = new WebConversionService(null, "HH*mm*ss", null, false);
+		assertThat(conversionService.convert(input, String.class)).isEqualTo("13*37*42");
+	}
+
+	private void customDateTimeFormat(Object input) {
+		WebConversionService conversionService = new WebConversionService(null, null, "dd*MM*yyyy HH*mm*ss", false);
+		assertThat(conversionService.convert(input, String.class)).isEqualTo("28*10*2019 13*37*42");
 	}
 
 }

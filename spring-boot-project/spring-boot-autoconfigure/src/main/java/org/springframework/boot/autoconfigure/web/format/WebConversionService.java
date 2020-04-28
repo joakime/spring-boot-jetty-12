@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.format;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
+import java.util.function.Consumer;
 
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
@@ -52,28 +53,41 @@ public class WebConversionService extends DefaultFormattingConversionService {
 
 	private final String dateTimeFormat;
 
+	private final boolean useIso;
+
 	/**
 	 * Create a new WebConversionService that configures formatters with the provided date
 	 * format, or register the default ones if no custom format is provided.
 	 * @param dateFormat the custom date format to use for date conversions
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #WebConversionService(String, String, String, boolean)}
 	 */
+	@Deprecated
 	public WebConversionService(String dateFormat) {
-		this(dateFormat, null, null);
+		this(dateFormat, null, null, false);
 	}
 
 	/**
-	 * Create a new WebConversionService that configures formatters with the provided date
-	 * and time formats, or register the default ones if no custom formats are provided.
-	 * @param dateFormat the custom date format to use for date conversions
-	 * @param timeFormat the custom time format to use for time conversions
-	 * @param dateTimeFormat the custom datetime format to use for datetime conversions
+	 * Create a new WebConversionService that configures formatters with the provided
+	 * date, time, and date-time formats, or registers the default ones if no custom
+	 * formats are provided.
+	 * @param dateFormat the custom date format to use for date conversions, or
+	 * {@code null} to use the default
+	 * @param timeFormat the custom time format to use for time conversions, or
+	 * {@code null} to use the default
+	 * @param dateTimeFormat the custom date-time format to use for date-time conversions,
+	 * or {@code null} to use the default
+	 * @param useIso whether the default date, time, and date-time formatters should use
+	 * their corresponding ISO format
+	 * @since 2.3.0
 	 */
-	public WebConversionService(String dateFormat, String timeFormat, String dateTimeFormat) {
+	public WebConversionService(String dateFormat, String timeFormat, String dateTimeFormat, boolean useIso) {
 		super(false);
-		this.dateFormat = getNonEmptyFormat(dateFormat);
-		this.timeFormat = getNonEmptyFormat(timeFormat);
-		this.dateTimeFormat = getNonEmptyFormat(dateTimeFormat);
-		if (this.dateFormat != null || this.timeFormat != null || this.dateTimeFormat != null) {
+		this.dateFormat = nullIfEmpty(dateFormat);
+		this.timeFormat = nullIfEmpty(timeFormat);
+		this.dateTimeFormat = nullIfEmpty(dateTimeFormat);
+		this.useIso = useIso;
+		if (dateFormat != null || timeFormat != null || dateTimeFormat != null || useIso) {
 			addFormatters();
 		}
 		else {
@@ -94,22 +108,17 @@ public class WebConversionService extends DefaultFormattingConversionService {
 
 	private void registerJsr310() {
 		DateTimeFormatterRegistrar dateTime = new DateTimeFormatterRegistrar();
-		if (this.dateFormat != null) {
-			dateTime.setDateFormatter(
-					DateTimeFormatter.ofPattern(this.dateFormat).withResolverStyle(ResolverStyle.SMART));
-		}
-
-		if (this.timeFormat != null) {
-			dateTime.setTimeFormatter(
-					DateTimeFormatter.ofPattern(this.timeFormat).withResolverStyle(ResolverStyle.SMART));
-		}
-
-		if (this.dateTimeFormat != null) {
-			dateTime.setDateTimeFormatter(
-					DateTimeFormatter.ofPattern(this.dateTimeFormat).withResolverStyle(ResolverStyle.SMART));
-		}
-
+		configure(this.dateFormat, dateTime::setDateFormatter);
+		configure(this.timeFormat, dateTime::setTimeFormatter);
+		configure(this.dateTimeFormat, dateTime::setDateTimeFormatter);
+		dateTime.setUseIsoFormat(this.useIso);
 		dateTime.registerFormatters(this);
+	}
+
+	private void configure(String format, Consumer<DateTimeFormatter> formatter) {
+		if (format != null) {
+			formatter.accept(DateTimeFormatter.ofPattern(format).withResolverStyle(ResolverStyle.SMART));
+		}
 	}
 
 	private void registerJavaDate() {
@@ -121,7 +130,7 @@ public class WebConversionService extends DefaultFormattingConversionService {
 		dateFormatterRegistrar.registerFormatters(this);
 	}
 
-	private static String getNonEmptyFormat(final String format) {
+	private static String nullIfEmpty(String format) {
 		return StringUtils.hasText(format) ? format : null;
 	}
 

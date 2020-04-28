@@ -52,6 +52,7 @@ import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceCh
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Format;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
@@ -427,8 +428,9 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@Override
 		public FormattingConversionService mvcConversionService() {
-			WebConversionService conversionService = new WebConversionService(this.mvcProperties.getDateFormat(),
-					this.mvcProperties.getTimeFormat(), this.mvcProperties.getDateTimeFormat());
+			Format format = this.mvcProperties.getFormat();
+			WebConversionService conversionService = new WebConversionService(format.getDate(), format.getTime(),
+					format.getDateTime());
 			addFormatters(conversionService);
 			return conversionService;
 		}

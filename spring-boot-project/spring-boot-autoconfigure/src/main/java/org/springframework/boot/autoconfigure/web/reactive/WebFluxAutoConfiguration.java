@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Format;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.codec.CodecCustomizer;
@@ -203,8 +204,9 @@ public class WebFluxAutoConfiguration {
 		@Bean
 		@Override
 		public FormattingConversionService webFluxConversionService() {
-			WebConversionService conversionService = new WebConversionService(this.webFluxProperties.getDateFormat(),
-					this.webFluxProperties.getTimeFormat(), this.webFluxProperties.getDateTimeFormat());
+			Format format = this.webFluxProperties.getFormat();
+			WebConversionService conversionService = new WebConversionService(format.getDate(), format.getTime(),
+					format.getDateTime(), format.isUseIso());
 			addFormatters(conversionService);
 			return conversionService;
 		}
