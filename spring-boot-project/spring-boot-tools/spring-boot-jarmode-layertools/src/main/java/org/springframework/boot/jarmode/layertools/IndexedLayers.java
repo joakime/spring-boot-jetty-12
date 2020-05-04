@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
@@ -50,6 +51,7 @@ class IndexedLayers implements Layers {
 		for (String line : lines) {
 			if (line.startsWith("- ")) {
 				layer = line.substring(3, line.length() - 2);
+				this.layers.put(layer, new LinkedList<>());
 			}
 			else if (line.startsWith("  - ")) {
 				this.layers.add(layer, line.substring(5, line.length() - 1));
