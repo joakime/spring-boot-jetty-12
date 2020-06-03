@@ -139,6 +139,7 @@ class JavaConventions {
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
 			}
+			args.add("-Werror");
 		});
 	}
 

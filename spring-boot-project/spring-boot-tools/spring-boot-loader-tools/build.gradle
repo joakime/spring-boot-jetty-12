@@ -63,3 +63,7 @@ processResources {
 	dependsOn reproducibleLoaderJar
 	dependsOn reproducibleJarModeLayerToolsJar
 }
+
+compileJava {
+	options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']
+}
