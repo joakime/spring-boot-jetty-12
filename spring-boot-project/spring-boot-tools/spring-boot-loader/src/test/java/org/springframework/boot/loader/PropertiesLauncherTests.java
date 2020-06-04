@@ -24,6 +24,7 @@ import java.net.URLClassLoader;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -265,7 +266,7 @@ class PropertiesLauncherTests {
 		assertThat(loader.getClass().getName()).isEqualTo(TestLoader.class.getName());
 	}
 
-	private List<Archive> archives() throws Exception {
+	private Iterator<Archive> archives() throws Exception {
 		List<Archive> archives = new ArrayList<>();
 		String path = System.getProperty("java.class.path");
 		for (String url : path.split(File.pathSeparator)) {
@@ -274,7 +275,7 @@ class PropertiesLauncherTests {
 				archives.add(archive);
 			}
 		}
-		return archives;
+		return archives.iterator();
 	}
 
 	private Archive archive(String url) throws IOException {

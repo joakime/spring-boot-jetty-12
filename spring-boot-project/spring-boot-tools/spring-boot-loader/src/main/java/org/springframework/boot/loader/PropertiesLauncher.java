@@ -346,10 +346,10 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	@Override
-	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
-		Set<URL> urls = new LinkedHashSet<>(archives.size());
-		for (Archive archive : archives) {
-			urls.add(archive.getUrl());
+	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
+		Set<URL> urls = new LinkedHashSet<>();
+		while (archives.hasNext()) {
+			urls.add(archives.next().getUrl());
 		}
 		ClassLoader loader = new LaunchedURLClassLoader(urls.toArray(NO_URLS), getClass().getClassLoader());
 		debug("Classpath: " + urls);

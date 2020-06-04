@@ -139,7 +139,7 @@ class JavaConventions {
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
 			}
-			args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked"));
+			args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation"));
 		});
 	}
 
