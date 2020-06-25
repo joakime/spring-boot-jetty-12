@@ -26,6 +26,7 @@ import groovy.lang.Closure;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
@@ -59,20 +60,13 @@ import org.springframework.util.StringUtils;
  */
 class BeanDefinitionLoader {
 
-	/**
-	 * Boolean flag controlled by a {@code spring.xml.ignore} system property that
-	 * instructs Spring to ignore XML, i.e. to not initialize the XML-related
-	 * infrastructure.
-	 * <p>
-	 * By default XML support is enabled.
-	 */
-	private static final boolean IS_XML_ENABLED = !SpringProperties.getFlag("spring.xml.ignore");
+	private static final boolean XML_ENABLED = !SpringProperties.getFlag("spring.xml.ignore");
 
 	private final Object[] sources;
 
 	private final AnnotatedBeanDefinitionReader annotatedReader;
 
-	private final XmlBeanDefinitionReader xmlReader;
+	private final AbstractBeanDefinitionReader xmlReader;
 
 	private final BeanDefinitionReader groovyReader;
 
@@ -91,7 +85,7 @@ class BeanDefinitionLoader {
 		Assert.notEmpty(sources, "Sources must not be empty");
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
-		this.xmlReader = (IS_XML_ENABLED ? new XmlBeanDefinitionReader(registry) : null);
+		this.xmlReader = (XML_ENABLED ? new XmlBeanDefinitionReader(registry) : null);
 		this.groovyReader = (isGroovyPresent() ? new GroovyBeanDefinitionReader(registry) : null);
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
 		this.scanner.addExcludeFilter(new ClassExcludeFilter(sources));
@@ -104,7 +98,7 @@ class BeanDefinitionLoader {
 	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
-		if (IS_XML_ENABLED) {
+		if (this.xmlReader != null) {
 			this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 		}
 	}
@@ -116,7 +110,7 @@ class BeanDefinitionLoader {
 	void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 		this.scanner.setResourceLoader(resourceLoader);
-		if (IS_XML_ENABLED) {
+		if (this.xmlReader != null) {
 			this.xmlReader.setResourceLoader(resourceLoader);
 		}
 	}
@@ -128,7 +122,7 @@ class BeanDefinitionLoader {
 	void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
 		this.scanner.setEnvironment(environment);
-		if (IS_XML_ENABLED) {
+		if (this.xmlReader != null) {
 			this.xmlReader.setEnvironment(environment);
 		}
 	}
@@ -182,8 +176,8 @@ class BeanDefinitionLoader {
 			}
 			return this.groovyReader.loadBeanDefinitions(source);
 		}
-		if (!IS_XML_ENABLED) {
-			throw new BeanDefinitionStoreException("Cannot load resources when XML support is disabled");
+		if (this.xmlReader == null) {
+			throw new BeanDefinitionStoreException("Cannot load XML bean definitions when XML support is disabled");
 		}
 		return this.xmlReader.loadBeanDefinitions(source);
 	}
