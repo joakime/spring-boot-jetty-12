@@ -21,14 +21,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link FunctionalCondition} that checks if properties are defined in environment.
+ * {@link RegistrationPredicate} that checks if properties are defined in environment.
  *
  * @author Maciej Walkowiak
  * @author Phillip Webb
@@ -36,17 +35,17 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 40)
-class OnPropertyFunctionalCondition extends SpringBootFunctionalCondition {
+class OnPropertyRegistrationPredicate extends SpringBootRegistrationPredicate {
 
 	private final List<PropertySpec> propertySpecs;
 
-	public OnPropertyFunctionalCondition(String location, List<PropertySpec> propertySpecs) {
+	public OnPropertyRegistrationPredicate(String location, List<PropertySpec> propertySpecs) {
 		super(location);
 		this.propertySpecs = propertySpecs;
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context) {
+	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
 		for (PropertySpec spec : this.propertySpecs) {

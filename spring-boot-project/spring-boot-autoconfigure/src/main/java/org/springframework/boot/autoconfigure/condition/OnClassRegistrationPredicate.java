@@ -16,27 +16,25 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
-
-import org.springframework.context.annotation.ConditionContext;
 
 /**
  * @author awilkinson
  */
-public class OnBeanFunctionalCondition extends SpringBootFunctionalCondition {
+public class OnClassRegistrationPredicate extends SpringBootRegistrationPredicate {
 
-	public OnBeanFunctionalCondition(String location) {
+	private final List<Supplier<Class<?>>> classes = new ArrayList<>();
+
+	public OnClassRegistrationPredicate(String location, Supplier<Class<?>> clazz) {
 		super(location);
+		this.classes.add(clazz);
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	public OnBeanFunctionalCondition ofType(Supplier<Class<?>> clazz) {
-		return this;
+	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
+		return null;
 	}
 
 }

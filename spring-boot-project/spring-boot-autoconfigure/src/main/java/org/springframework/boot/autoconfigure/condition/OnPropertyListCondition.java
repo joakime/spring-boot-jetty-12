@@ -29,7 +29,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Stephane Nicoll
  * @since 2.0.5
  */
-public class OnPropertyListCondition extends AnnotationCondition {
+public class OnPropertyListCondition extends SpringBootCondition {
 
 	private final String propertyName;
 

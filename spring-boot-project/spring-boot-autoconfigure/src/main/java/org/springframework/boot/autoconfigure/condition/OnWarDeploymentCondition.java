@@ -21,15 +21,16 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Adapter that enables annotation-based usage of
- * {@link OnWarDeploymentFunctionalCondition}.
+ * {@link OnWarDeploymentRegistrationPredicate}.
  *
  * @author Madhura Bhave
  */
-class OnWarDeploymentCondition extends AnnotationCondition {
+class OnWarDeploymentCondition extends SpringBootCondition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		return new OnWarDeploymentFunctionalCondition(getLocation(metadata)).matches(context);
+		return new OnWarDeploymentRegistrationPredicate(getLocation(metadata))
+				.test(new ConditionContextRegistrationContext(context));
 	}
 
 }

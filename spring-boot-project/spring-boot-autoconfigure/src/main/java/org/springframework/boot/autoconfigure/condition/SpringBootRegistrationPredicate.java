@@ -19,25 +19,24 @@ package org.springframework.boot.autoconfigure.condition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
  * @author awilkinson
  */
-public abstract class SpringBootFunctionalCondition implements FunctionalCondition {
+public abstract class SpringBootRegistrationPredicate implements RegistrationPredicate {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
 	private final String location;
 
-	public SpringBootFunctionalCondition(String location) {
+	public SpringBootRegistrationPredicate(String location) {
 		this.location = location;
 	}
 
 	@Override
-	public boolean matches(ConditionContext context) {
+	public boolean test(RegistrationContext context) {
 		ConditionOutcome outcome = getMatchOutcome(context);
 		logOutcome(outcome);
 		recordEvaluation(context, outcome);
@@ -46,10 +45,10 @@ public abstract class SpringBootFunctionalCondition implements FunctionalConditi
 
 	/**
 	 * Determine the outcome of the match along with suitable log output.
-	 * @param context the condition context
-	 * @return the condition outcome
+	 * @param context the registration context context
+	 * @return the outcome
 	 */
-	public abstract ConditionOutcome getMatchOutcome(ConditionContext context);
+	public abstract ConditionOutcome getMatchOutcome(RegistrationContext context);
 
 	protected final void logOutcome(ConditionOutcome outcome) {
 		if (this.logger.isTraceEnabled()) {
@@ -71,13 +70,28 @@ public abstract class SpringBootFunctionalCondition implements FunctionalConditi
 		return message;
 	}
 
-	private void recordEvaluation(ConditionContext context, ConditionOutcome outcome) {
+	private void recordEvaluation(RegistrationContext context, ConditionOutcome outcome) {
 		if (context.getBeanFactory() != null) {
 			// TODO Record functional condition outcomes
 			// ConditionEvaluationReport.get(context.getBeanFactory()).recordConditionEvaluation(classOrMethodName,
 			// this,
 			// outcome);
 		}
+	}
+
+	/**
+	 * Slightly faster variant of {@link ClassUtils#forName(String, ClassLoader)} that
+	 * doesn't deal with primitives, arrays or inner types.
+	 * @param className the class name to resolve
+	 * @param classLoader the class loader to use
+	 * @return a resolved class
+	 * @throws ClassNotFoundException if the class cannot be found
+	 */
+	protected static Class<?> resolve(String className, ClassLoader classLoader) throws ClassNotFoundException {
+		if (classLoader != null) {
+			return Class.forName(className, false, classLoader);
+		}
+		return Class.forName(className);
 	}
 
 }

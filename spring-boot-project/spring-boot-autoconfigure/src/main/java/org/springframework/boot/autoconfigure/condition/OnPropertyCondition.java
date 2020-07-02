@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.condition.OnPropertyFunctionalCondition.PropertySpec;
+import org.springframework.boot.autoconfigure.condition.OnPropertyRegistrationPredicate.PropertySpec;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -32,7 +32,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
- * Adapter that enables annotation-based usage of {@link OnPropertyFunctionalCondition}.
+ * Adapter that enables annotation-based usage of {@link OnPropertyRegistrationPredicate}.
  *
  * @author Maciej Walkowiak
  * @author Phillip Webb
@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  * @see ConditionalOnProperty
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 40)
-class OnPropertyCondition extends AnnotationCondition {
+class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -51,7 +51,8 @@ class OnPropertyCondition extends AnnotationCondition {
 		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {
 			propertySpecs.add(specFor(annotationAttributes));
 		}
-		return new OnPropertyFunctionalCondition(getLocation(metadata), propertySpecs).matches(context);
+		return new OnPropertyRegistrationPredicate(getLocation(metadata), propertySpecs)
+				.test(new ConditionContextRegistrationContext(context));
 	}
 
 	private List<AnnotationAttributes> annotationAttributesFromMultiValueMap(

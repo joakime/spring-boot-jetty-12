@@ -19,29 +19,28 @@ package org.springframework.boot.autoconfigure.condition;
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
- * A {@link FunctionalCondition} that evaluates a SpEL expression.
+ * A {@link RegistrationPredicate} that evaluates a SpEL expression.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
-class OnExpressionFunctionalCondition extends SpringBootFunctionalCondition {
+class OnExpressionRegistrationPredicate extends SpringBootRegistrationPredicate {
 
 	private final String expression;
 
-	OnExpressionFunctionalCondition(String location, String expression) {
+	OnExpressionRegistrationPredicate(String location, String expression) {
 		super(location);
 		this.expression = wrapIfNecessary(expression);
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context) {
+	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
 		ConditionMessage.Builder messageBuilder = ConditionMessage.forCondition(ConditionalOnExpression.class,
 				"(" + this.expression + ")");
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();

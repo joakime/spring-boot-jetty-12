@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.springframework.boot.autoconfigure.condition.OnPropertyFunctionalCondition.PropertySpec;
+import org.springframework.boot.autoconfigure.condition.OnPropertyRegistrationPredicate.PropertySpec;
 import org.springframework.context.annotation.ConditionContext;
 
 /**
@@ -43,18 +43,18 @@ public class Conditional implements FunctionalCondition {
 	}
 
 	public Conditional onClass(Supplier<Class<?>> clazz) {
-		return on(new OnClassFunctionalCondition(this.location, clazz));
+		return on(new OnClassRegistrationPredicate(this.location, clazz));
 	}
 
 	public Conditional onProperty(Consumer<PropertySpec> configurer) {
 		PropertySpec spec = new PropertySpec();
 		configurer.accept(spec);
-		OnPropertyFunctionalCondition condition = new OnPropertyFunctionalCondition(this.location, Arrays.asList(spec));
+		OnPropertyRegistrationPredicate condition = new OnPropertyRegistrationPredicate(this.location, Arrays.asList(spec));
 		return on(condition);
 	}
 
-	public Conditional onBean(Consumer<OnBeanFunctionalCondition> configurer) {
-		OnBeanFunctionalCondition condition = new OnBeanFunctionalCondition(this.location);
+	public Conditional onBean(Consumer<OnBeanRegistrationPredicate> configurer) {
+		OnBeanRegistrationPredicate condition = new OnBeanRegistrationPredicate(this.location);
 		configurer.accept(condition);
 		return on(condition);
 	}

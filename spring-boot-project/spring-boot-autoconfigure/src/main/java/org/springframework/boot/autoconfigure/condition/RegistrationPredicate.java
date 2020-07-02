@@ -16,22 +16,13 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
+import java.util.function.Predicate;
 
 /**
- * A functional alternative to {@link Condition} that does not rely upon annotation
- * metadata.
+ * A {@link Predicate} for conditional bean registration.
  *
  * @author Andy Wilkinson
  */
-public interface FunctionalCondition {
-
-	/**
-	 * Determine if the condition matches.
-	 * @param context the context in which the condition should be evaluated
-	 * @return {@code true} if the condition matches, otherwise {@code false}.
-	 */
-	boolean matches(ConditionContext context);
+public interface RegistrationPredicate extends Predicate<RegistrationContext> {
 
 }

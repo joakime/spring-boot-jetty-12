@@ -29,13 +29,13 @@ import org.springframework.core.io.ResourceLoader;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ClassPathExclusions("hibernate-validator-*.jar")
-public class OnClassFunctionalConditionTests {
+public class OnClassRegistrationPredicateTests {
 
 	private final ConditionContext context = new TestConditionContext();
 
 	@Test
 	void classPresent() {
-		ConditionOutcome outcome = new OnClassFunctionalCondition("here", () -> Object.class)
+		ConditionOutcome outcome = new OnClassRegistrationPredicate("here", () -> Object.class)
 				.getMatchOutcome(this.context);
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage()).isEqualTo("OnClassFunctionalCondition found class java.lang.Object");
@@ -43,7 +43,7 @@ public class OnClassFunctionalConditionTests {
 
 	@Test
 	void classMissing() {
-		ConditionOutcome outcome = new OnClassFunctionalCondition("here", () -> HibernateValidator.class)
+		ConditionOutcome outcome = new OnClassRegistrationPredicate("here", () -> HibernateValidator.class)
 				.getMatchOutcome(this.context);
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
@@ -52,7 +52,7 @@ public class OnClassFunctionalConditionTests {
 
 	@Test
 	void superClassMissing() {
-		ConditionOutcome outcome = new OnClassFunctionalCondition("here", () -> CustomHibernateValidator.class)
+		ConditionOutcome outcome = new OnClassRegistrationPredicate("here", () -> CustomHibernateValidator.class)
 				.getMatchOutcome(this.context);
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage()).isEqualTo(

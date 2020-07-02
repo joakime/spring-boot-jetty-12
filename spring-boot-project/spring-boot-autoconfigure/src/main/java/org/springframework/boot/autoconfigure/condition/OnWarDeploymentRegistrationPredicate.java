@@ -18,24 +18,23 @@ package org.springframework.boot.autoconfigure.condition;
 
 import javax.servlet.ServletContext;
 
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * {@link FunctionalCondition} that checks if the application is running as a traditional
- * war deployment.
+ * {@link RegistrationPredicate} that checks if the application is running as a
+ * traditional war deployment.
  *
  * @author Madhura Bhave
  */
-class OnWarDeploymentFunctionalCondition extends SpringBootFunctionalCondition {
+class OnWarDeploymentRegistrationPredicate extends SpringBootRegistrationPredicate {
 
-	OnWarDeploymentFunctionalCondition(String location) {
+	OnWarDeploymentRegistrationPredicate(String location) {
 		super(location);
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context) {
+	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
 		ResourceLoader resourceLoader = context.getResourceLoader();
 		if (resourceLoader instanceof WebApplicationContext) {
 			WebApplicationContext applicationContext = (WebApplicationContext) resourceLoader;

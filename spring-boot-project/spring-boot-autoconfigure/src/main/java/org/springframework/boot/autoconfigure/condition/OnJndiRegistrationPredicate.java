@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jndi.JndiLocatorDelegate;
@@ -28,22 +27,22 @@ import org.springframework.jndi.JndiLocatorSupport;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link FunctionalCondition} that checks for JNDI locations.
+ * {@link RegistrationPredicate} that checks for JNDI locations.
  *
  * @author Phillip Webb
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
-class OnJndiFunctionalCondition extends SpringBootFunctionalCondition {
+class OnJndiRegistrationPredicate extends SpringBootRegistrationPredicate {
 
 	private final List<String> jndiLocations;
 
-	OnJndiFunctionalCondition(String location, List<String> jndiLocations) {
+	OnJndiRegistrationPredicate(String location, List<String> jndiLocations) {
 		super(location);
 		this.jndiLocations = jndiLocations;
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context) {
+	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
 		try {
 			return getMatchOutcome();
 		}

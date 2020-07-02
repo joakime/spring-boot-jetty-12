@@ -27,13 +27,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 
 /**
- * Adapter that enables annotation-based usage of {@link OnResourceFunctionalCondition}.
+ * Adapter that enables annotation-based usage of {@link OnResourceRegistrationPredicate}.
  *
  * @author Dave Syer
  * @see ConditionalOnResource
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnResourceCondition extends AnnotationCondition {
+class OnResourceCondition extends SpringBootCondition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -43,7 +43,8 @@ class OnResourceCondition extends AnnotationCondition {
 		collectValues(locations, attributes.get("resources"));
 		Assert.isTrue(!locations.isEmpty(),
 				"@ConditionalOnResource annotations must specify at least one resource location");
-		return new OnResourceFunctionalCondition(getLocation(metadata), locations).matches(context);
+		return new OnResourceRegistrationPredicate(getLocation(metadata), locations)
+				.test(new ConditionContextRegistrationContext(context));
 	}
 
 	private void collectValues(List<String> names, List<Object> values) {

@@ -26,24 +26,25 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Adapter that enables annotation-based usage of {@link OnJndiFunctionalCondition}.
+ * Adapter that enables annotation-based usage of {@link OnJndiRegistrationPredicate}.
  *
  * @author Phillip Webb
  * @see ConditionalOnJndi
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
-class OnJndiCondition extends AnnotationCondition {
+class OnJndiCondition extends SpringBootCondition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
 		String[] locations = annotationAttributes.getStringArray("value");
-		return createFunctionalCondition(getLocation(metadata), Arrays.asList(locations)).matches(context);
+		return createFunctionalCondition(getLocation(metadata), Arrays.asList(locations))
+				.test(new ConditionContextRegistrationContext(context));
 	}
 
-	OnJndiFunctionalCondition createFunctionalCondition(String location, List<String> jndiLocations) {
-		return new OnJndiFunctionalCondition(location, jndiLocations);
+	OnJndiRegistrationPredicate createFunctionalCondition(String location, List<String> jndiLocations) {
+		return new OnJndiRegistrationPredicate(location, jndiLocations);
 	}
 
 }

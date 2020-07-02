@@ -26,21 +26,22 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Adapter that enables annotation-based usage of {@link OnJavaFunctionalCondition}.
+ * Adapter that enables annotation-based usage of {@link OnJavaRegistrationPredicate}.
  *
  * @author Oliver Gierke
  * @author Phillip Webb
  * @see ConditionalOnJava
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnJavaCondition extends AnnotationCondition {
+class OnJavaCondition extends SpringBootCondition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnJava.class.getName());
 		Range range = (Range) attributes.get("range");
 		JavaVersion version = (JavaVersion) attributes.get("value");
-		return new OnJavaFunctionalCondition(getLocation(metadata), range, version).matches(context);
+		return new OnJavaRegistrationPredicate(getLocation(metadata), range, version)
+				.test(new ConditionContextRegistrationContext(context));
 	}
 
 }

@@ -32,7 +32,7 @@ import org.springframework.context.annotation.ConditionContext;
  * @author Stephane Nicoll
  * @since 2.0.5
  */
-public class OnPropertyListFunctionalCondition extends SpringBootFunctionalCondition {
+public class OnPropertyListFunctionalCondition extends SpringBootRegistrationPredicate {
 
 	private static final Bindable<List<String>> STRING_LIST = Bindable.listOf(String.class);
 

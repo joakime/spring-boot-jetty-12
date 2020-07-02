@@ -17,24 +17,23 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.context.annotation.ConditionContext;
 
 /**
- * {@link FunctionalCondition} that checks for a required {@link CloudPlatform}.
+ * {@link RegistrationPredicate} that checks for a required {@link CloudPlatform}.
  *
  * @author Madhura Bhave
  */
-class OnCloudPlatformFunctionalCondition extends SpringBootFunctionalCondition {
+class OnCloudPlatformRegistrationPredicate extends SpringBootRegistrationPredicate {
 
 	private final CloudPlatform cloudPlatform;
 
-	public OnCloudPlatformFunctionalCondition(String location, CloudPlatform cloudPlatform) {
+	public OnCloudPlatformRegistrationPredicate(String location, CloudPlatform cloudPlatform) {
 		super(location);
 		this.cloudPlatform = cloudPlatform;
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context) {
+	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
 		String name = this.cloudPlatform.name();
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnCloudPlatform.class);
 		if (this.cloudPlatform.isActive(context.getEnvironment())) {

@@ -155,7 +155,7 @@ class ConditionalOnJndiTests {
 		private boolean jndiAvailable = true;
 
 		@Override
-		OnJndiFunctionalCondition createFunctionalCondition(String location, List<String> jndiLocations) {
+		OnJndiRegistrationPredicate createFunctionalCondition(String location, List<String> jndiLocations) {
 			return new MockableFunctionalOnJndi(location, jndiLocations);
 		}
 
@@ -163,7 +163,7 @@ class ConditionalOnJndiTests {
 			this.foundLocation = foundLocation;
 		}
 
-		class MockableFunctionalOnJndi extends OnJndiFunctionalCondition {
+		class MockableFunctionalOnJndi extends OnJndiRegistrationPredicate {
 
 			MockableFunctionalOnJndi(String location, List<String> jndiLocations) {
 				super(location, jndiLocations);

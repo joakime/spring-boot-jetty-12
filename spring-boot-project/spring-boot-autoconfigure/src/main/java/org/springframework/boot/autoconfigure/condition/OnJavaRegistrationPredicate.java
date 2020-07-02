@@ -18,18 +18,17 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.system.JavaVersion;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
- * {@link FunctionalCondition} that checks for a required version of Java.
+ * {@link RegistrationPredicate} that checks for a required version of Java.
  *
  * @author Oliver Gierke
  * @author Phillip Webb
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnJavaFunctionalCondition extends SpringBootFunctionalCondition {
+class OnJavaRegistrationPredicate extends SpringBootRegistrationPredicate {
 
 	private static final JavaVersion JVM_VERSION = JavaVersion.getJavaVersion();
 
@@ -37,14 +36,14 @@ class OnJavaFunctionalCondition extends SpringBootFunctionalCondition {
 
 	private final JavaVersion version;
 
-	OnJavaFunctionalCondition(String location, Range range, JavaVersion version) {
+	OnJavaRegistrationPredicate(String location, Range range, JavaVersion version) {
 		super(location);
 		this.range = range;
 		this.version = version;
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context) {
+	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
 		boolean match = isWithin(JVM_VERSION, this.range, this.version);
 		String expected = String.format((this.range != Range.EQUAL_OR_NEWER) ? "(older than %s)" : "(%s or newer)",
 				this.version);

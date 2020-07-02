@@ -20,29 +20,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 
 /**
- * {@link FunctionalCondition} that checks for specific resources.
+ * {@link RegistrationPredicate} that checks for specific resources.
  *
  * @author Dave Syer
  * @see ConditionalOnResource
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnResourceFunctionalCondition extends SpringBootFunctionalCondition {
+class OnResourceRegistrationPredicate extends SpringBootRegistrationPredicate {
 
 	private final List<String> resourceLocations;
 
-	OnResourceFunctionalCondition(String location, List<String> resourceLocations) {
+	OnResourceRegistrationPredicate(String location, List<String> resourceLocations) {
 		super(location);
 		this.resourceLocations = resourceLocations;
 	}
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context) {
+	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
 		ResourceLoader loader = context.getResourceLoader();
 		List<String> missing = new ArrayList<>();
 		for (String resourceLocation : this.resourceLocations) {
