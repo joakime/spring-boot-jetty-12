@@ -22,17 +22,18 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Adapter that enables annotation-based usage of {@link OnExpressionRegistrationPredicate}.
+ * Adapter that enables annotation-based usage of
+ * {@link OnExpressionRegistrationPredicate}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
  * @see ConditionalOnExpression
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
-class OnExpressionCondition extends SpringBootCondition {
+class OnExpressionCondition extends RegistrationPredicateCondition {
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String expression = (String) metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName())
 				.get("value");
 		return new OnExpressionRegistrationPredicate(getLocation(metadata), expression)

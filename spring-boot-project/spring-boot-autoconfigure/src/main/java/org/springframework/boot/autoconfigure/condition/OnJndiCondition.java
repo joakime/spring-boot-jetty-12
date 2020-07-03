@@ -32,10 +32,10 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @see ConditionalOnJndi
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
-class OnJndiCondition extends SpringBootCondition {
+class OnJndiCondition extends RegistrationPredicateCondition {
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
 		String[] locations = annotationAttributes.getStringArray("value");

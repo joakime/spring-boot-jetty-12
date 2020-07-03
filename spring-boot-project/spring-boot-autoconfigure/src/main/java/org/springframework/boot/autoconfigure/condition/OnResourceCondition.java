@@ -33,10 +33,10 @@ import org.springframework.util.MultiValueMap;
  * @see ConditionalOnResource
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnResourceCondition extends SpringBootCondition {
+class OnResourceCondition extends RegistrationPredicateCondition {
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata
 				.getAllAnnotationAttributes(ConditionalOnResource.class.getName(), true);
 		List<String> locations = new ArrayList<>();

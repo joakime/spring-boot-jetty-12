@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -122,8 +121,8 @@ class ConditionalOnSingleCandidateTests {
 	void invalidAnnotationTwoTypes() {
 		this.contextRunner.withUserConfiguration(OnBeanSingleCandidateTwoTypesConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
-			AbstractThrowableAssert<?, ? extends Throwable> failure = assertThat(context).getFailure();
-			failure.hasMessageContaining(OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
+			assertThat(context).getFailure().hasCauseInstanceOf(IllegalArgumentException.class)
+					.hasMessageContaining(OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 		});
 	}
 

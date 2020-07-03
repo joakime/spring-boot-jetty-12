@@ -41,10 +41,10 @@ import org.springframework.util.StringUtils;
  * @see ConditionalOnProperty
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 40)
-class OnPropertyCondition extends SpringBootCondition {
+class OnPropertyCondition extends RegistrationPredicateCondition {
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		List<AnnotationAttributes> allAnnotationAttributes = annotationAttributesFromMultiValueMap(
 				metadata.getAllAnnotationAttributes(ConditionalOnProperty.class.getName()));
 		List<PropertySpec> propertySpecs = new ArrayList<>();

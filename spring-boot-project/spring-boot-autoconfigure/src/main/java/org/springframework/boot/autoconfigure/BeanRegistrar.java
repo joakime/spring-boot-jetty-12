@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
-
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+package org.springframework.boot.autoconfigure;
 
 /**
- * Adapter that enables annotation-based usage of
- * {@link OnWarDeploymentRegistrationPredicate}.
- *
- * @author Madhura Bhave
+ * @author awilkinson
  */
-class OnWarDeploymentCondition extends RegistrationPredicateCondition {
+public interface BeanRegistrar {
 
-	@Override
-	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		return new OnWarDeploymentRegistrationPredicate(getLocation(metadata))
-				.test(new ConditionContextRegistrationContext(context));
-	}
+	void registerBeans(BeanRegistry beanRegistry);
 
 }

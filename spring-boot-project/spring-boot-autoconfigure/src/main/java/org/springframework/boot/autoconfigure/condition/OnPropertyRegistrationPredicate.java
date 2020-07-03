@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 40)
-class OnPropertyRegistrationPredicate extends SpringBootRegistrationPredicate {
+public class OnPropertyRegistrationPredicate extends SpringBootRegistrationPredicate {
 
 	private final List<PropertySpec> propertySpecs;
 
@@ -97,7 +97,7 @@ class OnPropertyRegistrationPredicate extends SpringBootRegistrationPredicate {
 		}
 
 		public PropertySpec prefix(String prefix) {
-			this.prefix = prefix;
+			this.prefix = prefix.endsWith(".") ? prefix : prefix + ".";
 			return this;
 		}
 

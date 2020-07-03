@@ -29,10 +29,10 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Madhura Bhave
  * @see ConditionalOnCloudPlatform
  */
-class OnCloudPlatformCondition extends SpringBootCondition {
+class OnCloudPlatformCondition extends RegistrationPredicateCondition {
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnCloudPlatform.class.getName());
 		CloudPlatform cloudPlatform = (CloudPlatform) attributes.get("value");
 		return new OnCloudPlatformRegistrationPredicate(getLocation(metadata), cloudPlatform)

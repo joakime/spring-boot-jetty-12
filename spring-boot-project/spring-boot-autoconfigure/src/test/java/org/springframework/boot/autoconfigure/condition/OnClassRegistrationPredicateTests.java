@@ -20,9 +20,7 @@ import org.hibernate.validator.HibernateValidator;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 
@@ -31,14 +29,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathExclusions("hibernate-validator-*.jar")
 public class OnClassRegistrationPredicateTests {
 
-	private final ConditionContext context = new TestConditionContext();
+	private final RegistrationContext context = new TestRegistrationContext();
 
 	@Test
 	void classPresent() {
 		ConditionOutcome outcome = new OnClassRegistrationPredicate("here", () -> Object.class)
 				.getMatchOutcome(this.context);
 		assertThat(outcome.isMatch()).isTrue();
-		assertThat(outcome.getMessage()).isEqualTo("OnClassFunctionalCondition found class java.lang.Object");
+		assertThat(outcome.getMessage()).isEqualTo("OnClassRegistrationPredicate found class java.lang.Object");
 	}
 
 	@Test
@@ -46,8 +44,8 @@ public class OnClassRegistrationPredicateTests {
 		ConditionOutcome outcome = new OnClassRegistrationPredicate("here", () -> HibernateValidator.class)
 				.getMatchOutcome(this.context);
 		assertThat(outcome.isMatch()).isFalse();
-		assertThat(outcome.getMessage())
-				.isEqualTo("OnClassFunctionalCondition did not find class org.hibernate.validator.HibernateValidator");
+		assertThat(outcome.getMessage()).isEqualTo(
+				"OnClassRegistrationPredicate did not find class org.hibernate.validator.HibernateValidator");
 	}
 
 	@Test
@@ -56,19 +54,14 @@ public class OnClassRegistrationPredicateTests {
 				.getMatchOutcome(this.context);
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage()).isEqualTo(
-				"OnClassFunctionalCondition did not find class org.springframework.boot.autoconfigure.condition.OnClassFunctionalConditionTests.CustomHibernateValidator");
+				"OnClassRegistrationPredicate did not find class org.springframework.boot.autoconfigure.condition.OnClassFunctionalConditionTests.CustomHibernateValidator");
 	}
 
 	static class CustomHibernateValidator extends HibernateValidator {
 
 	}
 
-	static class TestConditionContext implements ConditionContext {
-
-		@Override
-		public BeanDefinitionRegistry getRegistry() {
-			throw new UnsupportedOperationException("Auto-generated method stub");
-		}
+	static class TestRegistrationContext implements RegistrationContext {
 
 		@Override
 		public ConfigurableListableBeanFactory getBeanFactory() {
@@ -87,7 +80,7 @@ public class OnClassRegistrationPredicateTests {
 
 		@Override
 		public ClassLoader getClassLoader() {
-			return TestConditionContext.class.getClassLoader();
+			return TestRegistrationContext.class.getClassLoader();
 		}
 
 	}

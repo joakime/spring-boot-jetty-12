@@ -76,7 +76,8 @@ public final class ConditionEvaluationReport {
 	 * @param condition the condition evaluated
 	 * @param outcome the condition outcome
 	 */
-	public void recordConditionEvaluation(String source, Condition condition, ConditionOutcome outcome) {
+	// TODO Breaking API change
+	public void recordConditionEvaluation(String source, Object condition, ConditionOutcome outcome) {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(condition, "Condition must not be null");
 		Assert.notNull(outcome, "Outcome must not be null");
@@ -224,7 +225,11 @@ public final class ConditionEvaluationReport {
 
 		private final Set<ConditionAndOutcome> outcomes = new LinkedHashSet<>();
 
-		public void add(Condition condition, ConditionOutcome outcome) {
+		public void add(Object condition, ConditionOutcome outcome) {
+			this.outcomes.add(new ConditionAndOutcome(condition, outcome));
+		}
+
+		public void add(RegistrationPredicate condition, ConditionOutcome outcome) {
 			this.outcomes.add(new ConditionAndOutcome(condition, outcome));
 		}
 
@@ -253,16 +258,18 @@ public final class ConditionEvaluationReport {
 	 */
 	public static class ConditionAndOutcome {
 
-		private final Condition condition;
+		private final Object condition;
 
 		private final ConditionOutcome outcome;
 
-		public ConditionAndOutcome(Condition condition, ConditionOutcome outcome) {
+		// TODO Breaking API change
+		public ConditionAndOutcome(Object condition, ConditionOutcome outcome) {
 			this.condition = condition;
 			this.outcome = outcome;
 		}
 
-		public Condition getCondition() {
+		// TODO Breaking API change
+		public Object getCondition() {
 			return this.condition;
 		}
 

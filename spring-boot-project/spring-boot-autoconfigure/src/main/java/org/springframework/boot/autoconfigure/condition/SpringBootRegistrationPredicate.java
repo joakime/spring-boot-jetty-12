@@ -37,10 +37,15 @@ public abstract class SpringBootRegistrationPredicate implements RegistrationPre
 
 	@Override
 	public boolean test(RegistrationContext context) {
-		ConditionOutcome outcome = getMatchOutcome(context);
-		logOutcome(outcome);
-		recordEvaluation(context, outcome);
-		return outcome.isMatch();
+		try {
+			ConditionOutcome outcome = getMatchOutcome(context);
+			logOutcome(outcome);
+			recordEvaluation(context, outcome);
+			return outcome.isMatch();
+		}
+		catch (RuntimeException ex) {
+			throw new IllegalStateException("Error testing registration predicate at " + this.location, ex);
+		}
 	}
 
 	/**
@@ -72,10 +77,8 @@ public abstract class SpringBootRegistrationPredicate implements RegistrationPre
 
 	private void recordEvaluation(RegistrationContext context, ConditionOutcome outcome) {
 		if (context.getBeanFactory() != null) {
-			// TODO Record functional condition outcomes
-			// ConditionEvaluationReport.get(context.getBeanFactory()).recordConditionEvaluation(classOrMethodName,
-			// this,
-			// outcome);
+			ConditionEvaluationReport.get(context.getBeanFactory()).recordConditionEvaluation(this.location, this,
+					outcome);
 		}
 	}
 

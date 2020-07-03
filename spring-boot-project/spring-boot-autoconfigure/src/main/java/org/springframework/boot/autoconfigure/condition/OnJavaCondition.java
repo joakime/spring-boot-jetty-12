@@ -33,10 +33,10 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @see ConditionalOnJava
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnJavaCondition extends SpringBootCondition {
+class OnJavaCondition extends RegistrationPredicateCondition {
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnJava.class.getName());
 		Range range = (Range) attributes.get("range");
 		JavaVersion version = (JavaVersion) attributes.get("value");

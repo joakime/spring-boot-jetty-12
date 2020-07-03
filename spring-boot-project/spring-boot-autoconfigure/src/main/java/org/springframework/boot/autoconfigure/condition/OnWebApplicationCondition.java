@@ -38,7 +38,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @see ConditionalOnNotWebApplication
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-class OnWebApplicationCondition extends FilteringSpringBootCondition {
+class OnWebApplicationCondition extends FilteringRegistrationPredicateCondition {
 
 	@Override
 	protected ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
@@ -81,7 +81,7 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 	}
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		boolean required = metadata.isAnnotated(ConditionalOnWebApplication.class.getName());
 		Type type = deduceType(metadata);
 		return new OnWebApplicationRegistrationPredicate(getLocation(metadata), type, required)

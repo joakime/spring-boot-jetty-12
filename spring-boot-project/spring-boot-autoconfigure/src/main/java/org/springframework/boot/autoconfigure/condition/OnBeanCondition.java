@@ -61,7 +61,7 @@ import org.springframework.util.StringUtils;
  * @see ConditionalOnSingleCandidate
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class OnBeanCondition extends FilteringSpringBootCondition implements ConfigurationCondition {
+class OnBeanCondition extends FilteringRegistrationPredicateCondition implements ConfigurationCondition {
 
 	@Override
 	public ConfigurationPhase getConfigurationPhase() {
@@ -98,7 +98,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		MergedAnnotations annotations = metadata.getAnnotations();
 		Spec beanSpec = null;
 		Spec singleCandidateSpec = null;

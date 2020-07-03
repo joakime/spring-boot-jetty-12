@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
+package org.springframework.boot.autoconfigure;
 
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfigurationBeanRegistrar;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * Adapter that enables annotation-based usage of
- * {@link OnWarDeploymentRegistrationPredicate}.
- *
- * @author Madhura Bhave
+ * @author awilkinson
  */
-class OnWarDeploymentCondition extends RegistrationPredicateCondition {
+public class AutoConfigurationApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
-	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		return new OnWarDeploymentRegistrationPredicate(getLocation(metadata))
-				.test(new ConditionContextRegistrationContext(context));
+	public void initialize(ConfigurableApplicationContext applicationContext) {
+		new AopAutoConfigurationBeanRegistrar().registerBeans(new StandardBeanRegistry(applicationContext));
 	}
 
 }

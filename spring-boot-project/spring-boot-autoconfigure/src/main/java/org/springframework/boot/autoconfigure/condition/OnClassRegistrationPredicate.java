@@ -25,16 +25,31 @@ import java.util.function.Supplier;
  */
 public class OnClassRegistrationPredicate extends SpringBootRegistrationPredicate {
 
-	private final List<Supplier<Class<?>>> classes = new ArrayList<>();
+	private final List<Supplier<Class<?>>> classSuppliers = new ArrayList<>();
 
 	public OnClassRegistrationPredicate(String location, Supplier<Class<?>> clazz) {
 		super(location);
-		this.classes.add(clazz);
+		this.classSuppliers.add(clazz);
 	}
 
 	@Override
 	public ConditionOutcome getMatchOutcome(RegistrationContext context) {
-		return null;
+		List<String> classes = new ArrayList<>();
+		for (Supplier<Class<?>> classSupplier : this.classSuppliers) {
+			try {
+				classes.add(classSupplier.get().getName());
+			}
+			catch (NoClassDefFoundError ex) {
+				Throwable cause = ex.getCause();
+				String className = (cause instanceof ClassNotFoundException)
+						? className = ((ClassNotFoundException) cause).getMessage() : ex.getMessage().replace("/", ".");
+				return ConditionOutcome
+						.noMatch(ConditionMessage.forCondition(OnClassRegistrationPredicate.class.getSimpleName())
+								.didNotFind("class").items(className));
+			}
+		}
+		return ConditionOutcome.match(ConditionMessage.forCondition(OnClassRegistrationPredicate.class.getSimpleName())
+				.found("class", "classes").items(classes));
 	}
 
 }

@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
+package smoketest.simple;
 
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.AutoConfigurationApplicationContextInitializer;
 
 /**
- * Adapter that enables annotation-based usage of
- * {@link OnWarDeploymentRegistrationPredicate}.
- *
- * @author Madhura Bhave
+ * @author awilkinson
  */
-class OnWarDeploymentCondition extends RegistrationPredicateCondition {
+public class ConditionalRegistrationApplication {
 
-	@Override
-	public boolean evaluate(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		return new OnWarDeploymentRegistrationPredicate(getLocation(metadata))
-				.test(new ConditionContextRegistrationContext(context));
+	public static void main(String[] args) {
+		SpringApplication application = new SpringApplication(ConditionalRegistrationApplication.class);
+		application.addInitializers(new AutoConfigurationApplicationContextInitializer());
+		application.run("--debug");
 	}
 
 }
