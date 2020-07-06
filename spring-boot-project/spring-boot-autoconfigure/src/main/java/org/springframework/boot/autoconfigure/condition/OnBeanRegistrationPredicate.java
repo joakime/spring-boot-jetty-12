@@ -432,7 +432,7 @@ final class OnBeanRegistrationPredicate extends SpringBootRegistrationPredicate 
 	}
 
 	/**
-	 * A search specification extracted from the underlying annotation.
+	 * A bean search specification;
 	 */
 	static class Spec {
 

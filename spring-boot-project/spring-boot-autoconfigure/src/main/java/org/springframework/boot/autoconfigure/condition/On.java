@@ -17,10 +17,14 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.springframework.boot.autoconfigure.condition.OnBeanRegistrationPredicate.Spec;
 import org.springframework.boot.autoconfigure.condition.OnPropertyRegistrationPredicate.PropertySpec;
 
 public final class On {
@@ -62,6 +66,32 @@ public final class On {
 
 	public void setPredicate(Predicate<RegistrationContext> predicate) {
 		this.predicate = predicate;
+	}
+
+	public void missingBean(Consumer<MissingBeanSpec> specConfigurer) {
+		MissingBeanSpec spec = new MissingBeanSpec();
+		specConfigurer.accept(spec);
+		addPredicate(new OnBeanRegistrationPredicate(this.location, null, null,
+				new Spec(Collections.emptySet(), spec.types, Collections.emptySet(), Collections.emptySet(),
+						Collections.emptySet(), spec.searchStrategy, "MissingBean")));
+	}
+
+	public static class MissingBeanSpec {
+
+		private Set<String> types = new HashSet<>();
+
+		private SearchStrategy searchStrategy;
+
+		public MissingBeanSpec searchStrategy(SearchStrategy searchStrategy) {
+			this.searchStrategy = searchStrategy;
+			return this;
+		}
+
+		public MissingBeanSpec type(Class<?> type) {
+			this.types.add(type.getName());
+			return this;
+		}
+
 	}
 
 }
