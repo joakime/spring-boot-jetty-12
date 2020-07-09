@@ -42,7 +42,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
  */
 public class BuildInfo extends ConventionTask {
 
-	private final BuildInfoProperties properties = new BuildInfoProperties(getProject());
+	private final BuildInfoProperties properties = new BuildInfoProperties(((Task) this).getProject());
 
 	private File destinationDir;
 
@@ -73,7 +73,7 @@ public class BuildInfo extends ConventionTask {
 	 */
 	@OutputDirectory
 	public File getDestinationDir() {
-		return (this.destinationDir != null) ? this.destinationDir : getProject().getBuildDir();
+		return (this.destinationDir != null) ? this.destinationDir : ((Task) this).getProject().getBuildDir();
 	}
 
 	/**

@@ -30,6 +30,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
@@ -120,7 +121,8 @@ class JavaConventions {
 		project.getPlugins().apply(TestRetryPlugin.class);
 		project.getTasks().withType(Test.class,
 				(test) -> project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
-					TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
+					TestRetryTaskExtension testRetry = ((ExtensionAware) test).getExtensions()
+							.getByType(TestRetryTaskExtension.class);
 					testRetry.getFailOnPassedAfterRetry().set(true);
 					testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 				}));

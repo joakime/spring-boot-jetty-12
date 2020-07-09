@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import org.gradle.BuildResult;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.api.tasks.testing.TestDescriptor;
 import org.gradle.api.tasks.testing.TestListener;
@@ -115,7 +116,7 @@ public class TestFailuresPlugin implements Plugin<Project> {
 
 	public static class TestResultsExtension {
 
-		private final Map<Test, List<TestFailure>> testFailures = new TreeMap<>(
+		private final Map<Task, List<TestFailure>> testFailures = new TreeMap<>(
 				(one, two) -> one.getPath().compareTo(two.getPath()));
 
 		private final Object monitor = new Object();

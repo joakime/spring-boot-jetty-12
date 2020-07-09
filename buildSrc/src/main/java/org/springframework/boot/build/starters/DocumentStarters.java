@@ -52,8 +52,8 @@ public class DocumentStarters extends DefaultTask {
 	private File outputDir;
 
 	public DocumentStarters() {
-		this.starters = getProject().getConfigurations().create("starters");
-		getProject().getGradle().projectsEvaluated((gradle) -> {
+		this.starters = ((Task) this).getProject().getConfigurations().create("starters");
+		((Task) this).getProject().getGradle().projectsEvaluated((gradle) -> {
 			gradle.allprojects((project) -> {
 				if (project.getPlugins().hasPlugin(StarterPlugin.class)) {
 					Map<String, String> dependency = new HashMap<>();

@@ -35,12 +35,14 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskInputs;
 
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -62,8 +64,9 @@ public class TestSliceMetadata extends DefaultTask {
 	private File outputFile;
 
 	public TestSliceMetadata() {
-		getInputs().dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir());
-		getInputs().files((Callable<FileCollection>) () -> this.sourceSet.getOutput().getClassesDirs());
+		TaskInputs inputs = ((Task) this).getInputs();
+		inputs.dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir());
+		inputs.files((Callable<FileCollection>) () -> this.sourceSet.getOutput().getClassesDirs());
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
@@ -77,9 +80,10 @@ public class TestSliceMetadata extends DefaultTask {
 
 	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
-		Configuration testSliceMetadata = getProject().getConfigurations().maybeCreate("testSliceMetadata");
-		getProject().getArtifacts().add(testSliceMetadata.getName(),
-				getProject().provider((Callable<File>) this::getOutputFile), (artifact) -> artifact.builtBy(this));
+		Project project = ((Task) this).getProject();
+		Configuration testSliceMetadata = project.getConfigurations().maybeCreate("testSliceMetadata");
+		project.getArtifacts().add(testSliceMetadata.getName(), project.provider((Callable<File>) this::getOutputFile),
+				(artifact) -> artifact.builtBy(this));
 	}
 
 	@TaskAction

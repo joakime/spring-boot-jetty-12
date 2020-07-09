@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.plugin;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.FileCollection;
@@ -61,8 +62,8 @@ class WarPluginAction implements PluginApplicationAction {
 
 	private TaskProvider<BootWar> configureBootWarTask(Project project) {
 		return project.getTasks().register(SpringBootPlugin.BOOT_WAR_TASK_NAME, BootWar.class, (bootWar) -> {
-			bootWar.setGroup(BasePlugin.BUILD_GROUP);
-			bootWar.setDescription("Assembles an executable war archive containing webapp"
+			((Task) bootWar).setGroup(BasePlugin.BUILD_GROUP);
+			((Task) bootWar).setDescription("Assembles an executable war archive containing webapp"
 					+ " content, and the main classes and their dependencies.");
 			bootWar.providedClasspath(providedRuntimeConfiguration(project));
 			Configuration developmentOnly = project.getConfigurations()

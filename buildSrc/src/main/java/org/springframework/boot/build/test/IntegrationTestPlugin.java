@@ -18,6 +18,7 @@ package org.springframework.boot.build.test;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -71,11 +72,11 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 
 	private Test createTestTask(Project project, SourceSet intTestSourceSet) {
 		Test intTest = project.getTasks().create(INT_TEST_TASK_NAME, Test.class);
-		intTest.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-		intTest.setDescription("Runs integration tests.");
+		((Task) intTest).setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+		((Task) intTest).setDescription("Runs integration tests.");
 		intTest.setTestClassesDirs(intTestSourceSet.getOutput().getClassesDirs());
 		intTest.setClasspath(intTestSourceSet.getRuntimeClasspath());
-		intTest.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
+		((Task) intTest).shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
 		return intTest;
 	}
 

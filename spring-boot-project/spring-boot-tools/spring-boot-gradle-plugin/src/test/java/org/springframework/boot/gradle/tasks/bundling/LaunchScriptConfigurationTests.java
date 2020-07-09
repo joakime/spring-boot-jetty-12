@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +40,7 @@ class LaunchScriptConfigurationTests {
 
 	@BeforeEach
 	void setUp() {
-		given(this.task.getProject()).willReturn(this.project);
+		given(((Task) this.task).getProject()).willReturn(this.project);
 	}
 
 	@Test

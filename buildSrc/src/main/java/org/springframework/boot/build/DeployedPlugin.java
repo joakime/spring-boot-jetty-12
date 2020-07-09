@@ -45,7 +45,7 @@ public class DeployedPlugin implements Plugin<Project> {
 		MavenPublication mavenPublication = publishing.getPublications().create("maven", MavenPublication.class);
 		project.afterEvaluate((evaluated) -> {
 			project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
-				if (((Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME)).isEnabled()) {
+				if (enabled(((Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME)))) {
 					project.getComponents().matching((component) -> component.getName().equals("java"))
 							.all((javaComponent) -> mavenPublication.from(javaComponent));
 				}
@@ -55,6 +55,11 @@ public class DeployedPlugin implements Plugin<Project> {
 				.all((javaPlugin) -> project.getComponents()
 						.matching((component) -> component.getName().equals("javaPlatform"))
 						.all((javaComponent) -> mavenPublication.from(javaComponent)));
+	}
+
+	@SuppressWarnings("deprecation")
+	private boolean enabled(Jar jarTask) {
+		return jarTask.isEnabled();
 	}
 
 }

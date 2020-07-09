@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFile;
@@ -46,7 +48,8 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 	private File outputDir;
 
 	public AbstractPackageManagerDefinitionTask() {
-		getInputs().property("version", getProject().provider(getProject()::getVersion));
+		Project project = ((Task) this).getProject();
+		((Task) this).getInputs().property("version", project.provider(project::getVersion));
 	}
 
 	@InputFile
@@ -77,13 +80,14 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 	}
 
 	protected void createDescriptor(Map<String, Object> additionalProperties) {
-		getProject().copy((copy) -> {
+		Project project = ((Task) this).getProject();
+		project.copy((copy) -> {
 			copy.from(this.template);
 			copy.into(this.outputDir);
 			Map<String, Object> properties = new HashMap<>(additionalProperties);
 			properties.put("hash", sha256(this.archive.get().getAsFile()));
-			properties.put("repo", ArtifactoryRepository.forProject(getProject()));
-			properties.put("project", getProject());
+			properties.put("repo", ArtifactoryRepository.forProject(project));
+			properties.put("project", project);
 			copy.expand(properties);
 		});
 	}

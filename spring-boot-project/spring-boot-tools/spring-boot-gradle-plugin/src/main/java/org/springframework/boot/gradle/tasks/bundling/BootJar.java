@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
@@ -71,7 +72,7 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	public BootJar() {
 		this.support = new BootArchiveSupport(LAUNCHER, this::isLibrary, this::resolveZipCompression);
-		this.bootInfSpec = getProject().copySpec().into("BOOT-INF");
+		this.bootInfSpec = ((Task) this).getProject().copySpec().into("BOOT-INF");
 		configureBootInfSpec(this.bootInfSpec);
 		getMainSpec().with(this.bootInfSpec);
 	}
@@ -105,7 +106,7 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	protected CopyAction createCopyAction() {
 		if (this.layered != null) {
-			JavaPluginConvention javaPluginConvention = getProject().getConvention()
+			JavaPluginConvention javaPluginConvention = ((Task) this).getProject().getConvention()
 					.findPlugin(JavaPluginConvention.class);
 			Iterable<SourceSet> sourceSets = (javaPluginConvention != null) ? javaPluginConvention.getSourceSets()
 					: Collections.emptySet();
@@ -119,7 +120,7 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Internal
 	protected Iterable<Configuration> getConfigurations() {
-		return getProject().getConfigurations();
+		return ((Task) this).getProject().getConfigurations();
 	}
 
 	@Override
@@ -200,18 +201,18 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void classpath(Object... classpath) {
 		FileCollection existingClasspath = this.classpath;
-		this.classpath = getProject().files((existingClasspath != null) ? existingClasspath : Collections.emptyList(),
-				classpath);
+		this.classpath = ((Task) this).getProject()
+				.files((existingClasspath != null) ? existingClasspath : Collections.emptyList(), classpath);
 	}
 
 	@Override
 	public void setClasspath(Object classpath) {
-		this.classpath = getProject().files(classpath);
+		this.classpath = ((Task) this).getProject().files(classpath);
 	}
 
 	@Override
 	public void setClasspath(FileCollection classpath) {
-		this.classpath = getProject().files(classpath);
+		this.classpath = ((Task) this).getProject().files(classpath);
 	}
 
 	@Override
@@ -232,7 +233,7 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	@Internal
 	public CopySpec getBootInf() {
-		CopySpec child = getProject().copySpec();
+		CopySpec child = ((Task) this).getProject().copySpec();
 		this.bootInfSpec.with(child);
 		return child;
 	}

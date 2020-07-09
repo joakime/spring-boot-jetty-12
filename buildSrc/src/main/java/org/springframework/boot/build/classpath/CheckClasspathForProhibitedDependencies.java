@@ -39,7 +39,7 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 	private Configuration classpath;
 
 	public CheckClasspathForProhibitedDependencies() {
-		getOutputs().upToDateWhen((task) -> true);
+		((Task) this).getOutputs().upToDateWhen((task) -> true);
 	}
 
 	public void setClasspath(Configuration classpath) {

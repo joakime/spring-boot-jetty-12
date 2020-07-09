@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
@@ -139,7 +140,7 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public void providedClasspath(Object... classpath) {
 		FileCollection existingClasspath = this.providedClasspath;
-		this.providedClasspath = getProject()
+		this.providedClasspath = ((Task) this).getProject()
 				.files((existingClasspath != null) ? existingClasspath : Collections.emptyList(), classpath);
 	}
 
@@ -150,7 +151,7 @@ public class BootWar extends War implements BootArchive {
 	 * @since 2.0.7
 	 */
 	public void setProvidedClasspath(FileCollection classpath) {
-		this.providedClasspath = getProject().files(classpath);
+		this.providedClasspath = ((Task) this).getProject().files(classpath);
 	}
 
 	/**
@@ -161,7 +162,7 @@ public class BootWar extends War implements BootArchive {
 	 * @since 2.0.7
 	 */
 	public void setProvidedClasspath(Object classpath) {
-		this.providedClasspath = getProject().files(classpath);
+		this.providedClasspath = ((Task) this).getProject().files(classpath);
 	}
 
 	@Override

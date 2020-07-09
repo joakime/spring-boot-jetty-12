@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 
 import org.springframework.boot.loader.tools.FileUtils;
@@ -49,7 +50,7 @@ public class LaunchScriptConfiguration implements Serializable {
 	}
 
 	LaunchScriptConfiguration(AbstractArchiveTask archiveTask) {
-		Project project = archiveTask.getProject();
+		Project project = ((Task) archiveTask).getProject();
 		String baseName = archiveTask.getArchiveBaseName().get();
 		putIfMissing(this.properties, "initInfoProvides", baseName);
 		putIfMissing(this.properties, "initInfoShortDescription", removeLineBreaks(project.getDescription()), baseName);

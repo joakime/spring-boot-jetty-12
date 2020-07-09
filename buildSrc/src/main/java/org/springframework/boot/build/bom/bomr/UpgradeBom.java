@@ -79,10 +79,10 @@ public class UpgradeBom extends DefaultTask {
 		Milestone milestone = determineMilestone(repository);
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(
 				new MavenMetadataVersionResolver(Arrays.asList("https://repo1.maven.org/maven2/")),
-				this.bom.getUpgrade().getPolicy(), getServices().get(UserInputHandler.class))
-						.resolveUpgrades(this.bom.getLibraries());
-		Path buildFile = getProject().getBuildFile().toPath();
-		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
+				this.bom.getUpgrade().getPolicy(), getUserInputHandler()).resolveUpgrades(this.bom.getLibraries());
+		Path buildFile = ((Task) this).getProject().getBuildFile().toPath();
+		Path gradleProperties = new File(((Task) this).getProject().getRootProject().getProjectDir(),
+				"gradle.properties").toPath();
 		UpgradeApplicator upgradeApplicator = new UpgradeApplicator(buildFile, gradleProperties);
 		for (Upgrade upgrade : upgrades) {
 			String title = "Upgrade to " + upgrade.getLibrary().getName() + " " + upgrade.getVersion();
@@ -106,6 +106,11 @@ public class UpgradeBom extends DefaultTask {
 				Thread.currentThread().interrupt();
 			}
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private UserInputHandler getUserInputHandler() {
+		return getServices().get(UserInputHandler.class);
 	}
 
 	private GitHub createGitHub() {

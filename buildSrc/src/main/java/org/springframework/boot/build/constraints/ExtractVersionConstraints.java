@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.Configuration;
@@ -58,14 +59,16 @@ public class ExtractVersionConstraints extends DefaultTask {
 	private final List<String> projectPaths = new ArrayList<>();
 
 	public ExtractVersionConstraints() {
-		DependencyHandler dependencies = getProject().getDependencies();
-		this.configuration = getProject().getConfigurations().create(getName());
+		Project project = ((Task) this).getProject();
+		DependencyHandler dependencies = project.getDependencies();
+		this.configuration = project.getConfigurations().create(((Task) this).getName());
 		dependencies.getComponents().all(this::processMetadataDetails);
 	}
 
 	public void enforcedPlatform(String projectPath) {
-		this.configuration.getDependencies().add(getProject().getDependencies().enforcedPlatform(
-				getProject().getDependencies().project(Collections.singletonMap("path", projectPath))));
+		Project project = ((Task) this).getProject();
+		this.configuration.getDependencies().add(project.getDependencies()
+				.enforcedPlatform(project.getDependencies().project(Collections.singletonMap("path", projectPath))));
 		this.projectPaths.add(projectPath);
 	}
 
@@ -89,7 +92,7 @@ public class ExtractVersionConstraints extends DefaultTask {
 		this.configuration.resolve();
 		for (String projectPath : this.projectPaths) {
 			extractVersionProperties(projectPath);
-			for (DependencyConstraint constraint : getProject().project(projectPath).getConfigurations()
+			for (DependencyConstraint constraint : ((Task) this).getProject().project(projectPath).getConfigurations()
 					.getByName("apiElements").getAllDependencyConstraints()) {
 				this.versionConstraints.put(constraint.getGroup() + ":" + constraint.getName(),
 						constraint.getVersionConstraint().toString());
@@ -100,7 +103,7 @@ public class ExtractVersionConstraints extends DefaultTask {
 	}
 
 	private void extractVersionProperties(String projectPath) {
-		Object bom = getProject().project(projectPath).getExtensions().getByName("bom");
+		Object bom = ((Task) this).getProject().project(projectPath).getExtensions().getByName("bom");
 		BomExtension bomExtension = (BomExtension) bom;
 		for (Library lib : bomExtension.getLibraries()) {
 			this.versionProperties.add(new VersionProperty(lib.getName(), lib.getVersionProperty()));

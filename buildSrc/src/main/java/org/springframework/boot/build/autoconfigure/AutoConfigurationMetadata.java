@@ -45,10 +45,10 @@ public class AutoConfigurationMetadata extends DefaultTask {
 	private File outputFile;
 
 	public AutoConfigurationMetadata() {
-		getInputs().file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
+		((Task) this).getInputs().file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
 				"META-INF/spring.factories"));
-		dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
-		getProject().getConfigurations()
+		((Task) this).dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
+		((Task) this).getProject().getConfigurations()
 				.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
 	}
 
@@ -80,7 +80,7 @@ public class AutoConfigurationMetadata extends DefaultTask {
 				new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories"));
 		autoConfiguration.setProperty("autoConfigurationClassNames",
 				springFactories.getProperty("org.springframework.boot.autoconfigure.EnableAutoConfiguration"));
-		autoConfiguration.setProperty("module", getProject().getName());
+		autoConfiguration.setProperty("module", ((Task) this).getProject().getName());
 		return autoConfiguration;
 	}
 

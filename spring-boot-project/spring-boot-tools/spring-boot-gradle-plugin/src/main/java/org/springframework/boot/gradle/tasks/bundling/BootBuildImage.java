@@ -70,8 +70,9 @@ public class BootBuildImage extends DefaultTask {
 	private boolean verboseLogging;
 
 	public BootBuildImage() {
-		this.jar = getProject().getObjects().fileProperty();
-		this.targetJavaVersion = getProject().getObjects().property(JavaVersion.class);
+		Project project = ((Task) this).getProject();
+		this.jar = project.getObjects().fileProperty();
+		this.targetJavaVersion = project.getObjects().property(JavaVersion.class);
 	}
 
 	/**
@@ -240,8 +241,9 @@ public class BootBuildImage extends DefaultTask {
 		if (StringUtils.hasText(this.imageName)) {
 			return ImageReference.of(this.imageName);
 		}
-		ImageName imageName = ImageName.of(getProject().getName());
-		String version = getProject().getVersion().toString();
+		Project project = ((Task) this).getProject();
+		ImageName imageName = ImageName.of(project.getName());
+		String version = project.getVersion().toString();
 		if ("unspecified".equals(version)) {
 			return ImageReference.of(imageName);
 		}

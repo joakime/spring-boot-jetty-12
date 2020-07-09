@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
@@ -31,6 +32,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskInputs;
 
 import org.springframework.core.CollectionFactory;
 
@@ -46,8 +48,12 @@ public class StarterMetadata extends DefaultTask {
 	private File destination;
 
 	public StarterMetadata() {
-		getInputs().property("name", (Callable<String>) () -> getProject().getName());
-		getInputs().property("description", (Callable<String>) () -> getProject().getDescription());
+		TaskInputs inputs = ((Task) this).getInputs();
+		Project project = ((Task) this).getProject();
+		inputs.property("name", (Callable<String>) () -> {
+			return project.getName();
+		});
+		inputs.property("description", (Callable<String>) project::getDescription);
 	}
 
 	@Classpath
@@ -71,8 +77,9 @@ public class StarterMetadata extends DefaultTask {
 	@TaskAction
 	void generateMetadata() throws IOException {
 		Properties properties = CollectionFactory.createSortedProperties(true);
-		properties.setProperty("name", getProject().getName());
-		properties.setProperty("description", getProject().getDescription());
+		Project project = ((Task) this).getProject();
+		properties.setProperty("name", project.getName());
+		properties.setProperty("description", project.getDescription());
 		properties.setProperty("dependencies", String.join(",", this.dependencies.getResolvedConfiguration()
 				.getResolvedArtifacts().stream().map(ResolvedArtifact::getName).collect(Collectors.toSet())));
 		this.destination.getParentFile().mkdirs();

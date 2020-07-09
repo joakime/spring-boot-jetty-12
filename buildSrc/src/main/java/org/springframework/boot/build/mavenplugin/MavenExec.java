@@ -43,14 +43,14 @@ public class MavenExec extends JavaExec {
 	private File projectDir;
 
 	public MavenExec() throws IOException {
-		setClasspath(mavenConfiguration(getProject()));
+		setClasspath(mavenConfiguration(((Task) this).getProject()));
 		args("--batch-mode");
 		setMain("org.apache.maven.cli.MavenCli");
 	}
 
 	public void setProjectDir(File projectDir) {
 		this.projectDir = projectDir;
-		getInputs().file(new File(projectDir, "pom.xml"));
+		((Task) this).getInputs().file(new File(projectDir, "pom.xml"));
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class MavenExec extends JavaExec {
 		workingDir(this.projectDir);
 		systemProperty("maven.multiModuleProjectDirectory", this.projectDir.getAbsolutePath());
 		try {
-			Path logFile = Files.createTempFile(getName(), ".log");
+			Path logFile = Files.createTempFile(((Task) this).getName(), ".log");
 			try {
 				args("--log-file", logFile.toFile().getAbsolutePath());
 				super.exec();

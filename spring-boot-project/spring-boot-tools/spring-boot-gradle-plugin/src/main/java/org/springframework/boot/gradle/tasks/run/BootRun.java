@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.tasks.run;
 
 import java.lang.reflect.Method;
 
+import org.gradle.api.Task;
 import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
@@ -63,7 +64,7 @@ public class BootRun extends JavaExec {
 	 * @param sourceSet the source set
 	 */
 	public void sourceResources(SourceSet sourceSet) {
-		setClasspath(getProject().files(sourceSet.getResources().getSrcDirs(), getClasspath())
+		setClasspath(((Task) this).getProject().files(sourceSet.getResources().getSrcDirs(), getClasspath())
 				.filter((file) -> !file.equals(sourceSet.getOutput().getResourcesDir())));
 	}
 

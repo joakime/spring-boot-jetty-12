@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -110,8 +111,8 @@ public class SpringBootExtension {
 	}
 
 	private void configureBuildInfoTask(BuildInfo task) {
-		task.setGroup(BasePlugin.BUILD_GROUP);
-		task.setDescription("Generates a META-INF/build-info.properties file.");
+		((Task) task).setGroup(BasePlugin.BUILD_GROUP);
+		((Task) task).setDescription("Generates a META-INF/build-info.properties file.");
 		task.getConventionMapping().map("destinationDir",
 				() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
 	}

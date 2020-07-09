@@ -94,9 +94,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	private TaskProvider<BootJar> configureBootJarTask(Project project) {
 		return project.getTasks().register(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
-			bootJar.setDescription(
+			((Task) bootJar).setDescription(
 					"Assembles an executable jar archive containing the main classes and their dependencies.");
-			bootJar.setGroup(BasePlugin.BUILD_GROUP);
+			((Task) bootJar).setGroup(BasePlugin.BUILD_GROUP);
 			SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			bootJar.classpath((Callable<FileCollection>) () -> {
@@ -112,8 +112,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	private void configureBootBuildImageTask(Project project, TaskProvider<BootJar> bootJar) {
 		project.getTasks().register(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class, (buildImage) -> {
-			buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
-			buildImage.setGroup(BasePlugin.BUILD_GROUP);
+			((Task) buildImage)
+					.setDescription("Builds an OCI image of the application using the output of the bootJar task");
+			((Task) buildImage).setGroup(BasePlugin.BUILD_GROUP);
 			buildImage.getJar().set(bootJar.get().getArchiveFile());
 			buildImage.getTargetJavaVersion().set(javaPluginConvention(project).getTargetCompatibility());
 		});
@@ -126,8 +127,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	private void configureBootRunTask(Project project) {
 		project.getTasks().register("bootRun", BootRun.class, (run) -> {
-			run.setDescription("Runs this project as a Spring Boot application.");
-			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
+			((Task) run).setDescription("Runs this project as a Spring Boot application.");
+			((Task) run).setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(javaPluginConvention(project).getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME)
 					.getRuntimeClasspath());
 			run.getConventionMapping().map("jvmArgs", () -> {
@@ -167,7 +168,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
-		compile.doFirst(new AdditionalMetadataLocationsConfigurer());
+		((Task) compile).doFirst(new AdditionalMetadataLocationsConfigurer());
 	}
 
 	private void configureDevelopmentOnlyConfiguration(Project project) {
@@ -217,8 +218,10 @@ final class JavaPluginAction implements PluginApplicationAction {
 		}
 
 		private Optional<SourceSet> findMatchingSourceSet(JavaCompile compile) {
-			return compile.getProject().getConvention().getPlugin(JavaPluginConvention.class).getSourceSets().stream()
-					.filter((sourceSet) -> sourceSet.getCompileJavaTaskName().equals(compile.getName())).findFirst();
+			return ((Task) compile).getProject().getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+					.stream()
+					.filter((sourceSet) -> sourceSet.getCompileJavaTaskName().equals(((Task) compile).getName()))
+					.findFirst();
 		}
 
 		private void configureAdditionalMetadataLocations(JavaCompile compile, SourceSet sourceSet) {

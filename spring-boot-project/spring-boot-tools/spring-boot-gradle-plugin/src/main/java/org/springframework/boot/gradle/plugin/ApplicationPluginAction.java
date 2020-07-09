@@ -26,6 +26,7 @@ import java.util.concurrent.Callable;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.file.CopySpec;
@@ -57,7 +58,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		configureBaseNameConvention(project, applicationConvention, distribution);
 		CreateStartScripts bootStartScripts = project.getTasks().create("bootStartScripts",
 				determineCreateStartScriptsClass());
-		bootStartScripts
+		((Task) bootStartScripts)
 				.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
 		((TemplateBasedScriptGenerator) bootStartScripts.getUnixStartScriptGenerator())
 				.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));

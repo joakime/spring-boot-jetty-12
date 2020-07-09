@@ -53,7 +53,7 @@ public class ExtractResources extends DefaultTask {
 	private List<String> resourceNames = new ArrayList<>();
 
 	public ExtractResources() {
-		this.destinationDirectory = getProject().getObjects().directoryProperty();
+		this.destinationDirectory = ((Task) this).getProject().getObjects().directoryProperty();
 	}
 
 	@Input

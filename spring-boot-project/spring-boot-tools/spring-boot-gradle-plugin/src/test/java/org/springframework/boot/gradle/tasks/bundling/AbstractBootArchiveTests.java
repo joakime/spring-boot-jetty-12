@@ -40,6 +40,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.internal.file.archive.ZipCopyAction;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
@@ -162,7 +163,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	void classpathCanBeSetUsingAFileCollection() throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		this.task.classpath(jarFile("one.jar"));
-		this.task.setClasspath(this.task.getProject().files(jarFile("two.jar")));
+		this.task.setClasspath(((Task) this.task).getProject().files(jarFile("two.jar")));
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry(this.libPath + "one.jar")).isNull();

@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 
+import org.gradle.api.Task;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +51,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	void providedClasspathCanBeSetUsingAFileCollection() throws IOException {
 		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"));
-		getTask().setProvidedClasspath(getTask().getProject().files(jarFile("two.jar")));
+		getTask().setProvidedClasspath(((Task) getTask()).getProject().files(jarFile("two.jar")));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/one.jar")).isNull();

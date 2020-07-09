@@ -82,7 +82,7 @@ class AsciidoctorConventions {
 				if (asciidoctorTask instanceof AsciidoctorTask) {
 					configureHtmlOnlyAttributes(asciidoctorTask);
 					syncSource.from(unzipResources, (resources) -> resources.into("asciidoc"));
-					asciidoctorTask.doFirst(new Action<Task>() {
+					((Task) asciidoctorTask).doFirst(new Action<Task>() {
 
 						@Override
 						public void execute(Task task) {
@@ -122,12 +122,13 @@ class AsciidoctorConventions {
 	}
 
 	private Sync createSyncDocumentationSourceTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+		String taskName = ((Task) asciidoctorTask).getName();
 		Sync syncDocumentationSource = project.getTasks()
-				.create("syncDocumentationSourceFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
-		File syncedSource = new File(project.getBuildDir(), "docs/src/" + asciidoctorTask.getName());
+				.create("syncDocumentationSourceFor" + StringUtils.capitalize(taskName), Sync.class);
+		File syncedSource = new File(project.getBuildDir(), "docs/src/" + taskName);
 		syncDocumentationSource.setDestinationDir(syncedSource);
 		syncDocumentationSource.from("src/docs/");
-		asciidoctorTask.dependsOn(syncDocumentationSource);
+		((Task) asciidoctorTask).dependsOn(syncDocumentationSource);
 		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
 		return syncDocumentationSource;
 	}
@@ -190,10 +191,11 @@ class AsciidoctorConventions {
 
 		@TaskAction
 		void syncDocumentationResources() {
-			getProject().sync((copySpec) -> {
+			Project project = ((Task) this).getProject();
+			project.sync((copySpec) -> {
 				copySpec.into(this.outputDir);
 				for (File resource : this.resources) {
-					copySpec.from(getProject().zipTree(resource));
+					copySpec.from(project.zipTree(resource));
 				}
 			});
 		}

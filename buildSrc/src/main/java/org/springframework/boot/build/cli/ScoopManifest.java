@@ -30,7 +30,7 @@ public class ScoopManifest extends AbstractPackageManagerDefinitionTask {
 
 	@TaskAction
 	void createManifest() {
-		String version = getProject().getVersion().toString();
+		String version = ((Task) this).getProject().getVersion().toString();
 		createDescriptor(Collections.singletonMap("scoopVersion", version.substring(0, version.lastIndexOf('.'))));
 	}
 

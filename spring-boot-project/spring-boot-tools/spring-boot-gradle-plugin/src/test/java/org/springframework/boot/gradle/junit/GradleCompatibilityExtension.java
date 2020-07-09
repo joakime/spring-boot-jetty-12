@@ -16,11 +16,13 @@
 
 package org.springframework.boot.gradle.junit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.gradle.api.JavaVersion;
+import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -43,13 +45,11 @@ public final class GradleCompatibilityExtension implements TestTemplateInvocatio
 
 	static {
 		JavaVersion javaVersion = JavaVersion.current();
-		if (javaVersion.isCompatibleWith(JavaVersion.VERSION_14)
-				|| javaVersion.isCompatibleWith(JavaVersion.VERSION_13)) {
-			GRADLE_VERSIONS = Arrays.asList("6.3", "default");
+		List<String> versions = new ArrayList<>(Arrays.asList("6.3", "6.4.1", GradleVersion.current().getVersion()));
+		if (javaVersion.compareTo(JavaVersion.VERSION_13) < 0) {
+			versions.add(0, "5.6.4");
 		}
-		else {
-			GRADLE_VERSIONS = Arrays.asList("5.6.4", "6.3", "default");
-		}
+		GRADLE_VERSIONS = versions;
 	}
 
 	@Override
@@ -78,9 +78,7 @@ public final class GradleCompatibilityExtension implements TestTemplateInvocatio
 		@Override
 		public List<Extension> getAdditionalExtensions() {
 			GradleBuild gradleBuild = new GradleBuild();
-			if (!this.gradleVersion.equals("default")) {
-				gradleBuild.gradleVersion(this.gradleVersion);
-			}
+			gradleBuild.gradleVersion(this.gradleVersion);
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 

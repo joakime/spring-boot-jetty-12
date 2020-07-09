@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -60,7 +61,7 @@ class BuildInfoTests {
 	@Test
 	void projectGroupIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
-		task.getProject().setGroup("com.example");
+		((Task) task).getProject().setGroup("com.example");
 		assertThat(buildInfoProperties(task)).containsEntry("build.group", "com.example");
 	}
 
@@ -81,7 +82,7 @@ class BuildInfoTests {
 	@Test
 	void projectVersionIsReflectedInProperties() {
 		BuildInfo task = createTask(createProject("test"));
-		task.getProject().setVersion("1.2.3");
+		((Task) task).getProject().setVersion("1.2.3");
 		assertThat(buildInfoProperties(task)).containsEntry("build.version", "1.2.3");
 	}
 

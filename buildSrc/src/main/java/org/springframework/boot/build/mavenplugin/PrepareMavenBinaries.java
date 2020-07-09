@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.Input;
@@ -59,11 +60,11 @@ public class PrepareMavenBinaries extends DefaultTask {
 
 	@TaskAction
 	public void prepareBinaries() {
+		Project project = ((Task) this).getProject();
 		for (String version : this.versions) {
-			Configuration configuration = getProject().getConfigurations().detachedConfiguration(
-					getProject().getDependencies().create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
-			getProject().copy(
-					(copy) -> copy.into(this.outputDir).from(getProject().zipTree(configuration.getSingleFile())));
+			Configuration configuration = project.getConfigurations().detachedConfiguration(
+					project.getDependencies().create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
+			project.copy((copy) -> copy.into(this.outputDir).from(project.zipTree(configuration.getSingleFile())));
 		}
 	}
 

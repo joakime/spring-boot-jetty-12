@@ -24,6 +24,8 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
+import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.build.bom.Library.Group;
@@ -58,9 +60,10 @@ public class CheckBom extends DefaultTask {
 	}
 
 	private void checkExclusions(String groupId, Module module, DependencyVersion version) {
-		Set<String> resolved = getProject().getConfigurations()
+		Project project = ((Task) this).getProject();
+		Set<String> resolved = project.getConfigurations()
 				.detachedConfiguration(
-						getProject().getDependencies().create(groupId + ":" + module.getName() + ":" + version))
+						project.getDependencies().create(groupId + ":" + module.getName() + ":" + version))
 				.getResolvedConfiguration().getResolvedArtifacts().stream()
 				.map((artifact) -> artifact.getModuleVersion().getId())
 				.map((id) -> id.getGroup() + ":" + id.getModule().getName()).collect(Collectors.toSet());

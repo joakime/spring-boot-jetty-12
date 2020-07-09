@@ -86,7 +86,7 @@ public class BomPlugin implements Plugin<Project> {
 		project.getTasks().matching((task) -> task.getName().equals(DeployedPlugin.GENERATE_POM_TASK_NAME))
 				.all((task) -> {
 					Sync syncBom = project.getTasks().create("syncBom", Sync.class);
-					syncBom.dependsOn(task);
+					((Task) syncBom).dependsOn(task);
 					File generatedBomDir = new File(project.getBuildDir(), "generated/bom");
 					syncBom.setDestinationDir(generatedBomDir);
 					syncBom.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
@@ -109,9 +109,9 @@ public class BomPlugin implements Plugin<Project> {
 							"generated/effective-bom/" + project.getName() + "-effective-bom.xml");
 					generateEffectiveBom.args("--settings", "settings.xml", "help:effective-pom",
 							"-Doutput=" + effectiveBom);
-					generateEffectiveBom.dependsOn(syncBom);
-					generateEffectiveBom.getOutputs().file(effectiveBom);
-					generateEffectiveBom.doLast(new StripUnrepeatableOutputAction(effectiveBom));
+					((Task) generateEffectiveBom).dependsOn(syncBom);
+					((Task) generateEffectiveBom).getOutputs().file(effectiveBom);
+					((Task) generateEffectiveBom).doLast(new StripUnrepeatableOutputAction(effectiveBom));
 					project.getArtifacts().add(effectiveBomConfiguration.getName(), effectiveBom,
 							(artifact) -> artifact.builtBy(generateEffectiveBom));
 				});
