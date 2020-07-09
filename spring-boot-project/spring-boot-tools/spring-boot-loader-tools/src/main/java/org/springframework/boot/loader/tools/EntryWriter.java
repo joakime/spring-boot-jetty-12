@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -26,7 +27,7 @@ import java.io.OutputStream;
  * @since 2.3.0
  */
 @FunctionalInterface
-public interface EntryWriter {
+public interface EntryWriter extends Closeable {
 
 	/**
 	 * Write entry data to the specified output stream.
@@ -42,6 +43,15 @@ public interface EntryWriter {
 	 */
 	default int size() {
 		return -1;
+	}
+
+	/**
+	 * Closes the entry writer, tidying up any underlying resources
+	 * @since 2.3.2
+	 */
+	@Override
+	default void close() throws IOException {
+
 	}
 
 }

@@ -80,6 +80,13 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 		return this.size;
 	}
 
+	@Override
+	public void close() throws IOException {
+		if (this.content instanceof File) {
+			((File) this.content).delete();
+		}
+	}
+
 	static EntryWriter get(EntryWriter entryWriter) throws IOException {
 		if (entryWriter == null || entryWriter.size() != -1) {
 			return entryWriter;

@@ -85,8 +85,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		while (entries.hasMoreElements()) {
 			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
 			setUpEntry(jarFile, entry);
-			try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
-				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
+			try (EntryWriter entryWriter = new InputStreamEntryWriter(
+					new ZipHeaderPeekInputStream(jarFile.getInputStream(entry)))) {
 				JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
 				if (transformedEntry != null) {
 					writeEntry(transformedEntry, entryWriter, unpackHandler);
@@ -294,6 +294,11 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 				outputStream.write(buffer, 0, bytesRead);
 			}
 			outputStream.flush();
+		}
+
+		@Override
+		public void close() throws IOException {
+			this.inputStream.close();
 		}
 
 	}

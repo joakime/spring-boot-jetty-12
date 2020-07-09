@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Random;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +50,9 @@ class SizeCalculatingEntryWriterTests {
 		assertThat(writer.size()).isEqualTo(original.getBytes().length);
 		assertThat(writeBytes(writer)).isEqualTo(original.getBytes());
 		assertThat(writer).extracting("content").isInstanceOf(File.class);
+		assertThat(writer).extracting("content").asInstanceOf(InstanceOfAssertFactories.FILE).exists();
+		writer.close();
+		assertThat(writer).extracting("content").asInstanceOf(InstanceOfAssertFactories.FILE).doesNotExist();
 	}
 
 	private byte[] writeBytes(EntryWriter writer) throws IOException {
