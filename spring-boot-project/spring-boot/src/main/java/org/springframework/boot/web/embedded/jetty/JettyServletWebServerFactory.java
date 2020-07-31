@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EventListener;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,8 +47,11 @@ import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.FileSessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.servlet.ListenerHolder;
+import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
+import org.eclipse.jetty.servlet.Source;
 import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
@@ -336,6 +340,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		configurations.add(getServletContextInitializerConfiguration(webAppContext, initializers));
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
+		configurations.add(getWebListenersConfiguration());
 		configurations.addAll(getConfigurations());
 		return configurations.toArray(new Configuration[0]);
 	}
@@ -370,6 +375,30 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 				for (MimeMappings.Mapping mapping : getMimeMappings()) {
 					mimeTypes.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 				}
+			}
+
+		};
+	}
+
+	private Configuration getWebListenersConfiguration() {
+		return new AbstractConfiguration() {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public void configure(WebAppContext context) throws Exception {
+				ServletHandler servletHandler = context.getServletHandler();
+				for (String webListenerClassName : getWebListenerClassNames()) {
+					ListenerHolder holder = servletHandler
+							.newListenerHolder(new Source(Source.Origin.ANNOTATION, webListenerClassName));
+					holder.setHeldClass(
+							(Class<? extends EventListener>) getClassLoader(context).loadClass(webListenerClassName));
+					servletHandler.addListener(holder);
+				}
+			}
+
+			private ClassLoader getClassLoader(WebAppContext context) {
+				ClassLoader classLoader = context.getClassLoader();
+				return (classLoader != null) ? classLoader : getClass().getClassLoader();
 			}
 
 		};
