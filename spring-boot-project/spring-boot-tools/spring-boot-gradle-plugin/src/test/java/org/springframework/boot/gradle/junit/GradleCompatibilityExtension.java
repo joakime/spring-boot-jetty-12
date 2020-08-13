@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.gradle.api.JavaVersion;
+import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -45,16 +46,25 @@ public final class GradleCompatibilityExtension implements TestTemplateInvocatio
 		JavaVersion javaVersion = JavaVersion.current();
 		if (javaVersion.isCompatibleWith(JavaVersion.VERSION_14)
 				|| javaVersion.isCompatibleWith(JavaVersion.VERSION_13)) {
-			GRADLE_VERSIONS = Arrays.asList("6.3", "6.4.1", "6.5.1", "default");
+			GRADLE_VERSIONS = Arrays.asList("6.3", "6.4.1", "6.5.1", "6.6");
 		}
 		else {
-			GRADLE_VERSIONS = Arrays.asList("5.6.4", "6.3", "6.4.1", "6.5.1", "default");
+			GRADLE_VERSIONS = Arrays.asList("5.6.4", "6.3", "6.4.1", "6.5.1", "6.6");
 		}
 	}
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		return GRADLE_VERSIONS.stream().map(GradleVersionTestTemplateInvocationContext::new);
+		return GRADLE_VERSIONS.stream().flatMap(this::invocationContexts);
+	}
+
+	private Stream<TestTemplateInvocationContext> invocationContexts(String version) {
+		GradleVersion gradleVersion = GradleVersion.version(version);
+		if (GradleVersion.version("6.6").compareTo(gradleVersion) < 1) {
+			return Stream.of(new GradleVersionTestTemplateInvocationContext(version),
+					new GradleVersionTestTemplateInvocationContext(version, true));
+		}
+		return Stream.of(new GradleVersionTestTemplateInvocationContext(version));
 	}
 
 	@Override
@@ -66,20 +76,30 @@ public final class GradleCompatibilityExtension implements TestTemplateInvocatio
 
 		private final String gradleVersion;
 
+		private final boolean cacheConfiguration;
+
 		GradleVersionTestTemplateInvocationContext(String gradleVersion) {
+			this(gradleVersion, false);
+		}
+
+		GradleVersionTestTemplateInvocationContext(String gradleVersion, boolean cacheConfiguration) {
 			this.gradleVersion = gradleVersion;
+			this.cacheConfiguration = cacheConfiguration;
 		}
 
 		@Override
 		public String getDisplayName(int invocationIndex) {
-			return "Gradle " + this.gradleVersion;
+			return "Gradle " + this.gradleVersion + ((this.cacheConfiguration) ? " --cache-configuration" : "");
 		}
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
 			GradleBuild gradleBuild = new GradleBuild();
-			if (!this.gradleVersion.equals("default")) {
+			if (!this.gradleVersion.equals(GradleVersion.current().toString())) {
 				gradleBuild.gradleVersion(this.gradleVersion);
+			}
+			if (this.cacheConfiguration) {
+				gradleBuild.configurationCache();
 			}
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
