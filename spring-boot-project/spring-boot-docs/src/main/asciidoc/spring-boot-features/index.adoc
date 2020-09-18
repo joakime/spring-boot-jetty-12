@@ -1,0 +1,41 @@
+[[boot-features]]
+= Spring Boot features
+
+[partintro]
+--
+This section dives into the details of Spring Boot.
+Here you can learn about the key features that you may want to use and customize.
+If you have not already done so, you might want to read the "<<getting-started.adoc#getting-started>>" and "<<using-spring-boot.adoc#using-boot>>" sections, so that you have a good grounding of the basics.
+--
+
+
+
+include::spring-application.adoc
+include::external-config.adoc
+include::profiles.adoc
+include::logging.adoc
+include::internationalization.adoc
+include::json.adoc
+include::developing-web-applications.adoc
+include::security.adoc
+include::sql.adoc
+include::nosql.adoc
+include::caching.adoc
+include::messaging.adoc
+include::resttemplate.adoc
+include::webclient.adoc
+include::validation.adoc
+include::email.adoc
+include::jta.adoc
+include::hazelcast.adoc
+include::quartz.adoc
+include::task-execution-scheduling.adoc
+include::integration.adoc
+include::session.adoc
+include::jmx.adoc
+include::testing.adoc
+include::websockets.adoc
+include::webservices.adoc
+include::developing-auto-configuration.adoc
+include::kotlin.adoc
+include::whats-next.adoc
