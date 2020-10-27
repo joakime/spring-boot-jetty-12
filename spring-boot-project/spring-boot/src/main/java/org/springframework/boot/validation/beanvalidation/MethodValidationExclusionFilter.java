@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package smoketest.simple;
+package org.springframework.boot.validation.beanvalidation;
 
-import javax.validation.constraints.NotNull;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
+/**
+ * A filter for excluding types from method validation.
+ *
+ * @author Andy Wilkinson
+ * @see MethodValidationPostProcessor
+ * @since 2.4.0
+ */
+public interface MethodValidationExclusionFilter {
 
-@Validated
-@ConfigurationProperties(prefix = "sample")
-public final class SampleConfigurationProperties {
-
-	@NotNull
-	private String name;
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+	/**
+	 * Evaluate whether to exclude the given {@code type} from method validation.
+	 * @param type the type to evaluate
+	 * @return {@code true} to exclude the type from method validation, otherwise
+	 * {@code false}.
+	 */
+	boolean exclude(Class<?> type);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBea
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -157,6 +158,15 @@ class ValidationAutoConfigurationTests {
 		SampleService service = this.context.getBean(SampleService.class);
 		service.doSomething("Valid");
 		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> service.doSomething("KO"));
+	}
+
+	@Test
+	void classCanBeExcludedFromValidation() {
+		load(ExcludedServiceConfiguration.class);
+		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+		ExcludedService service = this.context.getBean(ExcludedService.class);
+		service.doSomething("Valid");
+		assertThatNoException().isThrownBy(() -> service.doSomething("KO"));
 	}
 
 	@Test
@@ -279,6 +289,31 @@ class ValidationAutoConfigurationTests {
 
 	@Validated
 	static class SampleService {
+
+		void doSomething(@Size(min = 3, max = 10) String name) {
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static final class ExcludedServiceConfiguration {
+
+		@Bean
+		ExcludedService excludedService() {
+			return new ExcludedService();
+		}
+
+		@Bean
+		MethodValidationExclusionFilter exclusionFilter() {
+			return (type) -> type.equals(ExcludedService.class);
+		}
+
+	}
+
+	@Validated
+	static final class ExcludedService
+
+	{
 
 		void doSomething(@Size(min = 3, max = 10) String name) {
 		}

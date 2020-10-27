@@ -36,6 +36,7 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 		registerInfrastructureBeans(registry);
+		ConfigurationPropertiesMethodValidationExclusionFilter.register(registry);
 		ConfigurationPropertiesBeanRegistrar beanRegistrar = new ConfigurationPropertiesBeanRegistrar(registry);
 		getTypes(metadata).forEach(beanRegistrar::register);
 	}
