@@ -23,6 +23,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetOutput;
+import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 /**
  * Custom {@link JavaExec} task for running a Spring Boot application.
@@ -84,6 +85,16 @@ public class BootRun extends JavaExec {
 	}
 
 	private boolean isJava13OrLater() {
+		try {
+			if (this.getJavaLauncher().isPresent()) {
+				JavaLanguageVersion version = this.getJavaLauncher()
+						.map((launcher) -> launcher.getMetadata().getLanguageVersion()).get();
+				return version.asInt() >= 13;
+			}
+		}
+		catch (Exception ex) {
+			// Continue with version from local JVM
+		}
 		for (Method method : String.class.getMethods()) {
 			if (method.getName().equals("stripIndent")) {
 				return true;
