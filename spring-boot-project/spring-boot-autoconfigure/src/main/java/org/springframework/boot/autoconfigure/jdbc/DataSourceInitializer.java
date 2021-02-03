@@ -46,8 +46,9 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @since 2.5.0
  */
-class DataSourceInitializer {
+public class DataSourceInitializer {
 
 	private static final Log logger = LogFactory.getLog(DataSourceInitializer.class);
 
@@ -64,7 +65,8 @@ class DataSourceInitializer {
 	 * @param properties the matching configuration
 	 * @param resourceLoader the resource loader to use (can be null)
 	 */
-	DataSourceInitializer(DataSource dataSource, DataSourceProperties properties, ResourceLoader resourceLoader) {
+	public DataSourceInitializer(DataSource dataSource, DataSourceProperties properties,
+			ResourceLoader resourceLoader) {
 		this.dataSource = dataSource;
 		this.properties = properties;
 		this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader(null);
@@ -85,11 +87,17 @@ class DataSourceInitializer {
 	}
 
 	/**
-	 * Create the schema if necessary.
-	 * @return {@code true} if the schema was created
-	 * @see DataSourceProperties#getSchema()
+	 * Initializes the {@link DataSource} by running DDL and DML scripts.
+	 * @return {@code true} if one or more scripts were applied to the database, otherwise
+	 * {@code false}
 	 */
-	boolean createSchema() {
+	public boolean initializeDataSource() {
+		boolean initialized = createSchema();
+		initialized = initSchema() && initialized;
+		return initialized;
+	}
+
+	private boolean createSchema() {
 		List<Resource> scripts = getScripts("spring.datasource.schema", this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
 			if (!isEnabled()) {
@@ -103,21 +111,18 @@ class DataSourceInitializer {
 		return !scripts.isEmpty();
 	}
 
-	/**
-	 * Initialize the schema if necessary.
-	 * @see DataSourceProperties#getData()
-	 */
-	void initSchema() {
+	private boolean initSchema() {
 		List<Resource> scripts = getScripts("spring.datasource.data", this.properties.getData(), "data");
 		if (!scripts.isEmpty()) {
 			if (!isEnabled()) {
 				logger.debug("Initialization disabled (not running data scripts)");
-				return;
+				return false;
 			}
 			String username = this.properties.getDataUsername();
 			String password = this.properties.getDataPassword();
 			runScripts(scripts, username, password);
 		}
+		return !scripts.isEmpty();
 	}
 
 	private boolean isEnabled() {

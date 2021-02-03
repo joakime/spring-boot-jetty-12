@@ -48,6 +48,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
@@ -274,6 +275,8 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	// TODO Do we need a better way for a user to access the initialized DataSource?
+	@DependsOn("dataSourceInitialization")
 	static class TestInitializedDataSourceConfiguration {
 
 		private boolean called;

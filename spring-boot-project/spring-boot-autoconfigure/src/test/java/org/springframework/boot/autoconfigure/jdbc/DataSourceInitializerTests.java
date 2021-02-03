@@ -33,6 +33,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -47,9 +48,7 @@ class DataSourceInitializerTests {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties());
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-			assertThat(initializer.createSchema()).isTrue();
-			assertNumberOfRows(jdbcTemplate, 0);
-			initializer.initSchema();
+			initializer.initializeDataSource();
 			assertNumberOfRows(jdbcTemplate, 1);
 		}
 	}
@@ -61,9 +60,7 @@ class DataSourceInitializerTests {
 			properties.setInitializationMode(DataSourceInitializationMode.ALWAYS);
 			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, properties);
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-			assertThat(initializer.createSchema()).isTrue();
-			assertNumberOfRows(jdbcTemplate, 0);
-			initializer.initSchema();
+			initializer.initializeDataSource();
 			assertNumberOfRows(jdbcTemplate, 1);
 		}
 	}
@@ -78,7 +75,7 @@ class DataSourceInitializerTests {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.NEVER);
 			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, properties);
-			assertThat(initializer.createSchema()).isFalse();
+			assertThat(initializer.initializeDataSource()).isFalse();
 		}
 	}
 
@@ -91,8 +88,8 @@ class DataSourceInitializerTests {
 		DataSource dataSource = mock(DataSource.class);
 		given(dataSource.getConnection()).willReturn(connection);
 		DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties());
-		assertThat(initializer.createSchema()).isFalse();
-		verify(dataSource).getConnection();
+		assertThat(initializer.initializeDataSource()).isFalse();
+		verify(dataSource, times(2)).getConnection();
 	}
 
 	private HikariDataSource createDataSource() {
