@@ -28,10 +28,16 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.http.codec.json.Jackson2CodecSupport;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.codec.support.DefaultClientCodecConfigurer;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -85,8 +91,19 @@ class CodecsAutoConfigurationTests {
 
 	@Test
 	void jacksonCodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresent() {
-		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class)
-				.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
+		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class).run((context) -> {
+			assertThat(context).hasBean("jacksonCodecCustomizer");
+			WebClient client = WebClient.builder().codecs((configurer) -> context
+					.getBean("jacksonCodecCustomizer", CodecCustomizer.class).customize(configurer)).build();
+			ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
+			assertThat(client).extracting("exchangeFunction.strategies.codecConfigurer.defaultCodecs")
+					.satisfies((defaultCodecs) -> {
+						assertThat(defaultCodecs).extracting("jackson2JsonDecoder.defaultObjectMapper")
+								.isEqualTo(objectMapper);
+						assertThat(defaultCodecs).extracting("jackson2JsonEncoder.defaultObjectMapper")
+								.isEqualTo(objectMapper);
+					});
+		});
 	}
 
 	@Test
@@ -147,6 +164,20 @@ class CodecsAutoConfigurationTests {
 
 		@Override
 		public void customize(CodecConfigurer configurer) {
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	private static final class AdditiveCodecCustomizer implements CodecCustomizer {
+
+		@Override
+		public void customize(CodecConfigurer configurer) {
+			configurer.defaultCodecs().configureDefaultCodec((codec) -> {
+				if (codec instanceof Jackson2JsonDecoder || codec instanceof Jackson2JsonEncoder) {
+					((Jackson2CodecSupport) codec).whatever();
+				}
+			});
 		}
 
 	}

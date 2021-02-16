@@ -31,9 +31,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.http.codec.json.Jackson2CodecSupport;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -51,8 +51,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @EnableConfigurationProperties(CodecProperties.class)
 public class CodecsAutoConfiguration {
 
-	private static final MimeType[] EMPTY_MIME_TYPES = {};
-
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	static class JacksonCodecConfiguration {
@@ -63,8 +61,11 @@ public class CodecsAutoConfiguration {
 		CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
 			return (configurer) -> {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
-				defaults.jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper, EMPTY_MIME_TYPES));
-				defaults.jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper, EMPTY_MIME_TYPES));
+				defaults.configureDefaultCodec((codec) -> {
+					if (codec instanceof Jackson2JsonDecoder || codec instanceof Jackson2JsonEncoder) {
+						((Jackson2CodecSupport) codec).setObjectMapper(objectMapper);
+					}
+				});
 			};
 		}
 
