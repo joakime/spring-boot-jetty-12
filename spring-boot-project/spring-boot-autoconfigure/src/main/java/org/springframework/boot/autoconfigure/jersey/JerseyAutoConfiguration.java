@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jersey;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
@@ -57,6 +58,7 @@ import org.springframework.boot.autoconfigure.web.servlet.DefaultJerseyApplicati
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.DynamicRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -67,6 +69,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.RequestContextFilter;
 
 /**
@@ -181,6 +184,44 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			servletContext.setInitParameter("contextConfigLocation", "<NONE>");
 		}
 
+	}
+
+	@Bean
+	public DelegatingFilterProxyRegistrationBean jerseyFilterRegistration(JerseyApplicationPath applicationPath,
+			ResourceConfig resourceConfig, JerseyProperties jersey) {
+		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean("jerseyFilter") {
+
+			@Override
+			public DelegatingFilterProxy getFilter() {
+				DelegatingFilterProxy filter = super.getFilter();
+				filter.setTargetFilterLifecycle(true);
+				return filter;
+			}
+
+		};
+		registration.setUrlPatterns(Collections.singletonList(applicationPath.getUrlMapping()));
+		registration.setOrder(jersey.getFilter().getOrder());
+		registration.addInitParameter(ServletProperties.FILTER_CONTEXT_PATH, stripPattern(applicationPath.getPath()));
+		addInitParameters(jersey.getInit(), registration);
+		registration.setName("jerseyFilter");
+		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+		return registration;
+	}
+
+	@Bean
+	public ServletContainer jerseyFilter(ResourceConfig resourceConfig) {
+		return new ServletContainer(resourceConfig);
+	}
+
+	private String stripPattern(String path) {
+		if (path.endsWith("/*")) {
+			path = path.substring(0, path.lastIndexOf("/*"));
+		}
+		return path;
+	}
+
+	private void addInitParameters(Map<String, String> initParameters, DynamicRegistrationBean<?> registration) {
+		initParameters.forEach(registration::addInitParameter);
 	}
 
 	@Configuration(proxyBeanMethods = false)
