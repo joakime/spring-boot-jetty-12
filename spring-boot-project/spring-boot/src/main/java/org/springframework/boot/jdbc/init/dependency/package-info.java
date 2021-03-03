@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for initializaton of a JDBC {@code DataSource}.
+ * Infrastructure for establishing {@code DataSource} initialization bean dependencies.
  */
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.jdbc.init.dependency;

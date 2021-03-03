@@ -51,7 +51,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesBindin
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.boot.jdbc.init.DataSourceInitializationDependencyConfigurer;
+import org.springframework.boot.jdbc.init.dependency.DataSourceInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;

@@ -231,10 +231,10 @@ class DataSourceInitializationIntegrationTests {
 				"spring.datasource.schema:classpath:does/not/exist.sql").run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
-					assertThat(context.getStartupFailure()).hasMessageContaining("[does/not/exist.sql]");
-					assertThat(context.getStartupFailure()).hasMessageContaining("spring.datasource.schema");
-					assertThat(context.getStartupFailure()).hasMessageContaining(
-							"No resources were found at location 'classpath:does/not/exist.sql'.");
+					assertThat(context.getStartupFailure()).hasMessageContaining("does/not/exist.sql");
+					assertThat(context.getStartupFailure()).hasMessageContaining("DDL scripts");
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("No DDL scripts found at location 'classpath:does/not/exist.sql'");
 				});
 	}
 
@@ -245,10 +245,10 @@ class DataSourceInitializationIntegrationTests {
 				"spring.datasource.data:classpath:does/not/exist.sql").run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
-					assertThat(context.getStartupFailure()).hasMessageContaining("[does/not/exist.sql]");
-					assertThat(context.getStartupFailure()).hasMessageContaining("spring.datasource.data");
-					assertThat(context.getStartupFailure()).hasMessageContaining(
-							"No resources were found at location 'classpath:does/not/exist.sql'.");
+					assertThat(context.getStartupFailure()).hasMessageContaining("does/not/exist.sql");
+					assertThat(context.getStartupFailure()).hasMessageContaining("DML scripts");
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("No DML scripts found at location 'classpath:does/not/exist.sql'");
 				});
 	}
 

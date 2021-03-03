@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for initializaton of a JDBC {@code DataSource}.
+ * Auto-configuration for initializing an SQL database.
  */
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.autoconfigure.sql.init;

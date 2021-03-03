@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.jdbc.init.dependency;
 
-import java.util.Collections;
-import java.util.Set;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.springframework.boot.jdbc.init.AbstractBeansOfTypeDataSourceInitializerDetector;
-import org.springframework.boot.jdbc.init.DataSourceInitializerDetector;
+import org.springframework.context.annotation.Bean;
 
 /**
- * A {@link DataSourceInitializerDetector} for {@link DataSourceInitialization}.
+ * Indicate that a bean's creation and initialization depends upon data source
+ * initialization having completed. May be used on a bean's class or its
+ * {@link Bean @Bean} definition.
  *
  * @author Andy Wilkinson
+ * @since 2.5.0
  */
-class DataSourceInitializationDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
-
-	@Override
-	protected Set<Class<?>> getDataSourceInitializerBeanTypes() {
-		return Collections.singleton(DataSourceInitialization.class);
-	}
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface DependsOnDataSourceInitialization {
 
 }

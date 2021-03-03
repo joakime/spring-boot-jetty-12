@@ -59,7 +59,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.autoconfigure.orm.jpa.mapping.NonAnnotatedEntity;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
-import org.springframework.boot.jdbc.init.DependsOnDataSourceInitialization;
+import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitialization;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
@@ -103,7 +103,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).hasMessageContaining("ddl.sql");
-					assertThat(context.getStartupFailure()).hasMessageContaining("spring.datasource.schema");
+					assertThat(context.getStartupFailure()).hasMessageContaining("DDL scripts");
 				});
 	}
 

@@ -161,6 +161,7 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
+	@Deprecated
 	void determineCredentialsForSchemaScripts() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setSchemaUsername("foo");
@@ -170,6 +171,7 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
+	@Deprecated
 	void determineCredentialsForDataScripts() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setDataUsername("foo");
