@@ -29,7 +29,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.r2dbc.generate-unique-name=true")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "spring.r2dbc.generate-unique-name=true", "debug" })
 class SampleR2dbcApplicationTests {
 
 	@Autowired

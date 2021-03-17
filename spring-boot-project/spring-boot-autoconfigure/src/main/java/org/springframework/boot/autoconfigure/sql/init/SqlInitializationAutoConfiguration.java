@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.context.annotation.Configuration;
@@ -35,9 +36,9 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(AbstractScriptDatabaseInitializer.class)
 @ConditionalOnProperty(prefix = "spring.sql.init", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, R2dbcAutoConfiguration.class })
 @EnableConfigurationProperties(SqlInitializationProperties.class)
-@Import(JdbcInitializationConfiguration.class)
+@Import({ R2dbcInitializationConfiguration.class, JdbcInitializationConfiguration.class })
 public class SqlInitializationAutoConfiguration {
 
 }
