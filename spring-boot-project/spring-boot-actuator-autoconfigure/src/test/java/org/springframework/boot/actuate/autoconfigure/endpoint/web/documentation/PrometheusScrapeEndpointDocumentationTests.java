@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
@@ -31,6 +32,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -44,6 +46,14 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 	@Test
 	void prometheus() throws Exception {
 		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk()).andDo(document("prometheus/all"));
+	}
+
+	@Test
+	void prometheusOpenmetrics() throws Exception {
+		this.mockMvc.perform(get("/actuator/prometheus").accept(TextFormat.CONTENT_TYPE_OPENMETRICS_100))
+				.andExpect(status().isOk())
+				.andExpect(header().string("Content-Type", "application/openmetrics-text;version=1.0.0;charset=utf-8"))
+				.andDo(document("prometheus/openmetrics"));
 	}
 
 	@Test
