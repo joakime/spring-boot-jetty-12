@@ -19,6 +19,8 @@ package org.springframework.boot.r2dbc;
 import java.util.UUID;
 
 import io.r2dbc.h2.H2ConnectionFactoryMetadata;
+import io.r2dbc.pool.ConnectionPool;
+import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
@@ -118,6 +120,63 @@ class ConnectionFactoryBuilderTests {
 				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(databaseName)).build();
 		assertThat(connectionFactory).isNotNull();
 		assertThat(connectionFactory.getMetadata().getName()).isEqualTo(H2ConnectionFactoryMetadata.NAME);
+	}
+
+	@Test
+	void buildWhenDerivedWithNewDatabaseReturnsNewConnectionFactory() {
+		String intialDatabaseName = UUID.randomUUID().toString();
+		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
+				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(intialDatabaseName)).build();
+		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
+		String derivedDatabaseName = UUID.randomUUID().toString();
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(connectionFactory).database(derivedDatabaseName)
+				.build();
+		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();
+		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.DATABASE)).isEqualTo(derivedDatabaseName);
+		assertMatchingOptions(derivedOptions, initialOptions, ConnectionFactoryOptions.CONNECT_TIMEOUT,
+				ConnectionFactoryOptions.DRIVER, ConnectionFactoryOptions.HOST, ConnectionFactoryOptions.PASSWORD,
+				ConnectionFactoryOptions.PORT, ConnectionFactoryOptions.PROTOCOL, ConnectionFactoryOptions.SSL,
+				ConnectionFactoryOptions.USER);
+	}
+
+	@Test
+	void buildWhenDerivedWithNewCredentialsReturnsNewConnectionFactory() {
+		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
+				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(UUID.randomUUID().toString())).build();
+		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(connectionFactory).username("admin")
+				.password("secret").build();
+		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();
+		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.USER)).isEqualTo("admin");
+		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("secret");
+		assertMatchingOptions(derivedOptions, initialOptions, ConnectionFactoryOptions.CONNECT_TIMEOUT,
+				ConnectionFactoryOptions.DATABASE, ConnectionFactoryOptions.DRIVER, ConnectionFactoryOptions.HOST,
+				ConnectionFactoryOptions.PORT, ConnectionFactoryOptions.PROTOCOL, ConnectionFactoryOptions.SSL);
+	}
+
+	@Test
+	void buildWhenDerivedFromPoolReturnsNewNonPooledConnectionFactory() {
+		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
+				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(UUID.randomUUID().toString())).build();
+		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
+		ConnectionPoolConfiguration poolConfiguration = ConnectionPoolConfiguration.builder(connectionFactory).build();
+		ConnectionPool pool = new ConnectionPool(poolConfiguration);
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(pool).username("admin").password("secret")
+				.build();
+		assertThat(derived).isNotInstanceOf(ConnectionPool.class).isInstanceOf(OptionsCapableConnectionFactory.class);
+		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();
+		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.USER)).isEqualTo("admin");
+		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("secret");
+		assertMatchingOptions(derivedOptions, initialOptions, ConnectionFactoryOptions.CONNECT_TIMEOUT,
+				ConnectionFactoryOptions.DATABASE, ConnectionFactoryOptions.DRIVER, ConnectionFactoryOptions.HOST,
+				ConnectionFactoryOptions.PORT, ConnectionFactoryOptions.PROTOCOL, ConnectionFactoryOptions.SSL);
+	}
+
+	private void assertMatchingOptions(ConnectionFactoryOptions actualOptions, ConnectionFactoryOptions expectedOptions,
+			Option<?>... optionsToCheck) {
+		for (Option<?> option : optionsToCheck) {
+			assertThat(actualOptions.getValue(option)).as(option.name()).isEqualTo(expectedOptions.getValue(option));
+		}
 	}
 
 }
