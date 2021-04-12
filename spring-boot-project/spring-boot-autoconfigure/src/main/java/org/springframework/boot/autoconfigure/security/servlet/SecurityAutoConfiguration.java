@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,25 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityDataConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.converter.ResourceKeyConverterAdapter;
+import org.springframework.security.converter.RsaKeyConverters;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security.
@@ -48,6 +55,22 @@ public class SecurityAutoConfiguration {
 	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
 	public DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);
+	}
+
+	@Bean
+	@ConfigurationPropertiesBinding
+	Converter<String, RSAPrivateKey> stringToRsaPrivateKeyConverter() {
+		return new ResourceKeyConverterAdapter<RSAPrivateKey>(RsaKeyConverters.pkcs8()) {
+
+		};
+	}
+
+	@Bean
+	@ConfigurationPropertiesBinding
+	Converter<String, RSAPublicKey> stringToRsaPublicKeyConverter() {
+		return new ResourceKeyConverterAdapter<RSAPublicKey>(RsaKeyConverters.x509()) {
+
+		};
 	}
 
 }
