@@ -725,6 +725,18 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 				.isThrownBy(() -> this.application.run("--spring.config.location=file:invalid/*/"));
 	}
 
+	@Test
+	void runWhenHasOptionalWildcardLocationThatDoesNotExistDoesNotThrow() {
+		assertThatNoException()
+				.isThrownBy(() -> this.application.run("--spring.config.location=optional:file:invalid/*/"));
+	}
+
+	@Test
+	void runWhenOptionalWildcardLocationHasNoSubdirectoriesDoesNotThrow() {
+		assertThatNoException().isThrownBy(() -> this.application
+				.run("--spring.config.location=optional:file:src/test/resources/config/0-empty/*/"));
+	}
+
 	@Test // gh-24990
 	void runWhenHasProfileSpecificFileWithActiveOnProfileProperty() {
 		ConfigurableApplicationContext context = this.application

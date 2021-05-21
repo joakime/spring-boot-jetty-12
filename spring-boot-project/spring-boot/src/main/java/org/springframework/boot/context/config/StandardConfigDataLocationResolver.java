@@ -265,8 +265,10 @@ public class StandardConfigDataLocationResolver
 
 	private Set<StandardConfigDataResource> resolvePatternEmptyDirectories(StandardConfigDataReference reference) {
 		Resource[] resources = this.resourceLoader.getResources(reference.getDirectory(), ResourceType.DIRECTORY);
-		Assert.state(resources.length > 0,
-				"No subdirectories found for mandatory directory location '" + reference.getDirectory() + "'.");
+		if (!reference.getConfigDataLocation().isOptional()) {
+			Assert.state(resources.length > 0,
+					"No subdirectories found for mandatory directory location '" + reference.getDirectory() + "'.");
+		}
 		return Arrays.stream(resources).filter(Resource::exists)
 				.map((resource) -> new StandardConfigDataResource(reference, resource, true))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
