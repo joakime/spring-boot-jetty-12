@@ -16,12 +16,14 @@
 
 package org.springframework.boot;
 
+import java.lang.Thread.State;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -37,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link SpringApplicationShutdownHook}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class SpringApplicationShutdownHookTests {
 
@@ -65,21 +68,26 @@ class SpringApplicationShutdownHookTests {
 		// JMX and then stops the JVM. The two actions happen almost simultaneously
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		List<Object> finished = new CopyOnWriteArrayList<>();
-		CountDownLatch latch = new CountDownLatch(1);
-		ConfigurableApplicationContext context = new TestApplicationContext(finished, latch);
+		CountDownLatch closing = new CountDownLatch(1);
+		CountDownLatch proceedWithClose = new CountDownLatch(1);
+		ConfigurableApplicationContext context = new TestApplicationContext(finished, closing, proceedWithClose);
 		shutdownHook.registerApplicationContext(context);
 		context.refresh();
 		Runnable handlerAction = new TestHandlerAction(finished);
 		shutdownHook.getHandlers().add(handlerAction);
 		Thread contextThread = new Thread(context::close);
 		contextThread.start();
+		// Wait for context thread to begin closing the context
+		closing.await();
 		Thread shutdownThread = new Thread(shutdownHook);
-		Thread.sleep(100);
 		shutdownThread.start();
-		Thread.sleep(100);
-		latch.countDown();
-		contextThread.join(500);
-		shutdownThread.join(500);
+		// Shutdown thread should become blocked on monitor held by context thread
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(shutdownThread::getState, State.BLOCKED::equals);
+		// Allow context thread to proceed, unblocking shutdown thread
+		proceedWithClose.countDown();
+		contextThread.join();
+		shutdownThread.join();
+		// Context should have been closed before handler action was run
 		assertThat(finished).containsExactly(context, handlerAction);
 	}
 
@@ -153,15 +161,18 @@ class SpringApplicationShutdownHookTests {
 
 		private final List<Object> finished;
 
-		private final CountDownLatch latch;
+		private final CountDownLatch closing;
+
+		private final CountDownLatch proceedWithClose;
 
 		TestApplicationContext(List<Object> finished) {
-			this(finished, null);
+			this(finished, null, null);
 		}
 
-		TestApplicationContext(List<Object> finished, CountDownLatch latch) {
+		TestApplicationContext(List<Object> finished, CountDownLatch closing, CountDownLatch proceedWithClose) {
 			this.finished = finished;
-			this.latch = latch;
+			this.closing = closing;
+			this.proceedWithClose = proceedWithClose;
 		}
 
 		@Override
@@ -174,11 +185,15 @@ class SpringApplicationShutdownHookTests {
 
 		@Override
 		protected void onClose() {
-			if (this.latch != null) {
+			if (this.closing != null) {
+				this.closing.countDown();
+			}
+			if (this.proceedWithClose != null) {
 				try {
-					this.latch.await(500, TimeUnit.MILLISECONDS);
+					this.proceedWithClose.await();
 				}
 				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
 				}
 			}
 			this.finished.add(this);

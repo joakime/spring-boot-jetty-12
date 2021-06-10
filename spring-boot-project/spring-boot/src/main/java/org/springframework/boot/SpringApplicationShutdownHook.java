@@ -35,14 +35,15 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.util.Assert;
 
 /**
- * A {@link Runtime#addShutdownHook(Thread) shutdown hook} thread used to perform graceful
- * shutdown of Spring Boot applications. This hook tracks registered application contexts
- * as well as any actions registered via {@link SpringApplication#getShutdownHandlers()}.
+ * A {@link Runnable} to be used as a {@link Runtime#addShutdownHook(Thread) shutdown
+ * hook} to perform graceful shutdown of Spring Boot applications. This hook tracks
+ * registered application contexts as well as any actions registered via
+ * {@link SpringApplication#getShutdownHandlers()}.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class SpringApplicationShutdownHook extends Thread {
+class SpringApplicationShutdownHook implements Runnable {
 
 	private static final int SLEEP = 50;
 
@@ -70,7 +71,7 @@ class SpringApplicationShutdownHook extends Thread {
 	}
 
 	protected void addRuntimeShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(this);
+		Runtime.getRuntime().addShutdownHook(new Thread(this, "SpringApplicationShutdownHook"));
 	}
 
 	SpringApplicationShutdownHandlers getHandlers() {
@@ -131,18 +132,16 @@ class SpringApplicationShutdownHook extends Thread {
 				if (waited > TIMEOUT) {
 					throw new TimeoutException();
 				}
-				try {
-					Thread.sleep(SLEEP);
-					waited += SLEEP;
-				}
-				catch (InterruptedException ex) {
-					waited += TIMEOUT;
-				}
+				Thread.sleep(SLEEP);
+				waited += SLEEP;
 			}
 		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			logger.warn("Interrupted waiting for application context " + context + " to become inactive");
+		}
 		catch (TimeoutException ex) {
-			String message = "Timeout waiting for application context " + context + " to become inactive";
-			logger.warn(message, ex);
+			logger.warn("Timed out waiting for application context " + context + " to become inactive", ex);
 		}
 	}
 
