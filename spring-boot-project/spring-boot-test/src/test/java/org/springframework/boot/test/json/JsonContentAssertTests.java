@@ -54,7 +54,7 @@ class JsonContentAssertTests {
 
 	private static final String DIFFERENT = loadJson("different.json");
 
-	private static final String TYPES = loadJson("types.json");
+	static final String TYPES = loadJson("types.json");
 
 	private static final String SIMPSONS = loadJson("simpsons.json");
 
@@ -1288,7 +1288,7 @@ class JsonContentAssertTests {
 
 	}
 
-	private AssertProvider<JsonContentAssert> forJson(String json) {
+	AssertProvider<JsonContentAssert> forJson(String json) {
 		return () -> new JsonContentAssert(JsonContentAssertTests.class, json);
 	}
 

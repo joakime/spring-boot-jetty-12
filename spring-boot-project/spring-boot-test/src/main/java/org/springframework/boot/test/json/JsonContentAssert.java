@@ -928,7 +928,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 */
 	public AbstractCharSequenceAssert<?, String> extractingJsonPathStringValue(CharSequence expression,
 			Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, String.class, "a string"));
+		return reflectiveAssertThat(String.class, extractingJsonPathValue(expression, args, String.class, "a string"));
 	}
 
 	/**
@@ -952,7 +952,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in a boolean
 	 */
 	public AbstractBooleanAssert<?> extractingJsonPathBooleanValue(CharSequence expression, Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, Boolean.class, "a boolean"));
+		return reflectiveAssertThat(Boolean.class,
+				extractingJsonPathValue(expression, args, Boolean.class, "a boolean"));
 	}
 
 	/**
@@ -964,9 +965,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in an array
 	 */
-	@SuppressWarnings("unchecked")
 	public <E> ListAssert<E> extractingJsonPathArrayValue(CharSequence expression, Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, List.class, "an array"));
+		return reflectiveAssertThat(List.class, extractingJsonPathValue(expression, args, List.class, "an array"));
 	}
 
 	/**
@@ -979,9 +979,18 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a map
 	 */
-	@SuppressWarnings("unchecked")
 	public <K, V> MapAssert<K, V> extractingJsonPathMapValue(CharSequence expression, Object... args) {
-		return Assertions.assertThat(extractingJsonPathValue(expression, args, Map.class, "a map"));
+		return reflectiveAssertThat(Map.class, extractingJsonPathValue(expression, args, Map.class, "a map"));
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T, E> T reflectiveAssertThat(Class<E> type, E arg) {
+		try {
+			return (T) Assertions.class.getMethod("assertThat", type).invoke(null, arg);
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
