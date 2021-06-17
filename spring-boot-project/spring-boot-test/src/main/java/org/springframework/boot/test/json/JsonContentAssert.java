@@ -928,7 +928,13 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 */
 	public AbstractCharSequenceAssert<?, String> extractingJsonPathStringValue(CharSequence expression,
 			Object... args) {
-		return reflectiveAssertThat(String.class, extractingJsonPathValue(expression, args, String.class, "a string"));
+		String value = extractingJsonPathValue(expression, args, String.class, "a string");
+		try {
+			return Assertions.assertThat(value);
+		}
+		catch (NoSuchMethodError ex) {
+			return reflectiveAssertThat(String.class, value);
+		}
 	}
 
 	/**
@@ -952,8 +958,13 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in a boolean
 	 */
 	public AbstractBooleanAssert<?> extractingJsonPathBooleanValue(CharSequence expression, Object... args) {
-		return reflectiveAssertThat(Boolean.class,
-				extractingJsonPathValue(expression, args, Boolean.class, "a boolean"));
+		Boolean value = extractingJsonPathValue(expression, args, Boolean.class, "a boolean");
+		try {
+			return Assertions.assertThat(value);
+		}
+		catch (NoSuchMethodError ex) {
+			return reflectiveAssertThat(Boolean.class, value);
+		}
 	}
 
 	/**
@@ -965,8 +976,15 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in an array
 	 */
+	@SuppressWarnings("unchecked")
 	public <E> ListAssert<E> extractingJsonPathArrayValue(CharSequence expression, Object... args) {
-		return reflectiveAssertThat(List.class, extractingJsonPathValue(expression, args, List.class, "an array"));
+		List<E> value = extractingJsonPathValue(expression, args, List.class, "an array");
+		try {
+			return Assertions.assertThat(value);
+		}
+		catch (NoSuchMethodError ex) {
+			return reflectiveAssertThat(List.class, value);
+		}
 	}
 
 	/**
@@ -979,8 +997,15 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a map
 	 */
+	@SuppressWarnings("unchecked")
 	public <K, V> MapAssert<K, V> extractingJsonPathMapValue(CharSequence expression, Object... args) {
-		return reflectiveAssertThat(Map.class, extractingJsonPathValue(expression, args, Map.class, "a map"));
+		Map<K, V> value = extractingJsonPathValue(expression, args, Map.class, "a map");
+		try {
+			return Assertions.assertThat(value);
+		}
+		catch (NoSuchMethodError ex) {
+			return reflectiveAssertThat(Map.class, value);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
