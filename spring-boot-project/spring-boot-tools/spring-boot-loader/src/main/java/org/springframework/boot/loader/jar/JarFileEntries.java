@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private int[] hashCodes;
 
-	private int[] centralDirectoryOffsets;
+	private long[] centralDirectoryOffsets;
 
 	private int[] positions;
 
@@ -120,19 +120,19 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		int maxSize = endRecord.getNumberOfRecords();
 		this.centralDirectoryData = centralDirectoryData;
 		this.hashCodes = new int[maxSize];
-		this.centralDirectoryOffsets = new int[maxSize];
+		this.centralDirectoryOffsets = new long[maxSize];
 		this.positions = new int[maxSize];
 	}
 
 	@Override
-	public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
+	public void visitFileHeader(CentralDirectoryFileHeader fileHeader, long dataOffset) {
 		AsciiBytes name = applyFilter(fileHeader.getName());
 		if (name != null) {
 			add(name, dataOffset);
 		}
 	}
 
-	private void add(AsciiBytes name, int dataOffset) {
+	private void add(AsciiBytes name, long dataOffset) {
 		this.hashCodes[this.size] = name.hashCode();
 		this.centralDirectoryOffsets[this.size] = dataOffset;
 		this.positions[this.size] = this.size;
@@ -189,6 +189,12 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private void swap(int[] array, int i, int j) {
 		int temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	private void swap(long[] array, int i, int j) {
+		long temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
 	}
