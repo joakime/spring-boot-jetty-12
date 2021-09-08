@@ -89,7 +89,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private int[] hashCodes;
 
-	private Object centralDirectoryOffsets;
+	private Offsets centralDirectoryOffsets;
 
 	private int[] positions;
 
@@ -120,7 +120,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		int maxSize = endRecord.getNumberOfRecords();
 		this.centralDirectoryData = centralDirectoryData;
 		this.hashCodes = new int[maxSize];
-		this.centralDirectoryOffsets = endRecord.isZip64() ? new long[maxSize] : new int[maxSize];
+		this.centralDirectoryOffsets = endRecord.isZip64() ? new Zip64Offsets(maxSize) : new ZipOffsets(maxSize);
 		this.positions = new int[maxSize];
 	}
 
@@ -134,12 +134,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private void add(AsciiBytes name, long dataOffset) {
 		this.hashCodes[this.size] = name.hashCode();
-		if (this.centralDirectoryOffsets instanceof long[]) {
-			((long[]) this.centralDirectoryOffsets)[this.size] = dataOffset;
-		}
-		else {
-			((int[]) this.centralDirectoryOffsets)[this.size] = (int) dataOffset;
-		}
+		this.centralDirectoryOffsets.set(this.size, dataOffset);
 		this.positions[this.size] = this.size;
 		this.size++;
 	}
@@ -188,23 +183,12 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private void swap(int i, int j) {
 		swap(this.hashCodes, i, j);
-		if (this.centralDirectoryOffsets instanceof long[]) {
-			swap((long[]) this.centralDirectoryOffsets, i, j);
-		}
-		else {
-			swap((int[]) this.centralDirectoryOffsets, i, j);
-		}
+		this.centralDirectoryOffsets.swap(i, j);
 		swap(this.positions, i, j);
 	}
 
-	private void swap(int[] array, int i, int j) {
+	private static void swap(int[] array, int i, int j) {
 		int temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
-	}
-
-	private void swap(long[] array, int i, int j) {
-		long temp = array[i];
 		array[i] = array[j];
 		array[j] = temp;
 	}
@@ -332,8 +316,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	@SuppressWarnings("unchecked")
 	private <T extends FileHeader> T getEntry(int index, Class<T> type, boolean cacheEntry, AsciiBytes nameAlias) {
 		try {
-			long offset = (this.centralDirectoryOffsets instanceof long[])
-					? ((long[]) this.centralDirectoryOffsets)[index] : ((int[]) this.centralDirectoryOffsets)[index];
+			long offset = this.centralDirectoryOffsets.get(index);
 			FileHeader cached = this.entriesCache.get(index);
 			FileHeader entry = (cached != null) ? cached
 					: CentralDirectoryFileHeader.fromRandomAccessData(this.centralDirectoryData, offset, this.filter);
@@ -434,6 +417,68 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			int entryIndex = JarFileEntries.this.positions[this.index];
 			this.index++;
 			return getEntry(entryIndex, JarEntry.class, false, null);
+		}
+
+	}
+
+	private interface Offsets {
+
+		void set(int index, long value);
+
+		long get(int index);
+
+		void swap(int i, int j);
+
+	}
+
+	private static final class ZipOffsets implements Offsets {
+
+		private final int[] offsets;
+
+		public ZipOffsets(int size) {
+			this.offsets = new int[size];
+		}
+
+		@Override
+		public void swap(int i, int j) {
+			JarFileEntries.swap(this.offsets, i, j);
+		}
+
+		@Override
+		public void set(int index, long value) {
+			this.offsets[index] = (int) value;
+		}
+
+		@Override
+		public long get(int index) {
+			return this.offsets[index];
+		}
+
+	}
+
+	private static final class Zip64Offsets implements Offsets {
+
+		private final long[] offsets;
+
+		public Zip64Offsets(int size) {
+			this.offsets = new long[size];
+		}
+
+		@Override
+		public void swap(int i, int j) {
+			long temp = this.offsets[i];
+			this.offsets[i] = this.offsets[j];
+			this.offsets[j] = temp;
+		}
+
+		@Override
+		public void set(int index, long value) {
+			this.offsets[index] = value;
+		}
+
+		@Override
+		public long get(int index) {
+			return this.offsets[index];
 		}
 
 	}
