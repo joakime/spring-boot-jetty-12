@@ -141,6 +141,10 @@ class CentralDirectoryEndRecord {
 		return comment.toString();
 	}
 
+	boolean isZip64() {
+		return this.zip64End != null;
+	}
+
 	/**
 	 * A Zip64 end of central directory record.
 	 *

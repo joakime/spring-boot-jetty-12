@@ -89,7 +89,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private int[] hashCodes;
 
-	private long[] centralDirectoryOffsets;
+	private Object centralDirectoryOffsets;
 
 	private int[] positions;
 
@@ -120,7 +120,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		int maxSize = endRecord.getNumberOfRecords();
 		this.centralDirectoryData = centralDirectoryData;
 		this.hashCodes = new int[maxSize];
-		this.centralDirectoryOffsets = new long[maxSize];
+		this.centralDirectoryOffsets = endRecord.isZip64() ? new long[maxSize] : new int[maxSize];
 		this.positions = new int[maxSize];
 	}
 
@@ -134,7 +134,12 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private void add(AsciiBytes name, long dataOffset) {
 		this.hashCodes[this.size] = name.hashCode();
-		this.centralDirectoryOffsets[this.size] = dataOffset;
+		if (this.centralDirectoryOffsets instanceof long[]) {
+			((long[]) this.centralDirectoryOffsets)[this.size] = dataOffset;
+		}
+		else {
+			((int[]) this.centralDirectoryOffsets)[this.size] = (int) dataOffset;
+		}
 		this.positions[this.size] = this.size;
 		this.size++;
 	}
@@ -183,7 +188,12 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private void swap(int i, int j) {
 		swap(this.hashCodes, i, j);
-		swap(this.centralDirectoryOffsets, i, j);
+		if (this.centralDirectoryOffsets instanceof long[]) {
+			swap((long[]) this.centralDirectoryOffsets, i, j);
+		}
+		else {
+			swap((int[]) this.centralDirectoryOffsets, i, j);
+		}
 		swap(this.positions, i, j);
 	}
 
@@ -322,9 +332,11 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	@SuppressWarnings("unchecked")
 	private <T extends FileHeader> T getEntry(int index, Class<T> type, boolean cacheEntry, AsciiBytes nameAlias) {
 		try {
+			long offset = (this.centralDirectoryOffsets instanceof long[])
+					? ((long[]) this.centralDirectoryOffsets)[index] : ((int[]) this.centralDirectoryOffsets)[index];
 			FileHeader cached = this.entriesCache.get(index);
-			FileHeader entry = (cached != null) ? cached : CentralDirectoryFileHeader
-					.fromRandomAccessData(this.centralDirectoryData, this.centralDirectoryOffsets[index], this.filter);
+			FileHeader entry = (cached != null) ? cached
+					: CentralDirectoryFileHeader.fromRandomAccessData(this.centralDirectoryData, offset, this.filter);
 			if (CentralDirectoryFileHeader.class.equals(entry.getClass()) && type.equals(JarEntry.class)) {
 				entry = new JarEntry(this.jarFile, index, (CentralDirectoryFileHeader) entry, nameAlias);
 			}
