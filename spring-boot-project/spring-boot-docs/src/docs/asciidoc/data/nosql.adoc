@@ -284,11 +284,10 @@ You can further tune how `RestHighLevelClient` is configured, as shown in the fo
 ----
 	spring:
 	  elasticsearch:
-	    rest:
-	      uris: "https://search.example.com:9200"
-	      read-timeout: "10s"
-	      username: "user"
-	      password: "secret"
+	    uris: "https://search.example.com:9200"
+	    socket-timeout: "10s"
+	    username: "user"
+	    password: "secret"
 ----
 
 You can also register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
@@ -323,15 +322,11 @@ You can further tune how it is configured, as shown in the following example:
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
-	  data:
-	    elasticsearch:
-	      client:
-	        reactive:
-	          endpoints: "search.example.com:9200"
-	          use-ssl: true
-	          socket-timeout: "10s"
-	          username: "user"
-	          password: "secret"
+	  elasticsearch:
+	    uris: "https://search.example.com:9200"
+	    socket-timeout: "10s"
+	    username: "user"
+	    password: "secret"
 ----
 
 If the configuration properties are not enough and you'd like to fully control the client

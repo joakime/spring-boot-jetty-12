@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -69,51 +70,78 @@ public class ReactiveElasticsearchRestClientProperties {
 	 */
 	private DataSize maxInMemorySize;
 
+	private boolean customized = false;
+
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.elasticsearch.uris")
 	public List<String> getEndpoints() {
 		return this.endpoints;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.elasticsearch.uris")
 	public void setEndpoints(List<String> endpoints) {
+		this.customized = true;
 		this.endpoints = endpoints;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "Use of SSL should be indicated through an https URI scheme")
 	public boolean isUseSsl() {
 		return this.useSsl;
 	}
 
+	@Deprecated
 	public void setUseSsl(boolean useSsl) {
+		this.customized = true;
 		this.useSsl = useSsl;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.elasticsearch.username")
 	public String getUsername() {
 		return this.username;
 	}
 
+	@Deprecated
 	public void setUsername(String username) {
+		this.customized = true;
 		this.username = username;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.elasticsearch.password")
 	public String getPassword() {
 		return this.password;
 	}
 
+	@Deprecated
 	public void setPassword(String password) {
+		this.customized = true;
 		this.password = password;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.elasticsearch.connection-timeout")
 	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
+	@Deprecated
 	public void setConnectionTimeout(Duration connectionTimeout) {
+		this.customized = true;
 		this.connectionTimeout = connectionTimeout;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.elasticsearch.socket-timeout")
 	public Duration getSocketTimeout() {
 		return this.socketTimeout;
 	}
 
+	@Deprecated
 	public void setSocketTimeout(Duration socketTimeout) {
+		this.customized = true;
 		this.socketTimeout = socketTimeout;
 	}
 
@@ -122,7 +150,12 @@ public class ReactiveElasticsearchRestClientProperties {
 	}
 
 	public void setMaxInMemorySize(DataSize maxInMemorySize) {
+		this.customized = true;
 		this.maxInMemorySize = maxInMemorySize;
+	}
+
+	boolean isCustomized() {
+		return this.customized;
 	}
 
 }

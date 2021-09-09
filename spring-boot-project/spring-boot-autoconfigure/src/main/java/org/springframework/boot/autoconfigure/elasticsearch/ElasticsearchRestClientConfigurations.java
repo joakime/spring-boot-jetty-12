@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.List;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -53,15 +54,22 @@ class ElasticsearchRestClientConfigurations {
 	@ConditionalOnMissingBean(RestClientBuilder.class)
 	static class RestClientBuilderConfiguration {
 
-		@Bean
-		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(ElasticsearchRestClientProperties properties) {
-			return new DefaultRestClientBuilderCustomizer(properties);
+		private final ConsolidatedProperties properties;
+
+		RestClientBuilderConfiguration(ElasticsearchProperties properties,
+				ElasticsearchRestClientProperties legacyProperties) {
+			this.properties = new ConsolidatedProperties(properties, legacyProperties);
 		}
 
 		@Bean
-		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchRestClientProperties properties,
+		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer() {
+			return new DefaultRestClientBuilderCustomizer(this.properties);
+		}
+
+		@Bean
+		RestClientBuilder elasticsearchRestClientBuilder(
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
-			HttpHost[] hosts = properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
+			HttpHost[] hosts = this.properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
 			RestClientBuilder builder = RestClient.builder(hosts);
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
@@ -133,9 +141,9 @@ class ElasticsearchRestClientConfigurations {
 
 		private static final PropertyMapper map = PropertyMapper.get();
 
-		private final ElasticsearchRestClientProperties properties;
+		private final ConsolidatedProperties properties;
 
-		DefaultRestClientBuilderCustomizer(ElasticsearchRestClientProperties properties) {
+		DefaultRestClientBuilderCustomizer(ConsolidatedProperties properties) {
 			this.properties = properties;
 		}
 
@@ -152,7 +160,7 @@ class ElasticsearchRestClientConfigurations {
 		public void customize(RequestConfig.Builder builder) {
 			map.from(this.properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
 					.to(builder::setConnectTimeout);
-			map.from(this.properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
+			map.from(this.properties::getSocketTimeout).whenNonNull().asInt(Duration::toMillis)
 					.to(builder::setSocketTimeout);
 		}
 
@@ -160,7 +168,7 @@ class ElasticsearchRestClientConfigurations {
 
 	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
 
-		PropertiesCredentialsProvider(ElasticsearchRestClientProperties properties) {
+		PropertiesCredentialsProvider(ConsolidatedProperties properties) {
 			if (StringUtils.hasText(properties.getUsername())) {
 				Credentials credentials = new UsernamePasswordCredentials(properties.getUsername(),
 						properties.getPassword());
@@ -197,6 +205,49 @@ class ElasticsearchRestClientConfigurations {
 			String username = userInfo.substring(0, delimiter);
 			String password = userInfo.substring(delimiter + 1);
 			return new UsernamePasswordCredentials(username, password);
+		}
+
+	}
+
+	private static final class ConsolidatedProperties {
+
+		private final ElasticsearchProperties properties;
+
+		private final ElasticsearchRestClientProperties legacyProperties;
+
+		private ConsolidatedProperties(ElasticsearchProperties properties,
+				ElasticsearchRestClientProperties legacyProperties) {
+			this.properties = properties;
+			this.legacyProperties = legacyProperties;
+		}
+
+		@SuppressWarnings("deprecation")
+		private List<String> getUris() {
+			return this.legacyProperties.isCustomized() ? this.legacyProperties.getUris() : this.properties.getUris();
+		}
+
+		@SuppressWarnings("deprecation")
+		private String getUsername() {
+			return this.legacyProperties.isCustomized() ? this.legacyProperties.getUsername()
+					: this.properties.getUsername();
+		}
+
+		@SuppressWarnings("deprecation")
+		private String getPassword() {
+			return this.legacyProperties.isCustomized() ? this.legacyProperties.getPassword()
+					: this.properties.getPassword();
+		}
+
+		@SuppressWarnings("deprecation")
+		private Duration getConnectionTimeout() {
+			return this.legacyProperties.isCustomized() ? this.legacyProperties.getConnectionTimeout()
+					: this.properties.getConnectionTimeout();
+		}
+
+		@SuppressWarnings("deprecation")
+		private Duration getSocketTimeout() {
+			return this.legacyProperties.isCustomized() ? this.legacyProperties.getReadTimeout()
+					: this.properties.getSocketTimeout();
 		}
 
 	}
