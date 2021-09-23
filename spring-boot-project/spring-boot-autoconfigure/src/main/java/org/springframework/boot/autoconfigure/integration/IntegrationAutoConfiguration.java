@@ -17,6 +17,9 @@
 package org.springframework.boot.autoconfigure.integration;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
@@ -39,6 +42,7 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfig
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -65,7 +69,6 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -85,6 +88,12 @@ import org.springframework.util.StringUtils;
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
 		TaskSchedulingAutoConfiguration.class })
 public class IntegrationAutoConfiguration {
+
+	private static final String PROPERTY_NAME_CRON = "spring.integration.poller.cron";
+
+	private static final String PROPERTY_NAME_FIXED_DELAY = "spring.integration.poller.fixed-delay";
+
+	private static final String PROPERTY_NAME_FIXED_RATE = "spring.integration.poller.fixed-rate";
 
 	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
@@ -120,11 +129,22 @@ public class IntegrationAutoConfiguration {
 		@ConditionalOnMissingBean(name = PollerMetadata.DEFAULT_POLLER)
 		public PollerMetadata defaultPoller(IntegrationProperties integrationProperties) {
 			IntegrationProperties.Poller poller = integrationProperties.getPoller();
-			int hasCron = poller.getCron() != null ? 1 : 0;
-			int hasFixedDelay = poller.getFixedDelay() != null ? 1 : 0;
-			int hasFixedRate = poller.getFixedRate() != null ? 1 : 0;
-			Assert.isTrue((hasCron + hasFixedDelay + hasFixedRate) <= 1,
-					"The 'cron', 'fixedDelay' and 'fixedRate' are mutually exclusive 'spring.integration.poller' properties.");
+			Set<String> triggerProperties = new LinkedHashSet<>();
+			if (poller.getCron() != null) {
+				triggerProperties.add(PROPERTY_NAME_CRON);
+			}
+			if (poller.getFixedDelay() != null) {
+				triggerProperties.add(PROPERTY_NAME_FIXED_DELAY);
+			}
+			if (poller.getFixedRate() != null) {
+				triggerProperties.add(PROPERTY_NAME_FIXED_RATE);
+			}
+			if (triggerProperties.size() > 1) {
+				throw new MutuallyExclusiveConfigurationPropertiesException(
+						new LinkedHashSet<>(
+								Arrays.asList(PROPERTY_NAME_CRON, PROPERTY_NAME_FIXED_DELAY, PROPERTY_NAME_FIXED_RATE)),
+						triggerProperties);
+			}
 			PollerMetadata pollerMetadata = new PollerMetadata();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
