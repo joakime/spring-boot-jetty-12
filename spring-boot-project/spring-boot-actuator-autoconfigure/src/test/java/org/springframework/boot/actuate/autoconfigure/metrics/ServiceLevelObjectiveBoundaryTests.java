@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.time.Duration;
+
 import io.micrometer.core.instrument.Meter.Type;
 import org.junit.jupiter.api.Test;
 
@@ -42,9 +44,15 @@ class ServiceLevelObjectiveBoundaryTests {
 	}
 
 	@Test
-	void getValueForTimerWhenFromDurationStringShouldReturnDurationNanos() {
+	void getValueForTimerWhenFromMillisecondDurationStringShouldReturnDurationNanos() {
 		ServiceLevelObjectiveBoundary slo = ServiceLevelObjectiveBoundary.valueOf("123ms");
 		assertThat(slo.getValue(Type.TIMER)).isEqualTo(123000000);
+	}
+
+	@Test
+	void getValueForTimerWhenFromDaysDurationStringShouldReturnDurationNanos() {
+		ServiceLevelObjectiveBoundary slo = ServiceLevelObjectiveBoundary.valueOf("1d");
+		assertThat(slo.getValue(Type.TIMER)).isEqualTo(Duration.ofDays(1).toNanos());
 	}
 
 	@Test
