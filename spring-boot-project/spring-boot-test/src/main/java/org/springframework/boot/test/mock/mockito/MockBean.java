@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.mockito.MockSettings;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -153,5 +154,12 @@ public @interface MockBean {
 	 * @return the reset mode
 	 */
 	MockReset reset() default MockReset.AFTER;
+
+	/**
+	 * The name of the context in which the mock bean should be created.
+	 * @return the name of the context
+	 * @see ContextConfiguration#name()
+	 */
+	String context() default "";
 
 }

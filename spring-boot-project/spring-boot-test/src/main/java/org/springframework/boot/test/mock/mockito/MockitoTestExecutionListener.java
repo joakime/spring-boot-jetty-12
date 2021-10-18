@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -104,11 +105,16 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 	}
 
 	private void postProcessFields(TestContext testContext, BiConsumer<MockitoField, MockitoPostProcessor> consumer) {
-		DefinitionsParser parser = new DefinitionsParser();
+		MockitoPostProcessor postProcessor;
+		try {
+			postProcessor = testContext.getApplicationContext().getBean(MockitoPostProcessor.class);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return;
+		}
+		DefinitionsParser parser = new DefinitionsParser(postProcessor.getContextName());
 		parser.parse(testContext.getTestClass());
 		if (!parser.getDefinitions().isEmpty()) {
-			MockitoPostProcessor postProcessor = testContext.getApplicationContext()
-					.getBean(MockitoPostProcessor.class);
 			for (Definition definition : parser.getDefinitions()) {
 				Field field = parser.getField(definition);
 				if (field != null) {

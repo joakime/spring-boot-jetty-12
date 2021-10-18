@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,10 @@ class MockitoTestExecutionListenerTests {
 	@Test
 	void prepareTestInstanceShouldInitMockitoAnnotations() throws Exception {
 		WithMockitoAnnotations instance = new WithMockitoAnnotations();
-		this.listener.prepareTestInstance(mockTestContext(instance));
+		TestContext testContext = mockTestContext(instance);
+		given(testContext.getApplicationContext()).willReturn(this.applicationContext);
+		given(this.applicationContext.getBean(MockitoPostProcessor.class)).willReturn(this.postProcessor);
+		this.listener.prepareTestInstance(testContext);
 		assertThat(instance.mock).isNotNull();
 		assertThat(instance.captor).isNotNull();
 	}

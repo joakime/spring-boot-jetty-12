@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,16 +48,19 @@ class DefinitionsParser {
 
 	private final Map<Definition, Field> definitionFields;
 
-	DefinitionsParser() {
-		this(Collections.emptySet());
+	private final String contextName;
+
+	DefinitionsParser(String contextName) {
+		this(Collections.emptySet(), contextName);
 	}
 
-	DefinitionsParser(Collection<? extends Definition> existing) {
+	DefinitionsParser(Collection<? extends Definition> existing, String contextName) {
 		this.definitions = new LinkedHashSet<>();
 		this.definitionFields = new LinkedHashMap<>();
 		if (existing != null) {
 			this.definitions.addAll(existing);
 		}
+		this.contextName = contextName;
 	}
 
 	void parse(Class<?> source) {
@@ -74,6 +77,10 @@ class DefinitionsParser {
 	}
 
 	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element, Class<?> source) {
+		String beanContextName = annotation.context();
+		if (StringUtils.hasText(beanContextName) && !beanContextName.equals(this.contextName)) {
+			return;
+		}
 		Set<ResolvableType> typesToMock = getOrDeduceTypes(element, annotation.value(), source);
 		Assert.state(!typesToMock.isEmpty(), () -> "Unable to deduce type to mock from " + element);
 		if (StringUtils.hasLength(annotation.name())) {

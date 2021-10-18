@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,15 +33,18 @@ class MockitoContextCustomizer implements ContextCustomizer {
 
 	private final Set<Definition> definitions;
 
-	MockitoContextCustomizer(Set<? extends Definition> definitions) {
+	private final String contextName;
+
+	MockitoContextCustomizer(Set<? extends Definition> definitions, String contextName) {
 		this.definitions = new LinkedHashSet<>(definitions);
+		this.contextName = contextName;
 	}
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		if (context instanceof BeanDefinitionRegistry) {
-			MockitoPostProcessor.register((BeanDefinitionRegistry) context, this.definitions);
+			MockitoPostProcessor.register((BeanDefinitionRegistry) context, this.definitions, this.contextName);
 		}
 	}
 

@@ -88,6 +88,8 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 
 	private final Set<Definition> definitions;
 
+	private final String contextName;
+
 	private ClassLoader classLoader;
 
 	private BeanFactory beanFactory;
@@ -106,7 +108,12 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 	 * @param definitions the initial definitions
 	 */
 	public MockitoPostProcessor(Set<Definition> definitions) {
+		this(definitions, null);
+	}
+
+	public MockitoPostProcessor(Set<Definition> definitions, String contextName) {
 		this.definitions = definitions;
+		this.contextName = contextName;
 	}
 
 	@Override
@@ -130,7 +137,7 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 
 	private void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory, BeanDefinitionRegistry registry) {
 		beanFactory.registerSingleton(MockitoBeans.class.getName(), this.mockitoBeans);
-		DefinitionsParser parser = new DefinitionsParser(this.definitions);
+		DefinitionsParser parser = new DefinitionsParser(this.definitions, this.contextName);
 		for (Class<?> configurationClass : getConfigurationClasses(beanFactory)) {
 			parser.parse(configurationClass);
 		}
@@ -393,18 +400,28 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 		register(registry, MockitoPostProcessor.class, definitions);
 	}
 
+	public static void register(BeanDefinitionRegistry registry, Set<Definition> definitions, String contextName) {
+		register(registry, MockitoPostProcessor.class, definitions, contextName);
+	}
+
+	public static void register(BeanDefinitionRegistry registry, Class<? extends MockitoPostProcessor> postProcessor,
+			Set<Definition> definitions) {
+		register(registry, postProcessor, definitions, null);
+	}
+
 	/**
 	 * Register the processor with a {@link BeanDefinitionRegistry}. Not required when
 	 * using the {@link SpringRunner} as registration is automatic.
 	 * @param registry the bean definition registry
 	 * @param postProcessor the post processor class to register
 	 * @param definitions the initial mock/spy definitions
+	 * @param contextName name of the context to target
 	 */
 	@SuppressWarnings("unchecked")
 	public static void register(BeanDefinitionRegistry registry, Class<? extends MockitoPostProcessor> postProcessor,
-			Set<Definition> definitions) {
+			Set<Definition> definitions, String contextName) {
 		SpyPostProcessor.register(registry);
-		BeanDefinition definition = getOrAddBeanDefinition(registry, postProcessor);
+		BeanDefinition definition = getOrAddBeanDefinition(registry, postProcessor, contextName);
 		ValueHolder constructorArg = definition.getConstructorArgumentValues().getIndexedArgumentValue(0, Set.class);
 		Set<Definition> existing = (Set<Definition>) constructorArg.getValue();
 		if (definitions != null) {
@@ -413,16 +430,21 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 	}
 
 	private static BeanDefinition getOrAddBeanDefinition(BeanDefinitionRegistry registry,
-			Class<? extends MockitoPostProcessor> postProcessor) {
+			Class<? extends MockitoPostProcessor> postProcessor, String contextName) {
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			RootBeanDefinition definition = new RootBeanDefinition(postProcessor);
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			ConstructorArgumentValues constructorArguments = definition.getConstructorArgumentValues();
 			constructorArguments.addIndexedArgumentValue(0, new LinkedHashSet<MockDefinition>());
+			constructorArguments.addIndexedArgumentValue(1, contextName);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 			return definition;
 		}
 		return registry.getBeanDefinition(BEAN_NAME);
+	}
+
+	String getContextName() {
+		return this.contextName;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,9 @@ class MockitoContextCustomizerTests {
 	void hashCodeAndEquals() {
 		MockDefinition d1 = createTestMockDefinition(ExampleService.class);
 		MockDefinition d2 = createTestMockDefinition(ExampleServiceCaller.class);
-		MockitoContextCustomizer c1 = new MockitoContextCustomizer(NO_DEFINITIONS);
-		MockitoContextCustomizer c2 = new MockitoContextCustomizer(new LinkedHashSet<>(Arrays.asList(d1, d2)));
-		MockitoContextCustomizer c3 = new MockitoContextCustomizer(new LinkedHashSet<>(Arrays.asList(d2, d1)));
+		MockitoContextCustomizer c1 = new MockitoContextCustomizer(NO_DEFINITIONS, null);
+		MockitoContextCustomizer c2 = new MockitoContextCustomizer(new LinkedHashSet<>(Arrays.asList(d1, d2)), null);
+		MockitoContextCustomizer c3 = new MockitoContextCustomizer(new LinkedHashSet<>(Arrays.asList(d2, d1)), null);
 		assertThat(c2.hashCode()).isEqualTo(c3.hashCode());
 		assertThat(c1).isEqualTo(c1).isNotEqualTo(c2);
 		assertThat(c2).isEqualTo(c2).isEqualTo(c3).isNotEqualTo(c1);
