@@ -29,7 +29,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.r2dbc.R2dbcProperties.Pool;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -65,7 +69,7 @@ abstract class ConnectionFactoryConfigurations {
 	@ConditionalOnClass(ConnectionPool.class)
 	@Conditional(PooledConnectionFactoryCondition.class)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
-	static class Pool {
+	static class PoolConfiguration {
 
 		@Bean(destroyMethod = "dispose")
 		ConnectionPool connectionFactory(R2dbcProperties properties, ResourceLoader resourceLoader,
@@ -92,7 +96,7 @@ abstract class ConnectionFactoryConfigurations {
 	@ConditionalOnProperty(prefix = "spring.r2dbc.pool", value = "enabled", havingValue = "false",
 			matchIfMissing = true)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
-	static class Generic {
+	static class GenericConfiguration {
 
 		@Bean
 		ConnectionFactory connectionFactory(R2dbcProperties properties, ResourceLoader resourceLoader,
@@ -112,19 +116,25 @@ abstract class ConnectionFactoryConfigurations {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			boolean poolEnabled = context.getEnvironment().getProperty("spring.r2dbc.pool.enabled", Boolean.class,
-					true);
-			if (poolEnabled) {
-				// Make sure the URL does not have pool options
-				String url = context.getEnvironment().getProperty("spring.r2dbc.url");
-				boolean pooledUrl = StringUtils.hasText(url) && url.contains(":pool:");
-				if (pooledUrl) {
-					return ConditionOutcome.noMatch("R2DBC Connection URL contains pooling-related options");
+			String url = context.getEnvironment().getProperty("spring.r2dbc.url");
+			boolean pooledUrl = StringUtils.hasText(url) && url.contains(":pool:");
+			BindResult<Pool> pool = Binder.get(context.getEnvironment()).bind("spring.r2dbc.pool",
+					Bindable.of(Pool.class));
+			if (pooledUrl) {
+				if (pool.isBound()) {
+					throw new IllegalStateException(
+							"R2DBC connection pooling configuration should be provided by either the "
+									+ "spring.r2dbc.pool.* properties or the spring.r2dbc.url property but both have "
+									+ "been used.");
 				}
-				return ConditionOutcome
-						.match("Pooling is enabled and R2DBC Connection URL does not contain pooling-related options");
+				return ConditionOutcome.noMatch("URL-based pooling has been configured");
+
 			}
-			return ConditionOutcome.noMatch("Pooling is disabled");
+			if (pool.orElseGet(Pool::new).isEnabled()) {
+				return ConditionOutcome.match("Property-based pooling is enabled");
+			}
+			return ConditionOutcome.noMatch("Property-based pooling is disabled");
+
 		}
 
 	}

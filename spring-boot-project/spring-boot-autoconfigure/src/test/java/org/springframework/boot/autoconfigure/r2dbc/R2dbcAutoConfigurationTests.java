@@ -98,14 +98,30 @@ class R2dbcAutoConfigurationTests {
 	}
 
 	@Test
-	void configureWithUrlPoolAndPoolPropertiesApplyUrlPoolOptions() {
+	void configureWithUrlPoolAndPoolPropertiesFails() {
 		this.contextRunner
 				.withPropertyValues("spring.r2dbc.url:r2dbc:pool:h2:mem:///" + randomDatabaseName() + "?maxSize=12",
 						"spring.r2dbc.pool.max-size=15")
+				.run((context) -> assertThat(context).hasFailed());
+	}
+
+	@Test
+	// Should this fail or would a user expect it to disable the URL-based pool?
+	void configureWithUrlPoolAndPropertyBasedPoolingDisabledFails() {
+		this.contextRunner
+				.withPropertyValues("spring.r2dbc.url:r2dbc:pool:h2:mem:///" + randomDatabaseName() + "?maxSize=12",
+						"spring.r2dbc.pool.enabled=false")
+				.run((context) -> assertThat(context).hasFailed());
+	}
+
+	@Test
+	void configureWithUrlPoolAndNoPoolPropertiesCreatesPool() {
+		this.contextRunner
+				.withPropertyValues("spring.r2dbc.url:r2dbc:pool:h2:mem:///" + randomDatabaseName() + "?maxSize=12")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(ConnectionPool.class);
-					PoolMetrics poolMetrics = context.getBean(ConnectionPool.class).getMetrics().get();
-					assertThat(poolMetrics.getMaxAllocatedSize()).isEqualTo(12);
+					ConnectionPool connectionPool = context.getBean(ConnectionPool.class);
+					assertThat(connectionPool.getMetrics().get().getMaxAllocatedSize()).isEqualTo(12);
 				});
 	}
 
