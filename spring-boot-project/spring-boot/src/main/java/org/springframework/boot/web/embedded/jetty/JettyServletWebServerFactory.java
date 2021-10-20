@@ -63,6 +63,7 @@ import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
@@ -245,6 +246,10 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private void configureSession(WebAppContext context) {
 		SessionHandler handler = context.getSessionHandler();
+		SameSite sameSite = getSession().getCookie().getSameSite();
+		if (sameSite != null) {
+			handler.setSameSite(org.eclipse.jetty.http.HttpCookie.SameSite.valueOf(sameSite.name()));
+		}
 		Duration sessionTimeout = getSession().getTimeout();
 		handler.setMaxInactiveInterval(isNegative(sessionTimeout) ? -1 : (int) sessionTimeout.getSeconds());
 		if (getSession().isPersistent()) {

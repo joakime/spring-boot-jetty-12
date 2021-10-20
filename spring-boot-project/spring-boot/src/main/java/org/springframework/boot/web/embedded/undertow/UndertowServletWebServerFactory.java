@@ -39,6 +39,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import io.undertow.Undertow.Builder;
+import io.undertow.server.handlers.SameSiteCookieHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceChangeListener;
@@ -56,6 +57,7 @@ import io.undertow.servlet.core.DeploymentImpl;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 
+import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.boot.web.server.WebServer;
@@ -458,8 +460,16 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @return a new {@link UndertowServletWebServer} instance
 	 */
 	protected UndertowServletWebServer getUndertowWebServer(Builder builder, DeploymentManager manager, int port) {
+		List<HttpHandlerFactory> initialHandlerFactories = new ArrayList<>();
+		initialHandlerFactories.add(new DeploymentManagerHttpHandlerFactory(manager));
+		SameSite sameSite = getSession().getCookie().getSameSite();
+		String cookieName = getSession().getCookie().getName();
+		if (sameSite != null) {
+			initialHandlerFactories.add((next) -> new SameSiteCookieHandler(next, sameSite.attributeValue(),
+					(cookieName != null) ? cookieName : "JSESSIONID"));
+		}
 		List<HttpHandlerFactory> httpHandlerFactories = this.delegate.createHttpHandlerFactories(this,
-				new DeploymentManagerHttpHandlerFactory(manager));
+				initialHandlerFactories.toArray(new HttpHandlerFactory[0]));
 		return new UndertowServletWebServer(builder, httpHandlerFactories, getContextPath(), port >= 0);
 	}
 

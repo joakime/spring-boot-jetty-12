@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletContainerInitializer;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -61,10 +63,16 @@ import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http2.Http2Protocol;
+import org.apache.tomcat.util.http.CookieProcessor;
+import org.apache.tomcat.util.http.CookieProcessorBase;
+import org.apache.tomcat.util.http.MimeHeaders;
+import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
+import org.apache.tomcat.util.http.ServerCookies;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
 import org.springframework.boot.util.LambdaSafe;
+import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServer;
@@ -396,6 +404,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		Boolean httpOnly = getSession().getCookie().getHttpOnly();
 		if (httpOnly != null) {
 			context.setUseHttpOnly(httpOnly);
+		}
+		SameSite sameSite = getSession().getCookie().getSameSite();
+		if (sameSite != null) {
+			String sessionCookieName = getSession().getCookie().getName();
+			CookieProcessor cookieProcessor = new OnlySessionSameSiteCookieProcessor(
+					(sessionCookieName != null) ? sessionCookieName : "JSESSIONID", sameSite);
+			context.setCookieProcessor(cookieProcessor);
 		}
 		if (getSession().isPersistent()) {
 			Manager manager = context.getManager();
@@ -876,6 +891,45 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 					throw new LifecycleException(ex);
 				}
 			}
+		}
+
+	}
+
+	private static class OnlySessionSameSiteCookieProcessor extends CookieProcessorBase {
+
+		private final Rfc6265CookieProcessor sameSiteCookieProcessor = new Rfc6265CookieProcessor();
+
+		private final Rfc6265CookieProcessor generalCookieProcessor = new Rfc6265CookieProcessor();
+
+		private final String sessionCookieName;
+
+		private OnlySessionSameSiteCookieProcessor(String sessionCookieName, SameSite sameSite) {
+			this.sessionCookieName = sessionCookieName;
+			this.sameSiteCookieProcessor.setSameSiteCookies(sameSite.attributeValue());
+		}
+
+		@Override
+		public void parseCookieHeader(MimeHeaders headers, ServerCookies serverCookies) {
+			this.generalCookieProcessor.parseCookieHeader(headers, serverCookies);
+		}
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public String generateHeader(Cookie cookie) {
+			return generateHeader(cookie, null);
+		}
+
+		@Override
+		public String generateHeader(Cookie cookie, HttpServletRequest request) {
+			if (this.sessionCookieName.equals(cookie.getName())) {
+				return this.sameSiteCookieProcessor.generateHeader(cookie, request);
+			}
+			return this.generalCookieProcessor.generateHeader(cookie, request);
+		}
+
+		@Override
+		public Charset getCharset() {
+			return this.generalCookieProcessor.getCharset();
 		}
 
 	}
