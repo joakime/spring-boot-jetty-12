@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.stereotype.Controller;

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import javax.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerContainer;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +69,7 @@ class WebSocketServletAutoConfigurationTests {
 		this.context.register(configuration);
 		this.context.refresh();
 		Object serverContainer = this.context.getServletContext()
-				.getAttribute("javax.websocket.server.ServerContainer");
+				.getAttribute("jakarta.websocket.server.ServerContainer");
 		assertThat(serverContainer).isInstanceOf(ServerContainer.class);
 
 	}

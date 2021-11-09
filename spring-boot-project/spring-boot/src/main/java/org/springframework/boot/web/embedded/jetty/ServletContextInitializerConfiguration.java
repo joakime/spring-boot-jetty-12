@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;

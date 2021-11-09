@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.freemarker;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Servlet;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Servlet;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

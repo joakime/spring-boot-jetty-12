@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.web.mappings.servlet;
 
 import java.util.Collection;
 
-import javax.servlet.FilterRegistration;
+import jakarta.servlet.FilterRegistration;
 
 /**
  * A {@link RegistrationMappingDescription} derived from a {@link FilterRegistration}.

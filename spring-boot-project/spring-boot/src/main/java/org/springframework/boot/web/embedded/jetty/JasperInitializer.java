@@ -23,7 +23,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
-import javax.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContainerInitializer;
 
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;

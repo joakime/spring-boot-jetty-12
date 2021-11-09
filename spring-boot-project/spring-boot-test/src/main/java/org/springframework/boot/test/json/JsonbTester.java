@@ -19,7 +19,7 @@ package org.springframework.boot.test.json;
 import java.io.IOException;
 import java.io.Reader;
 
-import javax.json.bind.Jsonb;
+import jakarta.json.bind.Jsonb;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;

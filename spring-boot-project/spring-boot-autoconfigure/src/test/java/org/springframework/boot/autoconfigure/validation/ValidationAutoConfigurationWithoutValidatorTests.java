@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
-import javax.validation.Validator;
+import jakarta.validation.Validator;
 
 import org.junit.jupiter.api.Test;
 

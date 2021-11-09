@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.validation;
 
 import java.util.HashMap;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
 
 import org.junit.jupiter.api.Test;
 
@@ -86,7 +86,7 @@ class ValidatorAdapterTests {
 	@Test
 	void wrapperWhenValidationProviderNotPresentShouldNotThrowException() {
 		ClassPathResource hibernateValidator = new ClassPathResource(
-				"META-INF/services/javax.validation.spi.ValidationProvider");
+				"META-INF/services/jakarta.validation.spi.ValidationProvider");
 		this.contextRunner
 				.withClassLoader(
 						new FilteredClassLoader(FilteredClassLoader.ClassPathResourceFilter.of(hibernateValidator),

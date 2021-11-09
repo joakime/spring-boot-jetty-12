@@ -19,8 +19,8 @@ package org.springframework.boot.web.servlet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.servlet.Registration;
-import javax.servlet.ServletContext;
+import jakarta.servlet.Registration;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Base class for Servlet 3.0+ {@link javax.servlet.Registration.Dynamic dynamic} based
+ * Base class for Servlet 3.0+ {@link jakarta.servlet.Registration.Dynamic dynamic} based
  * registration beans.
  *
  * @param <D> the dynamic registration result

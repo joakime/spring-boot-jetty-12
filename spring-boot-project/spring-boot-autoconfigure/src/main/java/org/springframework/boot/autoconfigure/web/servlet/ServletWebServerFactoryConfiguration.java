@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.stream.Collectors;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 
 import io.undertow.Undertow;
 import org.apache.catalina.startup.Tomcat;

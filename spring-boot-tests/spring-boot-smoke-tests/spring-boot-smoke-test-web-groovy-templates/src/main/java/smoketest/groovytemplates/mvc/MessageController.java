@@ -19,7 +19,7 @@ package smoketest.groovytemplates.mvc;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import smoketest.groovytemplates.Message;
 import smoketest.groovytemplates.MessageRepository;

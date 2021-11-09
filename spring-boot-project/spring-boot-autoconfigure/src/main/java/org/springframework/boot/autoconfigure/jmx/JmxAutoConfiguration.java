@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
-import org.springframework.context.annotation.MBeanExportConfiguration.SpecificPlatform;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.MBeanExporter;
@@ -91,10 +90,6 @@ public class JmxAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MBeanServer mbeanServer() {
-		SpecificPlatform platform = SpecificPlatform.get();
-		if (platform != null) {
-			return platform.getMBeanServer();
-		}
 		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
 		factory.setLocateExistingServerIfPossible(true);
 		factory.afterPropertiesSet();

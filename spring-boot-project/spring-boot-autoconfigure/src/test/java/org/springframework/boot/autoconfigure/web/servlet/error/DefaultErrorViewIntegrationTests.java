@@ -79,7 +79,7 @@ class DefaultErrorViewIntegrationTests {
 	void testErrorWithHtmlEscape() throws Exception {
 		MvcResult response = this.mockMvc
 				.perform(get("/error")
-						.requestAttr("javax.servlet.error.exception",
+						.requestAttr("jakarta.servlet.error.exception",
 								new RuntimeException("<script>alert('Hello World')</script>"))
 						.accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
@@ -93,7 +93,7 @@ class DefaultErrorViewIntegrationTests {
 	void testErrorWithSpelEscape() throws Exception {
 		String spel = "${T(" + getClass().getName() + ").injectCall()}";
 		MvcResult response = this.mockMvc.perform(get("/error")
-				.requestAttr("javax.servlet.error.exception", new RuntimeException(spel)).accept(MediaType.TEXT_HTML))
+				.requestAttr("jakarta.servlet.error.exception", new RuntimeException(spel)).accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).doesNotContain("injection");

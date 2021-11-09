@@ -16,9 +16,9 @@
 
 package org.springframework.boot.jms;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.XAConnectionFactory;
-import javax.transaction.TransactionManager;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.XAConnectionFactory;
+import jakarta.transaction.TransactionManager;
 
 /**
  * Strategy interface used to wrap a JMS {@link XAConnectionFactory} enrolling it with a

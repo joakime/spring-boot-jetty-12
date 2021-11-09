@@ -25,10 +25,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.annotation.WebServlet;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;

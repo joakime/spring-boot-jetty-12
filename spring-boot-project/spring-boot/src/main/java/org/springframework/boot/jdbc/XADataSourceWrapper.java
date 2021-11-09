@@ -18,7 +18,8 @@ package org.springframework.boot.jdbc;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
+
+import jakarta.transaction.TransactionManager;
 
 /**
  * Strategy interface used to wrap an {@link XADataSource} enrolling it with a JTA

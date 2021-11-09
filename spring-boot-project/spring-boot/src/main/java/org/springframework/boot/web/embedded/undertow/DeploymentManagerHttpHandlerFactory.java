@@ -19,7 +19,7 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.Closeable;
 import java.io.IOException;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;

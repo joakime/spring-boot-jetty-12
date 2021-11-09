@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletRegistration.Dynamic;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;

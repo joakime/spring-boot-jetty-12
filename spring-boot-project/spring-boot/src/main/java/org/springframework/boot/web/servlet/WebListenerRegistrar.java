@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.servlet;
 
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.annotation.WebListener;
 
 /**
  * Interface to be implemented by types that register {@link WebListener @WebListeners}.

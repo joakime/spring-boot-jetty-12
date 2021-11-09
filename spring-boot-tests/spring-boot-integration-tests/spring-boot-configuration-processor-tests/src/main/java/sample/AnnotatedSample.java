@@ -16,7 +16,7 @@
 
 package sample;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

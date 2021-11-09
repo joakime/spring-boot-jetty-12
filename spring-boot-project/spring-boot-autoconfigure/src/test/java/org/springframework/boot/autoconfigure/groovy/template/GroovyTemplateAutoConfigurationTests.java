@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import groovy.text.markup.MarkupTemplateEngine;
 import org.junit.jupiter.api.AfterEach;

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 

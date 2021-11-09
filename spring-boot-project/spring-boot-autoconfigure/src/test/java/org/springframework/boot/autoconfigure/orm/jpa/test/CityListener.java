@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa.test;
 
-import javax.persistence.PostLoad;
+import jakarta.persistence.PostLoad;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;

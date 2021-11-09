@@ -15,6 +15,6 @@
  */
 
 /**
- * Spring Boot specific {@link javax.servlet.Filter} implementations.
+ * Spring Boot specific {@link jakarta.servlet.Filter} implementations.
  */
 package org.springframework.boot.web.servlet.filter;

@@ -21,7 +21,7 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

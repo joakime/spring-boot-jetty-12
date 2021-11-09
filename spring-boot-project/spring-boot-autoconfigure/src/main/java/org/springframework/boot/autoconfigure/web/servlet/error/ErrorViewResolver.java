@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet.error;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;

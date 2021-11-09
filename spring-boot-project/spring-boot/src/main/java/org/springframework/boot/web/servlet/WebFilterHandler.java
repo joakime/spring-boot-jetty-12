@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.annotation.WebFilter;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.annotation.WebFilter;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;

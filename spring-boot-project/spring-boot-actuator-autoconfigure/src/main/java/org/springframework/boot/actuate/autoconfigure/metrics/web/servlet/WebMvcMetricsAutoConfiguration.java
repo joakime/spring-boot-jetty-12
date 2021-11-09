@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;
 
 import java.util.stream.Collectors;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;

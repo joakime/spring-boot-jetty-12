@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.servlet;
 
-import javax.servlet.MultipartConfigElement;
+import jakarta.servlet.MultipartConfigElement;
 
 import org.springframework.util.unit.DataSize;
 

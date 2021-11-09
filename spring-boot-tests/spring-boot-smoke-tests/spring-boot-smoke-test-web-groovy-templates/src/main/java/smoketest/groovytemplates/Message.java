@@ -18,7 +18,7 @@ package smoketest.groovytemplates;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 public class Message {
 

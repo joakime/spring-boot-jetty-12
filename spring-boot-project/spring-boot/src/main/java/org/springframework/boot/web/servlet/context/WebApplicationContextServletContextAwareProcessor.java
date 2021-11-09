@@ -16,8 +16,8 @@
 
 package org.springframework.boot.web.servlet.context;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.util.Assert;
 import org.springframework.web.context.ConfigurableWebApplicationContext;

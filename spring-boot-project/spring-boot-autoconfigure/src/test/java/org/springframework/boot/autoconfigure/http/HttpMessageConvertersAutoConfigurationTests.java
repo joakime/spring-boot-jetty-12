@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.http;
 
 import java.nio.charset.StandardCharsets;
 
-import javax.json.bind.Jsonb;
+import jakarta.json.bind.Jsonb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;

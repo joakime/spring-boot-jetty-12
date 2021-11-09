@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class DummyBody {
 

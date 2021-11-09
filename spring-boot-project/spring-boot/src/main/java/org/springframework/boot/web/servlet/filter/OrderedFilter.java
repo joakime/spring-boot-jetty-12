@@ -16,12 +16,12 @@
 
 package org.springframework.boot.web.servlet.filter;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import org.springframework.core.Ordered;
 
 /**
- * An {@link Ordered} {@link javax.servlet.Filter}.
+ * An {@link Ordered} {@link jakarta.servlet.Filter}.
  *
  * @author Phillip Webb
  * @since 2.1.0

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.web.mappings.servlet;
 
-import javax.servlet.Registration;
+import jakarta.servlet.Registration;
 
 /**
  * A mapping description derived from a {@link Registration}.

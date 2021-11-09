@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.servlet.context.config;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 
 import org.springframework.boot.web.servlet.mock.MockServlet;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;

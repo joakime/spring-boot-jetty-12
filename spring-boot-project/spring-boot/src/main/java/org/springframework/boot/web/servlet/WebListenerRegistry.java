@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.servlet;
 
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.annotation.WebListener;
 
 /**
  * A registry that holds {@link WebListener @WebListeners}.

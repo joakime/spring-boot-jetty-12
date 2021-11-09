@@ -22,7 +22,7 @@ public class SampleApplication {
 		if (isClassPresent("org.apache.log4j.Logger")) {
 			throw new IllegalStateException("Log4j was present and should not");
 		}
-		if (isClassPresent("javax.servlet.Servlet")) {
+		if (isClassPresent("jakarta.servlet.Servlet")) {
 			throw new IllegalStateException("servlet-api was present and should not");
 		}
 		System.out.println("I haz been run");

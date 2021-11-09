@@ -73,8 +73,8 @@ public class DevToolsDataSourceAutoConfiguration {
 	}
 
 	/**
-	 * Post processor to ensure that {@link javax.persistence.EntityManagerFactory} beans
-	 * depend on the {@code inMemoryDatabaseShutdownExecutor} bean.
+	 * Post processor to ensure that {@link jakarta.persistence.EntityManagerFactory}
+	 * beans depend on the {@code inMemoryDatabaseShutdownExecutor} bean.
 	 */
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)

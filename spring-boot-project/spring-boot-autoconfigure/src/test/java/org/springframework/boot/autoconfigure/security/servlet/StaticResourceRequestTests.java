@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.Test;

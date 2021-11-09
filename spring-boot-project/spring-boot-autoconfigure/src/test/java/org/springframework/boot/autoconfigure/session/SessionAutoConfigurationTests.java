@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.session;
 
 import java.util.Collections;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;

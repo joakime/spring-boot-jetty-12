@@ -45,9 +45,10 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("javax.annotation.PostConstruct", "javax.annotation.PreDestroy", "groovy.util.logging.Log",
-				"org.springframework.stereotype.Controller", "org.springframework.stereotype.Service",
-				"org.springframework.stereotype.Component", "org.springframework.beans.factory.annotation.Autowired",
+		imports.addImports("jakarta.annotation.PostConstruct", "jakarta.annotation.PreDestroy",
+				"groovy.util.logging.Log", "org.springframework.stereotype.Controller",
+				"org.springframework.stereotype.Service", "org.springframework.stereotype.Component",
+				"org.springframework.beans.factory.annotation.Autowired",
 				"org.springframework.beans.factory.annotation.Value", "org.springframework.context.annotation.Import",
 				"org.springframework.context.annotation.ImportResource",
 				"org.springframework.context.annotation.Profile", "org.springframework.context.annotation.Scope",
