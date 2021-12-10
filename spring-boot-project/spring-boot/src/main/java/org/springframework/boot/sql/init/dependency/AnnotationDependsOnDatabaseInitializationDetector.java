@@ -16,10 +16,16 @@
 
 package org.springframework.boot.sql.init.dependency;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
 /**
  * {@link DependsOnDatabaseInitializationDetector} that detects beans annotated with
@@ -33,11 +39,40 @@ class AnnotationDependsOnDatabaseInitializationDetector implements DependsOnData
 	public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
 		Set<String> dependentBeans = new HashSet<>();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
-			if (beanFactory.findAnnotationOnBean(beanName, DependsOnDatabaseInitialization.class) != null) {
+			if (findAnnotation(beanName, beanFactory).isPresent()) {
 				dependentBeans.add(beanName);
 			}
 		}
 		return dependentBeans;
+	}
+
+	private MergedAnnotation<DependsOnDatabaseInitialization> findAnnotation(String beanName,
+			ConfigurableListableBeanFactory beanFactory) {
+		Class<?> beanType = beanFactory.getType(beanName, false);
+		MergedAnnotation<DependsOnDatabaseInitialization> annotation = mergedAnnotation(beanType);
+		if (annotation.isPresent()) {
+			return annotation;
+		}
+		BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
+		if (definition instanceof RootBeanDefinition) {
+			RootBeanDefinition rootDefinition = (RootBeanDefinition) definition;
+			if (rootDefinition.hasBeanClass()) {
+				annotation = mergedAnnotation(rootDefinition.getBeanClass());
+				if (annotation.isPresent()) {
+					return annotation;
+				}
+			}
+			annotation = mergedAnnotation(rootDefinition.getResolvedFactoryMethod());
+		}
+		return annotation;
+	}
+
+	private MergedAnnotation<DependsOnDatabaseInitialization> mergedAnnotation(AnnotatedElement element) {
+		if (element == null) {
+			return MergedAnnotation.missing();
+		}
+		return MergedAnnotations.from(element, SearchStrategy.TYPE_HIERARCHY)
+				.get(DependsOnDatabaseInitialization.class);
 	}
 
 }
