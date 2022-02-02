@@ -42,6 +42,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -100,14 +101,14 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	@Test
 	void whenDetectorsAreCreatedThenTheEnvironmentCanBeInjected() {
-		performDetection(Arrays.asList(ConstructorInjectionDatabaseInitializerDetector.class,
-				ConstructorInjectionDependsOnDatabaseInitializationDetector.class), (context) -> {
+		performDetection(Arrays.asList(EnvironmentAwareDatabaseInitializerDetector.class,
+				EnvironmentAwareDependsOnDatabaseInitializationDetector.class), (context) -> {
 					BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 					context.registerBeanDefinition("alpha", alpha);
 					context.register(DependencyConfigurerConfiguration.class);
 					context.refresh();
-					assertThat(ConstructorInjectionDatabaseInitializerDetector.environment).isEqualTo(this.environment);
-					assertThat(ConstructorInjectionDependsOnDatabaseInitializationDetector.environment)
+					assertThat(EnvironmentAwareDatabaseInitializerDetector.environment).isEqualTo(this.environment);
+					assertThat(EnvironmentAwareDependsOnDatabaseInitializationDetector.environment)
 							.isEqualTo(this.environment);
 				});
 	}
@@ -187,12 +188,13 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	}
 
-	static class ConstructorInjectionDatabaseInitializerDetector implements DatabaseInitializerDetector {
+	static class EnvironmentAwareDatabaseInitializerDetector implements DatabaseInitializerDetector, EnvironmentAware {
 
 		private static Environment environment;
 
-		ConstructorInjectionDatabaseInitializerDetector(Environment environment) {
-			ConstructorInjectionDatabaseInitializerDetector.environment = environment;
+		@Override
+		public void setEnvironment(Environment environment) {
+			EnvironmentAwareDatabaseInitializerDetector.environment = environment;
 		}
 
 		@Override
@@ -202,13 +204,14 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	}
 
-	static class ConstructorInjectionDependsOnDatabaseInitializationDetector
-			implements DependsOnDatabaseInitializationDetector {
+	static class EnvironmentAwareDependsOnDatabaseInitializationDetector
+			implements DependsOnDatabaseInitializationDetector, EnvironmentAware {
 
 		private static Environment environment;
 
-		ConstructorInjectionDependsOnDatabaseInitializationDetector(Environment environment) {
-			ConstructorInjectionDependsOnDatabaseInitializationDetector.environment = environment;
+		@Override
+		public void setEnvironment(Environment environment) {
+			EnvironmentAwareDependsOnDatabaseInitializationDetector.environment = environment;
 		}
 
 		@Override

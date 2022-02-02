@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDatabaseInitializerDetector;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
@@ -35,11 +36,13 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-class JpaDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
+class JpaDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector
+		implements EnvironmentAware {
 
-	private final Environment environment;
+	private Environment environment;
 
-	JpaDatabaseInitializerDetector(Environment environment) {
+	@Override
+	public void setEnvironment(Environment environment) {
 		this.environment = environment;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDependsOnDatabaseInitializationDetector;
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 
@@ -33,11 +34,13 @@ import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
  *
  * @author Andy Wilkinson
  */
-class JpaDependsOnDatabaseInitializationDetector extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
+class JpaDependsOnDatabaseInitializationDetector extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector
+		implements EnvironmentAware {
 
-	private final Environment environment;
+	private Environment environment;
 
-	JpaDependsOnDatabaseInitializationDetector(Environment environment) {
+	@Override
+	public void setEnvironment(Environment environment) {
 		this.environment = environment;
 	}
 

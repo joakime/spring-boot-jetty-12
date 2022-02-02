@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,16 @@ package org.springframework.boot.sql.init.dependency;
 import java.util.Set;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 
 /**
  * Detects beans that depend on database initialization. Implementations should be
  * registered in {@code META-INF/spring.factories} under the key
  * {@code org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector}.
+ * <p>
+ * Implementations that require access to the {@link Environment} should implement
+ * {@link EnvironmentAware}.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
