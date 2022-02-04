@@ -1,0 +1,2 @@
+org.springframework.boot.io.support.ConstructorArgsExampleFactoryLoader
+org.springframework.boot.io.support.BrokenExampleFactoryLoader
