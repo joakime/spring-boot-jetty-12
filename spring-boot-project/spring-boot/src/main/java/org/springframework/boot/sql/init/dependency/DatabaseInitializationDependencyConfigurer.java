@@ -33,13 +33,13 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.util.Instantiator;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.FactoryArguments;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -151,10 +151,9 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 		}
 
 		private <T> List<T> getDetectors(ConfigurableListableBeanFactory beanFactory, Class<T> type) {
-			List<String> names = SpringFactoriesLoader.loadFactoryNames(type, beanFactory.getBeanClassLoader());
-			Instantiator<T> instantiator = new Instantiator<>(type,
-					(availableParameters) -> availableParameters.add(Environment.class, this.environment));
-			return instantiator.instantiate(beanFactory.getBeanClassLoader(), names);
+			FactoryArguments factoryArguments = new FactoryArguments();
+			factoryArguments.set(Environment.class, this.environment);
+			return SpringFactoriesLoader.loadFactories(type, factoryArguments, beanFactory.getBeanClassLoader());
 		}
 
 		private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {

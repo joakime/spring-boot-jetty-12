@@ -16,7 +16,6 @@
 
 package org.springframework.boot.diagnostics;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +27,9 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringBootExceptionReporter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.LoggingFactoryInstantiationFailureHandler;
 import org.springframework.core.log.LogMessage;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Utility to trigger {@link FailureAnalyzer} and {@link FailureAnalysisReporter}
@@ -68,39 +65,32 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 		return (context != null) ? context.getClassLoader() : null;
 	}
 
-	private List<FailureAnalyzer> loadFailureAnalyzers(ConfigurableApplicationContext context,
+	private static List<FailureAnalyzer> loadFailureAnalyzers(ConfigurableApplicationContext context,
 			ClassLoader classLoader) {
-		List<String> classNames = SpringFactoriesLoader.loadFactoryNames(FailureAnalyzer.class, classLoader);
 		List<FailureAnalyzer> analyzers = new ArrayList<>();
-		for (String className : classNames) {
-			try {
-				FailureAnalyzer analyzer = createAnalyzer(context, className);
-				if (analyzer != null) {
-					analyzers.add(analyzer);
-				}
-			}
-			catch (Throwable ex) {
-				logger.trace(LogMessage.format("Failed to load %s", className), ex);
+		for (FailureAnalyzer analyzer : SpringFactoriesLoader.loadFactories(FailureAnalyzer.class, classLoader,
+				new LoggingFactoryInstantiationFailureHandler())) {
+			FailureAnalyzer preparedAnalyzer = prepareAnalyzer(context, analyzer);
+			if (preparedAnalyzer != null) {
+				analyzers.add(preparedAnalyzer);
 			}
 		}
-		AnnotationAwareOrderComparator.sort(analyzers);
 		return analyzers;
 	}
 
-	private FailureAnalyzer createAnalyzer(ConfigurableApplicationContext context, String className) throws Exception {
-		Constructor<?> constructor = ClassUtils.forName(className, this.classLoader).getDeclaredConstructor();
-		ReflectionUtils.makeAccessible(constructor);
-		FailureAnalyzer analyzer = (FailureAnalyzer) constructor.newInstance();
+	private static FailureAnalyzer prepareAnalyzer(ConfigurableApplicationContext context, FailureAnalyzer analyzer) {
 		if (analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware) {
 			if (context == null) {
-				logger.trace(LogMessage.format("Skipping %s due to missing context", className));
+				logger.trace(LogMessage.format("Skipping %s due to missing context", analyzer));
 				return null;
 			}
-			if (analyzer instanceof BeanFactoryAware) {
-				((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
-			}
-			if (analyzer instanceof EnvironmentAware) {
-				((EnvironmentAware) analyzer).setEnvironment(context.getEnvironment());
+			else {
+				if (analyzer instanceof BeanFactoryAware) {
+					((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
+				}
+				if (analyzer instanceof EnvironmentAware) {
+					((EnvironmentAware) analyzer).setEnvironment(context.getEnvironment());
+				}
 			}
 		}
 		return analyzer;
