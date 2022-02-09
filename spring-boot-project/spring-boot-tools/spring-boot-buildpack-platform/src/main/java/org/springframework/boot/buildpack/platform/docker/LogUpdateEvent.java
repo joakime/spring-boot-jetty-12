@@ -76,20 +76,9 @@ public class LogUpdateEvent extends UpdateEvent {
 	static void readAll(InputStream inputStream, Consumer<LogUpdateEvent> consumer) throws IOException {
 		try {
 			LogUpdateEvent event;
-			do {
-				try {
-					event = LogUpdateEvent.read(inputStream);
-					if (event != null) {
-						consumer.accept(event);
-					}
-				}
-				catch (IllegalStateException e) {
-					// If parsing the event failed, convert exception into a stdErr event
-					event = new LogUpdateEvent(StreamType.STD_ERR, e.getMessage().getBytes(StandardCharsets.UTF_8));
-					consumer.accept(event);
-				}
+			while ((event = LogUpdateEvent.read(inputStream)) != null) {
+				consumer.accept(event);
 			}
-			while (event != null);
 		}
 		finally {
 			inputStream.close();
@@ -101,7 +90,6 @@ public class LogUpdateEvent extends UpdateEvent {
 		if (header == null) {
 			return null;
 		}
-
 		// First byte denotes stream type. 0 = stdin, 1 = stdout, 2 = stderr
 		byte streamTypeId = header[0];
 		boolean illegalStreamType = false;
@@ -110,7 +98,6 @@ public class LogUpdateEvent extends UpdateEvent {
 			// correctly, and subsequent reads start from a wrong position
 			illegalStreamType = true;
 		}
-
 		long size = 0;
 		for (int i = 0; i < 4; i++) {
 			size = (size << 8) + (header[i + 4] & 0xff);
@@ -118,10 +105,8 @@ public class LogUpdateEvent extends UpdateEvent {
 		byte[] payload = read(inputStream, size);
 
 		if (illegalStreamType) {
-			// At this point the stream has been advanved correctly and it is safe to
-			// throw exceptions
-			throw new IllegalStateException("Stream type is out of bounds. Must be >= 0 and < "
-					+ StreamType.values().length + ", but was " + streamTypeId);
+			return new LogUpdateEvent(StreamType.STD_ERR, ("Stream type is out of bounds. Must be >= 0 and < "
+					+ StreamType.values().length + ", but was " + streamTypeId).getBytes(StandardCharsets.UTF_8));
 		}
 
 		StreamType streamType = StreamType.values()[streamTypeId];
