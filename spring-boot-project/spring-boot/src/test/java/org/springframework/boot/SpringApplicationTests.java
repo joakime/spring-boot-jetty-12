@@ -1224,6 +1224,24 @@ class SpringApplicationTests {
 		assertThat(application.getEnvironmentPrefix()).isEqualTo("my");
 	}
 
+	@Test
+	void whenPrimarySourceIsASpringBootConfigurationAnnotatedConfigurerThenConfigurerIsCalled() {
+		SpringApplication application = new SpringApplication(ImplicitConfigurerConfig.class);
+		assertThat(application.getWebApplicationType()).isEqualTo(WebApplicationType.NONE);
+	}
+
+	@Test
+	void whenPrimarySourceIsAConfigurerButIsNotAnnotatedWithSpringBootConfigurationThenConfigurerIsNotCalled() {
+		SpringApplication application = new SpringApplication(NonSpringBootConfigurationImplicitConfigurerConfig.class);
+		assertThat(application.getWebApplicationType()).isEqualTo(WebApplicationType.SERVLET);
+	}
+
+	@Test
+	void whenPrimarySourceIsSpringBootConfigurationWitAConfigurerThenConfigurerIsCalled() {
+		SpringApplication application = new SpringApplication(ExplicitConfigurerConfig.class);
+		assertThat(application.getWebApplicationType()).isEqualTo(WebApplicationType.NONE);
+	}
+
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
 			S state) {
 		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
@@ -1595,6 +1613,40 @@ class SpringApplicationTests {
 
 		NotLazyBean(AtomicInteger counter) {
 			counter.getAndIncrement();
+		}
+
+	}
+
+	@SpringBootConfiguration
+	static class ImplicitConfigurerConfig implements SpringApplicationConfigurer {
+
+		@Override
+		public void configure(SpringApplication application) {
+			application.setWebApplicationType(WebApplicationType.NONE);
+		}
+
+	}
+
+	@SpringBootConfiguration(configurers = TestConfigurer.class)
+	static class ExplicitConfigurerConfig {
+
+	}
+
+	@Configuration
+	static class NonSpringBootConfigurationImplicitConfigurerConfig implements SpringApplicationConfigurer {
+
+		@Override
+		public void configure(SpringApplication application) {
+			application.setWebApplicationType(WebApplicationType.NONE);
+		}
+
+	}
+
+	static class TestConfigurer implements SpringApplicationConfigurer {
+
+		@Override
+		public void configure(SpringApplication application) {
+			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 
 	}

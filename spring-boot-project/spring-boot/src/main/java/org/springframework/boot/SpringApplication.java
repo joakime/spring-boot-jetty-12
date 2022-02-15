@@ -60,6 +60,7 @@ import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
@@ -261,6 +262,36 @@ public class SpringApplication {
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
+		applyConfigurers(this.primarySources);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applyConfigurers(Collection<Class<?>> sources) {
+		for (Class<?> source : sources) {
+			Set<SpringBootConfiguration> annotations = AnnotatedElementUtils.findAllMergedAnnotations(source,
+					SpringBootConfiguration.class);
+			if (!annotations.isEmpty()) {
+				if (SpringApplicationConfigurer.class.isAssignableFrom(source)) {
+					applyConfigurer((Class<? extends SpringApplicationConfigurer>) source);
+				}
+				for (SpringBootConfiguration annotation : annotations) {
+					for (Class<? extends SpringApplicationConfigurer> configurer : annotation.configurers()) {
+						applyConfigurer(configurer);
+					}
+				}
+			}
+		}
+	}
+
+	private void applyConfigurer(Class<? extends SpringApplicationConfigurer> configurer) {
+		try {
+			Constructor<?> constructor = configurer.getDeclaredConstructor();
+			ReflectionUtils.makeAccessible(constructor);
+			((SpringApplicationConfigurer) constructor.newInstance()).configure(this);
+		}
+		catch (Throwable ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -1093,6 +1124,7 @@ public class SpringApplication {
 	 */
 	public void addPrimarySources(Collection<Class<?>> additionalPrimarySources) {
 		this.primarySources.addAll(additionalPrimarySources);
+		this.applyConfigurers(additionalPrimarySources);
 	}
 
 	/**

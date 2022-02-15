@@ -73,4 +73,12 @@ public @interface SpringBootConfiguration {
 	@AliasFor(annotation = Configuration.class)
 	boolean proxyBeanMethods() default true;
 
+	/**
+	 * Configurers that are called to customize the {@link SpringApplication} that is
+	 * being created with the annotated class as a primary source.
+	 * @since 3.0
+	 * @return the configurers
+	 */
+	Class<? extends SpringApplicationConfigurer>[] configurers() default {};
+
 }

@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationConfigurer;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
@@ -147,5 +148,14 @@ public @interface SpringBootApplication {
 	 */
 	@AliasFor(annotation = Configuration.class)
 	boolean proxyBeanMethods() default true;
+
+	/**
+	 * Configurers that are called to customize the {@link SpringApplication} that is
+	 * being created with the annotated class as a primary source.
+	 * @since 3.0
+	 * @return the configurers
+	 */
+	@AliasFor(annotation = SpringBootConfiguration.class)
+	Class<? extends SpringApplicationConfigurer>[] configurers() default {};
 
 }
