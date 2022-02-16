@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +24,12 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationHooks;
+import org.springframework.boot.SpringApplicationHooks.Hook;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.test.context.SpringBootTest.MainMethodUsage;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -38,6 +43,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.SpringVersion;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
@@ -54,6 +60,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
@@ -90,7 +97,37 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
 						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
 						+ SpringVersion.getVersion() + ").");
+		String[] args = SpringBootTestArgs.get(config.getContextCustomizers());
+		SpringBootTest springBootTest = AnnotatedElementUtils.findMergedAnnotation(config.getTestClass(),
+				SpringBootTest.class);
+		if (springBootTest.useMainMethod() != MainMethodUsage.NEVER) {
+			Class<?> springBootConfigurationClass = findSpringBootConfigurationClass(configClasses);
+			if (springBootConfigurationClass != null) {
+				Method mainMethod = ReflectionUtils.findMethod(springBootConfigurationClass, "main", String[].class);
+				if (mainMethod != null) {
+					SpringBootContextLoaderHook hook = new SpringBootContextLoaderHook(config);
+					return SpringApplicationHooks.withHook(hook, () -> {
+						mainMethod.invoke(null, new Object[] { args });
+						return hook.context;
+					});
+				}
+				else if (springBootTest.useMainMethod() == MainMethodUsage.ALWAYS) {
+					throw new IllegalStateException(
+							"Main method not found on '" + springBootConfigurationClass.getName() + "'");
+				}
+			}
+			else if (springBootTest.useMainMethod() == MainMethodUsage.ALWAYS) {
+				throw new IllegalStateException(
+						"Cannot use main method as no @SpringBootConfiguration-annotated class is available");
+			}
+		}
 		SpringApplication application = getSpringApplication();
+		configure(config, configClasses, configLocations, application);
+		return application.run(args);
+	}
+
+	private void configure(MergedContextConfiguration config, Class<?>[] configClasses, String[] configLocations,
+			SpringApplication application) {
 		application.setMainApplicationClass(config.getTestClass());
 		application.addPrimarySources(Arrays.asList(configClasses));
 		application.getSources().addAll(Arrays.asList(configLocations));
@@ -120,8 +157,15 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		else {
 			application.addListeners(new PrepareEnvironmentListener(config));
 		}
-		String[] args = SpringBootTestArgs.get(config.getContextCustomizers());
-		return application.run(args);
+	}
+
+	private Class<?> findSpringBootConfigurationClass(Class<?>[] configClasses) {
+		for (Class<?> configClass : configClasses) {
+			if (AnnotatedElementUtils.hasAnnotation(configClass, SpringBootConfiguration.class)) {
+				return configClass;
+			}
+		}
+		return null;
 	}
 
 	private void prepareEnvironment(MergedContextConfiguration config, SpringApplication application,
@@ -336,6 +380,29 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			prepareEnvironment(this.config, event.getSpringApplication(), event.getEnvironment(), true);
+		}
+
+	}
+
+	private final class SpringBootContextLoaderHook implements Hook {
+
+		private final MergedContextConfiguration config;
+
+		private ConfigurableApplicationContext context;
+
+		private SpringBootContextLoaderHook(MergedContextConfiguration config) {
+			this.config = config;
+		}
+
+		@Override
+		public void preRun(SpringApplication application) {
+			SpringBootContextLoader.this.configure(this.config, this.config.getClasses(), this.config.getLocations(),
+					application);
+		}
+
+		@Override
+		public void postRun(ConfigurableApplicationContext context) {
+			this.context = context;
 		}
 
 	}
