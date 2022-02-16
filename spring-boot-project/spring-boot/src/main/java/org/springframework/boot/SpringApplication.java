@@ -285,6 +285,7 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		SpringApplicationHooks.hooks().preRun(this);
 		long startTime = System.nanoTime();
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
@@ -320,6 +321,7 @@ public class SpringApplication {
 			handleRunFailure(context, ex, null);
 			throw new IllegalStateException(ex);
 		}
+		SpringApplicationHooks.hooks().preRun(this);
 		return context;
 	}
 
