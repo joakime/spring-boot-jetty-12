@@ -97,6 +97,15 @@ public class SpringApplicationHooks {
 
 		}
 
+		/**
+		 * Called immediately before the given {@code context} is refreshed.
+		 * @param context the application's context
+		 * @return whether to continue with refresh processing
+		 */
+		default boolean preRefresh(ConfigurableApplicationContext context) {
+			return true;
+		}
+
 	}
 
 	/**
@@ -141,6 +150,16 @@ public class SpringApplicationHooks {
 			for (Hook delegate : this.delegates) {
 				delegate.postRun(context);
 			}
+		}
+
+		@Override
+		public boolean preRefresh(ConfigurableApplicationContext context) {
+			for (Hook delegate : this.delegates) {
+				if (!delegate.preRefresh(context)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 	}

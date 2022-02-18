@@ -54,6 +54,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.SpringApplicationHooks.Hook;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
@@ -74,7 +75,9 @@ import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextException;
@@ -92,6 +95,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -111,6 +115,7 @@ import org.springframework.core.metrics.StartupStep;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -1260,6 +1265,53 @@ class SpringApplicationTests {
 				.map(ApplicationFailedEvent.class::cast).findFirst().get();
 		assertThat(SpringApplicationShutdownHookInstance.get())
 				.didNotRegisterApplicationContext(failure.getApplicationContext());
+	}
+
+	@Test
+	void preRefreshHookCanRefreshForAotProcessingAndPreventNormalRefresh() throws Exception {
+		Hook aotProcessingHook = new Hook() {
+
+			@Override
+			public boolean preRefresh(ConfigurableApplicationContext context) {
+				Assert.isInstanceOf(GenericApplicationContext.class, context,
+						() -> "AOT processing requires a GenericApplicationContext but got at "
+								+ context.getClass().getName());
+				performAotProcessing((GenericApplicationContext) context);
+				return false;
+			}
+
+			private void performAotProcessing(GenericApplicationContext context) {
+				context.refreshForAotProcessing();
+			}
+
+		};
+		ConfigurableApplicationContext context = SpringApplicationHooks.withHook(aotProcessingHook,
+				() -> SpringApplication.run(ExampleConfig.class));
+		assertThat(context.isRunning()).isFalse();
+
+		Hook optimizedRunHook = new Hook() {
+
+			@Override
+			public void preRun(SpringApplication application) {
+				application.setApplicationContextFactory((webApplicationType) -> {
+					switch (webApplicationType) {
+					case SERVLET:
+						return new ServletWebServerApplicationContext();
+					case REACTIVE:
+						return new ReactiveWebServerApplicationContext();
+					default:
+						return new GenericApplicationContext();
+					}
+				});
+				application.addInitializers((context) -> {
+					// Generated bootstrap initialization
+				});
+			}
+
+		};
+
+		context = SpringApplicationHooks.withHook(optimizedRunHook, () -> SpringApplication.run(ExampleConfig.class));
+		assertThat(context).isInstanceOf(ServletWebServerApplicationContext.class);
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
