@@ -84,15 +84,22 @@ public class GenerateAotSources extends DefaultTask {
 		List<URL> urls = this.classpath.getFiles().stream().map(this::toURL)
 				.collect(Collectors.toCollection(ArrayList::new));
 		urls.add(AotInvoker.class.getProtectionDomain().getCodeSource().getLocation());
-		URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]));
-		Class<?> mainClass = Class.forName(getMainClass().get(), true, classLoader);
-		Object context = mainClass.getMethod("prepareApplicationContext").invoke(null);
-		Class<?> invokerClass = Class.forName(AotInvoker.class.getName(), true, classLoader);
-		Object invoker = invokerClass.getConstructor(Path.class, Path.class)
-				.newInstance(this.sourcesDir.get().getAsFile().toPath(), this.resourcesDir.get().getAsFile().toPath());
-		invoker.getClass()
-				.getMethod("invoke", classLoader.loadClass(GenericApplicationContext.class.getName()), Class.class)
-				.invoke(invoker, context, mainClass);
+		URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), ClassLoader.getPlatformClassLoader());
+		ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread().setContextClassLoader(classLoader);
+			Class<?> mainClass = Class.forName(getMainClass().get(), true, classLoader);
+			Object context = mainClass.getMethod("prepareApplicationContext").invoke(null);
+			Class<?> invokerClass = Class.forName(AotInvoker.class.getName(), true, classLoader);
+			Object invoker = invokerClass.getConstructor(Path.class, Path.class).newInstance(
+					this.sourcesDir.get().getAsFile().toPath(), this.resourcesDir.get().getAsFile().toPath());
+			invoker.getClass()
+					.getMethod("invoke", classLoader.loadClass(GenericApplicationContext.class.getName()), Class.class)
+					.invoke(invoker, context, mainClass);
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(previousTccl);
+		}
 	}
 
 	private URL toURL(File file) {
