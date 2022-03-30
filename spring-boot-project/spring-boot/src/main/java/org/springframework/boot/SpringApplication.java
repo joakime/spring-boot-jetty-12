@@ -326,7 +326,7 @@ public class SpringApplication {
 			handleRunFailure(context, ex, null);
 			throw new IllegalStateException(ex);
 		}
-		SpringApplicationHooks.hooks().postRun(context);
+		SpringApplicationHooks.hooks().postRun(this, context);
 		return context;
 	}
 
@@ -402,7 +402,7 @@ public class SpringApplication {
 	}
 
 	private boolean refreshContext(ConfigurableApplicationContext context) {
-		if (!SpringApplicationHooks.hooks().preRefresh(context)) {
+		if (!SpringApplicationHooks.hooks().preRefresh(this, context)) {
 			return false;
 		}
 		if (this.registerShutdownHook) {

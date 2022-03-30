@@ -91,18 +91,20 @@ public class SpringApplicationHooks {
 		 * Called at the end of {@link SpringApplication#run(String...)}. Provides access
 		 * to the {@link ConfigurableApplicationContext context} that has been created for
 		 * the application.
+		 * @param application the application that has been run
 		 * @param context the application's context
 		 */
-		default void postRun(ConfigurableApplicationContext context) {
+		default void postRun(SpringApplication application, ConfigurableApplicationContext context) {
 
 		}
 
 		/**
 		 * Called immediately before the given {@code context} is refreshed.
+		 * @param application the application for which the context is being refreshed
 		 * @param context the application's context
 		 * @return whether to continue with refresh processing
 		 */
-		default boolean preRefresh(ConfigurableApplicationContext context) {
+		default boolean preRefresh(SpringApplication application, ConfigurableApplicationContext context) {
 			return true;
 		}
 
@@ -146,16 +148,16 @@ public class SpringApplicationHooks {
 		}
 
 		@Override
-		public void postRun(ConfigurableApplicationContext context) {
+		public void postRun(SpringApplication application, ConfigurableApplicationContext context) {
 			for (Hook delegate : this.delegates) {
-				delegate.postRun(context);
+				delegate.postRun(application, context);
 			}
 		}
 
 		@Override
-		public boolean preRefresh(ConfigurableApplicationContext context) {
+		public boolean preRefresh(SpringApplication application, ConfigurableApplicationContext context) {
 			for (Hook delegate : this.delegates) {
-				if (!delegate.preRefresh(context)) {
+				if (!delegate.preRefresh(application, context)) {
 					return false;
 				}
 			}
