@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.aot;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Property;
@@ -81,7 +83,6 @@ public class GenerateAotSources extends DefaultTask {
 	void generateAotSources() throws Exception {
 		List<URL> urls = this.classpath.getFiles().stream().map(this::toURL)
 				.collect(Collectors.toCollection(ArrayList::new));
-		urls.forEach(System.out::println);
 		urls.add(AotInvoker.class.getProtectionDomain().getCodeSource().getLocation());
 		URLClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), ClassLoader.getPlatformClassLoader());
 		ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
@@ -93,6 +94,9 @@ public class GenerateAotSources extends DefaultTask {
 					mainClass, this.sourcesDir.get().getAsFile().toPath(),
 					this.resourcesDir.get().getAsFile().toPath());
 			aotProcessorClass.getMethod("process").invoke(aotProcessor);
+		}
+		catch (InvocationTargetException ex) {
+			throw new GradleException(ex.getCause().getMessage(), ex.getCause());
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(previousTccl);
