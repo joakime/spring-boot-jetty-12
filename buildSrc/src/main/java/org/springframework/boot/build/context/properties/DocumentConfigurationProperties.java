@@ -176,10 +176,11 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	private void webPrefixes(Config prefix) {
 		prefix.accept("spring.hateoas");
 		prefix.accept("spring.http");
-		prefix.accept("spring.servlet");
+		prefix.accept("spring.jersey");
 		prefix.accept("spring.mvc");
 		prefix.accept("spring.netty");
 		prefix.accept("spring.resources");
+		prefix.accept("spring.servlet");
 		prefix.accept("spring.session");
 		prefix.accept("spring.web");
 		prefix.accept("spring.webflux");

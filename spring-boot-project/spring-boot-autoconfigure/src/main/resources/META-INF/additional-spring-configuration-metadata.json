@@ -1202,6 +1202,10 @@
       }
     },
     {
+      "name": "spring.jersey.type",
+      "defaultValue": "servlet"
+    },
+    {
       "name": "spring.jpa.open-in-view",
       "defaultValue": true
     },

@@ -16,6 +16,7 @@ dependencies {
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	optional("com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations")
 	optional("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	optional("com.google.code.gson:gson")
 	optional("com.hazelcast:hazelcast")
@@ -102,6 +103,11 @@ dependencies {
 	optional("org.flywaydb:flyway-core")
 	optional("org.flywaydb:flyway-sqlserver")
 	optional("org.freemarker:freemarker")
+	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
+	optional("org.glassfish.jersey.containers:jersey-container-servlet")
+	optional("org.glassfish.jersey.core:jersey-server")
+	optional("org.glassfish.jersey.ext:jersey-spring6")
+	optional("org.glassfish.jersey.media:jersey-media-json-jackson")
 	optional("org.hibernate:hibernate-core-jakarta")
 	optional("org.hibernate:hibernate-jcache") {
 		exclude group: "org.hibernate", module: "hibernate-core"
