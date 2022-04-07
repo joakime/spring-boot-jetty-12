@@ -47,6 +47,7 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueH
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
+import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -430,13 +431,16 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 	 * {@link BeanPostProcessor} to handle {@link SpyBean} definitions. Registered as a
 	 * separate processor so that it can be ordered above AOP post processors.
 	 */
-	static class SpyPostProcessor implements SmartInstantiationAwareBeanPostProcessor, PriorityOrdered {
+	static class SpyPostProcessor
+			implements SmartInstantiationAwareBeanPostProcessor, PriorityOrdered, BeanFactoryAware {
 
 		private static final String BEAN_NAME = SpyPostProcessor.class.getName();
 
 		private final Map<String, Object> earlySpyReferences = new ConcurrentHashMap<>(16);
 
 		private final MockitoPostProcessor mockitoPostProcessor;
+
+		private boolean allowRawInjectionDespiteWrapping = false;
 
 		SpyPostProcessor(MockitoPostProcessor mockitoPostProcessor) {
 			this.mockitoPostProcessor = mockitoPostProcessor;
@@ -461,7 +465,8 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 			if (bean instanceof FactoryBean) {
 				return bean;
 			}
-			if (this.earlySpyReferences.remove(getCacheKey(bean, beanName)) != bean) {
+			if (this.earlySpyReferences.remove(getCacheKey(bean, beanName)) != bean
+					|| this.allowRawInjectionDespiteWrapping) {
 				return this.mockitoPostProcessor.createSpyIfNecessary(bean, beanName);
 			}
 			return bean;
@@ -479,6 +484,14 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 				constructorArguments.addIndexedArgumentValue(0,
 						new RuntimeBeanReference(MockitoPostProcessor.BEAN_NAME));
 				registry.registerBeanDefinition(BEAN_NAME, definition);
+			}
+		}
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
+				this.allowRawInjectionDespiteWrapping = ((AbstractAutowireCapableBeanFactory) beanFactory)
+						.isAllowRawInjectionDespiteWrapping();
 			}
 		}
 
