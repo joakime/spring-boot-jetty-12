@@ -258,11 +258,33 @@ public class SpringApplication {
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		this.mainApplicationClass = deduceMainApplicationClass();
+		setInitializers(loadInitializers());
 		this.bootstrapRegistryInitializers = new ArrayList<>(
 				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
-		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
-		this.mainApplicationClass = deduceMainApplicationClass();
+	}
+
+	private List<ApplicationContextInitializer<?>> loadInitializers() {
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>(
+				getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		addAotGeneratedInitializerIfNecessary(initializers);
+		return initializers;
+	}
+
+	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
+		if (NativeDetector.inNativeImage()) {
+			try {
+				Class<?> aClass = Class.forName(this.mainApplicationClass.getName() + "__ApplicationContextInitializer",
+						true, getClassLoader());
+				ApplicationContextInitializer<?> initializer = (ApplicationContextInitializer<?>) aClass
+						.getDeclaredConstructor().newInstance();
+				initializers.add(0, initializer);
+			}
+			catch (Exception ex) {
+				throw new IllegalArgumentException("Failed to load AOT-generated ApplicationContextInitializer", ex);
+			}
+		}
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -372,18 +394,6 @@ public class SpringApplication {
 			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
-		if (NativeDetector.inNativeImage()) {
-			try {
-				Class<?> aClass = Class.forName(this.mainApplicationClass.getName() + "__ApplicationContextInitializer",
-						true, getClassLoader());
-				ApplicationContextInitializer<?> initializer = (ApplicationContextInitializer<?>) aClass
-						.getDeclaredConstructor().newInstance();
-				this.initializers.add(0, initializer);
-			}
-			catch (Exception ex) {
-				throw new IllegalArgumentException("Failed to configure AOT context", ex);
-			}
-		}
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		bootstrapContext.close(context);
