@@ -33,6 +33,7 @@ class ServletWebServerApplicationContextFactory implements ApplicationContextFac
 
 	@Override
 	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
+		System.out.println("WebApplicationType = " + webApplicationType);
 		if (webApplicationType != WebApplicationType.SERVLET) {
 			return null;
 		}

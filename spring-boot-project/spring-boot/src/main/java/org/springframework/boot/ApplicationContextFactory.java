@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
@@ -44,9 +45,12 @@ public interface ApplicationContextFactory {
 	 */
 	ApplicationContextFactory DEFAULT = (webApplicationType) -> {
 		try {
-			for (ApplicationContextFactory candidate : SpringFactoriesLoader
-					.loadFactories(ApplicationContextFactory.class, ApplicationContextFactory.class.getClassLoader())) {
-				ConfigurableApplicationContext context = candidate.create(webApplicationType);
+			List<ApplicationContextFactory> factories = SpringFactoriesLoader
+					.loadFactories(ApplicationContextFactory.class, ApplicationContextFactory.class.getClassLoader());
+			System.out.println(factories);
+			for (ApplicationContextFactory factory : factories) {
+				ConfigurableApplicationContext context = factory.create(webApplicationType);
+				System.out.println(factory + " created " + context);
 				if (context != null) {
 					return context;
 				}

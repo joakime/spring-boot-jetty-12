@@ -259,20 +259,22 @@ public class SpringApplication {
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		this.mainApplicationClass = deduceMainApplicationClass();
-		setInitializers(loadInitializers());
+		setInitializers((Collection) loadInitializers());
 		this.bootstrapRegistryInitializers = new ArrayList<>(
 				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 	}
 
-	private List<ApplicationContextInitializer<?>> loadInitializers() {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>(
+	@SuppressWarnings("rawtypes")
+	private List<ApplicationContextInitializer> loadInitializers() {
+		List<ApplicationContextInitializer> initializers = new ArrayList<>(
 				getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		addAotGeneratedInitializerIfNecessary(initializers);
 		return initializers;
 	}
 
-	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
+	@SuppressWarnings("rawtypes")
+	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer> initializers) {
 		if (NativeDetector.inNativeImage()) {
 			try {
 				Class<?> aClass = Class.forName(this.mainApplicationClass.getName() + "__ApplicationContextInitializer",
