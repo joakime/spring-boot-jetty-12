@@ -175,4 +175,15 @@ abstract class AbstractJsonParserTests {
 		assertThat(map.get("foo")).isEqualTo("\"bar\"");
 	}
 
+	@Test
+	void listWithMalformedMap() {
+		assertThatExceptionOfType(JsonParseException.class)
+				.isThrownBy(() -> this.parser.parseList("[tru,erqett,{\"foo\":fatrue,true,true,true,tr''ue}]"));
+	}
+
+	@Test
+	void mapWithKeyAndNoValue() {
+		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseMap("{\"foo\"}"));
+	}
+
 }
