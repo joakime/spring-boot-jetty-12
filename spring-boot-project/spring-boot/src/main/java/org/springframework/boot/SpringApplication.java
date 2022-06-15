@@ -160,8 +160,7 @@ import org.springframework.util.StringUtils;
  * @author Chris Bono
  * @since 1.0.0
  * @see #run(Class, String[])
- * @see #run(Class[], String[])
- * @see #SpringApplication(Class...)
+ * @see #SpringApplication(Class)
  */
 public class SpringApplication {
 
@@ -181,11 +180,11 @@ public class SpringApplication {
 
 	static final SpringApplicationShutdownHook shutdownHook = new SpringApplicationShutdownHook();
 
-	private Set<Class<?>> primarySources;
-
-	private Set<String> sources = new LinkedHashSet<>();
+	private final Class<?> primarySource;
 
 	private Class<?> mainApplicationClass;
+
+	private Set<String> sources = new LinkedHashSet<>();
 
 	private Banner.Mode bannerMode = Banner.Mode.CONSOLE;
 
@@ -235,54 +234,41 @@ public class SpringApplication {
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
-	 * beans from the specified primary sources (see {@link SpringApplication class-level}
+	 * beans from the specified primary source (see {@link SpringApplication class-level}
 	 * documentation for details). The instance can be customized before calling
 	 * {@link #run(String...)}.
-	 * @param primarySources the primary bean sources
+	 * @param primarySource the primary bean source
 	 * @see #run(Class, String[])
-	 * @see #SpringApplication(ResourceLoader, Class...)
+	 * @see #SpringApplication(ResourceLoader, Class)
 	 * @see #setSources(Set)
+	 * @since 3.0.0
 	 */
-	public SpringApplication(Class<?>... primarySources) {
-		this(null, primarySources);
+	public SpringApplication(Class<?> primarySource) {
+		this(null, primarySource);
 	}
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
-	 * beans from the specified primary sources (see {@link SpringApplication class-level}
+	 * beans from the specified primary source (see {@link SpringApplication class-level}
 	 * documentation for details). The instance can be customized before calling
 	 * {@link #run(String...)}.
 	 * @param resourceLoader the resource loader to use
-	 * @param primarySources the primary bean sources
+	 * @param primarySource the primary bean source
 	 * @see #run(Class, String[])
 	 * @see #setSources(Set)
+	 * @since 3.0.0
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+	public SpringApplication(ResourceLoader resourceLoader, Class<?> primarySource) {
 		this.resourceLoader = resourceLoader;
-		Assert.notNull(primarySources, "PrimarySources must not be null");
-		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+		Assert.notNull(primarySource, "PrimarySource must not be null");
+		this.primarySource = primarySource;
+		this.mainApplicationClass = primarySource;
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		this.bootstrapRegistryInitializers = new ArrayList<>(
 				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
-		this.mainApplicationClass = deduceMainApplicationClass();
-	}
-
-	private Class<?> deduceMainApplicationClass() {
-		try {
-			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
-			for (StackTraceElement stackTraceElement : stackTrace) {
-				if ("main".equals(stackTraceElement.getMethodName())) {
-					return Class.forName(stackTraceElement.getClassName());
-				}
-			}
-		}
-		catch (ClassNotFoundException ex) {
-			// Swallow and continue
-		}
-		return null;
 	}
 
 	/**
@@ -894,20 +880,21 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Returns the main application class that has been deduced or explicitly configured.
-	 * @return the main application class or {@code null}
+	 * Returns the main application class. By default, this is the application's primary
+	 * source.
+	 * @return the main application class
 	 */
 	public Class<?> getMainApplicationClass() {
 		return this.mainApplicationClass;
 	}
 
 	/**
-	 * Set a specific main application class that will be used as a log source and to
-	 * obtain version information. By default the main application class will be deduced.
-	 * Can be set to {@code null} if there is no explicit application class.
-	 * @param mainApplicationClass the mainApplicationClass to set or {@code null}
+	 * Sets the main application class that will be used as a log source and to obtain
+	 * version information. By default the application's primary source will be used.
+	 * @param mainApplicationClass the mainApplicationClass to set
 	 */
 	public void setMainApplicationClass(Class<?> mainApplicationClass) {
+		Assert.notNull(mainApplicationClass, "MainApplicationClass must not be null");
 		this.mainApplicationClass = mainApplicationClass;
 	}
 
@@ -1096,30 +1083,13 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Add additional items to the primary sources that will be added to an
-	 * ApplicationContext when {@link #run(String...)} is called.
-	 * <p>
-	 * The sources here are added to those that were set in the constructor. Most users
-	 * should consider using {@link #getSources()}/{@link #setSources(Set)} rather than
-	 * calling this method.
-	 * @param additionalPrimarySources the additional primary sources to add
-	 * @see #SpringApplication(Class...)
-	 * @see #getSources()
-	 * @see #setSources(Set)
-	 * @see #getAllSources()
-	 */
-	public void addPrimarySources(Collection<Class<?>> additionalPrimarySources) {
-		this.primarySources.addAll(additionalPrimarySources);
-	}
-
-	/**
 	 * Returns a mutable set of the sources that will be added to an ApplicationContext
 	 * when {@link #run(String...)} is called.
 	 * <p>
 	 * Sources set here will be used in addition to any primary sources set in the
 	 * constructor.
 	 * @return the application sources.
-	 * @see #SpringApplication(Class...)
+	 * @see #SpringApplication(Class)
 	 * @see #getAllSources()
 	 */
 	public Set<String> getSources() {
@@ -1133,7 +1103,7 @@ public class SpringApplication {
 	 * Sources set here will be used in addition to any primary sources set in the
 	 * constructor.
 	 * @param sources the application sources to set
-	 * @see #SpringApplication(Class...)
+	 * @see #SpringApplication(Class)
 	 * @see #getAllSources()
 	 */
 	public void setSources(Set<String> sources) {
@@ -1150,9 +1120,7 @@ public class SpringApplication {
 	 */
 	public Set<Object> getAllSources() {
 		Set<Object> allSources = new LinkedHashSet<>();
-		if (!CollectionUtils.isEmpty(this.primarySources)) {
-			allSources.addAll(this.primarySources);
-		}
+		allSources.add(this.primarySource);
 		if (!CollectionUtils.isEmpty(this.sources)) {
 			allSources.addAll(this.sources);
 		}
@@ -1294,34 +1262,7 @@ public class SpringApplication {
 	 * @return the running {@link ApplicationContext}
 	 */
 	public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
-		return run(new Class<?>[] { primarySource }, args);
-	}
-
-	/**
-	 * Static helper that can be used to run a {@link SpringApplication} from the
-	 * specified sources using default settings and user supplied arguments.
-	 * @param primarySources the primary sources to load
-	 * @param args the application arguments (usually passed from a Java main method)
-	 * @return the running {@link ApplicationContext}
-	 */
-	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
-		return new SpringApplication(primarySources).run(args);
-	}
-
-	/**
-	 * A basic main that can be used to launch an application. This method is useful when
-	 * application sources are defined via a {@literal --spring.main.sources} command line
-	 * argument.
-	 * <p>
-	 * Most developers will want to define their own main method and call the
-	 * {@link #run(Class, String...) run} method instead.
-	 * @param args command line arguments
-	 * @throws Exception if the application cannot be started
-	 * @see SpringApplication#run(Class[], String[])
-	 * @see SpringApplication#run(Class, String...)
-	 */
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(new Class<?>[0], args);
+		return new SpringApplication(primarySource).run(args);
 	}
 
 	/**

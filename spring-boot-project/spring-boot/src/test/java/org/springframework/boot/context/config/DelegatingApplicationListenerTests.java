@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class DelegatingApplicationListenerTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"context.listener.classes=" + MockInitB.class.getName() + "," + MockInitA.class.getName());
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapContext(),
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
+				new SpringApplication(Object.class), new String[0], this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
 		this.context.refresh();
 		assertThat(this.context.getBeanFactory().getSingleton("a")).isEqualTo("a");
@@ -65,14 +65,14 @@ class DelegatingApplicationListenerTests {
 	@Test
 	void noInitializers() {
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapContext(),
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
+				new SpringApplication(Object.class), new String[0], this.context.getEnvironment()));
 	}
 
 	@Test
 	void emptyInitializers() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "context.listener.classes:");
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapContext(),
-				new SpringApplication(), new String[0], this.context.getEnvironment()));
+				new SpringApplication(Object.class), new String[0], this.context.getEnvironment()));
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

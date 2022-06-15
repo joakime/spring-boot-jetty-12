@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,17 @@
 
 package smoketest.xml;
 
-import java.util.Collections;
-
 import smoketest.xml.service.HelloWorldService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
+@ImportResource("classpath:/META-INF/application-context.xml")
 public class SampleSpringXmlApplication implements CommandLineRunner {
-
-	private static final String CONTEXT_XML = "classpath:/META-INF/application-context.xml";
 
 	@Autowired
 	private HelloWorldService helloWorldService;
@@ -39,8 +37,7 @@ public class SampleSpringXmlApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication application = new SpringApplication();
-		application.setSources(Collections.singleton(CONTEXT_XML));
+		SpringApplication application = new SpringApplication(SampleSpringXmlApplication.class);
 		application.run(args);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class FileEncodingApplicationListenerTests {
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
-			new DefaultBootstrapContext(), new SpringApplication(), new String[0], this.environment);
+			new DefaultBootstrapContext(), new SpringApplication(Object.class), new String[0], this.environment);
 
 	@Test
 	void testIllegalState() {

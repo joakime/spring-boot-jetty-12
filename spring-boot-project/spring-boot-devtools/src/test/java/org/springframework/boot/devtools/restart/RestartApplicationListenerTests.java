@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ class RestartApplicationListenerTests {
 		Restarter.clearInstance();
 		RestartApplicationListener listener = new RestartApplicationListener();
 		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
-		SpringApplication application = new SpringApplication();
+		SpringApplication application = new SpringApplication(Object.class);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		listener.onApplicationEvent(new ApplicationStartingEvent(bootstrapContext, application, ARGS));
 		assertThat(Restarter.getInstance()).isNotEqualTo(nullValue());

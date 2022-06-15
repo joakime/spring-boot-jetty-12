@@ -41,6 +41,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
@@ -57,10 +58,9 @@ class CustomContainerWebSocketsApplicationTests {
 
 	@Test
 	void echoEndpoint() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class)
-						.properties("websocket.uri:ws://localhost:" + this.port + "/ws/echo/websocket")
-						.run("--spring.main.web-application-type=none");
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class)
+				.properties("websocket.uri:ws://localhost:" + this.port + "/ws/echo/websocket")
+				.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
@@ -70,10 +70,9 @@ class CustomContainerWebSocketsApplicationTests {
 
 	@Test
 	void reverseEndpoint() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class)
-						.properties("websocket.uri:ws://localhost:" + this.port + "/ws/reverse")
-						.run("--spring.main.web-application-type=none");
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class)
+				.properties("websocket.uri:ws://localhost:" + this.port + "/ws/reverse")
+				.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
@@ -91,6 +90,7 @@ class CustomContainerWebSocketsApplicationTests {
 
 	}
 
+	@Import(PropertyPlaceholderAutoConfiguration.class)
 	@Configuration(proxyBeanMethods = false)
 	static class ClientConfiguration implements CommandLineRunner {
 

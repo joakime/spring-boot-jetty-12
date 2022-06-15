@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.boot.web.servlet.context.ServletWebServerApplicationC
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jmx.export.MBeanExporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,9 +109,7 @@ class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	@Test
 	void registerWithSimpleWebApp() throws Exception {
-		try (ConfigurableApplicationContext context = new SpringApplicationBuilder()
-				.sources(ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-						MultipleMBeanExportersConfiguration.class, SpringApplicationAdminJmxAutoConfiguration.class)
+		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(WebAppConfig.class)
 				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0")) {
 			assertThat(context).isInstanceOf(ServletWebServerApplicationContext.class);
 			assertThat(this.server.getAttribute(createDefaultObjectName(), "EmbeddedWebApplication"))
@@ -123,11 +122,9 @@ class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	@Test
 	void onlyRegisteredOnceWhenThereIsAChildContext() {
-		SpringApplicationBuilder parentBuilder = new SpringApplicationBuilder().web(WebApplicationType.NONE)
-				.sources(MultipleMBeanExportersConfiguration.class, SpringApplicationAdminJmxAutoConfiguration.class);
-		SpringApplicationBuilder childBuilder = parentBuilder
-				.child(MultipleMBeanExportersConfiguration.class, SpringApplicationAdminJmxAutoConfiguration.class)
+		SpringApplicationBuilder parentBuilder = new SpringApplicationBuilder(StandardConfig.class)
 				.web(WebApplicationType.NONE);
+		SpringApplicationBuilder childBuilder = parentBuilder.child(StandardConfig.class).web(WebApplicationType.NONE);
 		try (ConfigurableApplicationContext parent = parentBuilder.run("--" + ENABLE_ADMIN_PROP);
 				ConfigurableApplicationContext child = childBuilder.run("--" + ENABLE_ADMIN_PROP)) {
 			BeanFactoryUtils.beanOfType(parent.getBeanFactory(), SpringApplicationAdminMXBeanRegistrar.class);
@@ -152,6 +149,19 @@ class SpringApplicationAdminJmxAutoConfigurationTests {
 	private String getProperty(ObjectName objectName, String key) throws Exception {
 		return (String) this.server.invoke(objectName, "getProperty", new Object[] { key },
 				new String[] { String.class.getName() });
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import({ MultipleMBeanExportersConfiguration.class, SpringApplicationAdminJmxAutoConfiguration.class })
+	static class StandardConfig {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			StandardConfig.class })
+	static class WebAppConfig {
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

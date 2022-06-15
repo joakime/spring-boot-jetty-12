@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
@@ -46,8 +47,7 @@ class AutoConfigurationReproTests {
 
 	@Test
 	void doesNotEarlyInitializeFactoryBeans() {
-		SpringApplication application = new SpringApplication(EarlyInitConfig.class,
-				PropertySourcesPlaceholderConfigurer.class, ServletWebServerFactoryAutoConfiguration.class);
+		SpringApplication application = new SpringApplication(EarlyInitConfig.class);
 		this.context = application.run("--server.port=0");
 		String bean = (String) this.context.getBean("earlyInit");
 		assertThat(bean).isEqualTo("bucket");
@@ -59,6 +59,7 @@ class AutoConfigurationReproTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@Import({ PropertySourcesPlaceholderConfigurer.class, ServletWebServerFactoryAutoConfiguration.class })
 	@ImportResource("classpath:/early-init-test.xml")
 	static class EarlyInitConfig {
 

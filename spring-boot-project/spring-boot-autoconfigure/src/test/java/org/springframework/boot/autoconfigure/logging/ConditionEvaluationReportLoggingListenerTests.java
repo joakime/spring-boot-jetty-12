@@ -75,7 +75,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		context.register(ErrorConfig.class);
 		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
 				.satisfies((ex) -> withDebugLogging(() -> this.initializer.onApplicationEvent(
-						new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
+						new ApplicationFailedEvent(new SpringApplication(Object.class), new String[0], context, ex))));
 		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
 	}
 
@@ -84,8 +84,9 @@ class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
-		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh).satisfies((ex) -> this.initializer
-				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex)));
+		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
+				.satisfies((ex) -> this.initializer.onApplicationEvent(
+						new ApplicationFailedEvent(new SpringApplication(Object.class), new String[0], context, ex)));
 		assertThat(output).contains("Error starting ApplicationContext. To display the conditions report re-run"
 				+ " your application with 'debug' enabled.");
 	}
@@ -141,8 +142,8 @@ class ConditionEvaluationReportLoggingListenerTests {
 
 	@Test
 	void noErrorIfNotInitialized(CapturedOutput output) {
-		this.initializer.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], null,
-				new RuntimeException("Planned")));
+		this.initializer.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(Object.class),
+				new String[0], null, new RuntimeException("Planned")));
 		assertThat(output).contains("Unable to provide the conditions report");
 	}
 

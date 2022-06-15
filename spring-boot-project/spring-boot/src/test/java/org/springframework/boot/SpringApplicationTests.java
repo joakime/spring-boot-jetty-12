@@ -86,6 +86,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -197,15 +198,9 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void sourcesMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new SpringApplication((Class<?>[]) null).run())
-				.withMessageContaining("PrimarySources must not be null");
-	}
-
-	@Test
-	void sourcesMustNotBeEmpty() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new SpringApplication().run())
-				.withMessageContaining("Sources must not be empty");
+	void sourceMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new SpringApplication(null).run())
+				.withMessageContaining("PrimarySource must not be null");
 	}
 
 	@Test
@@ -741,19 +736,18 @@ class SpringApplicationTests {
 
 	@Test
 	void loadSources() {
-		Class<?>[] sources = { ExampleConfig.class, TestCommandLineRunner.class };
-		TestSpringApplication application = new TestSpringApplication(sources);
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.getSources().add("a");
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setUseMockLoader(true);
 		this.context = application.run();
 		Set<Object> allSources = application.getAllSources();
-		assertThat(allSources).contains(ExampleConfig.class, TestCommandLineRunner.class, "a");
+		assertThat(allSources).contains(ExampleConfig.class, "a");
 	}
 
 	@Test
 	void wildcardSources() {
-		TestSpringApplication application = new TestSpringApplication();
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.getSources().add("classpath*:org/springframework/boot/sample-${sample.app.test.prop}.xml");
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
@@ -767,7 +761,7 @@ class SpringApplicationTests {
 
 	@Test
 	void runComponents() {
-		this.context = SpringApplication.run(new Class<?>[] { ExampleWebConfig.class, Object.class }, new String[0]);
+		this.context = SpringApplication.run(ExampleWebConfig.class, new String[0]);
 		assertThat(this.context).isNotNull();
 	}
 
@@ -902,7 +896,7 @@ class SpringApplicationTests {
 
 	@Test
 	void registerListener() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class, ListenerConfig.class);
+		SpringApplication application = new SpringApplication(ListenerConfig.class);
 		application.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		Set<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
@@ -914,8 +908,7 @@ class SpringApplicationTests {
 
 	@Test
 	void registerListenerWithCustomMulticaster() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class, ListenerConfig.class,
-				Multicaster.class);
+		SpringApplication application = new SpringApplication(Multicaster.class);
 		application.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		Set<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
@@ -1100,29 +1093,34 @@ class SpringApplicationTests {
 	@Test
 	void beanDefinitionOverridingIsDisabledByDefault() {
 		assertThatExceptionOfType(BeanDefinitionOverrideException.class)
-				.isThrownBy(() -> new SpringApplication(ExampleConfig.class, OverrideConfig.class).run());
+				.isThrownBy(() -> new SpringApplication(BeanOverridingConfig.class).run());
 	}
 
 	@Test
 	void beanDefinitionOverridingCanBeEnabled() {
-		assertThat(new SpringApplication(ExampleConfig.class, OverrideConfig.class)
+		assertThat(new SpringApplication(BeanOverridingConfig.class)
 				.run("--spring.main.allow-bean-definition-overriding=true", "--spring.main.web-application-type=none")
 				.getBean("someBean")).isEqualTo("override");
 	}
 
 	@Test
 	void circularReferencesAreDisabledByDefault() {
-		assertThatExceptionOfType(UnsatisfiedDependencyException.class)
-				.isThrownBy(() -> new SpringApplication(ExampleProducerConfiguration.class,
-						ExampleConsumerConfiguration.class).run("--spring.main.web-application-type=none"))
-				.withRootCauseInstanceOf(BeanCurrentlyInCreationException.class);
+		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(() -> {
+			SpringApplication application = new SpringApplication(ExampleProducerConfiguration.class);
+			application.addInitializers((context) -> ((AnnotationConfigApplicationContext) context)
+					.register(ExampleConsumerConfiguration.class));
+			application.run("--spring.main.web-application-type=none");
+		}).withRootCauseInstanceOf(BeanCurrentlyInCreationException.class);
 	}
 
 	@Test
 	void circularReferencesCanBeEnabled() {
-		assertThatNoException().isThrownBy(
-				() -> new SpringApplication(ExampleProducerConfiguration.class, ExampleConsumerConfiguration.class).run(
-						"--spring.main.web-application-type=none", "--spring.main.allow-circular-references=true"));
+		assertThatNoException().isThrownBy(() -> {
+			SpringApplication application = new SpringApplication(ExampleProducerConfiguration.class);
+			application.addInitializers((context) -> ((AnnotationConfigApplicationContext) context)
+					.register(ExampleConsumerConfiguration.class));
+			application.run("--spring.main.web-application-type=none", "--spring.main.allow-circular-references=true");
+		});
 	}
 
 	@Test
@@ -1237,8 +1235,8 @@ class SpringApplicationTests {
 
 	@Test
 	void settingEnvironmentPrefixViaPropertiesThrowsException() {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> new SpringApplication().run("--spring.main.environment-prefix=my"));
+		assertThatIllegalStateException().isThrownBy(
+				() -> new SpringApplication(ExampleConfig.class).run("--spring.main.environment-prefix=my"));
 	}
 
 	@Test
@@ -1404,12 +1402,12 @@ class SpringApplicationTests {
 
 		private Banner.Mode bannerMode;
 
-		TestSpringApplication(Class<?>... primarySources) {
-			super(primarySources);
+		TestSpringApplication(Class<?> primarySource) {
+			super(primarySource);
 		}
 
-		TestSpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
-			super(resourceLoader, primarySources);
+		TestSpringApplication(ResourceLoader resourceLoader, Class<?> primarySource) {
+			super(resourceLoader, primarySource);
 		}
 
 		void setUseMockLoader(boolean useMockLoader) {
@@ -1463,6 +1461,12 @@ class SpringApplicationTests {
 
 	}
 
+	@Import({ ExampleConfig.class, OverrideConfig.class })
+	@Configuration(proxyBeanMethods = false)
+	static class BeanOverridingConfig {
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class BrokenPostConstructConfig {
 
@@ -1493,6 +1497,7 @@ class SpringApplicationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@Import(ListenerConfig.class)
 	static class Multicaster {
 
 		@Bean(name = AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME)

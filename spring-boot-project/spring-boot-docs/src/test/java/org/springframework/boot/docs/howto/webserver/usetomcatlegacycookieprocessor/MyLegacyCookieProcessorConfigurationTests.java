@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostPro
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,13 +41,14 @@ class MyLegacyCookieProcessorConfigurationTests {
 	@Test
 	void cookieProcessorIsCustomized() {
 		ServletWebServerApplicationContext applicationContext = (ServletWebServerApplicationContext) new SpringApplication(
-				TestConfiguration.class, MyLegacyCookieProcessorConfiguration.class).run();
+				TestConfiguration.class).run();
 		Context context = (Context) ((TomcatWebServer) applicationContext.getWebServer()).getTomcat().getHost()
 				.findChildren()[0];
 		assertThat(context.getCookieProcessor()).isInstanceOf(LegacyCookieProcessor.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@Import(MyLegacyCookieProcessorConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean

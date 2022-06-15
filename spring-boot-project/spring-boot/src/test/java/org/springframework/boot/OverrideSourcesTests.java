@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,18 +47,24 @@ class OverrideSourcesTests {
 
 	@Test
 	void beanInjectedToMainConfiguration() {
-		this.context = SpringApplication.run(new Class<?>[] { MainConfiguration.class },
+		this.context = SpringApplication.run(MainConfiguration.class,
 				new String[] { "--spring.main.web-application-type=none" });
 		assertThat(this.context.getBean(Service.class).bean.name).isEqualTo("foo");
 	}
 
 	@Test
 	void primaryBeanInjectedProvingSourcesNotOverridden() {
-		this.context = SpringApplication.run(new Class<?>[] { MainConfiguration.class, TestConfiguration.class },
+		this.context = SpringApplication.run(CombinedConfiguration.class,
 				new String[] { "--spring.main.web-application-type=none",
 						"--spring.main.allow-bean-definition-overriding=true",
 						"--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration" });
 		assertThat(this.context.getBean(Service.class).bean.name).isEqualTo("bar");
+	}
+
+	@Import({ MainConfiguration.class, TestConfiguration.class })
+	@Configuration(proxyBeanMethods = false)
+	static class CombinedConfiguration {
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

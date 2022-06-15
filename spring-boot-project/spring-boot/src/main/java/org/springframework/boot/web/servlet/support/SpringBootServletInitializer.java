@@ -38,12 +38,9 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.util.Assert;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.ContextLoaderListener;
@@ -54,13 +51,10 @@ import org.springframework.web.context.WebApplicationContext;
  * from a traditional WAR deployment. Binds {@link Servlet}, {@link Filter} and
  * {@link ServletContextInitializer} beans from the application context to the server.
  * <p>
- * To configure the application either override the
- * {@link #configure(SpringApplicationBuilder)} method (calling
- * {@link SpringApplicationBuilder#sources(Class...)}) or make the initializer itself a
- * {@code @Configuration}. If you are using {@link SpringBootServletInitializer} in
- * combination with other {@link WebApplicationInitializer WebApplicationInitializers} you
- * might also want to add an {@code @Ordered} annotation to configure a specific startup
- * order.
+ * To configure the application override the {@link #configure(SpringApplicationBuilder)}
+ * method. If you are using {@link SpringBootServletInitializer} in combination with other
+ * {@link WebApplicationInitializer WebApplicationInitializers} you might also want to add
+ * an {@code @Ordered} annotation to configure a specific startup order.
  * <p>
  * Note that a WebApplicationInitializer is only needed if you are building a war file and
  * deploying it. If you prefer to run an embedded web server then you won't need this at
@@ -77,6 +71,18 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	protected Log logger; // Don't initialize early
 
 	private boolean registerErrorPageFilter = true;
+
+	private final Class<?> primarySource;
+
+	/**
+	 * Creates a new {@code SpringBootServletInitializer} that will create a
+	 * {@link SpringApplication} using the given {@code primarySource}.
+	 * @param primarySource the primary source of the application
+	 * @since 3.0.0
+	 */
+	public SpringBootServletInitializer(Class<?> primarySource) {
+		this.primarySource = primarySource;
+	}
 
 	/**
 	 * Set if the {@link ErrorPageFilter} should be registered. Set to {@code false} if
@@ -126,8 +132,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	}
 
 	protected WebApplicationContext createRootApplicationContext(ServletContext servletContext) {
-		SpringApplicationBuilder builder = createSpringApplicationBuilder();
-		builder.main(getClass());
+		SpringApplicationBuilder builder = createSpringApplicationBuilder(this.primarySource);
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
 			this.logger.info("Root context already created (using as parent).");
@@ -139,16 +144,10 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		builder = configure(builder);
 		builder.listeners(new WebEnvironmentPropertySourceInitializer(servletContext));
 		SpringApplication application = builder.build();
-		if (application.getAllSources().isEmpty()
-				&& MergedAnnotations.from(getClass(), SearchStrategy.TYPE_HIERARCHY).isPresent(Configuration.class)) {
-			application.addPrimarySources(Collections.singleton(getClass()));
-		}
-		Assert.state(!application.getAllSources().isEmpty(),
-				"No SpringApplication sources have been defined. Either override the "
-						+ "configure method or add an @Configuration annotation");
 		// Ensure error pages are registered
 		if (this.registerErrorPageFilter) {
-			application.addPrimarySources(Collections.singleton(ErrorPageFilterConfiguration.class));
+			application.addInitializers(
+					(context) -> ((AnnotationConfigRegistry) context).register(ErrorPageFilterConfiguration.class));
 		}
 		application.setRegisterShutdownHook(false);
 		return run(application);
@@ -157,12 +156,13 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	/**
 	 * Returns the {@code SpringApplicationBuilder} that is used to configure and create
 	 * the {@link SpringApplication}. The default implementation returns a new
-	 * {@code SpringApplicationBuilder} in its default state.
+	 * {@code SpringApplicationBuilder} configured with the primary source.
+	 * @param primarySource the primary source of the application
 	 * @return the {@code SpringApplicationBuilder}.
-	 * @since 1.3.0
+	 * @since 3.0.0
 	 */
-	protected SpringApplicationBuilder createSpringApplicationBuilder() {
-		return new SpringApplicationBuilder();
+	protected SpringApplicationBuilder createSpringApplicationBuilder(Class<?> primarySource) {
+		return new SpringApplicationBuilder(this.primarySource);
 	}
 
 	/**

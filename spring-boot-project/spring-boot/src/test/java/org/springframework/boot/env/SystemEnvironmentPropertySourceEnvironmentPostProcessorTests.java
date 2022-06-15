@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
-	private final SpringApplication application = new SpringApplication();
+	private final SpringApplication application = new SpringApplication(Object.class);
 
 	@Test
 	void postProcessShouldReplaceSystemEnvironmentPropertySource() {
@@ -93,7 +93,7 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	@Test
 	void propertySourceShouldBePrefixed() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
-		SpringApplication application = new SpringApplication();
+		SpringApplication application = new SpringApplication(Object.class);
 		application.setEnvironmentPrefix("my");
 		postProcessor.postProcessEnvironment(this.environment, application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment

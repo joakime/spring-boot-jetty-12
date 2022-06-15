@@ -9,6 +9,5 @@
 	<context:property-placeholder/>
 
 	<bean id="helloService" class="smoketest.xml.service.HelloWorldService"/>
-	<bean id="application" class="smoketest.xml.SampleSpringXmlApplication"/>
 
 </beans>

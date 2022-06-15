@@ -109,7 +109,7 @@ class TomcatMetricsAutoConfigurationTests {
 	}
 
 	private ApplicationStartedEvent createApplicationStartedEvent(ConfigurableApplicationContext context) {
-		return new ApplicationStartedEvent(new SpringApplication(), null, context, null);
+		return new ApplicationStartedEvent(new SpringApplication(Object.class), null, context, null);
 	}
 
 	private void resetTomcatState() {

@@ -73,7 +73,7 @@ class SpringApplicationBuilderTests {
 
 	@Test
 	void profileAndProperties() {
-		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
 				.profiles("foo").properties("foo=bar");
 		this.context = application.run();
@@ -84,7 +84,7 @@ class SpringApplicationBuilderTests {
 
 	@Test
 	void propertiesAsMap() {
-		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
 				.properties(Collections.singletonMap("bar", "foo"));
 		this.context = application.run();
@@ -93,7 +93,7 @@ class SpringApplicationBuilderTests {
 
 	@Test
 	void propertiesAsProperties() {
-		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
 				.properties(StringUtils.splitArrayElementsIntoProperties(new String[] { "bar=foo" }, "="));
 		this.context = application.run();
@@ -102,7 +102,7 @@ class SpringApplicationBuilderTests {
 
 	@Test
 	void propertiesWithRepeatSeparator() {
-		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
 				.properties("one=c:\\logging.file.name", "two=a:b", "three:c:\\logging.file.name", "four:a:b");
 		this.context = application.run();
@@ -115,7 +115,7 @@ class SpringApplicationBuilderTests {
 
 	@Test
 	void specificApplicationContextFactory() {
-		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class));
 		this.context = application.run();
 		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
@@ -276,8 +276,8 @@ class SpringApplicationBuilderTests {
 
 	@Test
 	void sourcesWithBoundSources() {
-		SpringApplicationBuilder application = new SpringApplicationBuilder().web(WebApplicationType.NONE)
-				.sources(ExampleConfig.class).properties("spring.main.sources=" + ChildConfig.class.getName());
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
+				.web(WebApplicationType.NONE).properties("spring.main.sources=" + ChildConfig.class.getName());
 		this.context = application.run();
 		this.context.getBean(ExampleConfig.class);
 		this.context.getBean(ChildConfig.class);
@@ -304,8 +304,8 @@ class SpringApplicationBuilderTests {
 		SpringApplicationBuilder applicationBuilder = new SpringApplicationBuilder(resourceLoader,
 				ExampleConfig.class) {
 			@Override
-			protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?>... sources) {
-				return new CustomSpringApplication(resourceLoader, sources);
+			protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?> source) {
+				return new CustomSpringApplication(resourceLoader, source);
 			}
 		};
 		SpringApplication application = applicationBuilder.build();
@@ -327,8 +327,8 @@ class SpringApplicationBuilderTests {
 
 		private final ResourceLoader resourceLoader;
 
-		CustomSpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
-			super(resourceLoader, primarySources);
+		CustomSpringApplication(ResourceLoader resourceLoader, Class<?> primarySource) {
+			super(resourceLoader, primarySource);
 			this.resourceLoader = resourceLoader;
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,21 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @SpringBootApplication
 public class MyApplication extends SpringBootServletInitializer {
 
+	public MyApplication() {
+		super(MyApplication.class);
+	}
+
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return customizerBuilder(builder);
 	}
 
 	public static void main(String[] args) {
-		customizerBuilder(new SpringApplicationBuilder()).run(args);
+		customizerBuilder(new SpringApplicationBuilder(MyApplication.class)).run(args);
 	}
 
 	private static SpringApplicationBuilder customizerBuilder(SpringApplicationBuilder builder) {
-		return builder.sources(MyApplication.class).bannerMode(Banner.Mode.OFF);
+		return builder.bannerMode(Banner.Mode.OFF);
 	}
 
 }

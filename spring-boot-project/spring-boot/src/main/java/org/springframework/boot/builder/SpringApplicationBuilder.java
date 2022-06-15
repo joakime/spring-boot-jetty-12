@@ -82,8 +82,6 @@ public class SpringApplicationBuilder {
 
 	private final AtomicBoolean running = new AtomicBoolean();
 
-	private final Set<Class<?>> sources = new LinkedHashSet<>();
-
 	private final Map<String, Object> defaultProperties = new LinkedHashMap<>();
 
 	private ConfigurableEnvironment environment;
@@ -94,25 +92,43 @@ public class SpringApplicationBuilder {
 
 	private boolean configuredAsChild = false;
 
-	public SpringApplicationBuilder(Class<?>... sources) {
-		this(null, sources);
-	}
-
-	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
-		this.application = createSpringApplication(resourceLoader, sources);
+	private SpringApplicationBuilder() {
+		this.application = null;
 	}
 
 	/**
-	 * Creates a new {@link SpringApplication} instance from the given sources using the
+	 * Creates a new {@code SpringApplicationBuilder} that will create a
+	 * {@link SpringApplication} with the given {@code primarySource}.
+	 * @param primarySource primary source of the application
+	 * @since 3.0.0
+	 */
+	public SpringApplicationBuilder(Class<?> primarySource) {
+		this(null, primarySource);
+	}
+
+	/**
+	 * Creates a new {@code SpringApplicationBuilder} that will create a
+	 * {@link SpringApplication} with the given {@code resourceLoader} and
+	 * {@code primarySource}.
+	 * @param resourceLoader the resource loader of the application
+	 * @param primarySource primary source of the application
+	 * @since 3.0.0
+	 */
+	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?> primarySource) {
+		this.application = createSpringApplication(resourceLoader, primarySource);
+	}
+
+	/**
+	 * Creates a new {@link SpringApplication} instance from the given source using the
 	 * given {@link ResourceLoader}. Subclasses may override in order to provide a custom
 	 * subclass of {@link SpringApplication}.
 	 * @param resourceLoader the resource loader (can be null)
-	 * @param sources the sources
+	 * @param source the primary source
 	 * @return the {@link SpringApplication} instance
-	 * @since 2.6.0
+	 * @since 3.0.0
 	 */
-	protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?>... sources) {
-		return new SpringApplication(resourceLoader, sources);
+	protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?> source) {
+		return new SpringApplication(resourceLoader, source);
 	}
 
 	/**
@@ -179,19 +195,18 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplication build(String... args) {
 		configureAsChildIfNecessary(args);
-		this.application.addPrimarySources(this.sources);
 		return this.application;
 	}
 
 	/**
 	 * Create a child application with the provided sources. Default args and environment
 	 * are copied down into the child, but everything else is a clean sheet.
-	 * @param sources the sources for the application (Spring configuration)
+	 * @param source the source for the application (Spring configuration)
 	 * @return the child application builder
+	 * @since 3.0.0
 	 */
-	public SpringApplicationBuilder child(Class<?>... sources) {
-		SpringApplicationBuilder child = new SpringApplicationBuilder();
-		child.sources(sources);
+	public SpringApplicationBuilder child(Class<?> source) {
+		SpringApplicationBuilder child = new SpringApplicationBuilder(source);
 
 		// Copy environment stuff from parent to child
 		child.properties(this.defaultProperties).environment(this.environment)
@@ -206,25 +221,23 @@ public class SpringApplicationBuilder {
 		// Probably not interested in multiple banners
 		bannerMode(Banner.Mode.OFF);
 
-		// Make sure sources get copied over
-		this.application.addPrimarySources(this.sources);
-
 		return child;
 	}
 
 	/**
-	 * Add a parent application with the provided sources. Default args and environment
-	 * are copied up into the parent, but everything else is a clean sheet.
-	 * @param sources the sources for the application (Spring configuration)
+	 * Add a parent application with the provided source. Default args and environment are
+	 * copied up into the parent, but everything else is a clean sheet.
+	 * @param source the source for the application (Spring configuration)
 	 * @return the parent builder
+	 * @since 3.0.0
 	 */
-	public SpringApplicationBuilder parent(Class<?>... sources) {
+	public SpringApplicationBuilder parent(Class<?> source) {
 		if (this.parent == null) {
-			this.parent = new SpringApplicationBuilder(sources).web(WebApplicationType.NONE)
+			this.parent = new SpringApplicationBuilder(source).web(WebApplicationType.NONE)
 					.properties(this.defaultProperties).environment(this.environment);
 		}
 		else {
-			this.parent.sources(sources);
+			throw new IllegalStateException("A parent has already been configured");
 		}
 		return this.parent;
 	}
@@ -256,26 +269,28 @@ public class SpringApplicationBuilder {
 	 * Create a sibling application (one with the same parent). A side effect of calling
 	 * this method is that the current application (and its parent) are started without
 	 * any arguments if they are not already running. To supply arguments when starting
-	 * the current application and its parent use {@link #sibling(Class[], String...)}
+	 * the current application and its parent use {@link #sibling(Class, String...)}
 	 * instead.
-	 * @param sources the sources for the application (Spring configuration)
+	 * @param source the source for the application (Spring configuration)
 	 * @return the new sibling builder
+	 * @since 3.0.0
 	 */
-	public SpringApplicationBuilder sibling(Class<?>... sources) {
-		return runAndExtractParent().child(sources);
+	public SpringApplicationBuilder sibling(Class<?> source) {
+		return runAndExtractParent().child(source);
 	}
 
 	/**
 	 * Create a sibling application (one with the same parent). A side effect of calling
 	 * this method is that the current application (and its parent) are started if they
 	 * are not already running.
-	 * @param sources the sources for the application (Spring configuration)
+	 * @param source the source for the application (Spring configuration)
 	 * @param args the command line arguments to use when starting the current app and its
 	 * parent
 	 * @return the new sibling builder
+	 * @since 3.0.0
 	 */
-	public SpringApplicationBuilder sibling(Class<?>[] sources, String... args) {
-		return runAndExtractParent(args).child(sources);
+	public SpringApplicationBuilder sibling(Class<?> source, String... args) {
+		return runAndExtractParent(args).child(source);
 	}
 
 	/**
@@ -286,16 +301,6 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder contextFactory(ApplicationContextFactory factory) {
 		this.application.setApplicationContextFactory(factory);
-		return this;
-	}
-
-	/**
-	 * Add more sources (configuration classes and components) to this application.
-	 * @param sources the sources to add
-	 * @return the current builder
-	 */
-	public SpringApplicationBuilder sources(Class<?>... sources) {
-		this.sources.addAll(new LinkedHashSet<>(Arrays.asList(sources)));
 		return this;
 	}
 
@@ -357,16 +362,6 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder registerShutdownHook(boolean registerShutdownHook) {
 		this.registerShutdownHookApplied = true;
 		this.application.setRegisterShutdownHook(registerShutdownHook);
-		return this;
-	}
-
-	/**
-	 * Fixes the main application class that is used to anchor the startup messages.
-	 * @param mainApplicationClass the class to use.
-	 * @return the current builder
-	 */
-	public SpringApplicationBuilder main(Class<?> mainApplicationClass) {
-		this.application.setMainApplicationClass(mainApplicationClass);
 		return this;
 	}
 

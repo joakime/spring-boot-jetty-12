@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,12 +50,12 @@ class StartupTimeMetricsListenerAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(StartupTimeMetricsListener.class);
 			SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-			context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+			context.publishEvent(new ApplicationStartedEvent(new SpringApplication(Object.class), null,
 					context.getSourceApplicationContext(), Duration.ofMillis(1500)));
 			TimeGauge startedTimeGage = registry.find("application.started.time").timeGauge();
 			assertThat(startedTimeGage).isNotNull();
 			assertThat(startedTimeGage.value(TimeUnit.MILLISECONDS)).isEqualTo(1500L);
-			context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+			context.publishEvent(new ApplicationReadyEvent(new SpringApplication(Object.class), null,
 					context.getSourceApplicationContext(), Duration.ofMillis(2000)));
 			TimeGauge readyTimeGage = registry.find("application.ready.time").timeGauge();
 			assertThat(readyTimeGage).isNotNull();
@@ -67,9 +67,9 @@ class StartupTimeMetricsListenerAutoConfigurationTests {
 	void startupTimeMetricsCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.application.started.time:false",
 				"management.metrics.enable.application.ready.time:false").run((context) -> {
-					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(Object.class), null,
 							context.getSourceApplicationContext(), Duration.ofMillis(2500)));
-					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(Object.class), null,
 							context.getSourceApplicationContext(), Duration.ofMillis(3000)));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("application.started.time").timeGauge()).isNull();

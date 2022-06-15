@@ -52,7 +52,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	private StandardEnvironment environment = new StandardEnvironment();
 
-	private SpringApplication application = new SpringApplication();
+	private SpringApplication application = new SpringApplication(Object.class);
 
 	@Mock
 	private ConfigDataEnvironment configDataEnvironment;

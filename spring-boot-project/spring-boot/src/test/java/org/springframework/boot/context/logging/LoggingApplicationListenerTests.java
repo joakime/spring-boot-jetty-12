@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ class LoggingApplicationListenerTests {
 
 	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
-	private final SpringApplication springApplication = new SpringApplication();
+	private final SpringApplication springApplication = new SpringApplication(Object.class);
 
 	private final GenericApplicationContext context = new GenericApplicationContext();
 
@@ -122,7 +122,8 @@ class LoggingApplicationListenerTests {
 		this.output = output;
 		this.logFile = new File(this.tempDir.toFile(), "foo.log");
 		LogManager.getLogManager().readConfiguration(JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		multicastEvent(new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
+		multicastEvent(
+				new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(Object.class), NO_ARGS));
 		new File(this.tempDir.toFile(), "spring.log").delete();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		ConfigurationPropertySources.attach(environment);
@@ -412,7 +413,8 @@ class LoggingApplicationListenerTests {
 				"shutdownHookRegistered");
 		((AtomicBoolean) registered).set(false);
 		System.setProperty(LoggingSystem.class.getName(), TestShutdownHandlerLoggingSystem.class.getName());
-		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
+		multicastEvent(listener,
+				new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(Object.class), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNotNull();
 		listener.shutdownHook.run();
@@ -427,7 +429,8 @@ class LoggingApplicationListenerTests {
 		((AtomicBoolean) registered).set(false);
 		System.setProperty(LoggingSystem.class.getName(), TestShutdownHandlerLoggingSystem.class.getName());
 		addPropertiesToEnvironment(this.context, "logging.register_shutdown_hook=false");
-		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
+		multicastEvent(listener,
+				new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(Object.class), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNull();
 	}

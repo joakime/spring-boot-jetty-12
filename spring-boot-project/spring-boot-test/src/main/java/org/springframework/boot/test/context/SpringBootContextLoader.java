@@ -21,8 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -35,6 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.SpringVersion;
@@ -91,9 +94,32 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 				() -> "No configuration classes or locations found in @SpringApplicationConfiguration. "
 						+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
 						+ SpringVersion.getVersion() + ").");
-		SpringApplication application = getSpringApplication();
+
+		Class<?> primarySource = null;
+		List<Class<?>> additionalSources = new ArrayList<>();
+		if (configClasses.length == 1) {
+			primarySource = configClasses[0];
+		}
+		else {
+			for (Class<?> configClass : configClasses) {
+				if (primarySource == null
+						&& MergedAnnotations.from(configClass).get(SpringBootConfiguration.class).isPresent()) {
+					primarySource = configClass;
+				}
+				else {
+					additionalSources.add(configClass);
+				}
+			}
+		}
+		SpringApplication application = getSpringApplication(primarySource);
 		application.setMainApplicationClass(config.getTestClass());
-		application.addPrimarySources(Arrays.asList(configClasses));
+		if (!additionalSources.isEmpty()) {
+			application.addInitializers((context) -> {
+				AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(
+						(BeanDefinitionRegistry) context.getBeanFactory());
+				reader.register(additionalSources.toArray(new Class<?>[0]));
+			});
+		}
 		application.getSources().addAll(Arrays.asList(configLocations));
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(config, application);
 		if (config instanceof WebMergedContextConfiguration) {
@@ -160,10 +186,12 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	/**
 	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You can
 	 * override this method to add custom behavior
+	 * @param primarySource the primary source for the application
 	 * @return {@link org.springframework.boot.SpringApplication} instance
+	 * @since 3.0.0
 	 */
-	protected SpringApplication getSpringApplication() {
-		return new SpringApplication();
+	protected SpringApplication getSpringApplication(Class<?> primarySource) {
+		return new SpringApplication(primarySource);
 	}
 
 	/**

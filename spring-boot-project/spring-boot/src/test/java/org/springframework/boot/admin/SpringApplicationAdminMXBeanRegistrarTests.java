@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,10 +88,11 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 		SpringApplicationAdminMXBeanRegistrar registrar = new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		registrar.setApplicationContext(context);
-		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null,
+		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(Object.class), null,
 				mock(ConfigurableApplicationContext.class), null));
 		assertThat(isApplicationReady(registrar)).isFalse();
-		registrar.onApplicationReadyEvent(new ApplicationReadyEvent(new SpringApplication(), null, context, null));
+		registrar.onApplicationReadyEvent(
+				new ApplicationReadyEvent(new SpringApplication(Object.class), null, context, null));
 		assertThat(isApplicationReady(registrar)).isTrue();
 	}
 
