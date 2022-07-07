@@ -52,9 +52,9 @@ class UpgradeApplicatorTests {
 		String originalContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
 		File gradleProperties = new File(this.temp, "gradle.properties");
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
-		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath()).apply(new Upgrade(
-				new Library("ActiveMQ", new LibraryVersion(DependencyVersion.parse("5.15.11"), null), null, null, null),
-				DependencyVersion.parse("5.16")));
+		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath())
+				.apply(new Upgrade(new Library("ActiveMQ", new LibraryVersion(DependencyVersion.parse("5.15.11"), null),
+						null, null, null, null), DependencyVersion.parse("5.16")));
 		String bomContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
 		assertThat(bomContents.length()).isEqualTo(originalContents.length() - 3);
 	}
@@ -68,7 +68,7 @@ class UpgradeApplicatorTests {
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
 		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath()).apply(
 				new Upgrade(new Library("OAuth2 OIDC SDK", new LibraryVersion(DependencyVersion.parse("8.36.1"), null),
-						null, null, null), DependencyVersion.parse("8.36.2")));
+						null, null, null, null), DependencyVersion.parse("8.36.2")));
 		String bomContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
 		assertThat(bomContents.length()).isEqualTo(originalContents.length());
 		assertThat(bomContents).contains("version(\"8.36.2\")");
@@ -80,9 +80,9 @@ class UpgradeApplicatorTests {
 		FileCopyUtils.copy(new File("src/test/resources/bom.gradle"), bom);
 		File gradleProperties = new File(this.temp, "gradle.properties");
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
-		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath()).apply(new Upgrade(
-				new Library("Kotlin", new LibraryVersion(DependencyVersion.parse("1.3.70"), null), null, null, null),
-				DependencyVersion.parse("1.4")));
+		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath())
+				.apply(new Upgrade(new Library("Kotlin", new LibraryVersion(DependencyVersion.parse("1.3.70"), null),
+						null, null, null, null), DependencyVersion.parse("1.4")));
 		Properties properties = new Properties();
 		try (InputStream in = new FileInputStream(gradleProperties)) {
 			properties.load(in);

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,8 @@ public class Library {
 
 	private final LibraryVersion version;
 
+	private final Function<DependencyVersion, URI> releaseNotes;
+
 	private final List<Group> groups;
 
 	private final String versionProperty;
@@ -58,14 +61,16 @@ public class Library {
 	 * {@code groups}.
 	 * @param name name of the library
 	 * @param version version of the library
+	 * @param releaseNotes release notes of the library
 	 * @param groups groups in the library
 	 * @param prohibitedVersions version of the library that are prohibited
 	 * @param dependencyVersions the library's dependency versions
 	 */
-	public Library(String name, LibraryVersion version, List<Group> groups, List<ProhibitedVersion> prohibitedVersions,
-			DependencyVersions dependencyVersions) {
+	public Library(String name, LibraryVersion version, Function<DependencyVersion, URI> releaseNotes,
+			List<Group> groups, List<ProhibitedVersion> prohibitedVersions, DependencyVersions dependencyVersions) {
 		this.name = name;
 		this.version = version;
+		this.releaseNotes = releaseNotes;
 		this.groups = groups;
 		this.versionProperty = "Spring Boot".equals(name) ? null
 				: name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
@@ -79,6 +84,10 @@ public class Library {
 
 	public LibraryVersion getVersion() {
 		return this.version;
+	}
+
+	public URI getReleaseNotes(DependencyVersion version) {
+		return (this.releaseNotes != null) ? this.releaseNotes.apply(version) : null;
 	}
 
 	public List<Group> getGroups() {

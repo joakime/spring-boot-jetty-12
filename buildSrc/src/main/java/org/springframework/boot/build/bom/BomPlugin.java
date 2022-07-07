@@ -63,6 +63,7 @@ public class BomPlugin implements Plugin<Project> {
 				project);
 		project.getTasks().create("bomrCheck", CheckBom.class, bom);
 		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
+		project.getTasks().register("releaseNotes", ReleaseNotes.class, bom);
 		new PublishingCustomizer(project, bom).customize();
 
 	}

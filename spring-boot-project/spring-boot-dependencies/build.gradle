@@ -18,6 +18,13 @@ bom {
 		prohibit("[5.17.0,)") {
 			because "it requires Java 11"
 		}
+		releaseNotes {
+			urlTemplate = 'https://activemq.apache.org/activemq-${version}-release'
+			versionTransforms = ["version": { v ->
+				def components = v.split("\\.")
+				return "${components[0]}${components[1].padLeft(3, "0")}${components[2].padLeft(3, "0")}"
+			}]
+		}
 		group("org.apache.activemq") {
 			modules = [
 				"activemq-amqp",
@@ -77,6 +84,9 @@ bom {
 		prohibit("[2.20.0,)") {
 			because "it requires Java 11"
 		}
+		releaseNotes {
+			urlTemplate = 'https://activemq.apache.org/components/artemis/download/release-notes-${version}'
+		}
 		group("org.apache.activemq") {
 			modules = [
 				"artemis-amqp-protocol",
@@ -105,6 +115,10 @@ bom {
 		}
 	}
 	library("AspectJ", "1.9.7") {
+		releaseNotes {
+			urlTemplate = 'https://htmlpreview.github.io/?https://github.com/eclipse/org.aspectj/blob/master/docs/dist/doc/README-${version}.html'
+			versionTransforms = ["version": { v -> v.replace(".", "")}]
+		}
 		prohibit("[1.9.8.M1,)") {
 			because "it requires Java 11"
 		}
@@ -117,6 +131,10 @@ bom {
 		}
 	}
 	library("AssertJ", "3.22.0") {
+		releaseNotes {
+			urlTemplate = 'https://assertj.github.io/doc/#assertj-core-${version}-release-notes'
+			versionTransforms = ["version": { v -> v.replace(".", "-")}]
+		}
 		group("org.assertj") {
 			modules = [
 				"assertj-core"
@@ -127,6 +145,10 @@ bom {
 		prohibit("[5,)") {
 			because "our support is deprecated"
 		}
+		releaseNotes {
+			urlTemplate = 'https://www.atomikos.com/Blog/TransactionsEssentials${version}'
+			versionTransforms = ["version": { v -> v.replace(".", "dot")}]
+		}
 		group("com.atomikos") {
 			modules = [
 				"transactions-jdbc",
@@ -136,6 +158,9 @@ bom {
 		}
 	}
 	library("Awaitility", "4.2.0") {
+		releaseNotes {
+			urlTemplate = 'https://github.com/awaitility/awaitility/blob/master/changelog.txt'
+		}
 		group("org.awaitility") {
 			modules = [
 				"awaitility",
@@ -153,6 +178,9 @@ bom {
 		}
 	}
 	library("Byte Buddy", "1.12.19") {
+		releaseNotes {
+			urlTemplate = 'https://github.com/raphw/byte-buddy/releases/tag/byte-buddy-${version}'
+		}
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -161,6 +189,9 @@ bom {
 		}
 	}
 	library("cache2k", "2.6.1.Final") {
+		releaseNotes {
+			urlTemplate = 'https://github.com/cache2k/cache2k/releases/tag/v${version}'
+		}
 		group("org.cache2k") {
 			modules = [
 					"cache2k-api",
@@ -173,6 +204,9 @@ bom {
 		}
 	}
 	library("Caffeine", "2.9.3") {
+		releaseNotes {
+			urlTemplate = 'https://github.com/ben-manes/caffeine/releases/tag/v${version}'
+		}
 		prohibit("[3.0.0,)") {
 			because "it requires Java 11"
 		}
@@ -186,6 +220,10 @@ bom {
 		}
 	}
 	library("Cassandra Driver", "4.14.1") {
+		releaseNotes {
+			urlTemplate = 'https://docs.datastax.com/en/developer/java-driver/${version}/changelog/'
+			versionTransforms = ["version": { v -> v.substring(0, v.lastIndexOf(".")) }]
+		}
 		group("com.datastax.oss") {
 			imports = [
 				"java-driver-bom"
@@ -205,6 +243,9 @@ bom {
 		}
 	}
 	library("Commons Codec", "1.15") {
+		releaseNotes {
+			urlTemplate = 'https://commons.apache.org/proper/commons-codec/changes-report.html#a${version}'
+		}
 		group("commons-codec") {
 			modules = [
 				"commons-codec"
@@ -212,6 +253,9 @@ bom {
 		}
 	}
 	library("Commons DBCP2", "2.9.0") {
+		releaseNotes {
+			urlTemplate = 'https://commons.apache.org/proper/commons-dbcp/changes-report.html#a${version}'
+		}
 		group("org.apache.commons") {
 			modules = [
 				"commons-dbcp2" {
@@ -221,6 +265,9 @@ bom {
 		}
 	}
 	library("Commons Lang3", "3.12.0") {
+		releaseNotes {
+			urlTemplate = 'https://commons.apache.org/proper/commons-lang/changes-report.html#a${version}'
+		}
 		group("org.apache.commons") {
 			modules = [
 				"commons-lang3"
@@ -228,6 +275,9 @@ bom {
 		}
 	}
 	library("Commons Pool", "1.6") {
+		releaseNotes {
+			urlTemplate = 'https://commons.apache.org/proper/commons-pool/changes-report.html#a${version}'
+		}
 		group("commons-pool") {
 			modules = [
 				"commons-pool"
@@ -235,6 +285,9 @@ bom {
 		}
 	}
 	library("Commons Pool2", "2.11.1") {
+		releaseNotes {
+			urlTemplate = 'https://commons.apache.org/proper/commons-pool/changes-report.html#a${version}'
+		}
 		group("org.apache.commons") {
 			modules = [
 				"commons-pool2"
@@ -242,6 +295,9 @@ bom {
 		}
 	}
 	library("Couchbase Client", "3.3.4") {
+		releaseNotes {
+			urlTemplate = 'https://docs.couchbase.com/java-sdk/current/project-docs/sdk-release-notes.html'
+		}
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -256,6 +312,9 @@ bom {
 		}
 	}
 	library("Dependency Management Plugin", "1.0.15.RELEASE") {
+		releaseNotes {
+			urlTemplate = 'https://github.com/spring-gradle-plugins/dependency-management-plugin/releases/tag/v${version}'
+		}
 		group("io.spring.gradle") {
 			modules = [
 				"dependency-management-plugin"
@@ -265,6 +324,10 @@ bom {
 	library("Derby", "10.14.2.0") {
 		prohibit("[10.15,)") {
 			because "it requires Java 9"
+		}
+		releaseNotes {
+			urlTemplate = 'https://db.apache.org/derby/releases/release-${version}.cgi'
+			versionTransforms = ["version": { v -> v.replace(".", "_") }]
 		}
 		group("org.apache.derby") {
 			modules = [
@@ -277,6 +340,9 @@ bom {
 		}
 	}
 	library("Dropwizard Metrics", "4.2.13") {
+		releaseNotes {
+			urlTemplate = 'https://github.com/dropwizard/metrics/releases/tag/v${version}'
+		}
 		group("io.dropwizard.metrics") {
 			imports = [
 				"metrics-bom"
@@ -300,6 +366,10 @@ bom {
 		}
 	}
 	library("Elasticsearch", "7.17.7") {
+		releaseNotes {
+			urlTemplate = 'https://www.elastic.co/guide/en/elasticsearch/reference/${majorMinor}/release-notes-${version}.html'
+			versionTransforms = ["majorMinor": { v -> v.substring(0, v.lastIndexOf("."))}]
+		}
 		group("org.elasticsearch") {
 			modules = [
 				"elasticsearch"
@@ -554,6 +624,9 @@ bom {
 		}
 	}
 	library("HttpCore", "4.4.15") {
+		releaseNotes {
+			urlTemplate = 'https://downloads.apache.org/httpcomponents/httpcore/RELEASE_NOTES.txt'
+		}
 		group("org.apache.httpcomponents") {
 			modules = [
 				"httpcore",

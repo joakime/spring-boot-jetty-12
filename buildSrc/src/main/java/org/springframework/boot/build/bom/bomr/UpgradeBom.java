@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,9 +134,8 @@ public class UpgradeBom extends DefaultTask {
 			}
 			try {
 				Path modified = upgradeApplicator.apply(upgrade);
-				int issueNumber = repository.openIssue(title,
-						(existingUpgradeIssue != null) ? "Supersedes #" + existingUpgradeIssue.getNumber() : "",
-						issueLabels, milestone);
+				String body = issueBody(upgrade, existingUpgradeIssue);
+				int issueNumber = repository.openIssue(title, body, issueLabels, milestone);
 				if (existingUpgradeIssue != null) {
 					existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
 				}
@@ -155,6 +155,22 @@ public class UpgradeBom extends DefaultTask {
 				Thread.currentThread().interrupt();
 			}
 		}
+	}
+
+	private String issueBody(Upgrade upgrade, Issue existingUpgradeIssue) {
+		List<String> bodyLines = new ArrayList<>();
+		if (existingUpgradeIssue != null) {
+			bodyLines.add("Supersedes #" + existingUpgradeIssue.getNumber() + ".");
+		}
+		URI releaseNotes = upgrade.getLibrary().getReleaseNotes(upgrade.getVersion());
+		if (releaseNotes != null) {
+			if (!bodyLines.isEmpty()) {
+				bodyLines.add("");
+			}
+			bodyLines.add("" + releaseNotes);
+		}
+		String body = String.join("\n", bodyLines);
+		return body;
 	}
 
 	private List<Library> matchingLibraries(String pattern) {

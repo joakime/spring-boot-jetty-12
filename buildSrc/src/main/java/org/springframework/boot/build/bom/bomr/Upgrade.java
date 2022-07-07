@@ -16,6 +16,8 @@
 
 package org.springframework.boot.build.bom.bomr;
 
+import java.net.URI;
+
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
@@ -41,6 +43,10 @@ final class Upgrade {
 
 	DependencyVersion getVersion() {
 		return this.version;
+	}
+
+	URI getReleaseNotes() {
+		return this.library.getReleaseNotes(this.version);
 	}
 
 }

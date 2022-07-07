@@ -19,12 +19,15 @@ package org.springframework.boot.build.bom;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -69,6 +72,7 @@ import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.mavenplugin.MavenExec;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.PropertyPlaceholderHelper;
 
 /**
  * DSL extensions for {@link BomPlugin}.
@@ -119,8 +123,8 @@ public class BomExtension {
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version),
 				libraryHandler.versionAlignment);
-		addLibrary(new Library(name, libraryVersion, libraryHandler.groups, libraryHandler.prohibitedVersions,
-				libraryHandler.dependencyVersions));
+		addLibrary(new Library(name, libraryVersion, libraryHandler.releaseNotes, libraryHandler.groups,
+				libraryHandler.prohibitedVersions, libraryHandler.dependencyVersions));
 	}
 
 	public void effectiveBomArtifact() {
@@ -225,6 +229,8 @@ public class BomExtension {
 
 		private DependencyVersions dependencyVersions;
 
+		private Function<DependencyVersion, URI> releaseNotes;
+
 		@Inject
 		public LibraryHandler(String version, ObjectFactory objectFactory) {
 			this.version = version;
@@ -243,6 +249,26 @@ public class BomExtension {
 			action.execute(groupHandler);
 			this.groups
 					.add(new Group(groupHandler.id, groupHandler.modules, groupHandler.plugins, groupHandler.imports));
+		}
+
+		public void releaseNotes(Action<ReleaseNotesHandler> action) {
+			ReleaseNotesHandler releaseNotesHandler = new ReleaseNotesHandler();
+			action.execute(releaseNotesHandler);
+			this.releaseNotes = (dependencyVersion) -> {
+				try {
+					Map<String, String> properties = new HashMap<>();
+					properties.put("version", this.version);
+					if (releaseNotesHandler.versionTransforms != null) {
+						releaseNotesHandler.versionTransforms.forEach((property, transform) -> properties.put(property,
+								transform.call(this.version).toString()));
+					}
+					return new URI(new PropertyPlaceholderHelper("${", "}")
+							.replacePlaceholders(releaseNotesHandler.urlTemplate, properties::get));
+				}
+				catch (URISyntaxException ex) {
+					throw new InvalidUserDataException("Invalid release notes URI", ex);
+				}
+			};
 		}
 
 		public void prohibit(String range, Action<ProhibitedVersionHandler> action) {
@@ -347,6 +373,22 @@ public class BomExtension {
 					this.classifier = classifier;
 				}
 
+			}
+
+		}
+
+		public static class ReleaseNotesHandler {
+
+			private String urlTemplate;
+
+			private Map<String, Closure<CharSequence>> versionTransforms;
+
+			public void setUrlTemplate(String urlTemplate) {
+				this.urlTemplate = urlTemplate;
+			}
+
+			public void setVersionTransforms(Map<String, Closure<CharSequence>> versionTransforms) {
+				this.versionTransforms = versionTransforms;
 			}
 
 		}
