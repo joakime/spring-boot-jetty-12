@@ -1383,6 +1383,20 @@ bom {
 			]
 		}
 	}
+	library("Spring Data JPA", "3.0.0-H6-SNAPSHOT") {
+		group("org.springframework.data") {
+			modules = [
+				"spring-data-jpa"
+			]
+		}
+	}
+	library("Spring Data Envers", "3.0.0-H6-SNAPSHOT") {
+		group("org.springframework.data") {
+			modules = [
+				"spring-data-envers"
+			]
+		}
+	}
 	library("Spring Data Bom", "2022.0.0-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
