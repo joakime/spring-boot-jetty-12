@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -270,10 +270,15 @@ public class FlywayAutoConfiguration {
 		@SuppressWarnings("deprecation")
 		private void configureIgnoredMigrations(FluentConfiguration configuration, FlywayProperties properties,
 				PropertyMapper map) {
-			map.from(properties.isIgnoreMissingMigrations()).to(configuration::ignoreMissingMigrations);
-			map.from(properties.isIgnoreIgnoredMigrations()).to(configuration::ignoreIgnoredMigrations);
-			map.from(properties.isIgnorePendingMigrations()).to(configuration::ignorePendingMigrations);
-			map.from(properties.isIgnoreFutureMigrations()).to(configuration::ignoreFutureMigrations);
+			try {
+				map.from(properties.isIgnoreMissingMigrations()).to(configuration::ignoreMissingMigrations);
+				map.from(properties.isIgnoreIgnoredMigrations()).to(configuration::ignoreIgnoredMigrations);
+				map.from(properties.isIgnorePendingMigrations()).to(configuration::ignorePendingMigrations);
+				map.from(properties.isIgnoreFutureMigrations()).to(configuration::ignoreFutureMigrations);
+			}
+			catch (BootstrapMethodError ex) {
+				// Flyway 9+
+			}
 		}
 
 		private void configureFailOnMissingLocations(FluentConfiguration configuration,
