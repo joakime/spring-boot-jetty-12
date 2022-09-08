@@ -97,7 +97,7 @@ javadoc {
 		splitIndex = true
 		use = true
 		windowTitle = "Spring Boot Gradle Plugin ${project.version} API"
-		links "https://docs.gradle.org/$gradle.gradleVersion/javadoc/"
+		links "https://docs.gradle.org/6.9.2/javadoc/"
 		links "https://docs.oracle.com/javase/8/docs/api/"
 	}
 }
@@ -119,4 +119,8 @@ task zip(type: Zip) {
 
 artifacts {
 	"documentation" zip
+}
+
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(18)
 }
