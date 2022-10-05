@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -142,12 +143,16 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	}
 
 	private void runScripts(List<Resource> resources) {
-		runScripts(resources, this.settings.isContinueOnError(), this.settings.getSeparator(),
-				this.settings.getEncoding());
+		runScripts(new Scripts(resources, this.settings.isContinueOnError(), this.settings.getSeparator(),
+				this.settings.getEncoding()));
 	}
 
-	protected abstract void runScripts(List<Resource> resources, boolean continueOnError, String separator,
-			Charset encoding);
+	/**
+	 * Initialize the database by running the given {@code scripts}.
+	 * @param scripts the scripts to run
+	 * @since 3.0.0
+	 */
+	protected abstract void runScripts(Scripts scripts);
 
 	private static class ScriptLocationResolver {
 
@@ -169,6 +174,47 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 				}
 			});
 			return resources;
+		}
+
+	}
+
+	/**
+	 * Scripts to be used to initialize the database.
+	 *
+	 * @since 3.0.0
+	 */
+	public static class Scripts implements Iterable<Resource> {
+
+		private final List<Resource> resources;
+
+		private final boolean continueOnError;
+
+		private final String separator;
+
+		private final Charset encoding;
+
+		public Scripts(List<Resource> resources, boolean continueOnError, String separator, Charset encoding) {
+			this.resources = resources;
+			this.continueOnError = continueOnError;
+			this.separator = separator;
+			this.encoding = encoding;
+		}
+
+		@Override
+		public Iterator<Resource> iterator() {
+			return this.resources.iterator();
+		}
+
+		public boolean isContinueOnError() {
+			return this.continueOnError;
+		}
+
+		public String getSeparator() {
+			return this.separator;
+		}
+
+		public Charset getEncoding() {
+			return this.encoding;
 		}
 
 	}

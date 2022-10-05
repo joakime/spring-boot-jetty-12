@@ -16,9 +16,6 @@
 
 package org.springframework.boot.jdbc.init;
 
-import java.nio.charset.Charset;
-import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -76,14 +73,14 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 	}
 
 	@Override
-	protected void runScripts(List<Resource> resources, boolean continueOnError, String separator, Charset encoding) {
+	protected void runScripts(Scripts scripts) {
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		populator.setContinueOnError(continueOnError);
-		populator.setSeparator(separator);
-		if (encoding != null) {
-			populator.setSqlScriptEncoding(encoding.name());
+		populator.setContinueOnError(scripts.isContinueOnError());
+		populator.setSeparator(scripts.getSeparator());
+		if (scripts.getEncoding() != null) {
+			populator.setSqlScriptEncoding(scripts.getEncoding().name());
 		}
-		for (Resource resource : resources) {
+		for (Resource resource : scripts) {
 			populator.addScript(resource);
 		}
 		customize(populator);
