@@ -5,6 +5,6 @@ If you develop Spring Boot web applications, take a look at the following conten
 * *Servlet Web Applications:* <<web#web.servlet, Spring MVC, Jersey, Embedded Servlet Containers>>
 * *Reactive Web Applications:* <<web#web.reactive, Spring Webflux, Embedded Servlet Containers>>
 * *Graceful Shutdown:* <<web#web.graceful-shutdown, Graceful Shutdown>>
-* *Spring Security:* <<web#web.security, Default Security Configuration, Auto-configuration for OAuth2, SAML>>
+* *Spring Security:* <<web#web.security, Default Security Configuration, Auto-configuration for OAuth2>>
 * *Spring Session:* <<web#web.spring-session, Auto-configuration for Spring Session>>
 * *Spring HATEOAS:* <<web#web.spring-hateoas, Auto-configuration for Spring HATEOAS>>

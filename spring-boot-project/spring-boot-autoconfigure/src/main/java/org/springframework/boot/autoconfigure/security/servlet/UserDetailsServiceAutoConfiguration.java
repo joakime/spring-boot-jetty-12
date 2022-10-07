@@ -61,8 +61,7 @@ import org.springframework.util.StringUtils;
 				AuthenticationManagerResolver.class },
 		type = { "org.springframework.security.oauth2.jwt.JwtDecoder",
 				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector",
-				"org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
-				"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository" })
+				"org.springframework.security.oauth2.client.registration.ClientRegistrationRepository" })
 public class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";

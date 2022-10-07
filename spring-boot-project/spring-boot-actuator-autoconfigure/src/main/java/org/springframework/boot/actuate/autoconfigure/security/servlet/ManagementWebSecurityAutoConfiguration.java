@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSe
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
@@ -50,7 +49,7 @@ import org.springframework.util.ClassUtils;
 @AutoConfiguration(before = SecurityAutoConfiguration.class,
 		after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, OAuth2ClientAutoConfiguration.class,
-				OAuth2ResourceServerAutoConfiguration.class, Saml2RelyingPartyAutoConfiguration.class })
+				OAuth2ResourceServerAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnDefaultWebSecurity
 public class ManagementWebSecurityAutoConfiguration {

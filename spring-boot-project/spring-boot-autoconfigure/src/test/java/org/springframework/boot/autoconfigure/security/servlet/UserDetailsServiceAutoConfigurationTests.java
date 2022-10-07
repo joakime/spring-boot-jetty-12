@@ -45,7 +45,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -153,14 +152,6 @@ class UserDetailsServiceAutoConfigurationTests {
 	@Test
 	void userDetailsServiceWhenClientRegistrationRepositoryBeanPresent() {
 		this.contextRunner.withUserConfiguration(TestConfigWithClientRegistrationRepository.class)
-				.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
-	}
-
-	@Test
-	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryBeanPresent() {
-		this.contextRunner
-				.withBean(RelyingPartyRegistrationRepository.class,
-						() -> mock(RelyingPartyRegistrationRepository.class))
 				.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 

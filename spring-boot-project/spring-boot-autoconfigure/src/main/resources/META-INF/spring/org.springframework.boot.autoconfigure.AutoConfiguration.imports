@@ -105,7 +105,6 @@ org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfig
 org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
 org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration
 org.springframework.boot.autoconfigure.security.rsocket.RSocketSecurityAutoConfiguration
-org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
