@@ -16,11 +16,23 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -28,11 +40,17 @@ import java.util.logging.LogManager;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.CoreConstants;
+import ch.qos.logback.core.joran.spi.DefaultNestedComponentRegistry;
 import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.joran.util.beans.BeanDescription;
+import ch.qos.logback.core.joran.util.beans.BeanDescriptionCache;
+import ch.qos.logback.core.model.ComponentModel;
+import ch.qos.logback.core.model.Model;
+import ch.qos.logback.core.model.ModelUtil;
 import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
@@ -43,6 +61,15 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import org.springframework.aot.AotDetector;
+import org.springframework.aot.generate.GenerationContext;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.SerializationHints;
+import org.springframework.aot.hint.TypeReference;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -55,8 +82,13 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -69,13 +101,15 @@ import org.springframework.util.StringUtils;
  * @author Ben Hale
  * @since 1.0.0
  */
-public class LogbackLoggingSystem extends AbstractLoggingSystem {
+public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanFactoryInitializationAotProcessor {
 
 	private static final String BRIDGE_HANDLER = "org.slf4j.bridge.SLF4JBridgeHandler";
 
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
+
+	private LogbackModel logbackModel;
 
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.TRACE);
@@ -178,13 +212,28 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
-		super.initialize(initializationContext, configLocation, logFile);
+		if (!AotDetector.useGeneratedArtifacts()
+				|| !initializeWithAotGeneratedArtifacts(initializationContext, loggerContext)) {
+			super.initialize(initializationContext, configLocation, logFile);
+		}
 		loggerContext.getTurboFilterList().remove(FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
 			getLogger(LogbackLoggingSystem.class.getName()).warn("Ignoring '" + CONFIGURATION_FILE_PROPERTY
 					+ "' system property. Please use 'logging.config' instead.");
 		}
+	}
+
+	private boolean initializeWithAotGeneratedArtifacts(LoggingInitializationContext initializationContext,
+			LoggerContext loggerContext) {
+		loggerContext.reset();
+		loggerContext.getStatusManager().clear();
+		boolean loaded = new PatternRuleRegistry(loggerContext).load()
+				&& new LogbackModel(loggerContext).load(initializationContext);
+		if (loaded) {
+			reportErrorsIfNecessary(loggerContext);
+		}
+		return loaded;
 	}
 
 	@Override
@@ -218,6 +267,10 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Logback logging from " + location, ex);
 		}
+		reportErrorsIfNecessary(loggerContext);
+	}
+
+	private void reportErrorsIfNecessary(LoggerContext loggerContext) {
 		List<Status> statuses = loggerContext.getStatusManager().getCopyOfStatusList();
 		StringBuilder errors = new StringBuilder();
 		for (Status status : statuses) {
@@ -234,9 +287,10 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
 		if (url.toString().endsWith("xml")) {
-			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
+			SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
+			this.logbackModel = new LogbackModel(loggerContext, configurator);
 		}
 		else {
 			new ContextInitializer(loggerContext).configureByResource(url);
@@ -382,6 +436,22 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		loggerContext.removeObject(LoggingSystem.class.getName());
 	}
 
+	@Override
+	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
+		return new BeanFactoryInitializationAotContribution() {
+
+			@Override
+			public void applyTo(GenerationContext generationContext,
+					BeanFactoryInitializationCode beanFactoryInitializationCode) {
+				if (LogbackLoggingSystem.this.logbackModel != null) {
+					LogbackLoggingSystem.this.logbackModel.save(generationContext);
+					new PatternRuleRegistry(getLoggerContext()).save(generationContext);
+				}
+			}
+
+		};
+	}
+
 	/**
 	 * {@link LoggingSystemFactory} that returns {@link LogbackLoggingSystem} if possible.
 	 */
@@ -397,6 +467,196 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 				return new LogbackLoggingSystem(classLoader);
 			}
 			return null;
+		}
+
+	}
+
+	private static final class PatternRuleRegistry {
+
+		private static final String RESOURCE_LOCATION = "META-INF/spring/logback-pattern-rules";
+
+		private final LoggerContext loggerContext;
+
+		private PatternRuleRegistry(LoggerContext loggerContext) {
+			this.loggerContext = loggerContext;
+		}
+
+		private boolean load() {
+			try {
+				ClassPathResource resource = new ClassPathResource(RESOURCE_LOCATION);
+				if (!resource.exists()) {
+					return false;
+				}
+				Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+				Map<String, String> patternRuleRegistry = getRegistryMap();
+				for (String word : properties.stringPropertyNames()) {
+					patternRuleRegistry.put(word, properties.getProperty(word));
+				}
+				return true;
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private Map<String, String> getRegistryMap() {
+			Map<String, String> patternRuleRegistry = (Map<String, String>) this.loggerContext
+					.getObject(CoreConstants.PATTERN_RULE_REGISTRY);
+			if (patternRuleRegistry == null) {
+				patternRuleRegistry = new HashMap<>();
+				this.loggerContext.putObject(CoreConstants.PATTERN_RULE_REGISTRY, patternRuleRegistry);
+			}
+			return patternRuleRegistry;
+		}
+
+		private void save(GenerationContext generationContext) {
+			generationContext.getGeneratedFiles().addResourceFile(RESOURCE_LOCATION, this::getInputStream);
+			generationContext.getRuntimeHints().resources().registerPattern(RESOURCE_LOCATION);
+		}
+
+		private InputStream getInputStream() {
+			Map<String, String> patternRuleRegistry = getRegistryMap();
+			Properties properties = new Properties();
+			patternRuleRegistry.forEach(properties::setProperty);
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			try {
+				properties.store(bytes, "");
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+			return new ByteArrayInputStream(bytes.toByteArray());
+		}
+
+	}
+
+	private static final class LogbackModel {
+
+		private static final String RESOURCE_LOCATION = "META-INF/spring/logback-model";
+
+		private final LoggerContext loggerContext;
+
+		private final DefaultNestedComponentRegistry componentRegistry;
+
+		private final BeanDescriptionCache beanDescriptionCache;
+
+		private Model model;
+
+		private LogbackModel(LoggerContext loggerContext) {
+			this.loggerContext = loggerContext;
+			this.componentRegistry = null;
+			this.beanDescriptionCache = null;
+		}
+
+		private LogbackModel(LoggerContext loggerContext, SpringBootJoranConfigurator configurator) {
+			this.loggerContext = loggerContext;
+			this.model = configurator.getModel();
+			this.componentRegistry = configurator.getModelInterpretationContext().getDefaultNestedComponentRegistry();
+			this.beanDescriptionCache = configurator.getModelInterpretationContext().getBeanDescriptionCache();
+		}
+
+		private boolean load(LoggingInitializationContext initializationContext) {
+			try (InputStream modelInput = getClass().getClassLoader().getResourceAsStream(RESOURCE_LOCATION)) {
+				if (modelInput == null) {
+					return false;
+				}
+				SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
+				configurator.setContext(this.loggerContext);
+				try (ObjectInputStream input = new ObjectInputStream(modelInput)) {
+					this.model = (Model) input.readObject();
+					ModelUtil.resetForReuse(this.model);
+					configurator.processModel(this.model);
+					configurator.registerSafeConfiguration(this.model);
+				}
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+			return true;
+		}
+
+		private void save(GenerationContext generationContext) {
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			try (ObjectOutputStream output = new ObjectOutputStream(bytes)) {
+				output.writeObject(this.model);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+			Resource modelResource = new ByteArrayResource(bytes.toByteArray());
+			generationContext.getGeneratedFiles().addResourceFile(RESOURCE_LOCATION, modelResource);
+			generationContext.getRuntimeHints().resources().registerPattern(RESOURCE_LOCATION);
+			SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
+			serializationTypes(this.model).forEach(serializationHints::registerType);
+			reflectionTypes(this.model).forEach((type) -> generationContext.getRuntimeHints().reflection().registerType(
+					TypeReference.of(type), MemberCategory.INTROSPECT_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_METHODS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+		}
+
+		@SuppressWarnings("unchecked")
+		private Set<Class<? extends Serializable>> serializationTypes(Model model) {
+			Set<Class<? extends Serializable>> modelClasses = new HashSet<>();
+			Class<?> candidate = model.getClass();
+			while (Model.class.isAssignableFrom(candidate)) {
+				if (modelClasses.add((Class<? extends Model>) candidate)) {
+					ReflectionUtils.doWithFields(candidate, (field) -> {
+						ReflectionUtils.makeAccessible(field);
+						Object value = field.get(model);
+						if (value != null) {
+							Class<?> fieldType = value.getClass();
+							if (Serializable.class.isAssignableFrom(fieldType)) {
+								modelClasses.add((Class<? extends Serializable>) fieldType);
+							}
+						}
+					});
+					candidate = candidate.getSuperclass();
+				}
+			}
+			for (Model submodel : model.getSubModels()) {
+				modelClasses.addAll(serializationTypes(submodel));
+			}
+			return modelClasses;
+		}
+
+		private Set<String> reflectionTypes(Model model) {
+			Set<String> reflectionTypes = new HashSet<>();
+			if (model instanceof ComponentModel) {
+				String className = ((ComponentModel) model).getClassName();
+				processComponent(className, reflectionTypes);
+			}
+			String tag = model.getTag();
+			if (tag != null) {
+				String componentType = this.componentRegistry.findDefaultComponentTypeByTag(tag);
+				processComponent(componentType, reflectionTypes);
+			}
+			for (Model submodel : model.getSubModels()) {
+				reflectionTypes.addAll(reflectionTypes(submodel));
+			}
+			return reflectionTypes;
+		}
+
+		private void processComponent(String componentType, Set<String> reflectionTypes) {
+			if (componentType != null) {
+				try {
+					BeanDescription beanDescription = this.beanDescriptionCache
+							.getBeanDescription(ClassUtils.forName(componentType, getClass().getClassLoader()));
+					processComponentMethods(beanDescription.getPropertyNameToAdder(), reflectionTypes);
+					processComponentMethods(beanDescription.getPropertyNameToSetter(), reflectionTypes);
+				}
+				catch (Throwable ex) {
+					throw new RuntimeException(ex);
+				}
+				reflectionTypes.add(componentType);
+			}
+		}
+
+		private void processComponentMethods(Map<String, Method> methods, Set<String> reflectionTypes) {
+			methods.forEach((name, method) -> {
+				for (Class<?> parameterType : method.getParameterTypes()) {
+					reflectionTypes.add(parameterType.getName());
+				}
+			});
 		}
 
 	}

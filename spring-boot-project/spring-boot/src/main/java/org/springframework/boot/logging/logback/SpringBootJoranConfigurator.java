@@ -19,6 +19,7 @@ package org.springframework.boot.logging.logback;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.ElementSelector;
 import ch.qos.logback.core.joran.spi.RuleStore;
+import ch.qos.logback.core.model.Model;
 import ch.qos.logback.core.model.processor.DefaultProcessor;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -33,6 +34,8 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 class SpringBootJoranConfigurator extends JoranConfigurator {
 
 	private LoggingInitializationContext initializationContext;
+
+	private Model model;
 
 	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
 		this.initializationContext = initializationContext;
@@ -55,6 +58,16 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		ruleStore.addRule(new ElementSelector("configuration/springProperty"), SpringPropertyAction::new);
 		ruleStore.addRule(new ElementSelector("*/springProfile"), SpringProfileAction::new);
 		ruleStore.addTransparentPathPart("springProfile");
+	}
+
+	@Override
+	public void processModel(Model model) {
+		this.model = model;
+		super.processModel(model);
+	}
+
+	Model getModel() {
+		return this.model;
 	}
 
 }
