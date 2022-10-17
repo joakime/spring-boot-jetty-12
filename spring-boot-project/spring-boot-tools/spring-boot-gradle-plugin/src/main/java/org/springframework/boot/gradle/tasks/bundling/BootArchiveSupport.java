@@ -42,6 +42,8 @@ import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
 
+import org.springframework.boot.gradle.tasks.bundling.ResolvableDependencies.DependencyDescriptor;
+
 /**
  * Support class for implementations of {@link BootArchive}.
  *
@@ -105,12 +107,12 @@ class BootArchiveSupport {
 		return (version != null) ? version : "unknown";
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies) {
+	CopyAction createCopyAction(Jar jar, Map<File, DependencyDescriptor> resolvedDependencies) {
 		return createCopyAction(jar, resolvedDependencies, null, null);
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies, LayerResolver layerResolver,
-			String layerToolsLocation) {
+	CopyAction createCopyAction(Jar jar, Map<File, DependencyDescriptor> resolvedDependencies,
+			LayerResolver layerResolver, String layerToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();

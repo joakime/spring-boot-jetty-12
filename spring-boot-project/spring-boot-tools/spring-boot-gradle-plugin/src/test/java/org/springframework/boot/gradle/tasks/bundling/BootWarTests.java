@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.jar.JarFile;
 
 import org.gradle.api.Action;
-import org.gradle.api.artifacts.Configuration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -140,11 +139,6 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Override
 	protected void executeTask() {
 		getTask().copy();
-	}
-
-	@Override
-	void populateResolvedDependencies(Configuration configuration) {
-		getTask().getResolvedDependencies().processConfiguration(getTask().getProject(), configuration);
 	}
 
 	@Override

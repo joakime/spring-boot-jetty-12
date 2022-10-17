@@ -18,23 +18,28 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.ResolvableDependencies;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.work.DisableCachingByDefault;
+
+import org.springframework.boot.gradle.tasks.bundling.ResolvableDependencies.DependencyDescriptor;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
@@ -58,7 +63,9 @@ public class BootJar extends Jar implements BootArchive {
 
 	private static final String CLASSPATH_INDEX = "BOOT-INF/classpath.idx";
 
-	private final ResolvedDependencies resolvedDependencies = new ResolvedDependencies();
+	private final MapProperty<File, DependencyDescriptor> dependenciesByFile;
+
+	private final ResolvableDependencies archiveDependencies = new ResolvableDependencies(getProject());
 
 	private final BootArchiveSupport support;
 
@@ -79,16 +86,10 @@ public class BootJar extends Jar implements BootArchive {
 		this.bootInfSpec = project.copySpec().into("BOOT-INF");
 		this.mainClass = project.getObjects().property(String.class);
 		this.layered = project.getObjects().newInstance(LayeredSpec.class);
+		this.dependenciesByFile = project.getObjects().mapProperty(File.class, DependencyDescriptor.class);
+		this.dependenciesByFile.set(project.provider(this.archiveDependencies::resolve));
 		configureBootInfSpec(this.bootInfSpec);
 		getMainSpec().with(this.bootInfSpec);
-		project.getConfigurations().all((configuration) -> {
-			ResolvableDependencies incoming = configuration.getIncoming();
-			incoming.afterResolve((resolvableDependencies) -> {
-				if (resolvableDependencies == incoming) {
-					this.resolvedDependencies.processConfiguration(project, configuration);
-				}
-			});
-		});
 	}
 
 	private void configureBootInfSpec(CopySpec bootInfSpec) {
@@ -133,12 +134,13 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	protected CopyAction createCopyAction() {
+		Map<File, DependencyDescriptor> resolvedDependencies = this.dependenciesByFile.get();
 		if (!isLayeredDisabled()) {
-			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
+			LayerResolver layerResolver = new LayerResolver(resolvedDependencies, this.layered, this::isLibrary);
 			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_DIRECTORY : null;
-			return this.support.createCopyAction(this, this.resolvedDependencies, layerResolver, layerToolsLocation);
+			return this.support.createCopyAction(this, resolvedDependencies, layerResolver, layerToolsLocation);
 		}
-		return this.support.createCopyAction(this, this.resolvedDependencies);
+		return this.support.createCopyAction(this, resolvedDependencies);
 	}
 
 	@Override
@@ -263,6 +265,16 @@ public class BootJar extends Jar implements BootArchive {
 		return path.startsWith(LIB_DIRECTORY);
 	}
 
+	@Override
+	public void registerForClasspathDependencyCoordinateResolution(Configuration configuration) {
+		this.archiveDependencies.resolvedArtifacts(configuration.getIncoming().getArtifacts().getResolvedArtifacts());
+	}
+
+	@Input
+	MapProperty<File, DependencyDescriptor> getDependenciesByFile() {
+		return this.dependenciesByFile;
+	}
+
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
 		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
 		if (launchScript == null) {
@@ -290,11 +302,6 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	private static <T> Callable<T> callTo(Callable<T> callable) {
 		return callable;
-	}
-
-	@Internal
-	ResolvedDependencies getResolvedDependencies() {
-		return this.resolvedDependencies;
 	}
 
 	private final class LibrarySpec implements Spec<FileCopyDetails> {

@@ -45,20 +45,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.api.Action;
-import org.gradle.api.DomainObjectSet;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.DependencySet;
-import org.gradle.api.artifacts.LenientConfiguration;
-import org.gradle.api.artifacts.ModuleVersionIdentifier;
-import org.gradle.api.artifacts.ProjectDependency;
-import org.gradle.api.artifacts.ResolvableDependencies;
-import org.gradle.api.artifacts.ResolvedArtifact;
-import org.gradle.api.artifacts.ResolvedConfiguration;
-import org.gradle.api.artifacts.ResolvedModuleVersion;
-import org.gradle.api.artifacts.component.ComponentArtifactIdentifier;
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
-import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.internal.file.archive.ZipCopyAction;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
@@ -67,15 +54,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
+import org.springframework.boot.gradle.tasks.bundling.ResolvableDependencies.DependencyDescriptor;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.loader.tools.LibraryCoordinates;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Mockito.mock;
 
 /**
  * Abstract base class for testing {@link BootArchive} implementations.
@@ -654,7 +639,6 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		addContent(false);
 	}
 
-	@SuppressWarnings("unchecked")
 	void addContent(boolean addReachabilityProperties) throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		File classesJavaMain = new File(this.temp, "classes/java/main");
@@ -674,37 +658,70 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			createReachabilityProperties(resourcesMain, "com.example", "second-library", "true");
 			createReachabilityProperties(resourcesMain, "com.example", "fourth-library", "false");
 		}
-		this.task.classpath(classesJavaMain, resourcesMain, jarFile("first-library.jar"), jarFile("second-library.jar"),
-				jarFile("third-library-SNAPSHOT.jar"), jarFile("fourth-library.jar"),
-				jarFile("first-project-library.jar"), jarFile("second-project-library-SNAPSHOT.jar"));
-		Set<ResolvedArtifact> artifacts = new LinkedHashSet<>();
-		artifacts.add(mockLibraryArtifact("first-library.jar", "com.example", "first-library", "1.0.0"));
-		artifacts.add(mockLibraryArtifact("second-library.jar", "com.example", "second-library", "1.0.0"));
-		artifacts.add(
-				mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example", "third-library", "1.0.0.SNAPSHOT"));
-		artifacts.add(mockLibraryArtifact("fourth-library.jar", "com.example", "fourth-library", "1.0.0"));
-		artifacts
-				.add(mockProjectArtifact("first-project-library.jar", "com.example", "first-project-library", "1.0.0"));
-		artifacts.add(mockProjectArtifact("second-project-library-SNAPSHOT.jar", "com.example",
-				"second-project-library", "1.0.0.SNAPSHOT"));
-		ResolvedConfiguration resolvedConfiguration = mock(ResolvedConfiguration.class);
-		LenientConfiguration lenientConfiguration = mock(LenientConfiguration.class);
-		given(resolvedConfiguration.getLenientConfiguration()).willReturn(lenientConfiguration);
-		given(lenientConfiguration.getArtifacts()).willReturn(artifacts);
-		Configuration configuration = mock(Configuration.class);
-		given(configuration.getResolvedConfiguration()).willReturn(resolvedConfiguration);
-		ResolvableDependencies resolvableDependencies = mock(ResolvableDependencies.class);
-		given(configuration.getIncoming()).willReturn(resolvableDependencies);
-		DependencySet dependencies = mock(DependencySet.class);
-		DomainObjectSet<ProjectDependency> projectDependencies = mock(DomainObjectSet.class);
-		given(dependencies.withType(ProjectDependency.class)).willReturn(projectDependencies);
-		given(configuration.getAllDependencies()).willReturn(dependencies);
-		willAnswer((invocation) -> {
-			invocation.getArgument(0, Action.class).execute(resolvableDependencies);
-			return null;
-		}).given(resolvableDependencies).afterResolve(any(Action.class));
-		given(configuration.getIncoming()).willReturn(resolvableDependencies);
-		populateResolvedDependencies(configuration);
+		File firstLibrary = jarFile("first-library.jar");
+		File secondLibrary = jarFile("second-library.jar");
+		File thirdLibrary = jarFile("third-library-SNAPSHOT.jar");
+		File fourthLibrary = jarFile("fourth-library.jar");
+		File firstProjectLibrary = jarFile("first-project-library.jar");
+		File secondProjectLibrary = jarFile("second-project-library-SNAPSHOT.jar");
+		this.task.classpath(classesJavaMain, resourcesMain, firstLibrary, secondLibrary, thirdLibrary, fourthLibrary,
+				firstProjectLibrary, secondProjectLibrary);
+		Map<File, DependencyDescriptor> dependenciesByFile = new HashMap<>();
+		dependenciesByFile.put(firstLibrary, new DependencyDescriptor(
+				new TestLibraryCoordinates("com.example", "first-library", "1.0.0"), false, firstLibrary));
+		dependenciesByFile.put(secondLibrary, new DependencyDescriptor(
+				new TestLibraryCoordinates("com.example", "second-library", "1.0.0"), false, secondLibrary));
+		dependenciesByFile.put(thirdLibrary, new DependencyDescriptor(
+				new TestLibraryCoordinates("com.example", "third-library", "1.0.0.SNAPSHOT"), false, thirdLibrary));
+		dependenciesByFile.put(fourthLibrary, new DependencyDescriptor(
+				new TestLibraryCoordinates("com.example", "fourth-library", "1.0.0"), false, fourthLibrary));
+		dependenciesByFile.put(firstProjectLibrary,
+				new DependencyDescriptor(new TestLibraryCoordinates("com.example", "first-project-library", "1.0.0"),
+						true, firstProjectLibrary));
+		dependenciesByFile.put(secondProjectLibrary,
+				new DependencyDescriptor(
+						new TestLibraryCoordinates("com.example", "second-project-library", "1.0.0.SNAPSHOT"), true,
+						secondProjectLibrary));
+		((BootJar) this.task).getDependenciesByFile().set(dependenciesByFile);
+		// Set<ResolvedArtifactResult> artifacts = new LinkedHashSet<>();
+		// artifacts.add(mockLibraryArtifact("first-library.jar", "com.example",
+		// "first-library", "1.0.0"));
+		// artifacts.add(mockLibraryArtifact("second-library.jar", "com.example",
+		// "second-library", "1.0.0"));
+		// artifacts.add(
+		// mockLibraryArtifact("third-library-SNAPSHOT.jar", "com.example",
+		// "third-library", "1.0.0.SNAPSHOT"));
+		// artifacts.add(mockLibraryArtifact("fourth-library.jar", "com.example",
+		// "fourth-library", "1.0.0"));
+		// artifacts
+		// .add(mockProjectArtifact("first-project-library.jar", "com.example",
+		// "first-project-library", "1.0.0"));
+		// artifacts.add(mockProjectArtifact("second-project-library-SNAPSHOT.jar",
+		// "com.example",
+		// "second-project-library", "1.0.0.SNAPSHOT"));
+		// ResolvedConfiguration resolvedConfiguration =
+		// mock(ResolvedConfiguration.class);
+		// Configuration configuration = mock(Configuration.class);
+		// given(configuration.getResolvedConfiguration()).willReturn(resolvedConfiguration);
+		// ResolvableDependencies resolvableDependencies =
+		// mock(ResolvableDependencies.class);
+		// given(configuration.getIncoming()).willReturn(resolvableDependencies);
+		// ArtifactCollection artifactCollection = mock(ArtifactCollection.class);
+		// given(resolvableDependencies.getArtifacts()).willReturn(artifactCollection);
+		// Provider<Set<ResolvedArtifactResult>> artifactResultsProvider =
+		// this.project.provider(() -> artifacts);
+		// given(artifactCollection.getResolvedArtifacts()).willReturn(artifactResultsProvider);
+		// DependencySet dependencies = mock(DependencySet.class);
+		// DomainObjectSet<ProjectDependency> projectDependencies =
+		// mock(DomainObjectSet.class);
+		// given(dependencies.withType(ProjectDependency.class)).willReturn(projectDependencies);
+		// given(configuration.getAllDependencies()).willReturn(dependencies);
+		// willAnswer((invocation) -> {
+		// invocation.getArgument(0, Action.class).execute(resolvableDependencies);
+		// return null;
+		// }).given(resolvableDependencies).afterResolve(any(Action.class));
+		// given(configuration.getIncoming()).willReturn(resolvableDependencies);
+		// populateResolvedDependencies(configuration);
 	}
 
 	protected void createReachabilityProperties(File directory, String groupId, String artifactId, String override)
@@ -715,39 +732,50 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		FileCopyUtils.copy("override=%s\n".formatted(override).getBytes(StandardCharsets.ISO_8859_1), target);
 	}
 
-	abstract void populateResolvedDependencies(Configuration configuration);
+	// private ResolvedArtifactResult mockLibraryArtifact(String fileName, String group,
+	// String module, String version) {
+	// ModuleComponentIdentifier moduleComponentIdentifier =
+	// mock(ModuleComponentIdentifier.class);
+	// given(moduleComponentIdentifier.getGroup()).willReturn(group);
+	// given(moduleComponentIdentifier.getModule()).willReturn(module);
+	// given(moduleComponentIdentifier.getVersion()).willReturn(version);
+	// ComponentArtifactIdentifier libraryArtifactId =
+	// mock(ComponentArtifactIdentifier.class);
+	// given(libraryArtifactId.getComponentIdentifier()).willReturn(moduleComponentIdentifier);
+	// ResolvedArtifactResult libraryArtifact = mockArtifact(fileName, group, module,
+	// version);
+	// given(libraryArtifact.getId()).willReturn(libraryArtifactId);
+	// return libraryArtifact;
+	// }
 
-	private ResolvedArtifact mockLibraryArtifact(String fileName, String group, String module, String version) {
-		ModuleComponentIdentifier moduleComponentIdentifier = mock(ModuleComponentIdentifier.class);
-		ComponentArtifactIdentifier libraryArtifactId = mock(ComponentArtifactIdentifier.class);
-		given(libraryArtifactId.getComponentIdentifier()).willReturn(moduleComponentIdentifier);
-		ResolvedArtifact libraryArtifact = mockArtifact(fileName, group, module, version);
-		given(libraryArtifact.getId()).willReturn(libraryArtifactId);
-		return libraryArtifact;
-	}
+	// private ResolvedArtifactResult mockProjectArtifact(String fileName, String group,
+	// String module, String version) {
+	// ProjectComponentIdentifier projectComponentIdentifier =
+	// mock(ProjectComponentIdentifier.class);
+	// ComponentArtifactIdentifier projectArtifactId =
+	// mock(ComponentArtifactIdentifier.class);
+	// given(projectArtifactId.getComponentIdentifier()).willReturn(projectComponentIdentifier);
+	// ResolvedArtifactResult projectArtifact = mockArtifact(fileName, group, module,
+	// version);
+	// given(projectArtifact.getId()).willReturn(projectArtifactId);
+	// return projectArtifact;
+	// }
 
-	private ResolvedArtifact mockProjectArtifact(String fileName, String group, String module, String version) {
-		ProjectComponentIdentifier projectComponentIdentifier = mock(ProjectComponentIdentifier.class);
-		ComponentArtifactIdentifier projectArtifactId = mock(ComponentArtifactIdentifier.class);
-		given(projectArtifactId.getComponentIdentifier()).willReturn(projectComponentIdentifier);
-		ResolvedArtifact projectArtifact = mockArtifact(fileName, group, module, version);
-		given(projectArtifact.getId()).willReturn(projectArtifactId);
-		return projectArtifact;
-	}
-
-	private ResolvedArtifact mockArtifact(String fileName, String group, String module, String version) {
-		ModuleVersionIdentifier moduleVersionIdentifier = mock(ModuleVersionIdentifier.class);
-		given(moduleVersionIdentifier.getGroup()).willReturn(group);
-		given(moduleVersionIdentifier.getName()).willReturn(module);
-		given(moduleVersionIdentifier.getVersion()).willReturn(version);
-		ResolvedModuleVersion moduleVersion = mock(ResolvedModuleVersion.class);
-		given(moduleVersion.getId()).willReturn(moduleVersionIdentifier);
-		ResolvedArtifact libraryArtifact = mock(ResolvedArtifact.class);
-		File file = new File(this.temp, fileName).getAbsoluteFile();
-		given(libraryArtifact.getFile()).willReturn(file);
-		given(libraryArtifact.getModuleVersion()).willReturn(moduleVersion);
-		return libraryArtifact;
-	}
+	// private ResolvedArtifactResult mockArtifact(String fileName, String group, String
+	// module, String version) {
+	// ComponentArtifactIdentifier id = mock(ComponentArtifactIdentifier.class);
+	// ModuleComponentIdentifier componentIdentifier =
+	// mock(ModuleComponentIdentifier.class);
+	// given(componentIdentifier.getGroup()).willReturn(group);
+	// given(componentIdentifier.getModule()).willReturn(module);
+	// given(componentIdentifier.getVersion()).willReturn(version);
+	// given(id.getComponentIdentifier()).willReturn(componentIdentifier);
+	// ResolvedArtifactResult libraryArtifact = mock(ResolvedArtifactResult.class);
+	// File file = new File(this.temp, fileName).getAbsoluteFile();
+	// given(libraryArtifact.getFile()).willReturn(file);
+	// given(libraryArtifact.getId()).willReturn(id);
+	// return libraryArtifact;
+	// }
 
 	List<String> entryLines(JarFile jarFile, String entryName) throws IOException {
 		try (BufferedReader reader = new BufferedReader(
@@ -764,6 +792,37 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			}
 		}
 		return layerNames;
+	}
+
+	private static final class TestLibraryCoordinates implements LibraryCoordinates {
+
+		private final String groupId;
+
+		private final String artifactId;
+
+		private final String version;
+
+		private TestLibraryCoordinates(String groupId, String artifactId, String version) {
+			this.groupId = groupId;
+			this.artifactId = artifactId;
+			this.version = version;
+		}
+
+		@Override
+		public String getGroupId() {
+			return this.groupId;
+		}
+
+		@Override
+		public String getArtifactId() {
+			return this.artifactId;
+		}
+
+		@Override
+		public String getVersion() {
+			return this.version;
+		}
+
 	}
 
 }

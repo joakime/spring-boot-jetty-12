@@ -17,11 +17,12 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
+import java.util.Map;
 
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.specs.Spec;
 
-import org.springframework.boot.gradle.tasks.bundling.ResolvedDependencies.DependencyDescriptor;
+import org.springframework.boot.gradle.tasks.bundling.ResolvableDependencies.DependencyDescriptor;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
@@ -38,13 +39,13 @@ import org.springframework.boot.loader.tools.LibraryCoordinates;
  */
 class LayerResolver {
 
-	private final ResolvedDependencies resolvedDependencies;
+	private final Map<File, DependencyDescriptor> resolvedDependencies;
 
 	private final LayeredSpec layeredConfiguration;
 
 	private final Spec<FileCopyDetails> librarySpec;
 
-	LayerResolver(ResolvedDependencies resolvedDependencies, LayeredSpec layeredConfiguration,
+	LayerResolver(Map<File, DependencyDescriptor> resolvedDependencies, LayeredSpec layeredConfiguration,
 			Spec<FileCopyDetails> librarySpec) {
 		this.resolvedDependencies = resolvedDependencies;
 		this.layeredConfiguration = layeredConfiguration;
@@ -77,7 +78,7 @@ class LayerResolver {
 
 	private Library asLibrary(FileCopyDetails details) {
 		File file = details.getFile();
-		DependencyDescriptor dependency = this.resolvedDependencies.find(file);
+		DependencyDescriptor dependency = this.resolvedDependencies.get(file);
 		if (dependency == null) {
 			return new Library(null, file, null, null, false, false, true);
 		}

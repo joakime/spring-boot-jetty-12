@@ -150,6 +150,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 					.provider(() -> (String) bootJar.getManifest().getAttributes().get("Start-Class"));
 			bootJar.getMainClass().convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
 					? manifestStartClass : resolveMainClassName.get().readMainClassName()));
+			bootJar.registerForClasspathDependencyCoordinateResolution(
+					project.getConfigurations().getByName(mainSourceSet.getRuntimeClasspathConfigurationName()));
 		});
 	}
 

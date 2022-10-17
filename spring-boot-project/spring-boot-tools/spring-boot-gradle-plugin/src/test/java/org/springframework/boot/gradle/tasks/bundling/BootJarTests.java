@@ -22,7 +22,6 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.gradle.api.Action;
-import org.gradle.api.artifacts.Configuration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -197,11 +196,6 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Override
 	void applyLayered(Action<LayeredSpec> action) {
 		getTask().layered(action);
-	}
-
-	@Override
-	void populateResolvedDependencies(Configuration configuration) {
-		getTask().getResolvedDependencies().processConfiguration(getTask().getProject(), configuration);
 	}
 
 	@Override

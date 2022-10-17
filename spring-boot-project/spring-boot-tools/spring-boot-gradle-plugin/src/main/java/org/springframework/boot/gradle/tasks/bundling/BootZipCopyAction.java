@@ -52,7 +52,7 @@ import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.WorkResults;
 
-import org.springframework.boot.gradle.tasks.bundling.ResolvedDependencies.DependencyDescriptor;
+import org.springframework.boot.gradle.tasks.bundling.ResolvableDependencies.DependencyDescriptor;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JarModeLibrary;
@@ -103,7 +103,7 @@ class BootZipCopyAction implements CopyAction {
 
 	private final String encoding;
 
-	private final ResolvedDependencies resolvedDependencies;
+	private final Map<File, DependencyDescriptor> resolvedDependencies;
 
 	private final LayerResolver layerResolver;
 
@@ -111,7 +111,7 @@ class BootZipCopyAction implements CopyAction {
 			String layerToolsLocation, Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 			LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver, String encoding,
-			ResolvedDependencies resolvedDependencies, LayerResolver layerResolver) {
+			Map<File, DependencyDescriptor> resolvedDependencies, LayerResolver layerResolver) {
 		this.output = output;
 		this.manifest = manifest;
 		this.preserveFileTimestamps = preserveFileTimestamps;
@@ -353,7 +353,7 @@ class BootZipCopyAction implements CopyAction {
 			Set<String> excludes = new LinkedHashSet<>();
 			for (Map.Entry<String, FileCopyDetails> entry : this.writtenLibraries.entrySet()) {
 				DependencyDescriptor descriptor = BootZipCopyAction.this.resolvedDependencies
-						.find(entry.getValue().getFile());
+						.get(entry.getValue().getFile());
 				LibraryCoordinates coordinates = (descriptor != null) ? descriptor.getCoordinates() : null;
 				FileCopyDetails propertiesFile = (coordinates != null)
 						? this.reachabilityMetadataProperties.get(REACHABILITY_METADATA_PROPERTIES_LOCATION

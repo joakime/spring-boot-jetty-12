@@ -72,8 +72,9 @@ class WarPluginAction implements PluginApplicationAction {
 				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		Callable<FileCollection> classpath = () -> project.getExtensions().getByType(SourceSetContainer.class)
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
+		SourceSet mainSourceSet = project.getExtensions().getByType(SourceSetContainer.class)
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+		Callable<FileCollection> classpath = () -> mainSourceSet.getRuntimeClasspath()
 				.minus(providedRuntimeConfiguration(project)).minus((developmentOnly.minus(productionRuntimeClasspath)))
 				.filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveMainClassName = project.getTasks()
@@ -90,6 +91,8 @@ class WarPluginAction implements PluginApplicationAction {
 					bootWar.getMainClass()
 							.convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
 									? manifestStartClass : resolveMainClassName.get().readMainClassName()));
+					bootWar.registerForClasspathDependencyCoordinateResolution(project.getConfigurations()
+							.getByName(mainSourceSet.getRuntimeClasspathConfigurationName()));
 				});
 		bootWarProvider.map(War::getClasspath);
 		return bootWarProvider;

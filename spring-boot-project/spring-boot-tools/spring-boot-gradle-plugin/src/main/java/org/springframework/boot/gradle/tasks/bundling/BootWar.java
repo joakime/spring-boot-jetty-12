@@ -16,13 +16,15 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.File;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.ResolvableDependencies;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
@@ -31,11 +33,12 @@ import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.work.DisableCachingByDefault;
+
+import org.springframework.boot.gradle.tasks.bundling.ResolvableDependencies.DependencyDescriptor;
 
 /**
  * A custom {@link War} task that produces a Spring Boot executable war.
@@ -60,11 +63,11 @@ public class BootWar extends War implements BootArchive {
 
 	private static final String CLASSPATH_INDEX = "WEB-INF/classpath.idx";
 
+	private final ResolvableDependencies archiveDependencies = new ResolvableDependencies(getProject());
+
 	private final BootArchiveSupport support;
 
 	private final Property<String> mainClass;
-
-	private final ResolvedDependencies resolvedDependencies = new ResolvedDependencies();
 
 	private final LayeredSpec layered;
 
@@ -81,14 +84,6 @@ public class BootWar extends War implements BootArchive {
 		getWebInf().into("lib-provided", fromCallTo(this::getProvidedLibFiles));
 		this.support.moveModuleInfoToRoot(getRootSpec());
 		getRootSpec().eachFile(this.support::excludeNonZipLibraryFiles);
-		project.getConfigurations().all((configuration) -> {
-			ResolvableDependencies incoming = configuration.getIncoming();
-			incoming.afterResolve((resolvableDependencies) -> {
-				if (resolvableDependencies == incoming) {
-					this.resolvedDependencies.processConfiguration(project, configuration);
-				}
-			});
-		});
 	}
 
 	private Object getProvidedLibFiles() {
@@ -108,12 +103,13 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	protected CopyAction createCopyAction() {
+		Map<File, DependencyDescriptor> resolvedDependencies = this.archiveDependencies.resolve();
 		if (!isLayeredDisabled()) {
-			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
+			LayerResolver layerResolver = new LayerResolver(resolvedDependencies, this.layered, this::isLibrary);
 			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_DIRECTORY : null;
-			return this.support.createCopyAction(this, this.resolvedDependencies, layerResolver, layerToolsLocation);
+			return this.support.createCopyAction(this, resolvedDependencies, layerResolver, layerToolsLocation);
 		}
-		return this.support.createCopyAction(this, this.resolvedDependencies);
+		return this.support.createCopyAction(this, resolvedDependencies);
 	}
 
 	@Override
@@ -221,6 +217,11 @@ public class BootWar extends War implements BootArchive {
 		action.execute(this.layered);
 	}
 
+	@Override
+	public void registerForClasspathDependencyCoordinateResolution(Configuration configuration) {
+		this.archiveDependencies.resolvedArtifacts(configuration.getIncoming().getArtifacts().getResolvedArtifacts());
+	}
+
 	/**
 	 * Return if the {@link FileCopyDetails} are for a library. By default any file in
 	 * {@code WEB-INF/lib} or {@code WEB-INF/lib-provided} is considered to be a library.
@@ -239,11 +240,6 @@ public class BootWar extends War implements BootArchive {
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;
-	}
-
-	@Internal
-	ResolvedDependencies getResolvedDependencies() {
-		return this.resolvedDependencies;
 	}
 
 	/**

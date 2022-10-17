@@ -358,6 +358,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		writeResource();
 		BuildResult build = this.gradleBuild.build(this.taskName);
 		assertThat(build.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		System.out.println(build.getOutput());
 		Map<String, List<String>> indexedLayers;
 		String layerToolsJar = this.libPath + JarModeLibrary.LAYER_TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {

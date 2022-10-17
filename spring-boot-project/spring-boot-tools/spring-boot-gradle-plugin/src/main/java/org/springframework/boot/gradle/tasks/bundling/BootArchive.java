@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.provider.Property;
@@ -109,5 +110,13 @@ public interface BootArchive extends Task {
 	 * @since 2.0.7
 	 */
 	void setClasspath(FileCollection classpath);
+
+	/**
+	 * Registers the given {@code configuration} for use when determining the dependency
+	 * coordinates for files on the {@link #getClasspath()} of the archive.
+	 * @param configuration the configuration to register
+	 * @since 3.0.0
+	 */
+	void registerForClasspathDependencyCoordinateResolution(Configuration configuration);
 
 }
