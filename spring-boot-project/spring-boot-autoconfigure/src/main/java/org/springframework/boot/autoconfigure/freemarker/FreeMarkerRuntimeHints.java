@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.freemarker;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider.FreeMarkerTemplateAvailabilityProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsProcessor;
+import org.springframework.boot.context.properties.bind.BindingReflectionHintsProcessor;
 
 /**
  * {@link RuntimeHintsRegistrar} for FreeMarker support.
@@ -30,7 +30,7 @@ class FreeMarkerRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		ConfigurationPropertiesReflectionHintsProcessor
+		BindingReflectionHintsProcessor
 				.processConfigurationProperties(FreeMarkerTemplateAvailabilityProperties.class, hints.reflection());
 	}
 

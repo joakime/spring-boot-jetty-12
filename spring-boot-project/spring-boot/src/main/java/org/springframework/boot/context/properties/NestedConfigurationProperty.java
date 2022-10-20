@@ -35,10 +35,13 @@ import java.lang.annotation.Target;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 1.2.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.boot.context.properties.bind.NestedConfigurationProperty}
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@org.springframework.boot.context.properties.bind.NestedConfigurationProperty
 public @interface NestedConfigurationProperty {
 
 }

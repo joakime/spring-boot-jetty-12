@@ -24,6 +24,7 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContrib
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.context.properties.bind.BindingReflectionHintsProcessor;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -67,7 +68,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
 			for (Class<?> type : this.types) {
-				ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(type,
+				BindingReflectionHintsProcessor.processConfigurationProperties(type,
 						generationContext.getRuntimeHints().reflection());
 			}
 		}

@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsProcessor;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.BindingReflectionHintsProcessor;
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -106,7 +106,7 @@ public class HttpMessageConvertersAutoConfiguration {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(Encoding.class,
+			BindingReflectionHintsProcessor.processConfigurationProperties(Encoding.class,
 					hints.reflection());
 		}
 

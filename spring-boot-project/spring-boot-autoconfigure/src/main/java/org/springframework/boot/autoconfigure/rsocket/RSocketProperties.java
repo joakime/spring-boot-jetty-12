@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.rsocket;
 import java.net.InetAddress;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.NestedConfigurationProperty;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.unit.DataSize;

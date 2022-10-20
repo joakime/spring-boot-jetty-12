@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
+package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,15 +23,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @ConstructorBinding} for testing (removes the need
- * for a dependency on the real annotation).
+ * Indicates that a field in a class to which property are bound should be treated as if
+ * it were a nested type. This annotation has no bearing on the actual binding processes,
+ * but it is used by both {@link BindingReflectionHintsProcessor} and
+ * {@code spring-boot-configuration-processor} as a hint that a field is not bound as a
+ * single value and that introspection of the field's type for further properties is
+ * required.
+ * <p>
+ * This has no effect on collections and maps as these types are automatically identified.
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 3.0.0
  */
-@Target(ElementType.CONSTRUCTOR)
+@Target({ ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@org.springframework.boot.configurationsample.bind.ConstructorBinding
-public @interface ConstructorBinding {
+public @interface NestedConfigurationProperty {
 
 }

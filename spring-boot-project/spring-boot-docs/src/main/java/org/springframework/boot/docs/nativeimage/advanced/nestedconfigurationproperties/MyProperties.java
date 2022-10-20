@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationproperties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "my.properties")
 public class MyProperties {

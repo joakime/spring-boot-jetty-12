@@ -52,7 +52,7 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 
 	public static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.DeprecatedConfigurationProperty";
 
-	public static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.configurationsample.ConstructorBinding";
+	public static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.configurationsample.bind.ConstructorBinding";
 
 	public static final String AUTOWIRED_ANNOTATION = "org.springframework.boot.configurationsample.Autowired";
 

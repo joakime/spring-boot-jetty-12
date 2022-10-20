@@ -25,7 +25,7 @@ import org.apache.activemq.artemis.core.remoting.impl.invm.TransportConstants;
 
 import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.NestedConfigurationProperty;
 
 /**
  * Configuration properties for Artemis.

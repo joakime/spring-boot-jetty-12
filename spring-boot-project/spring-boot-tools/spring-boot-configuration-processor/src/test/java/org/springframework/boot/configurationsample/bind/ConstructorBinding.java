@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
+package org.springframework.boot.configurationsample.bind;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -28,10 +28,9 @@ import java.lang.annotation.Target;
  *
  * @author Stephane Nicoll
  */
-@Target(ElementType.CONSTRUCTOR)
+@Target({ ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@org.springframework.boot.configurationsample.bind.ConstructorBinding
 public @interface ConstructorBinding {
 
 }

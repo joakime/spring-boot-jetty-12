@@ -50,9 +50,9 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsProcessor;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.BindingReflectionHintsProcessor;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
@@ -1451,7 +1451,7 @@ public class SpringApplication {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(SpringApplication.class,
+			BindingReflectionHintsProcessor.processConfigurationProperties(SpringApplication.class,
 					hints.reflection());
 		}
 

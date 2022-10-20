@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Show;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.NestedConfigurationProperty;
 
 /**
  * Properties used to configure the health endpoint and endpoint groups.

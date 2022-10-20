@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties;
+package org.springframework.boot.context.properties.bind;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -33,8 +33,6 @@ import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
-import org.springframework.boot.context.properties.bind.BindConstructorProvider;
-import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ReflectionUtils;
@@ -48,7 +46,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Sebastien Deleuze
  * @since 3.0.0
  */
-public final class ConfigurationPropertiesReflectionHintsProcessor {
+public final class BindingReflectionHintsProcessor {
 
 	private static final BeanInfoFactory beanInfoFactory = new ExtendedBeanInfoFactory();
 
@@ -60,8 +58,7 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 
 	private final Set<Class<?>> seen;
 
-	private ConfigurationPropertiesReflectionHintsProcessor(Class<?> type, Constructor<?> bindConstructor,
-			Set<Class<?>> seen) {
+	private BindingReflectionHintsProcessor(Class<?> type, Constructor<?> bindConstructor, Set<Class<?>> seen) {
 		this.type = type;
 		this.bindConstructor = bindConstructor;
 		this.beanInfo = getBeanInfo(type);
@@ -75,7 +72,7 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 	 * @param reflectionHints {@link ReflectionHints} to register the types on
 	 */
 	public static void processConfigurationProperties(Class<?> type, ReflectionHints reflectionHints) {
-		new ConfigurationPropertiesReflectionHintsProcessor(type, getBindConstructor(type, false), new HashSet<>())
+		new BindingReflectionHintsProcessor(type, getBindConstructor(type, false), new HashSet<>())
 				.process(reflectionHints);
 	}
 
@@ -84,7 +81,7 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 	}
 
 	private void processNestedType(Class<?> type, Constructor<?> bindConstructor, ReflectionHints reflectionHints) {
-		new ConfigurationPropertiesReflectionHintsProcessor(type, bindConstructor, this.seen).process(reflectionHints);
+		new BindingReflectionHintsProcessor(type, bindConstructor, this.seen).process(reflectionHints);
 	}
 
 	private static Constructor<?> getBindConstructor(Class<?> type, boolean nestedType) {
