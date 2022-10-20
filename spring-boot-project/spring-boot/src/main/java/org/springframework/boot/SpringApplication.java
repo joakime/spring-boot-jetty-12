@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
@@ -359,18 +360,43 @@ public class SpringApplication {
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
 			EnvironmentConverter environmentConverter = new EnvironmentConverter(getClassLoader());
-			environment = environmentConverter.convertEnvironmentIfNecessary(environment, deduceEnvironmentClass());
+			environment = environmentConverter.convertEnvironmentIfNecessary(environment, environmentFactory());
 		}
 		ConfigurationPropertySources.attach(environment);
 		return environment;
 	}
 
-	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
-		return switch (this.webApplicationType) {
-			case SERVLET -> ApplicationServletEnvironment.class;
-			case REACTIVE -> ApplicationReactiveWebEnvironment.class;
-			default -> ApplicationEnvironment.class;
-		};
+	private EnvironmentFactory environmentFactory() {
+		try {
+			for (EnvironmentFactory candidate : SpringFactoriesLoader.loadFactories(EnvironmentFactory.class,
+					EnvironmentFactory.class.getClassLoader())) {
+				if (candidate.supports(this.webApplicationType)) {
+					return candidate;
+				}
+			}
+			return new EnvironmentFactory() {
+
+				@Override
+				public boolean supports(WebApplicationType webApplicationType) {
+					return true;
+				}
+
+				@Override
+				public Class<ApplicationEnvironment> environmentType() {
+					return ApplicationEnvironment.class;
+				}
+
+				@Override
+				public Supplier<StandardEnvironment> create() {
+					return ApplicationEnvironment::new;
+				}
+
+			};
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable create a default ApplicationEnvironment instance, "
+					+ "you may need a custom ApplicationEnvironmentFactory", ex);
+		}
 	}
 
 	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
@@ -462,14 +488,7 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		switch (this.webApplicationType) {
-			case SERVLET:
-				return new ApplicationServletEnvironment();
-			case REACTIVE:
-				return new ApplicationReactiveWebEnvironment();
-			default:
-				return new ApplicationEnvironment();
-		}
+		return environmentFactory().create().get();
 	}
 
 	/**

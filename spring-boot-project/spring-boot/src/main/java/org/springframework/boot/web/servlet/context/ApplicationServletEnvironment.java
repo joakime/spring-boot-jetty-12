@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.web.servlet.context;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
-import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
 import org.springframework.core.env.ConfigurablePropertyResolver;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
- * {@link StandardReactiveWebEnvironment} for typical use in a typical
+ * {@link StandardServletEnvironment} for typical use in a typical
  * {@link SpringApplication}.
  *
  * @author Phillip Webb
  */
-class ApplicationReactiveWebEnvironment extends StandardReactiveWebEnvironment {
+class ApplicationServletEnvironment extends StandardServletEnvironment {
 
 	@Override
 	protected String doGetActiveProfilesProperty() {

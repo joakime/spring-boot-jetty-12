@@ -24,6 +24,11 @@ org.springframework.boot.ApplicationContextFactory=\
 org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContextFactory,\
 org.springframework.boot.web.servlet.context.ServletWebServerApplicationContextFactory
 
+# Environment Factories
+org.springframework.boot.EnvironmentFactory=\
+org.springframework.boot.web.reactive.context.ApplicationReactiveEnvironmentFactory,\
+org.springframework.boot.web.servlet.context.ApplicationServletEnvironmentFactory
+
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\
 org.springframework.boot.context.event.EventPublishingRunListener

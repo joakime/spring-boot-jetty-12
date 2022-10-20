@@ -65,33 +65,25 @@ final class EnvironmentConverter {
 	 * type. If the environment is already of the same type, no conversion is performed
 	 * and it is returned unchanged.
 	 * @param environment the Environment to convert
-	 * @param type the type to convert the Environment to
+	 * @param environmentFactory the factory that can be used to create an environment of
+	 * the required type
 	 * @return the converted Environment
 	 */
 	StandardEnvironment convertEnvironmentIfNecessary(ConfigurableEnvironment environment,
-			Class<? extends StandardEnvironment> type) {
-		if (type.equals(environment.getClass())) {
+			EnvironmentFactory environmentFactory) {
+		if (environmentFactory.environmentType().equals(environment.getClass())) {
 			return (StandardEnvironment) environment;
 		}
-		return convertEnvironment(environment, type);
+		return convertEnvironment(environment, environmentFactory);
 	}
 
 	private StandardEnvironment convertEnvironment(ConfigurableEnvironment environment,
-			Class<? extends StandardEnvironment> type) {
-		StandardEnvironment result = createEnvironment(type);
+			EnvironmentFactory environmentFactory) {
+		StandardEnvironment result = environmentFactory.create().get();
 		result.setActiveProfiles(environment.getActiveProfiles());
 		result.setConversionService(environment.getConversionService());
 		copyPropertySources(environment, result);
 		return result;
-	}
-
-	private StandardEnvironment createEnvironment(Class<? extends StandardEnvironment> type) {
-		try {
-			return type.getDeclaredConstructor().newInstance();
-		}
-		catch (Exception ex) {
-			return new StandardEnvironment();
-		}
 	}
 
 	private void copyPropertySources(ConfigurableEnvironment source, StandardEnvironment target) {

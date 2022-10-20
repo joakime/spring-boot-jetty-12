@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.web.servlet.context;
 
+import org.springframework.boot.AbstractApplicationEnvironmentTests;
 import org.springframework.core.env.StandardEnvironment;
 
 /**
