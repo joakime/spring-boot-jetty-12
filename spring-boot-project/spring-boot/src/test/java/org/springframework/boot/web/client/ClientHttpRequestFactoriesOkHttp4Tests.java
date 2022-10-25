@@ -26,25 +26,32 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link RestTemplateBuilder} configuring an
- * {@link OkHttp3ClientHttpRequestFactory} that is using OkHttp 4.
+ * Tests for {@link ClientHttpRequestFactories} when OkHttp 4 is the predominant HTTP
+ * client.
  *
  * @author Andy Wilkinson
  */
 @ClassPathExclusions("httpclient5-*.jar")
-class RestTemplateBuilderOkHttp4ClientHttpRequestFactoryConfigurationTests
-		extends AbstractRestTemplateBuilderRequestFactoryConfigurationTests<OkHttp3ClientHttpRequestFactory> {
+class ClientHttpRequestFactoriesOkHttp4Tests
+		extends AbstractClientHttpRequestFactoriesTests<OkHttp3ClientHttpRequestFactory> {
 
-	protected RestTemplateBuilderOkHttp4ClientHttpRequestFactoryConfigurationTests() {
+	ClientHttpRequestFactoriesOkHttp4Tests() {
 		super(OkHttp3ClientHttpRequestFactory.class);
 	}
 
 	@Test
-	void okHttp3IsBeingUsed() {
+	void okHttp4IsBeingUsed() {
 		assertThat(new File(OkHttpClient.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getName())
 				.startsWith("okhttp-4.");
+	}
+
+	@Test
+	void getFailsWhenBufferRequestBodyIsEnabled() {
+		assertThatIllegalStateException().isThrownBy(() -> ClientHttpRequestFactories
+				.get(ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)));
 	}
 
 	@Override

@@ -21,16 +21,16 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link RestTemplateBuilder} configuring a
- * {@link SimpleClientHttpRequestFactory}.
+ * Tests for {@link ClientHttpRequestFactories} when the simple JDK-based client is the
+ * predominant HTTP client.
  *
  * @author Andy Wilkinson
  */
 @ClassPathExclusions({ "httpclient5-*.jar", "okhttp-*.jar" })
-class RestTemplateBuilderSimpleClientHttpRequestFactoryConfigurationTests
-		extends AbstractRestTemplateBuilderRequestFactoryConfigurationTests<SimpleClientHttpRequestFactory> {
+class ClientHttpRequestFactoriesSimpleTests
+		extends AbstractClientHttpRequestFactoriesTests<SimpleClientHttpRequestFactory> {
 
-	protected RestTemplateBuilderSimpleClientHttpRequestFactoryConfigurationTests() {
+	ClientHttpRequestFactoriesSimpleTests() {
 		super(SimpleClientHttpRequestFactory.class);
 	}
 

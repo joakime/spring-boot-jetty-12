@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 import reactor.netty.http.client.HttpClientRequest;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -66,8 +67,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Ilya Lukyanovich
  * @since 1.4.0
  */
-// FIXME
-// @ImportRuntimeHints(RestTemplateBuilder.ReflectiveClientHttpRequestFactorySupplierRuntimeHints.class)
+@ImportRuntimeHints(ClientHttpRequestFactoriesRuntimeHints.class)
 public class RestTemplateBuilder {
 
 	private final ClientHttpRequestFactorySettings requestFactorySettings;
@@ -327,7 +327,7 @@ public class RestTemplateBuilder {
 	/**
 	 * Set the {@link ClientHttpRequestFactorySupplier} that should be called each time we
 	 * {@link #build()} a new {@link RestTemplate} instance.
-	 * @param requestFactoryFunction the supplier for the request factory
+	 * @param requestFactoryFunction the settings to request factory function
 	 * @return a new builder instance
 	 * @since 3.0.0
 	 * @see ClientHttpRequestFactories

@@ -1009,7 +1009,6 @@ public class TestRestTemplate {
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);
 			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
-			// TODO Apply settings to HTTP client
 			boolean ssl = options.contains(HttpClientOption.SSL);
 			if (settings.readTimeout() != null || ssl) {
 				setHttpClient(createHttpClient(settings.readTimeout(), ssl));

@@ -23,15 +23,15 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link RestTemplateBuilder} configuring an
- * {@link HttpComponentsClientHttpRequestFactory}.
+ * Tests for {@link ClientHttpRequestFactories} when Apache Http Components is the
+ * predominant HTTP client.
  *
  * @author Andy Wilkinson
  */
-class RestTemplateBuilderHttpComponentsClientHttpRequestFactoryConfigurationTests
-		extends AbstractRestTemplateBuilderRequestFactoryConfigurationTests<HttpComponentsClientHttpRequestFactory> {
+class ClientHttpRequestFactoriesHttpComponentsTests
+		extends AbstractClientHttpRequestFactoriesTests<HttpComponentsClientHttpRequestFactory> {
 
-	protected RestTemplateBuilderHttpComponentsClientHttpRequestFactoryConfigurationTests() {
+	ClientHttpRequestFactoriesHttpComponentsTests() {
 		super(HttpComponentsClientHttpRequestFactory.class);
 	}
 

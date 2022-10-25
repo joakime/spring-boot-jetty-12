@@ -71,13 +71,14 @@ public class HttpWebServiceMessageSenderBuilder {
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Supplier<ClientHttpRequestFactory> requestFactorySupplier) {
 		Assert.notNull(requestFactorySupplier, "RequestFactorySupplier must not be null");
-		this.requestFactory = (settings) -> requestFactorySupplier.get();
+		this.requestFactory = (settings) -> ClientHttpRequestFactories.get(requestFactorySupplier, settings);
 		return this;
 	}
 
 	/**
-	 * Set the {@code Function} of {@link ClientHttpRequestFactory} that should be called
-	 * to create the HTTP-based {@link WebServiceMessageSender}.
+	 * Set the {@code Function} of {@link ClientHttpRequestFactorySettings} to
+	 * {@link ClientHttpRequestFactory} that should be called to create the HTTP-based
+	 * {@link WebServiceMessageSender}.
 	 * @param requestFactoryFunction the function for the request factory
 	 * @return a new builder instance
 	 * @since 3.0.0

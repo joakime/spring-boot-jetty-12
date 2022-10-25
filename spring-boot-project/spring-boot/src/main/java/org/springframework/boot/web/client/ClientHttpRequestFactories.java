@@ -20,7 +20,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.hc.client5.http.classic.HttpClient;
@@ -29,6 +31,10 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.core5.http.io.SocketConfig;
 
+import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.ReflectionHints;
+import org.springframework.aot.hint.TypeHint;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -49,11 +55,11 @@ import org.springframework.util.ReflectionUtils;
  */
 public final class ClientHttpRequestFactories {
 
-	private static final String APACHE_HTTP_CLIENT_CLASS = "org.apache.hc.client5.http.impl.classic.HttpClients";
+	static final String APACHE_HTTP_CLIENT_CLASS = "org.apache.hc.client5.http.impl.classic.HttpClients";
 
 	private static final boolean APACHE_HTTP_CLIENT_PRESENT = ClassUtils.isPresent(APACHE_HTTP_CLIENT_CLASS, null);
 
-	private static final String OKHTTP_CLIENT_CLASS = "okhttp3.OkHttpClient";
+	static final String OKHTTP_CLIENT_CLASS = "okhttp3.OkHttpClient";
 
 	private static final boolean OKHTTP_CLIENT_PRESENT = ClassUtils.isPresent(OKHTTP_CLIENT_CLASS, null);
 
@@ -78,7 +84,7 @@ public final class ClientHttpRequestFactories {
 	}
 
 	/**
-	 * Return a new {@link ClientHttpRequestFactory} of the given type, apply
+	 * Return a new {@link ClientHttpRequestFactory} of the given type, applying
 	 * {@link ClientHttpRequestFactorySettings} using reflection if necessary.
 	 * @param <T> the {@link ClientHttpRequestFactory} type
 	 * @param requestFactoryType the {@link ClientHttpRequestFactory} type
@@ -105,7 +111,7 @@ public final class ClientHttpRequestFactories {
 	}
 
 	/**
-	 * Return a new {@link ClientHttpRequestFactory} of the given supplied, apply
+	 * Return a new {@link ClientHttpRequestFactory} from the given supplier, applying
 	 * {@link ClientHttpRequestFactorySettings} using reflection.
 	 * @param <T> the {@link ClientHttpRequestFactory} type
 	 * @param requestFactorySupplier the {@link ClientHttpRequestFactory} supplier
@@ -190,11 +196,12 @@ public final class ClientHttpRequestFactories {
 	}
 
 	/**
-	 * Support for {@link Reflective}.
+	 * Support for reflective configuration of an unknown {@link ClientHttpRequestFactory}
+	 * implementation.
 	 */
 	static class Reflective {
 
-		public static <T extends ClientHttpRequestFactory> T get(Supplier<T> requestFactorySupplier,
+		static <T extends ClientHttpRequestFactory> T get(Supplier<T> requestFactorySupplier,
 				ClientHttpRequestFactorySettings settings) {
 			T requestFactory = requestFactorySupplier.get();
 			configure(requestFactory, settings);
@@ -256,6 +263,34 @@ public final class ClientHttpRequestFactories {
 
 		private static void invoke(ClientHttpRequestFactory requestFactory, Method method, Object... parameters) {
 			ReflectionUtils.invokeMethod(method, requestFactory, parameters);
+		}
+
+		static void registerReflectionHints(ReflectionHints hints) {
+			hints.registerField(Objects.requireNonNull(
+					ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory")));
+			registerReflectionHints(hints, HttpComponentsClientHttpRequestFactory.class,
+					(hint) -> hint.onReachableType(TypeReference.of(APACHE_HTTP_CLIENT_CLASS)));
+			registerReflectionHints(hints, OkHttp3ClientHttpRequestFactory.class,
+					(hint) -> hint.onReachableType(TypeReference.of(OKHTTP_CLIENT_CLASS)));
+			registerReflectionHints(hints, SimpleClientHttpRequestFactory.class);
+		}
+
+		private static void registerReflectionHints(ReflectionHints hints,
+				Class<? extends ClientHttpRequestFactory> requestFactoryType) {
+			registerReflectionHints(hints, requestFactoryType, null);
+		}
+
+		private static void registerReflectionHints(ReflectionHints hints,
+				Class<? extends ClientHttpRequestFactory> requestFactoryType,
+				Consumer<TypeHint.Builder> hintCustomizer) {
+			hints.registerType(requestFactoryType, (hint) -> {
+				hint.withMethod("setConnectTimeout", TypeReference.listOf(int.class), ExecutableMode.INVOKE);
+				hint.withMethod("setReadTimeout", TypeReference.listOf(int.class), ExecutableMode.INVOKE);
+				hint.withMethod("setBufferRequestBody", TypeReference.listOf(boolean.class), ExecutableMode.INVOKE);
+				if (hintCustomizer != null) {
+					hintCustomizer.accept(hint);
+				}
+			});
 		}
 
 	}
