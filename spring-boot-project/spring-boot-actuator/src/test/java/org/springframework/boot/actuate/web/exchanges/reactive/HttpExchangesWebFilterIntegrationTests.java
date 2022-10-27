@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.util.EnumSet;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.web.exchanges.HttpExchangesRepository;
-import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangesRepository;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
@@ -56,7 +56,7 @@ class HttpExchangesWebFilterIntegrationTests {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/").exchange().expectStatus()
 					.isNotFound();
-			HttpExchangesRepository repository = context.getBean(HttpExchangesRepository.class);
+			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);
 			assertThat(repository.findAll().get(0).getResponse().getStatus()).isEqualTo(404);
 		});
@@ -67,7 +67,7 @@ class HttpExchangesWebFilterIntegrationTests {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/mono-error").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-			HttpExchangesRepository repository = context.getBean(HttpExchangesRepository.class);
+			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);
 			assertThat(repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);
 		});
@@ -78,7 +78,7 @@ class HttpExchangesWebFilterIntegrationTests {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/thrown").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-			HttpExchangesRepository repository = context.getBean(HttpExchangesRepository.class);
+			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);
 			assertThat(repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);
 		});
@@ -89,13 +89,13 @@ class HttpExchangesWebFilterIntegrationTests {
 	static class Config {
 
 		@Bean
-		HttpExchangesWebFilter httpTraceWebFilter(HttpExchangesRepository repository) {
+		HttpExchangesWebFilter httpTraceWebFilter(HttpExchangeRepository repository) {
 			return new HttpExchangesWebFilter(repository, EnumSet.allOf(Include.class));
 		}
 
 		@Bean
-		HttpExchangesRepository httpTraceRepository() {
-			return new InMemoryHttpExchangesRepository();
+		HttpExchangeRepository httpTraceRepository() {
+			return new InMemoryHttpExchangeRepository();
 		}
 
 		@Bean

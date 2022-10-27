@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.web.exchanges;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangesEndpoint;
-import org.springframework.boot.actuate.web.exchanges.HttpExchangesRepository;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -37,10 +37,10 @@ import org.springframework.context.annotation.Bean;
 public class HttpExchangesEndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(HttpExchangesRepository.class)
+	@ConditionalOnBean(HttpExchangeRepository.class)
 	@ConditionalOnMissingBean
-	public HttpExchangesEndpoint httpTraceEndpoint(HttpExchangesRepository traceRepository) {
-		return new HttpExchangesEndpoint(traceRepository);
+	public HttpExchangesEndpoint httpExchangesEndpoint(HttpExchangeRepository exchangeRepository) {
+		return new HttpExchangesEndpoint(exchangeRepository);
 	}
 
 }

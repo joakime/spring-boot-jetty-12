@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,9 @@ class HttpExchangesEndpointTests {
 
 	@Test
 	void httpExchanges() {
-		HttpExchangesRepository repository = new InMemoryHttpExchangesRepository();
+		HttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
 		repository.add(HttpExchange.start(createRequest("GET")).finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID));
-		List<HttpExchange> httpExchanges = new HttpExchangesEndpoint(repository).httpExchanges().getTraces();
+		List<HttpExchange> httpExchanges = new HttpExchangesEndpoint(repository).httpExchanges().getExchanges();
 		assertThat(httpExchanges).hasSize(1);
 		HttpExchange trace = httpExchanges.get(0);
 		assertThat(trace.getRequest().getMethod()).isEqualTo("GET");

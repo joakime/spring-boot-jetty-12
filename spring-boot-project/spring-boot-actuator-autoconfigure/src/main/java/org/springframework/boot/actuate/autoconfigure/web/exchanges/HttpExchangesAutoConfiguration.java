@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.web.exchanges;
 
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
-import org.springframework.boot.actuate.web.exchanges.HttpExchangesRepository;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.reactive.HttpExchangesWebFilter;
 import org.springframework.boot.actuate.web.exchanges.servlet.HttpExchangesFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfiguration
 @ConditionalOnWebApplication
 @ConditionalOnProperty(prefix = "management.httpexchanges", name = "enabled", matchIfMissing = true)
-@ConditionalOnBean(HttpExchangesRepository.class)
+@ConditionalOnBean(HttpExchangeRepository.class)
 @EnableConfigurationProperties(HttpExchangesProperties.class)
 public class HttpExchangesAutoConfiguration {
 
@@ -51,7 +51,7 @@ public class HttpExchangesAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		HttpExchangesFilter httpExchangesFilter(HttpExchangesRepository repository,
+		HttpExchangesFilter httpExchangesFilter(HttpExchangeRepository repository,
 				HttpExchangesProperties traceProperties) {
 			return new HttpExchangesFilter(repository, traceProperties.getInclude());
 		}
@@ -64,7 +64,7 @@ public class HttpExchangesAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		HttpExchangesWebFilter httpExchangesWebFilter(HttpExchangesRepository repository,
+		HttpExchangesWebFilter httpExchangesWebFilter(HttpExchangeRepository repository,
 				HttpExchangesProperties traceProperties) {
 			return new HttpExchangesWebFilter(repository, traceProperties.getInclude());
 		}

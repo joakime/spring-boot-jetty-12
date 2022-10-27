@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,13 @@ import org.springframework.util.Assert;
 @Endpoint(id = "httpexchanges")
 public class HttpExchangesEndpoint {
 
-	private final HttpExchangesRepository repository;
+	private final HttpExchangeRepository repository;
 
 	/**
 	 * Create a new {@link HttpExchangesEndpoint} instance.
 	 * @param repository the trace repository
 	 */
-	public HttpExchangesEndpoint(HttpExchangesRepository repository) {
+	public HttpExchangesEndpoint(HttpExchangeRepository repository) {
 		Assert.notNull(repository, "Repository must not be null");
 		this.repository = repository;
 	}
@@ -56,11 +56,11 @@ public class HttpExchangesEndpoint {
 
 		private final List<HttpExchange> exchanges;
 
-		private HttpExchanges(List<HttpExchange> traces) {
-			this.exchanges = traces;
+		private HttpExchanges(List<HttpExchange> exchanges) {
+			this.exchanges = exchanges;
 		}
 
-		public List<HttpExchange> getTraces() {
+		public List<HttpExchange> getExchanges() {
 			return this.exchanges;
 		}
 

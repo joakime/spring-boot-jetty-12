@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ public final class HttpExchange {
 	private final Duration timeTaken;
 
 	/**
-	 * Primarily for use by {@link HttpExchangesRepository} implementations when
-	 * recreating an exchange from a persistent store.
+	 * Primarily for use by {@link HttpExchangeRepository} implementations when recreating
+	 * an exchange from a persistent store.
 	 * @param timestamp the instant that the exchange started
 	 * @param request the request
 	 * @param response the response
@@ -226,8 +226,8 @@ public final class HttpExchange {
 
 		/**
 		 * Creates a fully-configured {@code Request} instance. Primarily for use by
-		 * {@link HttpExchangesRepository} implementations when recreating a request from
-		 * a persistent store.
+		 * {@link HttpExchangeRepository} implementations when recreating a request from a
+		 * persistent store.
 		 * @param uri the URI of the request
 		 * @param remoteAddress remote address from which the request was sent, if known
 		 * @param method the HTTP method of the request
@@ -297,7 +297,7 @@ public final class HttpExchange {
 
 		/**
 		 * Creates a fully-configured {@code Response} instance. Primarily for use by
-		 * {@link HttpExchangesRepository} implementations when recreating a response from
+		 * {@link HttpExchangeRepository} implementations when recreating a response from
 		 * a persistent store.
 		 * @param status the status of the response
 		 * @param headers the response headers
@@ -339,7 +339,7 @@ public final class HttpExchange {
 		private final String id;
 
 		/**
-		 * Creates a {@code Session}. Primarily for use by {@link HttpExchangesRepository}
+		 * Creates a {@code Session}. Primarily for use by {@link HttpExchangeRepository}
 		 * implementations when recreating a session from a persistent store.
 		 * @param id the session id
 		 */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.Set;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
-import org.springframework.boot.actuate.web.exchanges.HttpExchangesRepository;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.core.Ordered;
 import org.springframework.web.server.ServerWebExchange;
@@ -45,7 +45,7 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 	// enriched headers, but users can add stuff after this if they want to
 	private int order = Ordered.LOWEST_PRECEDENCE - 10;
 
-	private final HttpExchangesRepository repository;
+	private final HttpExchangeRepository repository;
 
 	private final Set<Include> includes;
 
@@ -54,7 +54,7 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 	 * @param repository the repository used to record events
 	 * @param includes the include options
 	 */
-	public HttpExchangesWebFilter(HttpExchangesRepository repository, Set<Include> includes) {
+	public HttpExchangesWebFilter(HttpExchangeRepository repository, Set<Include> includes) {
 		this.repository = repository;
 		this.includes = includes;
 	}

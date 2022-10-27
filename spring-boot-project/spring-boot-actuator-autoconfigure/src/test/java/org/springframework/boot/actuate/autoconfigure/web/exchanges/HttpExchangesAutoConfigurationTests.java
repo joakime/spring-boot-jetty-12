@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
-import org.springframework.boot.actuate.web.exchanges.HttpExchangesRepository;
-import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangesRepository;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.boot.actuate.web.exchanges.reactive.HttpExchangesWebFilter;
 import org.springframework.boot.actuate.web.exchanges.servlet.HttpExchangesFilter;
@@ -55,9 +55,8 @@ class HttpExchangesAutoConfigurationTests {
 	void autoConfigurationIsEnabledWhenHttpTraceRepositoryBeanPresent() {
 		this.contextRunner.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(HttpExchangesFilter.class);
-			assertThat(context).hasSingleBean(HttpExchangesRepository.class);
-			assertThat(context.getBean(HttpExchangesRepository.class))
-					.isInstanceOf(CustomHttpExchangesRepository.class);
+			assertThat(context).hasSingleBean(HttpExchangeRepository.class);
+			assertThat(context.getBean(HttpExchangeRepository.class)).isInstanceOf(CustomHttpExchangesRepository.class);
 		});
 	}
 
@@ -93,11 +92,11 @@ class HttpExchangesAutoConfigurationTests {
 	void backsOffWhenDisabled() {
 		this.contextRunner.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
 				.withPropertyValues("management.httpexchanges.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpExchangesRepository.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpExchangeRepository.class)
 						.doesNotHaveBean(HttpExchangesFilter.class));
 	}
 
-	static class CustomHttpExchangesRepository implements HttpExchangesRepository {
+	static class CustomHttpExchangesRepository implements HttpExchangeRepository {
 
 		@Override
 		public List<HttpExchange> findAll() {
@@ -123,7 +122,7 @@ class HttpExchangesAutoConfigurationTests {
 
 	private static final class CustomHttpExchangesWebFilter extends HttpExchangesWebFilter {
 
-		private CustomHttpExchangesWebFilter(HttpExchangesRepository repository, Set<Include> includes) {
+		private CustomHttpExchangesWebFilter(HttpExchangeRepository repository, Set<Include> includes) {
 			super(repository, includes);
 		}
 
@@ -133,7 +132,7 @@ class HttpExchangesAutoConfigurationTests {
 	static class CustomWebFilterConfiguration {
 
 		@Bean
-		CustomHttpExchangesWebFilter customWebFilter(HttpExchangesRepository repository,
+		CustomHttpExchangesWebFilter customWebFilter(HttpExchangeRepository repository,
 				HttpExchangesProperties properties) {
 			return new CustomHttpExchangesWebFilter(repository, properties.getInclude());
 		}
@@ -142,7 +141,7 @@ class HttpExchangesAutoConfigurationTests {
 
 	private static final class CustomHttpExchangesFilter extends HttpExchangesFilter {
 
-		private CustomHttpExchangesFilter(HttpExchangesRepository repository, Set<Include> includes) {
+		private CustomHttpExchangesFilter(HttpExchangeRepository repository, Set<Include> includes) {
 			super(repository, includes);
 		}
 
@@ -152,7 +151,7 @@ class HttpExchangesAutoConfigurationTests {
 	static class CustomFilterConfiguration {
 
 		@Bean
-		CustomHttpExchangesFilter customWebFilter(HttpExchangesRepository repository, Set<Include> includes) {
+		CustomHttpExchangesFilter customWebFilter(HttpExchangeRepository repository, Set<Include> includes) {
 			return new CustomHttpExchangesFilter(repository, includes);
 		}
 

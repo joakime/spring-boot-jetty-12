@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.actuate.web.exchanges.HttpExchange.Session;
-import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangesRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
  */
 class HttpExchangesWebFilterTests {
 
-	private final InMemoryHttpExchangesRepository repository = new InMemoryHttpExchangesRepository();
+	private final InMemoryHttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
 
 	private final HttpExchangesWebFilter filter = new HttpExchangesWebFilter(this.repository,
 			EnumSet.allOf(Include.class));

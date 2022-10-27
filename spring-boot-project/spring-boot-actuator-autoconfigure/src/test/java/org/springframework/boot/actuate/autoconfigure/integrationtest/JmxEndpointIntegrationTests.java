@@ -32,7 +32,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
-import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangesRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -63,7 +63,7 @@ class JmxEndpointIntegrationTests {
 		this.contextRunner.run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer, new String[] { "health" }, new String[] { "beans", "conditions",
-					"configprops", "env", "info", "mappings", "threaddump", "httptrace", "shutdown" });
+					"configprops", "env", "info", "mappings", "threaddump", "httpexchanges", "shutdown" });
 		});
 	}
 
@@ -75,7 +75,7 @@ class JmxEndpointIntegrationTests {
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env",
-							"health", "info", "mappings", "threaddump", "httptrace" }, new String[] { "shutdown" });
+							"health", "info", "mappings", "threaddump", "httpexchanges" }, new String[] { "shutdown" });
 				});
 	}
 
@@ -84,7 +84,7 @@ class JmxEndpointIntegrationTests {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.exclude:*").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer, new String[0], new String[] { "beans", "conditions", "configprops", "env",
-					"health", "mappings", "shutdown", "threaddump", "httptrace" });
+					"health", "mappings", "shutdown", "threaddump", "httpexchanges" });
 
 		});
 	}
@@ -94,7 +94,7 @@ class JmxEndpointIntegrationTests {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include=beans").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer, new String[] { "beans" }, new String[] { "conditions", "configprops",
-					"env", "health", "mappings", "shutdown", "threaddump", "httptrace" });
+					"env", "health", "mappings", "shutdown", "threaddump", "httpexchanges" });
 		});
 	}
 
@@ -147,8 +147,8 @@ class JmxEndpointIntegrationTests {
 	static class HttpTraceRepositoryConfiguration {
 
 		@Bean
-		InMemoryHttpExchangesRepository httpTraceRepository() {
-			return new InMemoryHttpExchangesRepository();
+		InMemoryHttpExchangeRepository httpTraceRepository() {
+			return new InMemoryHttpExchangeRepository();
 		}
 
 	}

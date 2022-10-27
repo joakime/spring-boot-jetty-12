@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.web.exchanges.HttpExchange.Session;
-import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangesRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mock;
  */
 class HttpExchangesFilterTests {
 
-	private final InMemoryHttpExchangesRepository repository = new InMemoryHttpExchangesRepository();
+	private final InMemoryHttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
 
 	private final HttpExchangesFilter filter = new HttpExchangesFilter(this.repository, EnumSet.allOf(Include.class));
 

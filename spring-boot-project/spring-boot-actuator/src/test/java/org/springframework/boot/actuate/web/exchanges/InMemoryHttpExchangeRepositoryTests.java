@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,18 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link InMemoryHttpExchangesRepository}.
+ * Tests for {@link InMemoryHttpExchangeRepository}.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-class InMemoryHttpExchangesRepositoryTests {
+class InMemoryHttpExchangeRepositoryTests {
 
 	private static final Supplier<Principal> NO_PRINCIPAL = () -> null;
 
 	private static final Supplier<String> NO_SESSION_ID = () -> null;
 
-	private final InMemoryHttpExchangesRepository repository = new InMemoryHttpExchangesRepository();
+	private final InMemoryHttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
 
 	@Test
 	void adWhenHasLimitedCapacityRestrictsSize() {

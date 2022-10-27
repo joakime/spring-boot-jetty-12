@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,9 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.web.exchanges.XHttpExchangesDunno;
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangesEndpoint;
-import org.springframework.boot.actuate.web.exchanges.HttpExchangesRepository;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.boot.actuate.web.exchanges.SourceHttpRequest;
 import org.springframework.boot.actuate.web.exchanges.SourceHttpResponse;
@@ -52,13 +51,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
-	private HttpExchangesRepository repository;
+	private HttpExchangeRepository repository;
 
 	@Test
-	void traces() throws Exception {
+	void httpExchanges() throws Exception {
 		SourceHttpRequest request = mock(SourceHttpRequest.class);
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");
@@ -70,34 +69,31 @@ class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 				.willReturn(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
-		XHttpExchangesDunno tracer = new XHttpExchangesDunno(EnumSet.allOf(Include.class));
-		HttpExchange trace = tracer.receivedRequest(request);
-		tracer.sendingResponse(trace, response, () -> principal, () -> UUID.randomUUID().toString());
-		given(this.repository.findAll()).willReturn(Arrays.asList(trace));
-		this.mockMvc.perform(get("/actuator/httptrace")).andExpect(status().isOk())
-				.andDo(document("httptrace", responseFields(
-						fieldWithPath("traces").description("An array of traced HTTP request-response exchanges."),
-						fieldWithPath("traces.[].timestamp")
-								.description("Timestamp of when the traced exchange occurred."),
-						fieldWithPath("traces.[].principal").description("Principal of the exchange, if any.")
+		HttpExchange exchange = HttpExchange.start(request).finish(response, () -> principal,
+				() -> UUID.randomUUID().toString(), EnumSet.allOf(Include.class));
+		given(this.repository.findAll()).willReturn(Arrays.asList(exchange));
+		this.mockMvc.perform(get("/actuator/httpexchanges")).andExpect(status().isOk()).andDo(document("httpexchanges",
+				responseFields(fieldWithPath("exchanges").description("An array of HTTP request-response exchanges."),
+						fieldWithPath("exchanges.[].timestamp").description("Timestamp of when the exchange occurred."),
+						fieldWithPath("exchanges.[].principal").description("Principal of the exchange, if any.")
 								.optional(),
-						fieldWithPath("traces.[].principal.name").description("Name of the principal.").optional(),
-						fieldWithPath("traces.[].request.method").description("HTTP method of the request."),
-						fieldWithPath("traces.[].request.remoteAddress")
+						fieldWithPath("exchanges.[].principal.name").description("Name of the principal.").optional(),
+						fieldWithPath("exchanges.[].request.method").description("HTTP method of the request."),
+						fieldWithPath("exchanges.[].request.remoteAddress")
 								.description("Remote address from which the request was received, if known.").optional()
 								.type(JsonFieldType.STRING),
-						fieldWithPath("traces.[].request.uri").description("URI of the request."),
-						fieldWithPath("traces.[].request.headers")
+						fieldWithPath("exchanges.[].request.uri").description("URI of the request."),
+						fieldWithPath("exchanges.[].request.headers")
 								.description("Headers of the request, keyed by header name."),
-						fieldWithPath("traces.[].request.headers.*.[]").description("Values of the header"),
-						fieldWithPath("traces.[].response.status").description("Status of the response"),
-						fieldWithPath("traces.[].response.headers")
+						fieldWithPath("exchanges.[].request.headers.*.[]").description("Values of the header"),
+						fieldWithPath("exchanges.[].response.status").description("Status of the response"),
+						fieldWithPath("exchanges.[].response.headers")
 								.description("Headers of the response, keyed by header name."),
-						fieldWithPath("traces.[].response.headers.*.[]").description("Values of the header"),
-						fieldWithPath("traces.[].session").description("Session associated with the exchange, if any.")
-								.optional(),
-						fieldWithPath("traces.[].session.id").description("ID of the session."),
-						fieldWithPath("traces.[].timeTaken")
+						fieldWithPath("exchanges.[].response.headers.*.[]").description("Values of the header"),
+						fieldWithPath("exchanges.[].session")
+								.description("Session associated with the exchange, if any.").optional(),
+						fieldWithPath("exchanges.[].session.id").description("ID of the session."),
+						fieldWithPath("exchanges.[].timeTaken")
 								.description("Time, in milliseconds, taken to handle the exchange."))));
 	}
 
@@ -106,7 +102,7 @@ class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	static class TestConfiguration {
 
 		@Bean
-		HttpExchangesEndpoint httpTraceEndpoint(HttpExchangesRepository repository) {
+		HttpExchangesEndpoint httpExchangesEndpoint(HttpExchangeRepository repository) {
 			return new HttpExchangesEndpoint(repository);
 		}
 
