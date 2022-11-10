@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.KotlinDetector;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Default {@link BindConstructorProvider} implementation.
@@ -44,12 +45,20 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 		if (type == null) {
 			return null;
 		}
-		Constructors constructors = Constructors.getConstructors(type);
+		Class<?> unproxiedType = findUnproxiedType(type);
+		Constructors constructors = Constructors.getConstructors(unproxiedType);
 		if (constructors.getBind() != null || isNestedConstructorBinding) {
 			Assert.state(!constructors.hasAutowired(),
-					() -> type.getName() + " declares @ConstructorBinding and @Autowired constructor");
+					() -> unproxiedType.getName() + " declares @ConstructorBinding and @Autowired constructor");
 		}
 		return constructors.getBind();
+	}
+
+	private Class<?> findUnproxiedType(Class<?> type) {
+		while (type.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
+			type = type.getSuperclass();
+		}
+		return type;
 	}
 
 	/**
