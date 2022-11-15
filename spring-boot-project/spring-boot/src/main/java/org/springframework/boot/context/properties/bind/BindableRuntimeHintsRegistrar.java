@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.stream.StreamSupport;
 
 import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -38,8 +39,11 @@ import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -72,7 +76,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 	public void registerHints(RuntimeHints hints) {
 		for (Class<?> type : this.types) {
-			new Processor(type).process(hints.reflection());
+			new Processor(type).process(hints);
 		}
 	}
 
@@ -119,7 +123,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			}
 		}
 
-		void process(ReflectionHints hints) {
+		void process(RuntimeHints hints) {
 			if (this.seen.contains(this.type)) {
 				return;
 			}
@@ -133,20 +137,36 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			}
 		}
 
-		private void handleConstructor(ReflectionHints hints) {
+		private void handleConstructor(RuntimeHints hints) {
 			if (this.bindConstructor != null) {
-				hints.registerConstructor(this.bindConstructor, ExecutableMode.INVOKE);
+				hints.reflection().registerConstructor(this.bindConstructor, ExecutableMode.INVOKE);
+				String[] parameterNames = new StandardReflectionParameterNameDiscoverer()
+						.getParameterNames(this.bindConstructor);
+				if (parameterNames == null) {
+					registerHintsForLocalVariableTableParameterNameDiscovery(hints);
+				}
 				return;
 			}
-			Arrays.stream(this.type.getDeclaredConstructors()).filter(this::hasNoParameters).findFirst()
-					.ifPresent((constructor) -> hints.registerConstructor(constructor, ExecutableMode.INVOKE));
+			Arrays.stream(this.type.getDeclaredConstructors()).filter(this::hasNoParameters).findFirst().ifPresent(
+					(constructor) -> hints.reflection().registerConstructor(constructor, ExecutableMode.INVOKE));
+		}
+
+		private void registerHintsForLocalVariableTableParameterNameDiscovery(RuntimeHints hints) {
+			// Allow the .class file to be read so that it can be processed using ASM
+			hints.resources().registerResource(new ClassPathResource(
+					ClassUtils.convertClassNameToResourcePath(this.bindConstructor.getDeclaringClass().getName())
+							+ ".class"));
+			// Discovery process eagerly resolves the Executable for each method found in
+			// the class
+			hints.reflection().registerType(this.bindConstructor.getDeclaringClass(),
+					MemberCategory.INTROSPECT_DECLARED_METHODS);
 		}
 
 		private boolean hasNoParameters(Constructor<?> candidate) {
 			return candidate.getParameterCount() == 0;
 		}
 
-		private void handleValueObjectProperties(ReflectionHints hints) {
+		private void handleValueObjectProperties(RuntimeHints hints) {
 			for (int i = 0; i < this.bindConstructor.getParameterCount(); i++) {
 				String propertyName = this.bindConstructor.getParameters()[i].getName();
 				ResolvableType propertyType = ResolvableType.forConstructorParameter(this.bindConstructor, i);
@@ -154,11 +174,11 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			}
 		}
 
-		private void handleJavaBeanProperties(ReflectionHints hints) {
+		private void handleJavaBeanProperties(RuntimeHints hints) {
 			for (PropertyDescriptor propertyDescriptor : this.beanInfo.getPropertyDescriptors()) {
 				Method writeMethod = propertyDescriptor.getWriteMethod();
 				if (writeMethod != null) {
-					hints.registerMethod(writeMethod, ExecutableMode.INVOKE);
+					hints.reflection().registerMethod(writeMethod, ExecutableMode.INVOKE);
 				}
 				Method readMethod = propertyDescriptor.getReadMethod();
 				if (readMethod != null) {
@@ -168,7 +188,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 						continue;
 					}
 					handleProperty(hints, propertyName, propertyType);
-					hints.registerMethod(readMethod, ExecutableMode.INVOKE);
+					hints.reflection().registerMethod(readMethod, ExecutableMode.INVOKE);
 				}
 			}
 		}
@@ -184,7 +204,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			return !isNestedType(propertyName, propertyClass);
 		}
 
-		private void handleProperty(ReflectionHints hints, String propertyName, ResolvableType propertyType) {
+		private void handleProperty(RuntimeHints hints, String propertyName, ResolvableType propertyType) {
 			Class<?> propertyClass = propertyType.resolve();
 			if (propertyClass == null) {
 				return;
@@ -204,7 +224,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			}
 		}
 
-		private void processNested(Class<?> type, ReflectionHints hints) {
+		private void processNested(Class<?> type, RuntimeHints hints) {
 			new Processor(type, true, this.seen).process(hints);
 		}
 
