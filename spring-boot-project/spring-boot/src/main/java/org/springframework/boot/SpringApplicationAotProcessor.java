@@ -19,12 +19,19 @@ package org.springframework.boot;
 import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringApplication.AbandonedRunException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.aot.ContextAotProcessor;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -41,6 +48,8 @@ import org.springframework.util.function.ThrowingSupplier;
  * @since 3.0.0
  */
 public class SpringApplicationAotProcessor extends ContextAotProcessor {
+
+	private static final Log logger = LogFactory.getLog(SpringApplicationAotProcessor.class);
 
 	private final String[] applicationArgs;
 
@@ -73,7 +82,49 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 				.artifactId(args[5]).build();
 		String[] applicationArgs = (args.length > requiredArgs) ? Arrays.copyOfRange(args, requiredArgs, args.length)
 				: new String[0];
-		new SpringApplicationAotProcessor(application, settings, applicationArgs).process();
+		try {
+			new SpringApplicationAotProcessor(application, settings, applicationArgs).process();
+		}
+		catch (Exception ex) {
+			reportFailure(getExceptionReporters(), ex);
+			ReflectionUtils.rethrowRuntimeException(ex);
+		}
+	}
+
+	private static Collection<SpringBootExceptionReporter> getExceptionReporters() {
+		try {
+			return SpringFactoriesLoader
+					.forDefaultResourceLocation(SpringApplicationAotProcessor.class.getClassLoader())
+					.load(SpringBootExceptionReporter.class, (ArgumentResolver) null);
+		}
+		catch (Throwable ex) {
+			return Collections.emptyList();
+		}
+	}
+
+	private static void reportFailure(Collection<SpringBootExceptionReporter> exceptionReporters, Throwable failure) {
+		try {
+			for (SpringBootExceptionReporter reporter : exceptionReporters) {
+				if (reporter.reportException(failure)) {
+					registerLoggedException(failure);
+					return;
+				}
+			}
+		}
+		catch (Throwable ex) {
+			// Continue with normal handling of the original failure
+		}
+		if (logger.isErrorEnabled()) {
+			logger.error("AOT processing failed", failure);
+			registerLoggedException(failure);
+		}
+	}
+
+	private static void registerLoggedException(Throwable exception) {
+		SpringBootExceptionHandler handler = SpringBootExceptionHandler.forCurrentThread();
+		if (handler != null) {
+			handler.registerLoggedException(exception);
+		}
 	}
 
 	/**
