@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	private final DataSource deriveFrom;
 
+	private Supplier<T> instanceSupplier;
+
 	private DataSourceBuilder(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 		this.deriveFrom = null;
@@ -109,7 +111,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * Set the {@link DataSource} type that should be built.
+	 * Set the {@link DataSource} type that should be built. To avoid reflection, consider
+	 * using {@link #instance(Class, Supplier)} instead.
 	 * @param <D> the datasource type
 	 * @param type the datasource type
 	 * @return this builder
@@ -117,6 +120,22 @@ public final class DataSourceBuilder<T extends DataSource> {
 	@SuppressWarnings("unchecked")
 	public <D extends DataSource> DataSourceBuilder<D> type(Class<D> type) {
 		this.type = (Class<T>) type;
+		return (DataSourceBuilder<D>) this;
+	}
+
+	/**
+	 * Set the {@link Supplier} for an instance of the DataSource. The instance will be
+	 * further configured by this builder.
+	 * @param <D> the datasource type
+	 * @param type the datasource type
+	 * @param supplier the instance supplier
+	 * @return this builder
+	 * @since 3.0.2
+	 */
+	@SuppressWarnings("unchecked")
+	public <D extends DataSource> DataSourceBuilder<D> instance(Class<D> type, Supplier<D> supplier) {
+		this.type = (Class<T>) type;
+		this.instanceSupplier = (Supplier<T>) supplier;
 		return (DataSourceBuilder<D>) this;
 	}
 
@@ -171,8 +190,14 @@ public final class DataSourceBuilder<T extends DataSource> {
 	public T build() {
 		DataSourceProperties<T> properties = DataSourceProperties.forType(this.classLoader, this.type);
 		DataSourceProperties<DataSource> deriveFromProperties = getDeriveFromProperties();
-		Class<? extends T> instanceType = (this.type != null) ? this.type : properties.getDataSourceInstanceType();
-		T dataSource = BeanUtils.instantiateClass(instanceType);
+		T dataSource;
+		if (this.instanceSupplier != null) {
+			dataSource = this.instanceSupplier.get();
+		}
+		else {
+			Class<? extends T> instanceType = (this.type != null) ? this.type : properties.getDataSourceInstanceType();
+			dataSource = BeanUtils.instantiateClass(instanceType);
+		}
 		Set<DataSourceProperty> applied = new HashSet<>();
 		for (DataSourceProperty property : DataSourceProperty.values()) {
 			String value = this.values.get(property);

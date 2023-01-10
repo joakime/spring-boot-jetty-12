@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -371,6 +371,22 @@ class DataSourceBuilderTests {
 		assertThat(built.getUsername()).isEqualTo("test2");
 		assertThat(built.getPassword()).isEqualTo("secret2");
 		assertThat(built.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
+	}
+
+	@Test
+	void buildWhenDerivedFromExistingDatabaseWithSuppliedInstance() {
+		HikariDataSource dataSource = new HikariDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setJdbcUrl("jdbc:postgresql://localhost:5432/postgres");
+		SimpleDriverDataSource newDataSource = new SimpleDriverDataSource();
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource).instance(SimpleDriverDataSource.class,
+				() -> newDataSource);
+		SimpleDriverDataSource built = (SimpleDriverDataSource) builder.username("test2").password("secret2").build();
+		assertThat(built.getUsername()).isEqualTo("test2");
+		assertThat(built.getPassword()).isEqualTo("secret2");
+		assertThat(built.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
+		assertThat(built).isSameAs(newDataSource);
 	}
 
 	@Test // gh-27295
