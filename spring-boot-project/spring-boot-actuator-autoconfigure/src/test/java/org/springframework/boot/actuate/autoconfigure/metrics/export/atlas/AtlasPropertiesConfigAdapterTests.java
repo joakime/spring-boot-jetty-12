@@ -18,7 +18,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.atlas;
 
 import java.time.Duration;
 
+import com.netflix.spectator.atlas.AtlasConfig;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -114,6 +117,13 @@ class AtlasPropertiesConfigAdapterTests {
 		properties.setEvalUri("https://atlas.example.com/evaluate");
 		assertThat(new AtlasPropertiesConfigAdapter(properties).evalUri())
 				.isEqualTo("https://atlas.example.com/evaluate");
+	}
+
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(AtlasConfig.class,
+				AtlasPropertiesConfigAdapter.class, "lwcIgnorePublishStep", "initialPollingDelay", "autoStart",
+				"lwcStep", "validTagCharacters");
 	}
 
 }
