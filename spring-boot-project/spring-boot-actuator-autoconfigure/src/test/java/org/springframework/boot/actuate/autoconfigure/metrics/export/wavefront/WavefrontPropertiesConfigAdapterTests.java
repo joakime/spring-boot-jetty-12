@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import java.net.URI;
 
-import io.micrometer.wavefront.WavefrontConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WavefrontPropertiesConfigAdapterTests
 		extends PushRegistryPropertiesConfigAdapterTests<WavefrontProperties, WavefrontPropertiesConfigAdapter> {
+
+	protected WavefrontPropertiesConfigAdapterTests() {
+		super(WavefrontPropertiesConfigAdapter.class);
+	}
 
 	@Override
 	protected WavefrontProperties createProperties() {
@@ -70,13 +72,6 @@ class WavefrontPropertiesConfigAdapterTests
 		WavefrontProperties properties = createProperties();
 		properties.setGlobalPrefix("test");
 		assertThat(createConfigAdapter(properties).globalPrefix()).isEqualTo("test");
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(WavefrontConfig.class,
-				WavefrontPropertiesConfigAdapter.class, "distributionPort", "reportMinuteDistribution",
-				"reportHourDistribution", "reportDayDistribution");
 	}
 
 }

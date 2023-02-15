@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx;
 
-import io.micrometer.signalfx.SignalFxConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class SignalFXPropertiesConfigAdapterTests
+class SignalFxPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<SignalFxProperties, SignalFxPropertiesConfigAdapter> {
+
+	protected SignalFxPropertiesConfigAdapterTests() {
+		super(SignalFxPropertiesConfigAdapter.class);
+	}
 
 	@Override
 	protected SignalFxProperties createProperties() {
@@ -62,12 +64,6 @@ class SignalFXPropertiesConfigAdapterTests
 		SignalFxProperties properties = createProperties();
 		properties.setSource("DESKTOP-GA5");
 		assertThat(createConfigAdapter(properties).source()).isEqualTo("DESKTOP-GA5");
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(SignalFxConfig.class,
-				SignalFxPropertiesConfigAdapter.class, "publishDeltaHistogram", "publishCumulativeHistogram");
 	}
 
 }
