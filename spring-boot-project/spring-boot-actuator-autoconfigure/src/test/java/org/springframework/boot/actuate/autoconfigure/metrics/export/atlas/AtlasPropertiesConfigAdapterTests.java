@@ -126,7 +126,8 @@ class AtlasPropertiesConfigAdapterTests
 	@Test
 	@Override
 	protected void adapterOverridesAllConfigMethods() {
-		adapterOverridesAllConfigMethodsExcept("autoStart", "debugRegistry", "publisher", "rollupPolicy");
+		adapterOverridesAllConfigMethodsExcept("autoStart", "commonTags", "debugRegistry", "publisher", "rollupPolicy",
+				"validTagCharacters");
 	}
 
 }

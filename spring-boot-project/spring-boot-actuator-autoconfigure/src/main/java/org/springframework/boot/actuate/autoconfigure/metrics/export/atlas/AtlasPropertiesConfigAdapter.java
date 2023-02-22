@@ -85,6 +85,16 @@ class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperti
 	}
 
 	@Override
+	public Duration lwcStep() {
+		return get(AtlasProperties::getLwcStep, AtlasConfig.super::lwcStep);
+	}
+
+	@Override
+	public boolean lwcIgnorePublishStep() {
+		return get(AtlasProperties::isLwcIgnorePublishStep, AtlasConfig.super::lwcIgnorePublishStep);
+	}
+
+	@Override
 	public Duration configRefreshFrequency() {
 		return get(AtlasProperties::getConfigRefreshFrequency, AtlasConfig.super::configRefreshFrequency);
 	}
