@@ -30,10 +30,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,16 +47,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Neo4jAutoConfigurationIntegrationTests {
 
 	@Container
+	@ConfigurationPropertiesSource
 	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));
-
-	@DynamicPropertySource
-	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
-		registry.add("spring.neo4j.authentication.username", () -> "neo4j");
-		registry.add("spring.neo4j.authentication.password", neo4jServer::getAdminPassword);
-	}
 
 	@Autowired
 	private Driver driver;

@@ -28,11 +28,10 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,16 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
+	@ConfigurationPropertiesSource
 	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));
-
-	@DynamicPropertySource
-	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
-		registry.add("spring.neo4j.authentication.username", () -> "neo4j");
-		registry.add("spring.neo4j.authentication.password", neo4jServer::getAdminPassword);
-	}
 
 	@Autowired
 	private CountryRepository countryRepository;

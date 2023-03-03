@@ -29,11 +29,10 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,16 +48,10 @@ class Neo4jReactiveHealthIndicatorIntegrationTests {
 	// gh-33428
 
 	@Container
+	@ConfigurationPropertiesSource
 	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));
-
-	@DynamicPropertySource
-	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
-		registry.add("spring.neo4j.authentication.username", () -> "neo4j");
-		registry.add("spring.neo4j.authentication.password", neo4jServer::getAdminPassword);
-	}
 
 	@Autowired
 	private Neo4jReactiveHealthIndicator healthIndicator;
