@@ -18,9 +18,9 @@ package org.springframework.boot.devservices.dockercompose;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
+import org.springframework.boot.serviceconnection.ServiceConnection;
 import org.springframework.core.env.Environment;
 
 /**

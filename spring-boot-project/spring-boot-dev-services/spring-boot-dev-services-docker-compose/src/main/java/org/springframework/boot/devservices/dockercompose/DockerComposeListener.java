@@ -28,7 +28,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.devservices.dockercompose.configuration.DockerComposeDevServiceConfigurationProperties;
@@ -41,6 +40,7 @@ import org.springframework.boot.devservices.dockercompose.readiness.ReadinessTim
 import org.springframework.boot.devservices.dockercompose.readiness.ServiceNotReadyException;
 import org.springframework.boot.devservices.dockercompose.readiness.ServiceReadinessCheck;
 import org.springframework.boot.devservices.dockercompose.readiness.ServiceReadinessCheckFactory;
+import org.springframework.boot.serviceconnection.ServiceConnection;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;

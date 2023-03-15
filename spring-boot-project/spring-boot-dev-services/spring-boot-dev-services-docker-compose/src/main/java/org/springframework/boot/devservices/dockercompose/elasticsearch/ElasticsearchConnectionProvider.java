@@ -22,10 +22,10 @@ import java.util.List;
 
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchServiceConnection.Node.Protocol;
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
 import org.springframework.boot.devservices.dockercompose.RunningServiceServiceConnectionProvider;
 import org.springframework.boot.devservices.dockercompose.interop.RunningService;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.serviceconnection.ServiceConnection;
 import org.springframework.util.ClassUtils;
 
 /**

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.serviceconnection.ServiceConnection;
 
 /**
  * A connection to a SQL database service through JDBC.

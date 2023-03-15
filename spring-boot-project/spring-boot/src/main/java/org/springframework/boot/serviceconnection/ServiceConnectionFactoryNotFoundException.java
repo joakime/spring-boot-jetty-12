@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.serviceconnection;
+
 /**
- * Class related to connecting to external services.
+ * {@link RuntimeException} thrown when a {@link ServiceConnectionFactory} could not be
+ * found.
+ *
+ * @author Andy Wilkinson
+ * @since 3.1.0
  */
-package org.springframework.boot.autoconfigure.serviceconnection;
+public class ServiceConnectionFactoryNotFoundException extends RuntimeException {
+
+	public ServiceConnectionFactoryNotFoundException(ServiceConnectionSource<?, ?> source) {
+		super("No ServiceConnectionFactory found for source '" + source + "'");
+	}
+
+}

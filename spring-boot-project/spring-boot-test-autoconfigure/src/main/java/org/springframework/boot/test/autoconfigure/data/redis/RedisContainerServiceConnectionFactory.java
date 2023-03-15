@@ -20,8 +20,8 @@ import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisServiceConnection;
 import org.springframework.boot.origin.Origin;
-import org.springframework.boot.test.autoconfigure.serviceconnection.ServiceConnectionFactory;
-import org.springframework.boot.test.autoconfigure.serviceconnection.ServiceConnectionSource;
+import org.springframework.boot.serviceconnection.ServiceConnectionFactory;
+import org.springframework.boot.serviceconnection.ServiceConnectionSource;
 
 /**
  * A {@link ServiceConnectionFactory} for creating a {@link RedisServiceConnection} from a

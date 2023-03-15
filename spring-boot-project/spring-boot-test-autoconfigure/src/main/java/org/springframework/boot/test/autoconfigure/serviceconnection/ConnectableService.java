@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.serviceconnection.ServiceConnection;
 
 /**
  * A remote service for which a {@link ServiceConnection} can be created.

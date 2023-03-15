@@ -20,7 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.serviceconnection.ServiceConnection;
+import org.springframework.boot.serviceconnection.ServiceConnection;
 
 /**
  * A connection to an Elasticsearch service.
