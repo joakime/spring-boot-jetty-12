@@ -34,7 +34,9 @@ import org.springframework.util.CollectionUtils;
  * @author Scott Frederick
  * @author Safeer Ansari
  * @since 2.4.0
+ * @deprecate since 3.1.0 in favor of {@link StandardMongoClientSettingsBuilderCustomizer}
  */
+@Deprecated(forRemoval = true)
 public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClientSettingsBuilderCustomizer, Ordered {
 
 	private final MongoProperties properties;
