@@ -14,44 +14,44 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.certificate;
 
 import java.security.KeyStore;
 
-import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslDetails;
+import org.springframework.boot.ssl.SslStoreProvider;
 
 /**
  * An {@link SslStoreProvider} that creates key and trust stores from certificate and
- * private key PEM files.
+ * private key PEM files identified by configuration properties.
  *
  * @author Scott Frederick
- * @since 2.7.0
- * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
- * {@link org.springframework.boot.ssl.certificate.CertificateFileSslStoreProvider}
+ * @since 3.1.0
  */
-@Deprecated(since = "3.1.0", forRemoval = true)
-@SuppressWarnings({ "deprecation", "removal" })
-public final class CertificateFileSslStoreProvider implements SslStoreProvider {
+public final class CertificateFileSslStoreProvider extends CertificateSslStoreProvider {
 
-	private final SslBundle delegate;
+	private final CertificateFileSslDetails ssl;
 
-	public CertificateFileSslStoreProvider(SslBundle delegate) {
-		this.delegate = delegate;
+	private CertificateFileSslStoreProvider(CertificateFileSslDetails ssl) {
+		this.ssl = ssl;
 	}
 
 	@Override
 	public KeyStore getKeyStore() throws Exception {
-		return this.delegate.getKeyStores().getKeyStore();
+		if (this.ssl.getCertificate() == null) {
+			return null;
+		}
+		return createKeyStoreFromResources(this.ssl.getCertificate(), this.ssl.getCertificatePrivateKey(),
+				this.ssl.getKeyStoreType(), this.ssl.getKeyAlias());
 	}
 
 	@Override
 	public KeyStore getTrustStore() throws Exception {
-		return this.delegate.getKeyStores().getTrustStore();
-	}
-
-	@Override
-	public String getKeyPassword() {
-		return this.delegate.getKeyStores().getKeyPassword();
+		if (this.ssl.getTrustCertificate() == null) {
+			return null;
+		}
+		return createKeyStoreFromResources(this.ssl.getTrustCertificate(), this.ssl.getTrustCertificatePrivateKey(),
+				this.ssl.getTrustStoreType(), this.ssl.getKeyAlias());
 	}
 
 	/**
@@ -60,10 +60,9 @@ public final class CertificateFileSslStoreProvider implements SslStoreProvider {
 	 * @param ssl the SSL properties
 	 * @return an {@code SslStoreProvider} or {@code null}
 	 */
-	public static SslStoreProvider from(Ssl ssl) {
-		if (ssl.getCertificate() != null && ssl.getCertificatePrivateKey() != null) {
-			SslBundle sslBundle = ServerSslBundleFactory.from(ssl);
-			return new CertificateFileSslStoreProvider(sslBundle);
+	public static SslStoreProvider from(SslDetails ssl) {
+		if (ssl instanceof CertificateFileSslDetails certificateSsl) {
+			return new CertificateFileSslStoreProvider(certificateSsl);
 		}
 		return null;
 	}
