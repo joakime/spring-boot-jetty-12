@@ -51,7 +51,8 @@ public class SslBundle {
 	}
 
 	/**
-	 * Return an {@link SslKeyStores} that can be used to generate {@link KeyStore}s.
+	 * Return an {@link SslKeyStores} that can be used to access this bundle's
+	 * {@link KeyStore}s.
 	 * @return the {@code SslKeyStores}
 	 */
 	public SslKeyStores getKeyStores() {
@@ -59,8 +60,8 @@ public class SslBundle {
 	}
 
 	/**
-	 * Return an {@link SslManagers} that can be used to generate {@link KeyManager}s and
-	 * {@link TrustManager}s.
+	 * Return an {@link SslManagers} that can be used to access this bundle's
+	 * {@link KeyManager}s and {@link TrustManager}s.
 	 * @return the {@code SslManagers}
 	 */
 	public SslManagers getManagers() {

@@ -24,6 +24,9 @@ package org.springframework.boot.ssl;
  */
 public class SslDetails {
 
+	// TODO Rename to SslConfiguration? It would match the javadoc here and in
+	// SSlBundle#getDetails
+
 	/**
 	 * Supported SSL ciphers.
 	 */
@@ -34,6 +37,8 @@ public class SslDetails {
 	 */
 	private String[] enabledProtocols;
 
+	// TODO Should we group keyAlias, keyPassword, and keyStoreType? Something like
+	// keystore.alias, keystore.password, and keystore.type
 	/**
 	 * The alias that identifies the key in the key store.
 	 */
@@ -49,6 +54,7 @@ public class SslDetails {
 	 */
 	private String keyStoreType;
 
+	// TODO If we group the three preceding properties, should this be truststore.type?
 	/**
 	 * The type of the trust store to create.
 	 */

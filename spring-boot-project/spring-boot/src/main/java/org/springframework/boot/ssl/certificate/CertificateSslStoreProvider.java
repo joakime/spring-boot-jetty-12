@@ -40,6 +40,8 @@ import org.springframework.util.ResourceUtils;
  */
 public abstract class CertificateSslStoreProvider implements SslStoreProvider {
 
+	// TODO There's only one subclass. Could they be combined?
+
 	private static final String KEY_PASSWORD = "";
 
 	private static final String DEFAULT_KEY_ALIAS = "spring-boot-web";

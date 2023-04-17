@@ -24,11 +24,21 @@ package org.springframework.boot.ssl;
  */
 public interface SslBundles {
 
+	// TODO Rename to SslBundleRegistry?
+	// Now I've looked at auto-configure, it has SslBundleRegistry that implements
+	// SslBundles. Should that implementation move into spring-boot? As things stand,
+	// using SslBundles requires spring-boot-autoconfigure or writing your own
+	// implementation
+
 	/**
 	 * Return an {@link SslBundle} with the provided name.
 	 * @param name the bundle name
 	 * @return the bundle
 	 */
+	// TODO Behavior when a bundle with the given name isn't registered.
+	// SslBundleRegistry throws IllegalArgumentException. Should it be
+	// IllegalStateException, a custom exception, or should we just return null. FWIW,
+	// BootstrapRegistry returns null.
 	SslBundle getBundle(String name);
 
 }

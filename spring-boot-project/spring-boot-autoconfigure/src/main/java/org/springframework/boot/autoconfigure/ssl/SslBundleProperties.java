@@ -33,6 +33,9 @@ import org.springframework.boot.ssl.keystore.JavaKeyStoreSslDetails;
 @ConfigurationProperties(prefix = "spring.ssl")
 public class SslBundleProperties {
 
+	// TODO Rename to SSL properties to align with the prefix and the names of
+	// SslPropertiesSslBundleRegistrar and SslAutoConfiguration?
+
 	/**
 	 * PEM-encoded SSL trust material.
 	 */

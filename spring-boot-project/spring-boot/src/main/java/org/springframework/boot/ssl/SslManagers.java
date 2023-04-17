@@ -40,11 +40,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Generates a {@link KeyManagerFactory} and a {@link TrustManagerFactory} from
- * {@link KeyStore}s.
+ * Provides access to key and trust managers and manager factories from
+ * {@link SslKeyStores}.
  *
  * @author Scott Frederick
  * @since 3.1.0
+ * @see SslBundle#getManagers()
  */
 public class SslManagers {
 

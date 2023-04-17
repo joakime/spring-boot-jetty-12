@@ -23,7 +23,7 @@ import org.springframework.boot.ssl.SslStoreProvider;
 
 /**
  * An {@link SslStoreProvider} that creates key and trust stores from certificate and
- * private key PEM files identified by configuration properties.
+ * private key PEM files.
  *
  * @author Scott Frederick
  * @since 3.1.0
@@ -55,9 +55,8 @@ public final class CertificateFileSslStoreProvider extends CertificateSslStorePr
 	}
 
 	/**
-	 * Create an {@link SslStoreProvider} if the appropriate SSL properties are
-	 * configured.
-	 * @param ssl the SSL properties
+	 * Create an {@link SslStoreProvider} if the appropriate SSL details are configured.
+	 * @param ssl the SSL details
 	 * @return an {@code SslStoreProvider} or {@code null}
 	 */
 	public static SslStoreProvider from(SslDetails ssl) {

@@ -19,7 +19,7 @@ package org.springframework.boot.ssl;
 import java.security.KeyStore;
 
 /**
- * Interface to provide SSL key stores for a remote connections to use.
+ * Interface to provide SSL key and trust stores.
  *
  * @author Phillip Webb
  * @author Scott Frederick
@@ -44,7 +44,6 @@ public interface SslStoreProvider {
 	/**
 	 * Return the password of the private key in the key store.
 	 * @return the key password
-	 * @since 2.7.2
 	 */
 	default String getKeyPassword() {
 		return null;
@@ -53,10 +52,9 @@ public interface SslStoreProvider {
 	/**
 	 * Return the password of the key store.
 	 * @return the key store password
-	 * @since 3.1.0
 	 */
 	default String getKeyStorePassword() {
 		return null;
-	};
+	}
 
 }

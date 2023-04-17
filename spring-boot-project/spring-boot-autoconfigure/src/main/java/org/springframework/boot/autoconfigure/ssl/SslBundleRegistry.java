@@ -33,6 +33,8 @@ public class SslBundleRegistry implements SslBundles {
 
 	private final HashMap<String, SslBundle> bundles = new LinkedHashMap<>();
 
+	// TODO Thread safety
+
 	/**
 	 * Register a named {@link SslBundle}.
 	 * @param name the bundle name
@@ -41,6 +43,7 @@ public class SslBundleRegistry implements SslBundles {
 	public void registerBundle(String name, SslBundle bundle) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(bundle, "Bundle must not be null");
+		// TODO Should it be an error if a bundle is overridden?
 		this.bundles.put(name, bundle);
 	}
 
@@ -53,8 +56,9 @@ public class SslBundleRegistry implements SslBundles {
 	@Override
 	public SslBundle getBundle(String name) {
 		Assert.notNull(name, "Name must not be null");
-		Assert.isTrue(this.bundles.containsKey(name), "SSL bundle name '" + name + "' is not valid");
-		return this.bundles.get(name);
+		SslBundle sslBundle = this.bundles.get(name);
+		Assert.notNull(sslBundle, () -> "SSL bundle name '" + name + "' is not valid");
+		return sslBundle;
 	}
 
 }
