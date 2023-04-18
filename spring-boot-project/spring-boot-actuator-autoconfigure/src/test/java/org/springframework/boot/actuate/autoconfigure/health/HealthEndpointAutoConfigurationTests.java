@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointConfiguration.HealthEndpointGroupMembershipValidator.NoSuchHealthContributorException;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -139,6 +140,39 @@ class HealthEndpointAutoConfigurationTests {
 			assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
 			assertThat(groups.getNames()).containsOnly("ready");
 		});
+	}
+
+	@Test
+	void runFailsWhenHealthEndpointGroupIncludesContributorThatDoesNotExist() {
+		this.contextRunner.withPropertyValues("management.endpoint.health.group.ready.include=nope").run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context.getStartupFailure()).isInstanceOf(NoSuchHealthContributorException.class)
+				.hasMessage("Included health contributor 'nope' in group 'ready' does not exist");
+		});
+	}
+
+	@Test
+	void runFailsWhenHealthEndpointGroupExcludesContributorThatDoesNotExist() {
+		this.contextRunner
+			.withPropertyValues("management.endpoint.health.group.ready.exclude=nope",
+					"management.endpoint.health.group.ready.include=*")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure()).isInstanceOf(NoSuchHealthContributorException.class)
+					.hasMessage("Excluded health contributor 'nope' in group 'ready' does not exist");
+			});
+	}
+
+	@Test
+	void runCreatesHealthEndpointGroupThatIncludesContributorThatDoesNotExistWhenValidationIsDisabled() {
+		this.contextRunner
+			.withPropertyValues("management.endpoint.health.validate-group-membership=false",
+					"management.endpoint.health.group.ready.include=nope")
+			.run((context) -> {
+				HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+				assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
+				assertThat(groups.getNames()).containsOnly("ready");
+			});
 	}
 
 	@Test
