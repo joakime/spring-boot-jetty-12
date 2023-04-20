@@ -18,14 +18,13 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
@@ -37,6 +36,7 @@ import org.springframework.test.context.MergedContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -88,12 +88,12 @@ class ServiceConnectionContextCustomizerTests {
 		given(this.factories.getConnectionDetails(this.source))
 			.willReturn(Map.of(JdbcConnectionDetails.class, connectionDetails));
 		customizer.customizeContext(context, mergedConfig);
-		ArgumentCaptor<BeanDefinition> beanDefinitionCaptor = ArgumentCaptor.forClass(BeanDefinition.class);
 		then(beanFactory).should()
-			.registerBeanDefinition(eq("testJdbcConnectionDetailsForMyBean"), beanDefinitionCaptor.capture());
-		RootBeanDefinition beanDefinition = (RootBeanDefinition) beanDefinitionCaptor.getValue();
-		assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
-		assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);
+			.registerBeanDefinition(eq("testJdbcConnectionDetailsForMyBean"),
+					assertArg((Consumer<RootBeanDefinition>) (beanDefinition) -> {
+						assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
+						assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);
+					}));
 	}
 
 	@Test
