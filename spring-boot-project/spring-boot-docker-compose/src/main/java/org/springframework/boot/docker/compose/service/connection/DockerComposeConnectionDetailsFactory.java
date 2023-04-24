@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
+import org.springframework.boot.docker.compose.core.ImageReference;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
@@ -65,7 +66,17 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 	private String getConnectionName(RunningService service) {
 		String connectionName = service.labels().get("org.springframework.boot.service-connection");
-		return (connectionName != null) ? connectionName : service.image().getImageName();
+		return (connectionName != null) ? connectionName : getConnectionNameForImage(service.image());
+	}
+
+	/**
+	 * Return the connection name to use for the given {@code image}. Defaults to the
+	 * {@link ImageReference#getImageName name} of the referenced image.
+	 * @param image the image from which a connection name should be derived
+	 * @return the connection name
+	 */
+	protected String getConnectionNameForImage(ImageReference image) {
+		return image.getImageName();
 	}
 
 	private boolean hasRequiredClasses() {

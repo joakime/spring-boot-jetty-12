@@ -36,9 +36,21 @@ class ImageReferenceTests {
 	}
 
 	@Test
+	void getProjectNameWhenImageOnly() {
+		ImageReference imageReference = ImageReference.of("redis");
+		assertThat(imageReference.getProjectName()).isNull();
+	}
+
+	@Test
 	void getImageNameWhenImageAndTag() {
 		ImageReference imageReference = ImageReference.of("redis:5");
 		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	}
+
+	@Test
+	void getProjectNameWhenImageAndTag() {
+		ImageReference imageReference = ImageReference.of("redis:5");
+		assertThat(imageReference.getProjectName()).isNull();
 	}
 
 	@Test
@@ -49,28 +61,60 @@ class ImageReferenceTests {
 	}
 
 	@Test
-	void getImageNameWhenProjectAndImage() {
-		ImageReference imageReference = ImageReference.of("library/redis");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
-	}
-
-	@Test
-	void getImageNameWhenRegistryLibraryAndImage() {
-		ImageReference imageReference = ImageReference.of("docker.io/library/redis");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
-	}
-
-	@Test
-	void getImageNameWhenRegistryLibraryImageAndTag() {
-		ImageReference imageReference = ImageReference.of("docker.io/library/redis:5");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
-	}
-
-	@Test
-	void getImageNameWhenRegistryLibraryImageAndDigest() {
+	void getProjectNameWhenImageAndDigest() {
 		ImageReference imageReference = ImageReference
-			.of("docker.io/library/redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7");
+			.of("redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7");
+		assertThat(imageReference.getProjectName()).isNull();
+	}
+
+	@Test
+	void getImageNameWhenProjectAndImage() {
+		ImageReference imageReference = ImageReference.of("project/redis");
 		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	}
+
+	@Test
+	void getProjectNameWhenProjectAndImage() {
+		ImageReference imageReference = ImageReference.of("project/redis");
+		assertThat(imageReference.getProjectName()).isEqualTo("project");
+	}
+
+	@Test
+	void getImageNameWhenRegistryProjectAndImage() {
+		ImageReference imageReference = ImageReference.of("docker.io/project/redis");
+		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	}
+
+	@Test
+	void getProjectNameWhenRegistryProjectAndImage() {
+		ImageReference imageReference = ImageReference.of("docker.io/project/redis");
+		assertThat(imageReference.getProjectName()).isEqualTo("project");
+	}
+
+	@Test
+	void getImageNameWhenRegistryProjectImageAndTag() {
+		ImageReference imageReference = ImageReference.of("docker.io/project/redis:5");
+		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	}
+
+	@Test
+	void getProjectNameWhenRegistryProjectImageAndTag() {
+		ImageReference imageReference = ImageReference.of("docker.io/project/redis:5");
+		assertThat(imageReference.getProjectName()).isEqualTo("project");
+	}
+
+	@Test
+	void getImageNameWhenRegistryProjectImageAndDigest() {
+		ImageReference imageReference = ImageReference
+			.of("docker.io/project/redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7");
+		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	}
+
+	@Test
+	void getProjectNameWhenRegistryProjectImageAndDigest() {
+		ImageReference imageReference = ImageReference
+			.of("docker.io/project/redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7");
+		assertThat(imageReference.getProjectName()).isEqualTo("project");
 	}
 
 	@Test
@@ -80,22 +124,35 @@ class ImageReferenceTests {
 	}
 
 	@Test
+	void getProjectNameWhenRegistryWithPort() {
+		ImageReference imageReference = ImageReference.of("my_private.registry:5000/redis");
+		assertThat(imageReference.getImageName()).isEqualTo("redis");
+		assertThat(imageReference.getProjectName()).isNull();
+	}
+
+	@Test
 	void getImageNameWhenRegistryWithPortAndTag() {
 		ImageReference imageReference = ImageReference.of("my_private.registry:5000/redis:5");
 		assertThat(imageReference.getImageName()).isEqualTo("redis");
 	}
 
 	@Test
+	void getProjectNameWhenRegistryWithPortAndTag() {
+		ImageReference imageReference = ImageReference.of("my_private.registry:5000/redis:5");
+		assertThat(imageReference.getProjectName()).isNull();
+	}
+
+	@Test
 	void toStringReturnsReferenceString() {
-		ImageReference imageReference = ImageReference.of("docker.io/library/redis");
-		assertThat(imageReference).hasToString("docker.io/library/redis");
+		ImageReference imageReference = ImageReference.of("docker.io/project/redis");
+		assertThat(imageReference).hasToString("docker.io/project/redis");
 	}
 
 	@Test
 	void equalsAndHashCode() {
-		ImageReference imageReference1 = ImageReference.of("docker.io/library/redis");
-		ImageReference imageReference2 = ImageReference.of("docker.io/library/redis");
-		ImageReference imageReference3 = ImageReference.of("docker.io/library/other");
+		ImageReference imageReference1 = ImageReference.of("docker.io/project/redis");
+		ImageReference imageReference2 = ImageReference.of("docker.io/project/redis");
+		ImageReference imageReference3 = ImageReference.of("docker.io/project/other");
 		assertThat(imageReference1.hashCode()).isEqualTo(imageReference2.hashCode());
 		assertThat(imageReference1).isEqualTo(imageReference1).isEqualTo(imageReference2).isNotEqualTo(imageReference3);
 	}

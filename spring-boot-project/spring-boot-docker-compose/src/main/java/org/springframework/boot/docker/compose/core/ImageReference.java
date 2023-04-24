@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.core;
 
+import org.springframework.util.Assert;
+
 /**
  * A docker image reference of form
  * {@code [<registry>/][<project>/]<image>[:<tag>|@<digest>]}.
@@ -31,12 +33,28 @@ public final class ImageReference {
 
 	private final String reference;
 
+	private final String projectName;
+
 	private final String imageName;
 
 	ImageReference(String reference) {
 		this.reference = reference;
-		int lastSlashIndex = reference.lastIndexOf('/');
-		String imageTagDigest = (lastSlashIndex != -1) ? reference.substring(lastSlashIndex + 1) : reference;
+		String[] components = reference.split("/");
+		Assert.isTrue(components.length >= 1 && components.length <= 3,
+				() -> "Image reference '" + reference + "' is malformed");
+		if (components.length == 1) {
+			// Just <image>[:<tag>|@<digest>]
+			this.projectName = null;
+		}
+		else if (components.length == 2) {
+			// <registry>/<image>[:<tag>|@<digest>] or <project>/<image>[:<tag>|@<digest>]
+			this.projectName = components[0].contains(".") ? null : components[0];
+		}
+		else {
+			// <registry>/<project>/<image>[:<tag>|@<digest>]
+			this.projectName = components[1];
+		}
+		String imageTagDigest = components[components.length - 1];
 		int digestIndex = imageTagDigest.indexOf('@');
 		String imageTag = (digestIndex != -1) ? imageTagDigest.substring(0, digestIndex) : imageTagDigest;
 		int colon = imageTag.indexOf(':');
@@ -72,6 +90,16 @@ public final class ImageReference {
 	 */
 	public String getImageName() {
 		return this.imageName;
+	}
+
+	/**
+	 * Return the name of the project of the referenced image, or {@code null} if it has
+	 * no project. For example, a reference of
+	 * {@code my_private.registry:5000/my_project/redis:5} would return {@code project}.
+	 * @return the project name of the referenced image, or {@code null}
+	 */
+	public String getProjectName() {
+		return this.projectName;
 	}
 
 	/**
