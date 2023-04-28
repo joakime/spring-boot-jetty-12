@@ -3,7 +3,11 @@ org.springframework.context.ApplicationListener=\
 org.springframework.boot.docker.compose.lifecycle.DockerComposeListener,\
 org.springframework.boot.docker.compose.service.connection.DockerComposeServiceConnectionsApplicationListener
 
-# Connection Detail Factories
+# Connection Details Converters
+org.springframework.boot.docker.compose.service.connection.ConnectionDetailsConverter=\
+org.springframework.boot.docker.compose.service.connection.flyway.JdbcToFlywayConnectionDetailsConverter
+
+# Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
 org.springframework.boot.docker.compose.service.connection.cassandra.CassandraDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.elasticsearch.ElasticsearchDockerComposeConnectionDetailsFactory,\
@@ -21,3 +25,4 @@ org.springframework.boot.docker.compose.service.connection.redis.RedisDockerComp
 org.springframework.boot.docker.compose.service.connection.sqlserver.SqlServerJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.sqlserver.SqlServerR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.zipkin.ZipkinDockerComposeConnectionDetailsFactory
+

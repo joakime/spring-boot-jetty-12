@@ -18,6 +18,8 @@ package org.springframework.boot.docker.compose.service.connection.test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.AfterAll;
 
@@ -25,6 +27,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -53,13 +56,21 @@ public abstract class AbstractDockerComposeIntegrationTests {
 	}
 
 	protected final <T extends ConnectionDetails> T run(Class<T> type) {
+		AtomicReference<T> connectionDetails = new AtomicReference<>();
+		run((context) -> {
+			connectionDetails.set(context.getBean(type));
+		});
+		return connectionDetails.get();
+	}
+
+	protected final void run(Consumer<ApplicationContext> consumer) {
 		SpringApplication application = new SpringApplication(Config.class);
 		Map<String, Object> properties = new LinkedHashMap<>();
 		properties.put("spring.docker.compose.skip.in-tests", "false");
 		properties.put("spring.docker.compose.file",
 				ThrowingSupplier.of(this.composeResource::getFile).get().getAbsolutePath());
 		application.setDefaultProperties(properties);
-		return application.run().getBean(type);
+		consumer.accept(application.run());
 	}
 
 	@Configuration(proxyBeanMethods = false)

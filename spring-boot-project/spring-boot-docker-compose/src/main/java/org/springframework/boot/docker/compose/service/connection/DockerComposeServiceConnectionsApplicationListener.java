@@ -46,12 +46,16 @@ class DockerComposeServiceConnectionsApplicationListener
 
 	private final ConnectionDetailsFactories factories;
 
+	private final ConnectionDetailsConverters converters;
+
 	DockerComposeServiceConnectionsApplicationListener() {
-		this(new ConnectionDetailsFactories());
+		this(new ConnectionDetailsFactories(), new ConnectionDetailsConverters());
 	}
 
-	DockerComposeServiceConnectionsApplicationListener(ConnectionDetailsFactories factories) {
+	DockerComposeServiceConnectionsApplicationListener(ConnectionDetailsFactories factories,
+			ConnectionDetailsConverters converters) {
 		this.factories = factories;
+		this.converters = converters;
 	}
 
 	@Override
@@ -65,9 +69,12 @@ class DockerComposeServiceConnectionsApplicationListener
 	private void registerConnectionDetails(BeanDefinitionRegistry registry, List<RunningService> runningServices) {
 		for (RunningService runningService : runningServices) {
 			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService);
-			this.factories.getConnectionDetails(source)
-				.forEach((connectionDetailsType, connectionDetails) -> register(registry, runningService,
-						connectionDetailsType, connectionDetails));
+			this.factories.getConnectionDetails(source).forEach((connectionDetailsType, connectionDetails) -> {
+				register(registry, runningService, connectionDetailsType, connectionDetails);
+				this.converters.convert(connectionDetails)
+					.forEach((convertedType, convertedDetails) -> register(registry, runningService, convertedType,
+							convertedDetails));
+			});
 		}
 	}
 

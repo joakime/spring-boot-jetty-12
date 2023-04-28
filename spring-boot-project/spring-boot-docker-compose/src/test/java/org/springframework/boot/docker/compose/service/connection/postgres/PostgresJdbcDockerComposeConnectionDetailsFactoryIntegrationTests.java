@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.service.connection.postgres;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 
@@ -38,10 +39,16 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends 
 
 	@Test
 	void runCreatesConnectionDetails() {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
-		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
-		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
+		run((context) -> {
+			JdbcConnectionDetails jdbcConnectionDetails = context.getBean(JdbcConnectionDetails.class);
+			assertThat(jdbcConnectionDetails.getUsername()).isEqualTo("myuser");
+			assertThat(jdbcConnectionDetails.getPassword()).isEqualTo("secret");
+			assertThat(jdbcConnectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
+			FlywayConnectionDetails flywayConnectionDetails = context.getBean(FlywayConnectionDetails.class);
+			assertThat(flywayConnectionDetails.getUsername()).isEqualTo("myuser");
+			assertThat(flywayConnectionDetails.getPassword()).isEqualTo("secret");
+			assertThat(flywayConnectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
+		});
 	}
 
 }
