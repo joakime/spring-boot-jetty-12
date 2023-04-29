@@ -26,6 +26,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactoryNotFoundException;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeServicesReadyEvent;
 import org.springframework.context.ApplicationContext;
@@ -46,16 +47,12 @@ class DockerComposeServiceConnectionsApplicationListener
 
 	private final ConnectionDetailsFactories factories;
 
-	private final ConnectionDetailsConverters converters;
-
 	DockerComposeServiceConnectionsApplicationListener() {
-		this(new ConnectionDetailsFactories(), new ConnectionDetailsConverters());
+		this(new ConnectionDetailsFactories());
 	}
 
-	DockerComposeServiceConnectionsApplicationListener(ConnectionDetailsFactories factories,
-			ConnectionDetailsConverters converters) {
+	DockerComposeServiceConnectionsApplicationListener(ConnectionDetailsFactories factories) {
 		this.factories = factories;
-		this.converters = converters;
 	}
 
 	@Override
@@ -71,9 +68,14 @@ class DockerComposeServiceConnectionsApplicationListener
 			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService);
 			this.factories.getConnectionDetails(source).forEach((connectionDetailsType, connectionDetails) -> {
 				register(registry, runningService, connectionDetailsType, connectionDetails);
-				this.converters.convert(connectionDetails)
-					.forEach((convertedType, convertedDetails) -> register(registry, runningService, convertedType,
-							convertedDetails));
+				try {
+					this.factories.getConnectionDetails(connectionDetails)
+						.forEach((adaptedType, adaptedDetails) -> register(registry, runningService, adaptedType,
+								adaptedDetails));
+				}
+				catch (ConnectionDetailsFactoryNotFoundException ex) {
+					// No adapting factories for connectionDetailsType. Continue.
+				}
 			});
 		}
 	}

@@ -18,16 +18,19 @@ package org.springframework.boot.docker.compose.service.connection.flyway;
 
 import org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.ConnectionDetailsConverter;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 
 /**
- * @author awilkinson
+ * {@link ConnectionDetailsFactory} that produces {@link FlywayConnectionDetails} by
+ * adapting {@link JdbcConnectionDetails}.
+ *
+ * @author Andy Wilkinson
  */
-class JdbcToFlywayConnectionDetailsConverter
-		implements ConnectionDetailsConverter<JdbcConnectionDetails, FlywayConnectionDetails> {
+class JdbcAdaptingFlywayConnectionDetailsFactory
+		implements ConnectionDetailsFactory<JdbcConnectionDetails, FlywayConnectionDetails> {
 
 	@Override
-	public FlywayConnectionDetails convert(JdbcConnectionDetails input) {
+	public FlywayConnectionDetails getConnectionDetails(JdbcConnectionDetails input) {
 		return new FlywayConnectionDetails() {
 
 			@Override
