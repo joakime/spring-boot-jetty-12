@@ -22,28 +22,28 @@ import org.springframework.boot.docker.compose.core.DockerCompose;
 import org.springframework.boot.logging.LogLevel;
 
 /**
- * Command used to startup docker compose.
+ * Command used to start up docker compose.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 3.1.0
  */
-public enum StartupCommand {
+public enum StartUpCommand {
 
 	/**
-	 * Startup using {@code docker compose up}.
+	 * Start up using {@code docker compose up}.
 	 */
 	UP(DockerCompose::up),
 
 	/**
-	 * Startup using {@code docker compose start}.
+	 * Start up using {@code docker compose start}.
 	 */
 	START(DockerCompose::start);
 
 	private final BiConsumer<DockerCompose, LogLevel> action;
 
-	StartupCommand(BiConsumer<DockerCompose, LogLevel> action) {
+	StartUpCommand(BiConsumer<DockerCompose, LogLevel> action) {
 		this.action = action;
 	}
 

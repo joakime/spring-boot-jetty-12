@@ -17,37 +17,38 @@
 package org.springframework.boot.docker.compose.lifecycle;
 
 import java.time.Duration;
-
-import org.junit.jupiter.api.Test;
+import java.util.function.BiConsumer;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
 
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
-
 /**
- * Tests for {@link ShutdownCommand}.
+ * Command used to shut down docker compose.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 3.1.0
  */
-class ShutdownCommandTests {
+public enum ShutDownCommand {
 
-	private DockerCompose dockerCompose = mock(DockerCompose.class);
+	/**
+	 * Shut down using {@code docker compose down}.
+	 */
+	DOWN(DockerCompose::down),
 
-	private Duration duration = Duration.ofSeconds(10);
+	/**
+	 * Shut down using {@code docker compose stop}.
+	 */
+	STOP(DockerCompose::stop);
 
-	@Test
-	void applyToWhenDown() {
-		ShutdownCommand.DOWN.applyTo(this.dockerCompose, this.duration);
-		then(this.dockerCompose).should().down(this.duration);
+	private final BiConsumer<DockerCompose, Duration> action;
+
+	ShutDownCommand(BiConsumer<DockerCompose, Duration> action) {
+		this.action = action;
 	}
 
-	@Test
-	void applyToWhenStart() {
-		ShutdownCommand.STOP.applyTo(this.dockerCompose, this.duration);
-		then(this.dockerCompose).should().stop(this.duration);
+	void applyTo(DockerCompose dockerCompose, Duration timeout) {
+		this.action.accept(dockerCompose, timeout);
 	}
 
 }

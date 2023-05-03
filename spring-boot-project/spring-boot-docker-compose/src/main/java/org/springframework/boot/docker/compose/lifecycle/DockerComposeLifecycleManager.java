@@ -89,7 +89,7 @@ class DockerComposeLifecycleManager {
 				: new ServiceReadinessChecks(this.classLoader, applicationContext.getEnvironment(), binder);
 	}
 
-	void startup() {
+	void startUp() {
 		if (!this.properties.isEnabled()) {
 			logger.trace("Docker compose support not enabled");
 			return;
@@ -109,9 +109,9 @@ class DockerComposeLifecycleManager {
 		LifecycleManagement lifecycleManagement = this.properties.getLifecycleManagement();
 		Startup startup = this.properties.getStartup();
 		Shutdown shutdown = this.properties.getShutdown();
-		if (lifecycleManagement.shouldStartup() && !dockerCompose.hasRunningServices()) {
+		if (lifecycleManagement.shouldStartUp() && !dockerCompose.hasRunningServices()) {
 			startup.getCommand().applyTo(dockerCompose, startup.getLogLevel());
-			if (lifecycleManagement.shouldShutdown()) {
+			if (lifecycleManagement.shouldShutDown()) {
 				this.shutdownHandlers.add(() -> shutdown.getCommand().applyTo(dockerCompose, shutdown.getTimeout()));
 			}
 		}

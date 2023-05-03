@@ -16,39 +16,35 @@
 
 package org.springframework.boot.docker.compose.lifecycle;
 
-import java.time.Duration;
-import java.util.function.BiConsumer;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
+import org.springframework.boot.logging.LogLevel;
+
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
 /**
- * Command used to shut down docker compose.
+ * Tests for {@link StartUpCommand}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
  */
-public enum ShutdownCommand {
+class StartUpCommandTests {
 
-	/**
-	 * Shutdown using {@code docker compose down}.
-	 */
-	DOWN(DockerCompose::down),
+	private DockerCompose dockerCompose = mock(DockerCompose.class);
 
-	/**
-	 * Shutdown using {@code docker compose stop}.
-	 */
-	STOP(DockerCompose::stop);
-
-	private final BiConsumer<DockerCompose, Duration> action;
-
-	ShutdownCommand(BiConsumer<DockerCompose, Duration> action) {
-		this.action = action;
+	@Test
+	void applyToWhenUp() {
+		StartUpCommand.UP.applyTo(this.dockerCompose, LogLevel.INFO);
+		then(this.dockerCompose).should().up(LogLevel.INFO);
 	}
 
-	void applyTo(DockerCompose dockerCompose, Duration timeout) {
-		this.action.accept(dockerCompose, timeout);
+	@Test
+	void applyToWhenStart() {
+		StartUpCommand.START.applyTo(this.dockerCompose, LogLevel.INFO);
+		then(this.dockerCompose).should().start(LogLevel.INFO);
 	}
 
 }

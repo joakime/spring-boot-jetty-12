@@ -16,35 +16,38 @@
 
 package org.springframework.boot.docker.compose.lifecycle;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
-import org.springframework.boot.logging.LogLevel;
 
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link StartupCommand}.
+ * Tests for {@link ShutDownCommand}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class StartupCommandTests {
+class ShutDownCommandTests {
 
 	private DockerCompose dockerCompose = mock(DockerCompose.class);
 
+	private Duration duration = Duration.ofSeconds(10);
+
 	@Test
-	void applyToWhenUp() {
-		StartupCommand.UP.applyTo(this.dockerCompose, LogLevel.INFO);
-		then(this.dockerCompose).should().up(LogLevel.INFO);
+	void applyToWhenDown() {
+		ShutDownCommand.DOWN.applyTo(this.dockerCompose, this.duration);
+		then(this.dockerCompose).should().down(this.duration);
 	}
 
 	@Test
 	void applyToWhenStart() {
-		StartupCommand.START.applyTo(this.dockerCompose, LogLevel.INFO);
-		then(this.dockerCompose).should().start(LogLevel.INFO);
+		ShutDownCommand.STOP.applyTo(this.dockerCompose, this.duration);
+		then(this.dockerCompose).should().stop(this.duration);
 	}
 
 }

@@ -51,7 +51,7 @@ public class DockerComposeProperties {
 	/**
 	 * Docker compose lifecycle management.
 	 */
-	private LifecycleManagement lifecycleManagement = LifecycleManagement.START_AND_STOP;
+	private LifecycleManagement lifecycleManagement = LifecycleManagement.START_UP_AND_SHUT_DOWN;
 
 	/**
 	 * Hostname or IP of the machine where the docker containers are started.
@@ -59,12 +59,12 @@ public class DockerComposeProperties {
 	private String host;
 
 	/**
-	 * Start configuration.
+	 * Startup configuration.
 	 */
 	private final Startup startup = new Startup();
 
 	/**
-	 * Stop configuration.
+	 * Shutdown configuration.
 	 */
 	private final Shutdown shutdown = new Shutdown();
 
@@ -135,18 +135,18 @@ public class DockerComposeProperties {
 		/**
 		 * Command used to start docker compose.
 		 */
-		private StartupCommand command = StartupCommand.UP;
+		private StartUpCommand command = StartUpCommand.UP;
 
 		/**
 		 * Log level for output.
 		 */
 		private LogLevel logLevel = LogLevel.INFO;
 
-		public StartupCommand getCommand() {
+		public StartUpCommand getCommand() {
 			return this.command;
 		}
 
-		public void setCommand(StartupCommand command) {
+		public void setCommand(StartUpCommand command) {
 			this.command = command;
 		}
 
@@ -166,20 +166,20 @@ public class DockerComposeProperties {
 	public static class Shutdown {
 
 		/**
-		 * Command used to stop docker compose.
+		 * Command used to shut down docker compose.
 		 */
-		private ShutdownCommand command = ShutdownCommand.DOWN;
+		private ShutDownCommand command = ShutDownCommand.STOP;
 
 		/**
-		 * Timeout for stopping docker compose. Use '0' for forced stop.
+		 * Timeout for shutting down docker compose. Use '0' for forced shutdown.
 		 */
 		private Duration timeout = Duration.ofSeconds(10);
 
-		public ShutdownCommand getCommand() {
+		public ShutDownCommand getCommand() {
 			return this.command;
 		}
 
-		public void setCommand(ShutdownCommand command) {
+		public void setCommand(ShutDownCommand command) {
 			this.command = command;
 		}
 

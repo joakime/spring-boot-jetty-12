@@ -42,10 +42,10 @@ class DockerComposePropertiesTests {
 		Binder binder = new Binder(new MapConfigurationPropertySource());
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
 		assertThat(properties.getFile()).isNull();
-		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_AND_STOP);
+		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_UP_AND_SHUT_DOWN);
 		assertThat(properties.getHost()).isNull();
-		assertThat(properties.getStartup().getCommand()).isEqualTo(StartupCommand.UP);
-		assertThat(properties.getShutdown().getCommand()).isEqualTo(ShutdownCommand.DOWN);
+		assertThat(properties.getStartup().getCommand()).isEqualTo(StartUpCommand.UP);
+		assertThat(properties.getShutdown().getCommand()).isEqualTo(ShutDownCommand.STOP);
 		assertThat(properties.getShutdown().getTimeout()).isEqualTo(Duration.ofSeconds(10));
 		assertThat(properties.getProfiles().getActive()).isEmpty();
 	}
@@ -54,19 +54,19 @@ class DockerComposePropertiesTests {
 	void getWhenPropertiesReturnsBound() {
 		Map<String, String> source = new LinkedHashMap<>();
 		source.put("spring.docker.compose.file", "my-compose.yml");
-		source.put("spring.docker.compose.lifecycle-management", "start-only");
+		source.put("spring.docker.compose.lifecycle-management", "start-up-only");
 		source.put("spring.docker.compose.host", "myhost");
 		source.put("spring.docker.compose.startup.command", "start");
-		source.put("spring.docker.compose.shutdown.command", "stop");
+		source.put("spring.docker.compose.shutdown.command", "down");
 		source.put("spring.docker.compose.shutdown.timeout", "5s");
 		source.put("spring.docker.compose.profiles.active", "myprofile");
 		Binder binder = new Binder(new MapConfigurationPropertySource(source));
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
 		assertThat(properties.getFile()).isEqualTo(new File("my-compose.yml"));
-		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_ONLY);
+		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_UP_ONLY);
 		assertThat(properties.getHost()).isEqualTo("myhost");
-		assertThat(properties.getStartup().getCommand()).isEqualTo(StartupCommand.START);
-		assertThat(properties.getShutdown().getCommand()).isEqualTo(ShutdownCommand.STOP);
+		assertThat(properties.getStartup().getCommand()).isEqualTo(StartUpCommand.START);
+		assertThat(properties.getShutdown().getCommand()).isEqualTo(ShutDownCommand.DOWN);
 		assertThat(properties.getShutdown().getTimeout()).isEqualTo(Duration.ofSeconds(5));
 		assertThat(properties.getProfiles().getActive()).containsExactly("myprofile");
 	}
