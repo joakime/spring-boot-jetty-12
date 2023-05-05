@@ -17,21 +17,23 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.ResolvableDependencies;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
@@ -62,13 +64,15 @@ public abstract class BootWar extends War implements BootArchive {
 
 	private final BootArchiveSupport support;
 
-	private final ResolvedDependencies resolvedDependencies = new ResolvedDependencies();
-
 	private final LayeredSpec layered;
 
 	private final Provider<String> projectName;
 
 	private final Provider<Object> projectVersion;
+
+	private final Set<String> projectIds;
+
+	private final SetProperty<ResolvedArtifactResult> resolvedArtifactResults;
 
 	private FileCollection providedClasspath;
 
@@ -82,20 +86,27 @@ public abstract class BootWar extends War implements BootArchive {
 		getWebInf().into("lib-provided", fromCallTo(this::getProvidedLibFiles));
 		this.support.moveModuleInfoToRoot(getRootSpec());
 		getRootSpec().eachFile(this.support::excludeNonZipLibraryFiles);
-		project.getConfigurations().all((configuration) -> {
-			ResolvableDependencies incoming = configuration.getIncoming();
-			incoming.afterResolve((resolvableDependencies) -> {
-				if (resolvableDependencies == incoming) {
-					this.resolvedDependencies.processConfiguration(project, configuration);
-				}
-			});
-		});
 		this.projectName = project.provider(project::getName);
 		this.projectVersion = project.provider(project::getVersion);
+		this.projectIds = projectIds(project);
+		this.resolvedArtifactResults = project.getObjects().setProperty(ResolvedArtifactResult.class);
+	}
+
+	private Set<String> projectIds(Project project) {
+		return project.getRootProject().getAllprojects().stream().map(this::projectId).collect(Collectors.toSet());
+	}
+
+	private String projectId(Project project) {
+		return project.getGroup() + ":" + project.getName() + ":" + project.getVersion();
 	}
 
 	private Object getProvidedLibFiles() {
 		return (this.providedClasspath != null) ? this.providedClasspath : Collections.emptyList();
+	}
+
+	@Override
+	public void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
+		this.resolvedArtifactResults.addAll(resolvedArtifacts);
 	}
 
 	@Override
@@ -112,12 +123,14 @@ public abstract class BootWar extends War implements BootArchive {
 
 	@Override
 	protected CopyAction createCopyAction() {
+		ResolvedDependencies resolvedDependencies = new ResolvedDependencies(this.projectIds,
+				this.resolvedArtifactResults.get());
 		if (!isLayeredDisabled()) {
-			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
+			LayerResolver layerResolver = new LayerResolver(resolvedDependencies, this.layered, this::isLibrary);
 			String layerToolsLocation = this.layered.getIncludeLayerTools().get() ? LIB_DIRECTORY : null;
-			return this.support.createCopyAction(this, this.resolvedDependencies, layerResolver, layerToolsLocation);
+			return this.support.createCopyAction(this, resolvedDependencies, layerResolver, layerToolsLocation);
 		}
-		return this.support.createCopyAction(this, this.resolvedDependencies);
+		return this.support.createCopyAction(this, resolvedDependencies);
 	}
 
 	@Override
@@ -238,11 +251,6 @@ public abstract class BootWar extends War implements BootArchive {
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;
-	}
-
-	@Internal
-	ResolvedDependencies getResolvedDependencies() {
-		return this.resolvedDependencies;
 	}
 
 	/**

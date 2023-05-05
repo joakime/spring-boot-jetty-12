@@ -17,22 +17,18 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.LenientConfiguration;
-import org.gradle.api.artifacts.ModuleVersionIdentifier;
-import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
+import org.gradle.api.artifacts.component.ComponentArtifactIdentifier;
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
 
 import org.springframework.boot.loader.tools.LibraryCoordinates;
 
 /**
- * Tracks and provides details of resolved dependencies in the project so we can find
+ * Provides details of resolved dependencies in the project so we can find
  * {@link LibraryCoordinates}.
  *
  * @author Madhura Bhave
@@ -43,70 +39,37 @@ import org.springframework.boot.loader.tools.LibraryCoordinates;
  */
 class ResolvedDependencies {
 
-	private final Map<Configuration, ResolvedConfigurationDependencies> configurationDependencies = new LinkedHashMap<>();
+	private final Set<String> projectIds;
 
-	private String projectId(Project project) {
-		return project.getGroup() + ":" + project.getName() + ":" + project.getVersion();
-	}
+	private final Set<ResolvedArtifactResult> resolvedArtifactResults;
 
-	void processConfiguration(Project project, Configuration configuration) {
-		Set<String> localProjectIds = project.getRootProject()
-			.getAllprojects()
-			.stream()
-			.map(this::projectId)
-			.collect(Collectors.toSet());
-		this.configurationDependencies.put(configuration,
-				new ResolvedConfigurationDependencies(localProjectIds, configuration.getResolvedConfiguration()));
+	ResolvedDependencies(Set<String> projectIds, Set<ResolvedArtifactResult> resolvedArtifactResults) {
+		this.projectIds = projectIds;
+		this.resolvedArtifactResults = resolvedArtifactResults;
 	}
 
 	DependencyDescriptor find(File file) {
-		for (ResolvedConfigurationDependencies dependencies : this.configurationDependencies.values()) {
-			DependencyDescriptor dependency = dependencies.find(file);
-			if (dependency != null) {
-				return dependency;
+		for (ResolvedArtifactResult result : this.resolvedArtifactResults) {
+			if (result.getFile().equals(file)) {
+				ComponentArtifactIdentifier id = result.getId();
+				if (id instanceof ModuleComponentArtifactIdentifier) {
+					ModuleComponentIdentifier moduleId = ((ModuleComponentArtifactIdentifier) id)
+						.getComponentIdentifier();
+					boolean projectDependency = this.projectIds
+						.contains(moduleId.getGroup() + ":" + moduleId.getModule() + ":" + moduleId.getVersion());
+					return new DependencyDescriptor(new ModuleComponentIdentifierLibraryCoordinates(moduleId),
+							projectDependency);
+				}
 			}
 		}
 		return null;
 	}
 
-	/**
-	 * Stores details of resolved configuration dependencies.
-	 */
-	private static class ResolvedConfigurationDependencies {
+	private static final class ModuleComponentIdentifierLibraryCoordinates implements LibraryCoordinates {
 
-		private final Map<File, DependencyDescriptor> dependencies = new LinkedHashMap<>();
+		private final ModuleComponentIdentifier identifier;
 
-		ResolvedConfigurationDependencies(Set<String> projectDependencyIds,
-				ResolvedConfiguration resolvedConfiguration) {
-			if (!resolvedConfiguration.hasError()) {
-				LenientConfiguration lenientConfiguration = resolvedConfiguration.getLenientConfiguration();
-				// Ensure that all files are resolved, allowing Gradle to resolve in
-				// parallel if they are not
-				lenientConfiguration.getFiles();
-				for (ResolvedArtifact resolvedArtifact : lenientConfiguration.getArtifacts()) {
-					ModuleVersionIdentifier id = resolvedArtifact.getModuleVersion().getId();
-					boolean projectDependency = projectDependencyIds
-						.contains(id.getGroup() + ":" + id.getName() + ":" + id.getVersion());
-					this.dependencies.put(resolvedArtifact.getFile(), new DependencyDescriptor(
-							new ModuleVersionIdentifierLibraryCoordinates(id), projectDependency));
-				}
-			}
-		}
-
-		DependencyDescriptor find(File file) {
-			return this.dependencies.get(file);
-		}
-
-	}
-
-	/**
-	 * Adapts a {@link ModuleVersionIdentifier} to {@link LibraryCoordinates}.
-	 */
-	private static class ModuleVersionIdentifierLibraryCoordinates implements LibraryCoordinates {
-
-		private final ModuleVersionIdentifier identifier;
-
-		ModuleVersionIdentifierLibraryCoordinates(ModuleVersionIdentifier identifier) {
+		private ModuleComponentIdentifierLibraryCoordinates(ModuleComponentIdentifier identifier) {
 			this.identifier = identifier;
 		}
 
@@ -117,17 +80,12 @@ class ResolvedDependencies {
 
 		@Override
 		public String getArtifactId() {
-			return this.identifier.getName();
+			return this.identifier.getModule();
 		}
 
 		@Override
 		public String getVersion() {
 			return this.identifier.getVersion();
-		}
-
-		@Override
-		public String toString() {
-			return this.identifier.toString();
 		}
 
 	}
