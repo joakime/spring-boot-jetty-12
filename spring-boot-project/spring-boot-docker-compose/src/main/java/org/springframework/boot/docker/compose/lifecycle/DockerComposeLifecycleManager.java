@@ -110,13 +110,15 @@ class DockerComposeLifecycleManager {
 		LifecycleManagement lifecycleManagement = this.properties.getLifecycleManagement();
 		Start start = this.properties.getStart();
 		Stop stop = this.properties.getStop();
-		if (lifecycleManagement.shouldStart() && !dockerCompose.hasRunningServices()) {
+		List<RunningService> allRunningServices = dockerCompose.getRunningServices();
+		if (lifecycleManagement.shouldStart() && allRunningServices.isEmpty()) {
 			start.getCommand().applyTo(dockerCompose, start.getLogLevel());
 			if (lifecycleManagement.shouldStop()) {
 				this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
 			}
+			allRunningServices = dockerCompose.getRunningServices();
 		}
-		List<RunningService> runningServices = new ArrayList<>(dockerCompose.getRunningServices());
+		List<RunningService> runningServices = new ArrayList<>(allRunningServices);
 		runningServices.removeIf(this::isIgnored);
 		this.serviceReadinessChecks.waitUntilReady(runningServices);
 		publishEvent(new DockerComposeServicesReadyEvent(this.applicationContext, runningServices));

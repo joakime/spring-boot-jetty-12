@@ -39,13 +39,19 @@ import org.springframework.core.log.LogMessage;
  */
 class DockerCli {
 
-	private final Log logger = LogFactory.getLog(DockerCli.class);
+	private static final Log logger = LogFactory.getLog(DockerCli.class);
+
+	private static final List<String> DOCKER_COMMAND;
+
+	private static final List<String> DOCKER_COMPOSE_COMMAND;
+
+	static {
+		ProcessRunner processRunner = new ProcessRunner();
+		DOCKER_COMMAND = getDockerCommand(processRunner);
+		DOCKER_COMPOSE_COMMAND = getDockerComposeCommand(processRunner);
+	}
 
 	private final ProcessRunner processRunner;
-
-	private final List<String> dockerCommand;
-
-	private final List<String> dockerComposeCommand;
 
 	private final DockerComposeFile composeFile;
 
@@ -59,16 +65,14 @@ class DockerCli {
 	 */
 	DockerCli(File workingDirectory, DockerComposeFile composeFile, Set<String> activeProfiles) {
 		this.processRunner = new ProcessRunner(workingDirectory);
-		this.dockerCommand = getDockerCommand(this.processRunner);
-		this.dockerComposeCommand = getDockerComposeCommand(this.processRunner);
 		this.composeFile = composeFile;
 		this.activeProfiles = (activeProfiles != null) ? activeProfiles : Collections.emptySet();
 	}
 
-	private List<String> getDockerCommand(ProcessRunner processRunner) {
+	private static List<String> getDockerCommand(ProcessRunner processRunner) {
 		try {
 			String version = processRunner.run("docker", "version", "--format", "{{.Client.Version}}");
-			this.logger.trace(LogMessage.format("Using docker %s", version));
+			logger.trace(LogMessage.format("Using docker %s", version));
 			return List.of("docker");
 		}
 		catch (ProcessStartException ex) {
@@ -84,12 +88,12 @@ class DockerCli {
 		}
 	}
 
-	private List<String> getDockerComposeCommand(ProcessRunner processRunner) {
+	private static List<String> getDockerComposeCommand(ProcessRunner processRunner) {
 		try {
 			DockerCliComposeVersionResponse response = DockerJson.deserialize(
 					processRunner.run("docker", "compose", "version", "--format", "json"),
 					DockerCliComposeVersionResponse.class);
-			this.logger.trace(LogMessage.format("Using docker compose %s", response.version()));
+			logger.trace(LogMessage.format("Using docker compose %s", response.version()));
 			return List.of("docker", "compose");
 		}
 		catch (ProcessExitException ex) {
@@ -99,7 +103,7 @@ class DockerCli {
 			DockerCliComposeVersionResponse response = DockerJson.deserialize(
 					processRunner.run("docker-compose", "version", "--format", "json"),
 					DockerCliComposeVersionResponse.class);
-			this.logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
+			logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
 			return List.of("docker-compose");
 		}
 		catch (ProcessStartException ex) {
@@ -127,14 +131,14 @@ class DockerCli {
 		if (logLevel == null || logLevel == LogLevel.OFF) {
 			return null;
 		}
-		return (line) -> logLevel.log(this.logger, line);
+		return (line) -> logLevel.log(DockerCli.logger, line);
 	}
 
 	private List<String> createCommand(Type type) {
 		return switch (type) {
-			case DOCKER -> new ArrayList<>(this.dockerCommand);
+			case DOCKER -> new ArrayList<>(DOCKER_COMMAND);
 			case DOCKER_COMPOSE -> {
-				List<String> result = new ArrayList<>(this.dockerComposeCommand);
+				List<String> result = new ArrayList<>(DOCKER_COMPOSE_COMMAND);
 				if (this.composeFile != null) {
 					result.add("--file");
 					result.add(this.composeFile.toString());
