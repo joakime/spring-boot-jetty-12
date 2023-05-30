@@ -23,9 +23,11 @@ import org.testcontainers.containers.Container;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
@@ -98,6 +100,15 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 				? testcontainerBeanDefinition.getContainerImageName() : null;
 		return new ContainerConnectionSource<>(beanName, origin, containerType, containerImageName, annotation,
 				() -> beanFactory.getBean(beanName, containerType));
+	}
+
+	class ServiceConnectionBeanRegistrationExcludeFilter implements BeanRegistrationExcludeFilter {
+
+		@Override
+		public boolean isExcludedFromAotProcessing(RegisteredBean registeredBean) {
+			return registeredBean.getMergedBeanDefinition().getAttribute(ServiceConnection.class.getName()) != null;
+		}
+
 	}
 
 }

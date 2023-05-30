@@ -102,7 +102,9 @@ class ConnectionDetailsRegistrar {
 		Class<T> beanType = (Class<T>) connectionDetails.getClass();
 		Supplier<T> beanSupplier = () -> (T) connectionDetails;
 		logger.debug(LogMessage.of(() -> "Registering '%s' for %s".formatted(beanName, source)));
-		registry.registerBeanDefinition(beanName, new RootBeanDefinition(beanType, beanSupplier));
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
+		beanDefinition.setAttribute(ServiceConnection.class.getName(), true);
+		registry.registerBeanDefinition(beanName, beanDefinition);
 	}
 
 	private String getBeanName(ContainerConnectionSource<?> source, ConnectionDetails connectionDetails) {
