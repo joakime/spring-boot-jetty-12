@@ -1,7 +1,9 @@
 services:
   cassandra:
-    image: 'cassandra:3.11.10'
+    image: 'bitnami/cassandra:3.11.10'
     ports:
       - '9042'
     environment:
       - 'CASSANDRA_DC=dc1'
+    labels:
+      org.springframework.boot.service-connection: cassandra

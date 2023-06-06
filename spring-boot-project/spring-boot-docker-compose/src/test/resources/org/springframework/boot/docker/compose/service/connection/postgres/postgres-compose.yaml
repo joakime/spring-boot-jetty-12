@@ -1,9 +1,11 @@
 services:
   database:
-    image: 'postgres:15.2'
+    image: 'bitnami/postgresql:15.2.0'
     ports:
       - '5432'
     environment:
       - 'POSTGRES_USER=myuser'
       - 'POSTGRES_DB=mydatabase'
       - 'POSTGRES_PASSWORD=secret'
+    labels:
+      org.springframework.boot.service-connection: postgres

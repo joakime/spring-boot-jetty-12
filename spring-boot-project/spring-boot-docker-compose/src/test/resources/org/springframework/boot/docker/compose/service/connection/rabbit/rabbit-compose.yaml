@@ -1,8 +1,10 @@
 services:
   rabbitmq:
-    image: 'rabbitmq:3.11'
+    image: 'bitnami/rabbitmq:3.11'
     environment:
       - 'RABBITMQ_DEFAULT_USER=myuser'
       - 'RABBITMQ_DEFAULT_PASS=secret'
     ports:
       - '5672'
+    labels:
+      org.springframework.boot.service-connection: rabbitmq
