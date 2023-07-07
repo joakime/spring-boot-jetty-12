@@ -311,7 +311,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		File root = getValidDocumentRoot();
 		File docBase = (root != null) ? root : createTempDir("jetty-docbase");
 		try {
-			ResourceFactory resourceFactory = ResourceFactory.of(handler);
+			ResourceFactory resourceFactory = handler.getResourceFactory();
 			List<Resource> resources = new ArrayList<>();
 			Resource rootResource = (docBase.isDirectory()
 					? resourceFactory.newResource(docBase.getCanonicalFile().toURI())
@@ -336,10 +336,10 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		if ("file".equals(url.getProtocol())) {
 			File file = new File(url.toURI());
 			if (file.isFile()) {
-				return resourceFactory.newResource("jar:" + url + "!/META-INF/resources");
+				return resourceFactory.newResource("jar:" + url + "!/META-INF/resources/");
 			}
 			if (file.isDirectory()) {
-				return resourceFactory.newResource(url).resolve("META-INF/resources");
+				return resourceFactory.newResource(url).resolve("META-INF/resources/");
 			}
 		}
 		return urlResourceFactory.newResource(url + "META-INF/resources/");
